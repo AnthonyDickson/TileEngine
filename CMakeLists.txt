@@ -8,3 +8,9 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Wpedantic")
 
 add_executable(EconSimPlusPlus main.cpp)
+
+# GLFW
+add_subdirectory(glfw)
+target_link_libraries(EconSimPlusPlus glfw)
+find_package(OpenGL REQUIRED)
+target_link_libraries(EconSimPlusPlus OpenGL::GL)
