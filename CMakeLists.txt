@@ -7,10 +7,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Wpedantic")
 
-add_executable(EconSimPlusPlus main.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
 
 # GLFW
 add_subdirectory(glfw)
-target_link_libraries(EconSimPlusPlus glfw)
+target_link_libraries(${PROJECT_NAME} glfw)
 find_package(OpenGL REQUIRED)
-target_link_libraries(EconSimPlusPlus OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} OpenGL::GL)
+
+# GLAD
+add_library(glad glad/include/glad/glad.h glad/src/glad.c)
+target_include_directories(glad PUBLIC glad/include)
+target_link_libraries(${PROJECT_NAME} glad)
