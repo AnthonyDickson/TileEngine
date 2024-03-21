@@ -27,6 +27,12 @@ void framebuffer_size_callback(GLFWwindow*, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+void processInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+}
+
 int main() {
     std::cout << "Hello, World!" << std::endl;
 
@@ -54,8 +60,13 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     while(!glfwWindowShouldClose(window)) {
-        glfwSwapBuffers(window);
+        processInput(window);
+
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         glfwPollEvents();
+        glfwSwapBuffers(window);
     }
 
     glfwTerminate();
