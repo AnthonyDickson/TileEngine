@@ -12,6 +12,9 @@ add_executable(${PROJECT_NAME} main.cpp)
 # GLFW
 add_subdirectory(glfw)
 target_link_libraries(${PROJECT_NAME} glfw)
+include_directories(glfw/include)
+
+# OpenGL
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 
@@ -19,3 +22,4 @@ target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 add_library(glad glad/include/glad/glad.h glad/src/glad.c)
 target_include_directories(glad PUBLIC glad/include)
 target_link_libraries(${PROJECT_NAME} glad)
+include_directories(glad/include)
