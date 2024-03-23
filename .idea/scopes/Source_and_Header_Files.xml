@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Source and Header Files" pattern="file[EconSimPlusPlus]:include//*||file[EconSimPlusPlus]:src//*" />
+</component>
