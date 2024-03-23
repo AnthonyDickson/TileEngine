@@ -39,8 +39,7 @@ public:
      * @param textureUnit (optional) Which texture unit to use. Defaults to GL_TEXTURE0.
      * @param imageFormat (optional) The image format. Defaults to GL_RGB.
      */
-    explicit Texture(const std::string &imagePath, unsigned int textureUnit = GL_TEXTURE0,
-                     unsigned int imageFormat = GL_RGB);
+    explicit Texture(const std::string &imagePath, int textureUnit = GL_TEXTURE0, int imageFormat = GL_RGB);
 
     /** Activate the current texture for use in rendering.*/
     void use() const;

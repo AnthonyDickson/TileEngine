@@ -64,7 +64,8 @@ int main() {
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Texture texture{"resource/container.jpg", GL_TEXTURE0};
+    Texture containerTexture{"resource/container.jpg", GL_TEXTURE0};
+    Texture faceTexture{"resource/awesomeface.png", GL_TEXTURE1, GL_RGBA};
 
     Shader shader{"resource/shader/shader.vert", "resource/shader/shader.frag"};
 
@@ -108,13 +109,18 @@ int main() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+    shader.use();
+    shader.setInt("textureSampler1", 0);
+    shader.setInt("textureSampler2", 1);
+
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         shader.use();
-        texture.use();
+        containerTexture.use();
+        faceTexture.use();
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
@@ -125,7 +131,8 @@ int main() {
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
     glDeleteBuffers(1, &eboID);
-    texture.cleanup();
+    containerTexture.cleanup();
+    faceTexture.cleanup();
     shader.cleanup();
 
     glfwTerminate();

@@ -26,21 +26,28 @@
 
 #include "Texture.h"
 
-Texture::Texture(const std::string &imagePath, unsigned int textureUnit, unsigned int imageFormat) :
+Texture::Texture(const std::string &imagePath, int textureUnit, int imageFormat) :
         textureID(0), textureUnit(textureUnit) {
     glGenTextures(1, &textureID);
-    use();
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width{};
     int height{};
     int channelCount{};
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *imageData = stbi_load(imagePath.c_str(), &width, &height, &channelCount, 0);
 
     if (imageData == nullptr) {
-        std::cout << "Texture failed to load image from " << imagePath << ":\n" << stbi_failure_reason()
+        std::cout << "Texture failed to load image from " << imagePath << ": " << stbi_failure_reason()
                   << std::endl;
     } else {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, imageFormat, GL_UNSIGNED_BYTE, imageData);
+        glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, width, height, 0, imageFormat, GL_UNSIGNED_BYTE, imageData);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
