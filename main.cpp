@@ -24,6 +24,8 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+#include "shader.h"
+
 void framebuffer_size_callback(GLFWwindow *, int width, int height) {
     glViewport(0, 0, width, height);
 }
@@ -60,70 +62,7 @@ int main() {
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // Setup vertex shader.
-    const char *vertexShaderSource{
-            "#version 330 core\n"
-            "layout (location = 0) in vec3 aPos;\n"
-            "layout (location = 1) in vec3 aColor;\n"
-            "out vec3 ourColor;\n"
-            "void main() {\n"
-            "    gl_Position = vec4(aPos, 1.0);\n"
-            "    ourColor = aColor;\n"
-            "}\0"
-    };
-    unsigned int vertexShaderID{glCreateShader(GL_VERTEX_SHADER)};
-    glShaderSource(vertexShaderID, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShaderID);
-
-    int success{};
-    glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
-
-    if (!success) {
-        char infoLog[512];
-        glGetShaderInfoLog(vertexShaderID, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // Setup fragment shader.
-    const char *fragmentShaderSource{
-            "#version 330 core\n"
-            "in vec3 ourColor;\n"
-            "out vec4 FragColor;\n"
-            "void main() {\n"
-            "    FragColor = vec4(ourColor, 1.0);\n"
-            "}\0"
-    };
-    unsigned int fragmentShaderID{glCreateShader(GL_FRAGMENT_SHADER)};
-    glShaderSource(fragmentShaderID, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShaderID);
-
-    int fragSuccess{};
-    glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &fragSuccess);
-
-    if (!fragSuccess) {
-        char infoLog[512];
-        glGetShaderInfoLog(fragmentShaderID, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // Create shader program and link shaders.
-    unsigned int shaderProgramID{glCreateProgram()};
-    glAttachShader(shaderProgramID, vertexShaderID);
-    glAttachShader(shaderProgramID, fragmentShaderID);
-    glLinkProgram(shaderProgramID);
-    glDeleteShader(vertexShaderID);
-    glDeleteShader(fragmentShaderID);
-
-    int linkSuccess{};
-    glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &linkSuccess);
-
-    if (!linkSuccess) {
-        char infoLog[512];
-        glGetProgramInfoLog(shaderProgramID, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-
-    glUseProgram(shaderProgramID);
+    Shader shader{"shader/shader.vert", "shader/shader.frag"};
 
     // Create the vertex array object.
     unsigned int vaoID{};
@@ -155,7 +94,7 @@ int main() {
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shaderProgramID);
+        shader.use();
         glBindVertexArray(vaoID);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -165,7 +104,7 @@ int main() {
 
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboId);
-    glDeleteProgram(shaderProgramID);
+    shader.cleanup();
 
     glfwTerminate();
     return 0;
