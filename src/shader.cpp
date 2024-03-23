@@ -22,8 +22,10 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "shader.h"
+
 #include "glad/glad.h"
+
+#include "shader.h"
 
 Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath) {
     // Load the shader source code.
