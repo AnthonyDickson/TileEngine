@@ -23,6 +23,7 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "stb_image.h"
 
 #include "shader.h"
 
@@ -62,7 +63,28 @@ int main() {
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Shader shader{"shader/shader.vert", "shader/shader.frag"};
+    unsigned int textureID{};
+    glGenTextures(1, &textureID);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    int width{};
+    int height{};
+    int channelCount{};
+    const char *imageFilename = "resource/container.jpg";
+    unsigned char *imageData = stbi_load(imageFilename, &width, &height, &channelCount, 0);
+
+    if (imageData == nullptr) {
+        std::cout << "Texture failed to load image from " << imageFilename << ":\n" << stbi_failure_reason()
+                  << std::endl;
+    } else {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    stbi_image_free(imageData);
+
+    Shader shader{"resource/shader/shader.vert", "resource/shader/shader.frag"};
 
     // Create the vertex array object.
     unsigned int vaoID{};
@@ -71,23 +93,38 @@ int main() {
 
     // Set up and buffer vertices.
     float vertices[]{
-            // positions         // colors
-            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom left
-            0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // top
+            // positions          // colors           // texture coords
+            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
+            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,   // bottom left
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f    // top left
     };
 
-    unsigned int vboId{};
-    glGenBuffers(1, &vboId);
-    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    unsigned int vboID{};
+    glGenBuffers(1, &vboID);
+    glBindBuffer(GL_ARRAY_BUFFER, vboID);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Set the vertex position attributes.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) nullptr);
     glEnableVertexAttribArray(0);
     // Set the vertex color attributes.
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    // Set the vertex texture coordinates attributes.
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    // Setup and buffer indices.
+    unsigned int indices[]{
+            0, 3, 1,
+            1, 2, 3
+    };
+
+    unsigned int eboID{};
+    glGenBuffers(1, &eboID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -95,15 +132,18 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         shader.use();
+        glBindTexture(GL_TEXTURE_2D, textureID);
         glBindVertexArray(vaoID);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
 
     glDeleteVertexArrays(1, &vaoID);
-    glDeleteBuffers(1, &vboId);
+    glDeleteBuffers(1, &vboID);
+    glDeleteBuffers(1, &eboID);
+    glDeleteTextures(1, &textureID);
     shader.cleanup();
 
     glfwTerminate();

@@ -8,9 +8,13 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Wpedantic")
 
 add_executable(${PROJECT_NAME} src/main.cpp
-        src/shader.cpp)
+        src/shader.cpp
+        src/stb_image.cpp)
 
 include_directories(include/)
+
+# stb_image
+include_directories(lib/stb_image/include)
 
 # GLFW
 add_subdirectory(lib/glfw)
