@@ -19,6 +19,7 @@
 // Created by Anthony on 31/10/2023.
 //
 #include <iostream>
+#include <cmath>
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -63,8 +64,11 @@ int main() {
     const char *vertexShaderSource{
             "#version 330 core\n"
             "layout (location = 0) in vec3 aPos;\n"
+            "layout (location = 1) in vec3 aColor;\n"
+            "out vec3 ourColor;\n"
             "void main() {\n"
             "    gl_Position = vec4(aPos, 1.0);\n"
+            "    ourColor = aColor;\n"
             "}\0"
     };
     unsigned int vertexShaderID{glCreateShader(GL_VERTEX_SHADER)};
@@ -83,9 +87,10 @@ int main() {
     // Setup fragment shader.
     const char *fragmentShaderSource{
             "#version 330 core\n"
+            "in vec3 ourColor;\n"
             "out vec4 FragColor;\n"
             "void main() {\n"
-            "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+            "    FragColor = vec4(ourColor, 1.0);\n"
             "}\0"
     };
     unsigned int fragmentShaderID{glCreateShader(GL_FRAGMENT_SHADER)};
@@ -115,7 +120,7 @@ int main() {
     if (!linkSuccess) {
         char infoLog[512];
         glGetProgramInfoLog(shaderProgramID, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::LINK_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
     glUseProgram(shaderProgramID);
@@ -127,10 +132,10 @@ int main() {
 
     // Set up and buffer vertices.
     float vertices[]{
-            0.5f, 0.5f, 0.0f,  // Top right
-            0.5f, -0.5f, 0.0f,  // Bottom right
-            -0.5f, -0.5f, 0.0f,  // bottom left
-            -0.5f, 0.5f, 0.0f   // top left
+            // positions         // colors
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom left
+            0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // top
     };
 
     unsigned int vboId{};
@@ -138,20 +143,12 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Setup and buffer the indices.
-    unsigned int indices[]{
-            0, 1, 3, // First triangle
-            1, 2, 3 // Second triangle
-    };
-
-    unsigned int eboId{};
-    glGenBuffers(1, &eboId);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboId);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Set the vertex attributes.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) nullptr);
+    // Set the vertex position attributes.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) nullptr);
     glEnableVertexAttribArray(0);
+    // Set the vertex color attributes.
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -160,7 +157,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgramID);
         glBindVertexArray(vaoID);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -168,7 +165,6 @@ int main() {
 
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboId);
-    glDeleteBuffers(1, &eboId);
     glDeleteProgram(shaderProgramID);
 
     glfwTerminate();
