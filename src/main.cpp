@@ -25,7 +25,8 @@
 #include "GLFW/glfw3.h"
 #include "stb_image.h"
 
-#include "shader.h"
+#include "Shader.h"
+#include "Texture.h"
 
 void framebuffer_size_callback(GLFWwindow *, int width, int height) {
     glViewport(0, 0, width, height);
@@ -63,26 +64,7 @@ int main() {
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    unsigned int textureID{};
-    glGenTextures(1, &textureID);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    int width{};
-    int height{};
-    int channelCount{};
-    const char *imageFilename = "resource/container.jpg";
-    unsigned char *imageData = stbi_load(imageFilename, &width, &height, &channelCount, 0);
-
-    if (imageData == nullptr) {
-        std::cout << "Texture failed to load image from " << imageFilename << ":\n" << stbi_failure_reason()
-                  << std::endl;
-    } else {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
-    stbi_image_free(imageData);
+    Texture texture{"resource/container.jpg", GL_TEXTURE0};
 
     Shader shader{"resource/shader/shader.vert", "resource/shader/shader.frag"};
 
@@ -132,7 +114,7 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         shader.use();
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        texture.use();
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
@@ -143,7 +125,7 @@ int main() {
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
     glDeleteBuffers(1, &eboID);
-    glDeleteTextures(1, &textureID);
+    texture.cleanup();
     shader.cleanup();
 
     glfwTerminate();

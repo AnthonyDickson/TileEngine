@@ -13,7 +13,7 @@
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.ses/>.
 
 //
 // Created by Anthony on 23/03/2024.
@@ -25,7 +25,7 @@
 
 #include "glad/glad.h"
 
-#include "shader.h"
+#include "Shader.h"
 
 Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath) {
     // Load the shader source code.
