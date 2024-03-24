@@ -19,14 +19,17 @@
 // Created by Anthony on 31/10/2023.
 //
 #include <iostream>
-#include <cmath>
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+#include "glm/mat4x4.hpp"
 #include "stb_image.h"
 
 #include "Shader.h"
 #include "Texture.h"
+#include "glm/ext/matrix_transform.hpp"
 
 void framebuffer_size_callback(GLFWwindow *, int width, int height) {
     glViewport(0, 0, width, height);
@@ -76,11 +79,11 @@ int main() {
 
     // Set up and buffer vertices.
     float vertices[]{
-            // positions          // colors           // texture coords
-            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
-            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,   // bottom left
-            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f    // top left
+            // positions         // texture coords
+            0.5f, 0.5f, 0.0f, 1.0f, 1.0f,   // top right
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,   // bottom left
+            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f    // top left
     };
 
     unsigned int vboID{};
@@ -89,17 +92,14 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Set the vertex position attributes.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
-    // Set the vertex color attributes.
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
     // Set the vertex texture coordinates attributes.
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // Setup and buffer indices.
-    unsigned int indices[]{
+    int indices[]{
             0, 3, 1,
             1, 2, 3
     };
@@ -121,6 +121,13 @@ int main() {
         shader.use();
         containerTexture.use();
         faceTexture.use();
+
+        auto transform{glm::mat4(1.0f)};
+        transform = glm::rotate(transform, static_cast<float>(glfwGetTime()), glm::vec3(0.0, 0.0, 1.0));
+        transform = glm::translate(transform, glm::vec3(0.25f, -0.25f, 0.0f));
+        transform = glm::rotate(transform, static_cast<float>(glfwGetTime()), glm::vec3(0.0, 0.0, 1.0));
+        shader.setMat4("transform", transform);
+
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 

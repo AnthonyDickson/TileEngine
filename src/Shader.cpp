@@ -13,7 +13,7 @@
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.ses/>.
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Anthony on 23/03/2024.
@@ -26,6 +26,7 @@
 #include "glad/glad.h"
 
 #include "Shader.h"
+#include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath) {
     // Load the shader source code.
@@ -35,7 +36,7 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     std::string vertexShaderString{};
     std::string fragmentShaderString{};
 
-    // ensure ifstream objects can throw exceptions:
+    // ensure stream objects can throw exceptions:
     vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -119,17 +120,22 @@ void Shader::cleanup() const {
     glDeleteShader(shaderProgramID);
 }
 
-void Shader::setBool(const std::string &name, bool value) const {
-    int uniformLocation = glGetUniformLocation(shaderProgramID, name.c_str());
-    glUniform1i(uniformLocation, value);
+int Shader::getUniformLocation(const std::string &name) const {
+    return glGetUniformLocation(shaderProgramID, name.c_str());
+}
+
+[[maybe_unused]] void Shader::setBool(const std::string &name, bool value) const {
+    setInt(name, value);
 }
 
 void Shader::setInt(const std::string &name, int value) const {
-    int uniformLocation = glGetUniformLocation(shaderProgramID, name.c_str());
-    glUniform1i(uniformLocation, value);
+    glUniform1i(getUniformLocation(name), value);
 }
 
-void Shader::setFloat(const std::string &name, float value) const {
-    int uniformLocation = glGetUniformLocation(shaderProgramID, name.c_str());
-    glUniform1f(uniformLocation, value);
+[[maybe_unused]] void Shader::setFloat(const std::string &name, float value) const {
+    glUniform1f(getUniformLocation(name), value);
+}
+
+void Shader::setMat4(const std::string &name, const glm::mat4 &matrix) const {
+    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
 }

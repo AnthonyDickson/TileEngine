@@ -13,7 +13,7 @@
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.ses/>.
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by Anthony on 23/03/2024.
@@ -23,6 +23,7 @@
 #define ECONSIMPLUSPLUS_SHADER_H
 
 #include <string>
+#include "glm/detail/type_mat4x4.hpp"
 
 /**
  * Handles the loading, compilation, linking and usage of an OpenGL shader program.
@@ -48,11 +49,18 @@ public:
     void cleanup() const;
 
     /**
+     * Get the location of a uniform variable in the shader program.
+     * @param name The name of the uniform in the shader source code.
+     * @return An integer indicating the location.
+     */
+    [[nodiscard]] int getUniformLocation(const std::string &name) const;
+
+    /**
      * Set a bool uniform value.
      * @param name The name of the uniform.
      * @param value The value to set the uniform to.
      */
-    void setBool(const std::string &name, bool value) const;
+    [[maybe_unused]] void setBool(const std::string &name, bool value) const;
 
     /**
      * Set an integer uniform value.
@@ -66,7 +74,14 @@ public:
      * @param name The name of the uniform.
      * @param value The value to set the uniform to.
      */
-    void setFloat(const std::string &name, float value) const;
+    [[maybe_unused]] void setFloat(const std::string &name, float value) const;
+
+    /**
+     * Set a 4x4 float matrix uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setMat4(const std::string &name, const glm::mat4x4 &matrix) const;
 };
 
 
