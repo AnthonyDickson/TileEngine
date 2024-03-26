@@ -32,6 +32,7 @@ private:
     unsigned int textureID;
     /** The texture unit that the texture should be bound to. */
     unsigned int textureUnit;
+
 public:
     /**
      * Create a texture from an image.

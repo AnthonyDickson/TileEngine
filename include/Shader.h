@@ -29,10 +29,11 @@
  * Handles the loading, compilation, linking and usage of an OpenGL shader program.
  */
 class Shader {
-public:
+private:
     /** The ID of the shader program in OpenGL. */
     unsigned int shaderProgramID;
 
+public:
     /**
      * Load and compile GLSL shaders from disk.
      * @param vertexShaderSourcePath The path to the vertex shader source code.

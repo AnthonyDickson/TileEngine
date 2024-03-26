@@ -22,23 +22,34 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
 #include "stb_image.h"
 
 #include "Shader.h"
 #include "Texture.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "Camera.h"
 
 void framebuffer_size_callback(GLFWwindow *, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
+void processInput(GLFWwindow *window, Camera &camera, float cameraSpeed) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.move(Camera::Direction::forward, cameraSpeed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera.move(Camera::Direction::backward, cameraSpeed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera.move(Camera::Direction::left, cameraSpeed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera.move(Camera::Direction::right, cameraSpeed);
     }
 }
 
@@ -152,24 +163,26 @@ int main() {
             glm::vec3(-1.3f, 1.0f, -1.5f)
     };
 
-    const float radius{10.0f};
+    Camera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
+
     auto projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 1000.0f);
 
+    auto lastFrameTime = static_cast<float>(glfwGetTime());
+    constexpr const float cameraMoveSpeed = 2.5f;
+
     while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+        const auto currentFrameTime = static_cast<float>(glfwGetTime());
+        const auto deltaTime = currentFrameTime - lastFrameTime;
+        lastFrameTime = currentFrameTime;
+
+        processInput(window, camera, deltaTime * cameraMoveSpeed);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-        float camX{static_cast<float>(sin(glfwGetTime()) * radius)};
-        float camZ{static_cast<float>(cos(glfwGetTime()) * radius)};
-        auto view = glm::lookAt(glm::vec3(camX, 0.0f, camZ),
-                                glm::vec3(0.0f, 0.0f, 0.0f),
-                                glm::vec3(0.0f, 1.0f, 0.0f));
-
         shader.use();
-        shader.setMat4("view", view);
+        shader.setMat4("view", camera.getLookAtMatrix());
         shader.setMat4("projection", projection);
         containerTexture.use();
         faceTexture.use();
