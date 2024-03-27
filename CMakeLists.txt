@@ -15,10 +15,8 @@ include_directories(include/)
 # stb_image
 include_directories(lib/stb_image/include)
 
-# GLFW
-add_subdirectory(lib/glfw)
+add_subdirectory(lib/)
 target_link_libraries(${PROJECT_NAME} glfw)
-include_directories(lib/glfw/include)
 
 # OpenGL
 find_package(OpenGL REQUIRED)
