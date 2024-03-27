@@ -21,6 +21,4 @@ add_subdirectory(lib/)
 target_link_libraries(${PROJECT_NAME} glad)
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} glm)
-
-## stb_image
-include_directories(lib/stb_image/include)
+target_link_libraries(${PROJECT_NAME} stb_image)
