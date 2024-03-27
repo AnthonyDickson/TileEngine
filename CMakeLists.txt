@@ -17,6 +17,7 @@ include_directories(lib/stb_image/include)
 
 add_subdirectory(lib/)
 target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} glm)
 
 # OpenGL
 find_package(OpenGL REQUIRED)
@@ -27,6 +28,3 @@ add_library(glad lib/glad/src/glad.c)
 target_include_directories(glad PUBLIC lib/glad/include)
 target_link_libraries(${PROJECT_NAME} glad)
 include_directories(lib/glad/include)
-
-# GLM
-include_directories(lib/glm)
