@@ -9,22 +9,18 @@ set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Wpedantic")
 
 file(GLOB_RECURSE PROJECT_SOURCE src/*.cpp)
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE})
+target_include_directories(${PROJECT_NAME} PUBLIC include/)
 
-include_directories(include/)
 
-# stb_image
-include_directories(lib/stb_image/include)
-
+# Libraries
+## OpenGL
+find_package(OpenGL REQUIRED)
+target_link_libraries(${PROJECT_NAME} OpenGL::GL)
+## Other libraries
 add_subdirectory(lib/)
+target_link_libraries(${PROJECT_NAME} glad)
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} glm)
 
-# OpenGL
-find_package(OpenGL REQUIRED)
-target_link_libraries(${PROJECT_NAME} OpenGL::GL)
-
-# GLAD
-add_library(glad lib/glad/src/glad.c)
-target_include_directories(glad PUBLIC lib/glad/include)
-target_link_libraries(${PROJECT_NAME} glad)
-include_directories(lib/glad/include)
+## stb_image
+include_directories(lib/stb_image/include)

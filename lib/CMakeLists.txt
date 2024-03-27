@@ -15,3 +15,7 @@ FetchContent_Declare(
         GIT_TAG 1.0.1
 )
 FetchContent_MakeAvailable(glm)
+
+# GLAD
+add_library(glad glad/src/glad.c)
+target_include_directories(glad PUBLIC glad/include)
