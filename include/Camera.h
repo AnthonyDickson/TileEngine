@@ -37,6 +37,10 @@ private:
     /** The vertical axis of the camera. Must be a normalized vector and perpendicular to the forward vector. */
     glm::vec3 up{glm::vec3(0.0f, 1.0f, 0.0f)};
 
+    /** The vertical field of view (degrees). */
+    float fov{45.0f};
+    /** The ratio between the width and height of the camera viewport. */
+    float aspectRatio{1.0f};
     /** The last recorded position of the mouse pointer. */
     glm::vec2 lastMousePosition{};
     /** The rotation in Euler angles (xyz, degrees). */
@@ -54,11 +58,13 @@ public:
 
     /**
      * Create a camera.
+     * @param aspectRatio The aspect ratio of the render window.
      * @param position Where the camera should initially be positioned.
      * @param forward The forward direction for the camera. Note: Must be a normalized vector and orthogonal with `up`.
      * @param up The up direction for the camera. Note: Must be a normalized vector and orthogonal with `forward`.
      */
-    explicit Camera(glm::vec3 position = glm::vec3{},
+    explicit Camera(float aspectRatio,
+                    glm::vec3 position = glm::vec3{},
                     glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f),
                     glm::vec3 up = glm::vec3{0.0f, 1.0f, 0.0f});
 
@@ -77,10 +83,23 @@ public:
     void updateRotation(glm::vec2 mousePosition);
 
     /**
-     * Get the look at matrix for the camera.
+     * React to the user moving the scroll wheel.
+     * @param scrollX The amount scrolled horizontally.
+     * @param scrollY The amount scrolled vertically.
+     */
+    void handleMouseScroll(double scrollX, double scrollY);
+
+    /**
+     * Get the perspective matrix of the camera.
      * @return A 4x4 matrix.
      */
-    [[nodiscard]] glm::mat4 getLookAtMatrix() const;
+    [[nodiscard]] glm::mat4 getPerspectiveMatrix() const;
+
+    /**
+     * Get the view matrix of the camera.
+     * @return A 4x4 matrix.
+     */
+    [[nodiscard]] glm::mat4 getViewMatrix() const;
 };
 
 

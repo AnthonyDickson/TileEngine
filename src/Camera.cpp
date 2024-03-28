@@ -23,8 +23,10 @@
 #include "Camera.h"
 #include "glm/geometric.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/matrix_clip_space.hpp"
 
-Camera::Camera(glm::vec3 position, glm::vec3 forward, glm::vec3 up) : position{position}, forward{forward}, up{up} {
+Camera::Camera(float aspectRatio, glm::vec3 position, glm::vec3 forward, glm::vec3 up) :
+        position{position}, forward{forward}, up{up}, aspectRatio{aspectRatio} {
     if (glm::dot(forward, up) != 0.0f) {
         throw std::logic_error{"Forward and up vectors are not orthogonal."};
     }
@@ -86,6 +88,20 @@ void Camera::updateRotation(const glm::vec2 mousePosition) {
     forward = glm::normalize(direction);
 }
 
-glm::mat4 Camera::getLookAtMatrix() const {
+void Camera::handleMouseScroll(double, double scrollY) {
+    fov -= static_cast<float>(scrollY);
+
+    if (fov < 1.0f) {
+        fov = 1.0f;
+    } else if (fov > 45.0f) {
+        fov = 45.0f;
+    }
+}
+
+glm::mat4 Camera::getPerspectiveMatrix() const {
+    return glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 1000.0f);
+}
+
+glm::mat4 Camera::getViewMatrix() const {
     return glm::lookAt(position, position + forward, up);
 }

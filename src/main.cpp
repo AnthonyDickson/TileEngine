@@ -26,7 +26,6 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "glm/ext/matrix_transform.hpp"
-#include "glm/ext/matrix_clip_space.hpp"
 #include "Camera.h"
 
 void framebuffer_size_callback(GLFWwindow *, int width, int height) {
@@ -61,15 +60,26 @@ void handleMouseInput(GLFWwindow *window, Camera &camera) {
     camera.updateRotation(mousePosition);
 }
 
+void handleMouseScroll(GLFWwindow *window, double scrollX, double scrollY) {
+    Camera *camera{reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window))};
+
+    if (camera) {
+        camera->handleMouseScroll(scrollX, scrollY);
+    }
+}
+
 int main() {
     std::cout << "Hello, World!" << std::endl;
+
+    constexpr int windowWidth{800};
+    constexpr int windowHeight{600};
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
 
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window." << std::endl;
@@ -84,9 +94,10 @@ int main() {
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetScrollCallback(window, handleMouseScroll);
 
     Texture containerTexture{"resource/container.jpg", GL_TEXTURE0};
     Texture faceTexture{"resource/awesomeface.png", GL_TEXTURE1, GL_RGBA};
@@ -171,9 +182,9 @@ int main() {
             glm::vec3(-1.3f, 1.0f, -1.5f)
     };
 
-    Camera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
-
-    auto projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 1000.0f);
+    constexpr float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+    Camera camera{aspectRatio, glm::vec3(0.0f, 0.0f, 3.0f)};
+    glfwSetWindowUserPointer(window, reinterpret_cast<void *>(&camera));
 
     auto lastFrameTime = static_cast<float>(glfwGetTime());
     constexpr const float cameraMoveSpeed = 2.5f;
@@ -191,8 +202,8 @@ int main() {
         glEnable(GL_DEPTH_TEST);
 
         shader.use();
-        shader.setMat4("view", camera.getLookAtMatrix());
-        shader.setMat4("projection", projection);
+        shader.setMat4("view", camera.getViewMatrix());
+        shader.setMat4("projection", camera.getPerspectiveMatrix());
         containerTexture.use();
         faceTexture.use();
 
