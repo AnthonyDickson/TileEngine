@@ -33,7 +33,7 @@ void framebuffer_size_callback(GLFWwindow *, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window, Camera &camera, float cameraSpeed) {
+void handleKeyboardInput(GLFWwindow *window, Camera &camera, float cameraSpeed) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
@@ -50,6 +50,15 @@ void processInput(GLFWwindow *window, Camera &camera, float cameraSpeed) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.move(Camera::Direction::right, cameraSpeed);
     }
+}
+
+void handleMouseInput(GLFWwindow *window, Camera &camera) {
+    double x{};
+    double y{};
+    glfwGetCursorPos(window, &x, &y);
+
+    const auto mousePosition = glm::vec2{static_cast<float>(x), static_cast<float>(y)};
+    camera.updateRotation(mousePosition);
 }
 
 int main() {
@@ -77,10 +86,10 @@ int main() {
 
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Texture containerTexture{"resource/container.jpg", GL_TEXTURE0};
     Texture faceTexture{"resource/awesomeface.png", GL_TEXTURE1, GL_RGBA};
-
     Shader shader{"resource/shader/shader.vert", "resource/shader/shader.frag"};
 
     // Create the vertex array object.
@@ -174,7 +183,8 @@ int main() {
         const auto deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
 
-        processInput(window, camera, deltaTime * cameraMoveSpeed);
+        handleKeyboardInput(window, camera, deltaTime * cameraMoveSpeed);
+        handleMouseInput(window, camera);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
