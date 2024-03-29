@@ -231,6 +231,11 @@ int main() {
             glm::vec3(-1.3f, 1.0f, -1.5f)
     };
 
+    glm::vec3 lightPosition{1.2f, 1.0f, -2.0f};
+    glm::mat4 lightModelMatrix{1.0f};
+    lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
+    lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
+
     constexpr float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
     Camera camera{aspectRatio, glm::vec3(0.0f, 0.0f, 3.0f)};
     glfwSetWindowUserPointer(window, reinterpret_cast<void *>(&camera));
@@ -271,6 +276,11 @@ int main() {
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        // Draw the light source.
+        shader.setVec3("objectColor", lightColor);
+        shader.setMat4("model", lightModelMatrix);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
