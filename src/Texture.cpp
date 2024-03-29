@@ -26,8 +26,8 @@
 
 #include "Texture.h"
 
-Texture::Texture(const std::string &imagePath, int textureUnit, int imageFormat) :
-        textureID(0), textureUnit(textureUnit) {
+Texture::Texture(const std::string &imagePath, unsigned int textureUnit_, unsigned int imageFormat_) :
+        textureID(0), textureUnit(textureUnit_) {
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -47,7 +47,8 @@ Texture::Texture(const std::string &imagePath, int textureUnit, int imageFormat)
         std::cout << "Texture failed to load image from " << imagePath << ": " << stbi_failure_reason()
                   << std::endl;
     } else {
-        glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, width, height, 0, imageFormat, GL_UNSIGNED_BYTE, imageData);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat_), width, height, 0, imageFormat_, GL_UNSIGNED_BYTE,
+                     imageData);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 

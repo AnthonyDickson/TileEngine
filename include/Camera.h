@@ -58,15 +58,15 @@ public:
 
     /**
      * Create a camera.
-     * @param aspectRatio The aspect ratio of the render window.
-     * @param position Where the camera should initially be positioned.
-     * @param forward The forward direction for the camera. Note: Must be a normalized vector and orthogonal with `up`.
-     * @param up The up direction for the camera. Note: Must be a normalized vector and orthogonal with `forward`.
+     * @param aspectRatio_ The aspect ratio of the render window.
+     * @param position_ Where the camera should initially be positioned.
+     * @param forward_ The forward direction for the camera. Note: Must be a normalized vector and orthogonal with `up`.
+     * @param up_ The up direction for the camera. Note: Must be a normalized vector and orthogonal with `forward`.
      */
-    explicit Camera(float aspectRatio,
-                    glm::vec3 position = glm::vec3{},
-                    glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f),
-                    glm::vec3 up = glm::vec3{0.0f, 1.0f, 0.0f});
+    explicit Camera(float aspectRatio_,
+                    glm::vec3 position_ = glm::vec3{},
+                    glm::vec3 forward_ = glm::vec3(0.0f, 0.0f, -1.0f),
+                    glm::vec3 up_ = glm::vec3{0.0f, 1.0f, 0.0f});
 
     /**
      * Move the camera in a given direction.

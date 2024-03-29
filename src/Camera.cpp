@@ -25,8 +25,8 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 
-Camera::Camera(float aspectRatio, glm::vec3 position, glm::vec3 forward, glm::vec3 up) :
-        position{position}, forward{forward}, up{up}, aspectRatio{aspectRatio} {
+Camera::Camera(float aspectRatio_, glm::vec3 position_, glm::vec3 forward_, glm::vec3 up_) :
+        position{position_}, forward{forward_}, up{up_}, aspectRatio{aspectRatio_} {
     if (glm::dot(forward, up) != 0.0f) {
         throw std::logic_error{"Forward and up vectors are not orthogonal."};
     }
