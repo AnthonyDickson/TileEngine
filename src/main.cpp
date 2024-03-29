@@ -28,6 +28,52 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "Camera.h"
 
+namespace constants {
+    constexpr float texturedCube[]{
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
+    };
+}
+
 void framebuffer_size_callback(GLFWwindow *, int width, int height) {
     glViewport(0, 0, width, height);
 }
@@ -110,54 +156,10 @@ int main() {
     glBindVertexArray(vaoID);
 
     // Set up and buffer vertices.
-    float vertices[]{
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-
-            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-    };
-
     unsigned int vboID{};
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::texturedCube), constants::texturedCube, GL_STATIC_DRAW);
 
     // Set the vertex position attributes.
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
