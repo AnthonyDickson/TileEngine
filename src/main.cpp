@@ -61,6 +61,7 @@ void handleMouseInput(GLFWwindow *window, Camera &camera) {
 }
 
 void handleMouseScroll(GLFWwindow *window, double scrollX, double scrollY) {
+    // This function is a workaround to use non-static functions as callbacks with glfw.
     Camera *camera{reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window))};
 
     if (camera) {
@@ -101,7 +102,7 @@ int main() {
 
     Texture containerTexture{"resource/container.jpg", GL_TEXTURE0};
     Texture faceTexture{"resource/awesomeface.png", GL_TEXTURE1, GL_RGBA};
-    Shader shader{"resource/shader/shader.vert", "resource/shader/shader.frag"};
+    Shader shader{"resource/shader/texture.vert", "resource/shader/texture.frag"};
 
     // Create the vertex array object.
     unsigned int vaoID{};
