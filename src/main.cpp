@@ -24,12 +24,55 @@
 #include "GLFW/glfw3.h"
 
 #include "Shader.h"
-#include "Texture.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "Camera.h"
 
 namespace constants {
-    constexpr float texturedCube[]{
+    [[maybe_unused]] constexpr float cube[]{
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+
+            -0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, -0.5f, 0.5f,
+
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+
+            0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, -0.5f, -0.5f,
+
+            -0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, -0.5f,
+    };
+
+    [[maybe_unused]] constexpr float texturedCube[]{
             -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
             0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
@@ -146,10 +189,6 @@ int main() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetScrollCallback(window, handleMouseScroll);
 
-    Texture containerTexture{"resource/container.jpg", GL_TEXTURE0};
-    Texture faceTexture{"resource/awesomeface.png", GL_TEXTURE1, GL_RGBA};
-    Shader shader{"resource/shader/texture.vert", "resource/shader/texture.frag"};
-
     // Create the vertex array object.
     unsigned int vaoID{};
     glGenVertexArrays(1, &vaoID);
@@ -158,19 +197,26 @@ int main() {
     // Set up and buffer vertices.
     unsigned int vboID{};
     glGenBuffers(1, &vboID);
+
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::texturedCube), constants::texturedCube, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::cube), constants::cube, GL_STATIC_DRAW);
 
-    // Set the vertex position attributes.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
-    // Set the vertex texture coordinates attributes.
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
 
-    shader.use();
-    shader.setInt("textureSampler1", 0);
-    shader.setInt("textureSampler2", 1);
+    // Setup light cube while reusing the buffered data from the previous cube.
+    unsigned int lightVaoID{};
+    glGenVertexArrays(1, &lightVaoID);
+    glBindVertexArray(lightVaoID);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    // No need to buffer vertex data here since we are reusing the vertex data from the previous cube.
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(0);
+
+
+    Shader shader{"resource/shader/color.vert", "resource/shader/color.frag"};
 
     glm::vec3 cubePositions[]{
             glm::vec3(0.0f, 0.0f, 0.0f),
@@ -192,6 +238,9 @@ int main() {
     auto lastFrameTime = static_cast<float>(glfwGetTime());
     constexpr const float cameraMoveSpeed = 2.5f;
 
+    glm::vec3 objectColor{1.0f, 0.5f, 0.31f};
+    glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
+
     while (!glfwWindowShouldClose(window)) {
         const auto currentFrameTime = static_cast<float>(glfwGetTime());
         const auto deltaTime = currentFrameTime - lastFrameTime;
@@ -207,8 +256,8 @@ int main() {
         shader.use();
         shader.setMat4("view", camera.getViewMatrix());
         shader.setMat4("projection", camera.getPerspectiveMatrix());
-        containerTexture.use();
-        faceTexture.use();
+        shader.setVec3("objectColor", objectColor);
+        shader.setVec3("lightColor", lightColor);
 
         glBindVertexArray(vaoID);
 
@@ -229,8 +278,6 @@ int main() {
 
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
-    containerTexture.cleanup();
-    faceTexture.cleanup();
     shader.cleanup();
 
     glfwTerminate();

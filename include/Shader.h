@@ -78,11 +78,18 @@ public:
     [[maybe_unused]] void setFloat(const std::string &name, float value) const;
 
     /**
+     * Set a float 3-vector uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setVec3(const std::string &name, const glm::vec3 &value) const;
+
+    /**
      * Set a 4x4 float matrix uniform value.
      * @param name The name of the uniform.
      * @param value The value to set the uniform to.
      */
-    void setMat4(const std::string &name, const glm::mat4x4 &matrix) const;
+    void setMat4(const std::string &name, const glm::mat4x4 &value) const;
 };
 
 
