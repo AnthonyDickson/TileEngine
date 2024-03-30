@@ -245,6 +245,7 @@ int main() {
     glm::vec3 objectColor{1.0f, 0.5f, 0.31f};
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
     glm::vec4 ambientLight{1.0f, 1.0f, 1.0f, 0.2f};
+    constexpr float specularStrength{0.5f};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -261,11 +262,13 @@ int main() {
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
 
         shader.use();
-        shader.setMat4("projectionViewMatrix", projectionViewMatrix);
-        shader.setVec3("objectColor", objectColor);
+        shader.setFloat("specularStrength", specularStrength);
         shader.setVec3("lightColor", lightColor);
         shader.setVec3("lightPosition", lightPosition);
+        shader.setVec3("objectColor", objectColor);
+        shader.setVec3("viewPosition", camera.getPosition());
         shader.setVec4("ambientLight", ambientLight);
+        shader.setMat4("projectionViewMatrix", projectionViewMatrix);
 
         glBindVertexArray(vaoID);
 

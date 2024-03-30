@@ -84,6 +84,10 @@ void Camera::zoom(const float scrollDelta) {
     }
 }
 
+glm::vec3 Camera::getPosition() const {
+    return position;
+}
+
 glm::mat4 Camera::getPerspectiveMatrix() const {
     return glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 1000.0f);
 }

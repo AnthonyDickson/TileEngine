@@ -86,6 +86,12 @@ public:
     void zoom(float scrollDelta);
 
     /**
+     * Get the camera's position.
+     * @return A 3-vector.
+     */
+    [[nodiscard]] glm::vec3 getPosition() const;
+
+    /**
      * Get the perspective matrix of the camera.
      * @return A 4x4 matrix.
      */
