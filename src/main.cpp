@@ -22,10 +22,11 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-
-#include "Shader.h"
 #include "glm/ext/matrix_transform.hpp"
+
 #include "Camera.h"
+#include "Material.h"
+#include "Shader.h"
 #include "Window.h"
 
 namespace constants {
@@ -245,7 +246,8 @@ int main() {
     glm::vec3 objectColor{1.0f, 0.5f, 0.31f};
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
     glm::vec4 ambientLight{1.0f, 1.0f, 1.0f, 0.2f};
-    constexpr float specularStrength{0.5f};
+    Material cubeMaterial{glm::vec3{1.0f, 0.5f, 0.31f}, glm::vec3{1.0f, 0.5f, 0.31f}, glm::vec3{0.5f, 0.5f, 0.5f},
+                          32.0f};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -266,13 +268,12 @@ int main() {
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
 
         shader.use();
-        shader.setFloat("specularStrength", specularStrength);
         shader.setVec3("lightColor", lightColor);
         shader.setVec3("lightPosition", lightPosition);
-        shader.setVec3("objectColor", objectColor);
         shader.setVec3("viewPosition", camera.getPosition());
         shader.setVec4("ambientLight", ambientLight);
         shader.setMat4("projectionViewMatrix", projectionViewMatrix);
+        shader.setMaterial("material", cubeMaterial);
 
         glBindVertexArray(vaoID);
 

@@ -24,6 +24,7 @@
 
 #include <string>
 #include "glm/detail/type_mat4x4.hpp"
+#include "Material.h"
 
 /**
  * Handles the loading, compilation, linking and usage of an OpenGL shader program.
@@ -97,6 +98,13 @@ public:
      * @param value The value to set the uniform to.
      */
     void setMat4(const std::string &name, const glm::mat4x4 &value) const;
+
+    /**
+     * Set a material uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setMaterial(const std::string &name, const Material &value) const;
 };
 
 
