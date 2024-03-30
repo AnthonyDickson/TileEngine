@@ -67,6 +67,7 @@ void Window::runMainLoop(const std::function<void(float)> &updateFunction) {
         // scrollDelta should be reset AFTER the update function is called, otherwise the update function will always
         // see a zero value for scrollDelta.
         scrollDelta = 0.0f;
+        hasWindowChangedSize = false;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -97,6 +98,10 @@ float Window::getAspectRatio() const {
     return static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 }
 
+bool Window::hasWindowSizeChanged() const {
+    return hasWindowChangedSize;
+}
+
 void Window::onWindowResize(GLFWwindow *window_, int width, int height) {
     auto windowHandle{reinterpret_cast<Window *>(glfwGetWindowUserPointer(window_))};
 
@@ -104,6 +109,7 @@ void Window::onWindowResize(GLFWwindow *window_, int width, int height) {
         windowHandle->windowWidth = width;
         windowHandle->windowHeight = height;
         glViewport(0, 0, windowHandle->windowWidth, windowHandle->windowHeight);
+        windowHandle->hasWindowChangedSize = true;
     }
 }
 

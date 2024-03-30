@@ -52,6 +52,8 @@ private:
     glm::vec2 mouseMovement{};
     /** The net change in the scroll wheel since the most recent update step. */
     float scrollDelta{};
+    /** Whether the user changed the window size since the most recent update step. */
+    bool hasWindowChangedSize{false};
 public:
     /**
      * Create and initialize a GLFW window.
@@ -108,6 +110,8 @@ public:
      * @return The aspect ratio in pixels.
      */
     [[nodiscard]] float getAspectRatio() const;
+
+    [[nodiscard]] bool hasWindowSizeChanged() const;
 
 private:
     /**

@@ -102,6 +102,12 @@ public:
      * @return A 4x4 matrix.
      */
     [[nodiscard]] glm::mat4 getViewMatrix() const;
+
+    /**
+     * Update the aspect ratio, typically after the user changes the application window size.
+     * @param aspectRatio_ The ratio of the window width divided by the window height.
+     */
+    void setAspectRatio(float aspectRatio_);
 };
 
 

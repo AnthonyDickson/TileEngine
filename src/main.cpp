@@ -253,6 +253,10 @@ int main() {
             return;
         }
 
+        if (window.hasWindowSizeChanged()) {
+            camera.setAspectRatio(window.getAspectRatio());
+        }
+
         handleInput(window, camera, deltaTime * cameraMoveSpeed);
 
         glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
