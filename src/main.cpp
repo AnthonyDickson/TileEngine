@@ -26,6 +26,7 @@
 #include "Shader.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "Camera.h"
+#include "Window.h"
 
 namespace constants {
     [[maybe_unused]] constexpr float cube[]{
@@ -117,45 +118,22 @@ namespace constants {
     };
 }
 
-void framebuffer_size_callback(GLFWwindow *, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-void handleKeyboardInput(GLFWwindow *window, Camera &camera, float cameraSpeed) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+void handleInput(Window &window, Camera &camera, float cameraSpeed) {
+    if (window.getKeyState(GLFW_KEY_W) == GLFW_PRESS) {
         camera.move(Camera::Direction::forward, cameraSpeed);
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if (window.getKeyState(GLFW_KEY_S) == GLFW_PRESS) {
         camera.move(Camera::Direction::backward, cameraSpeed);
     }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if (window.getKeyState(GLFW_KEY_A) == GLFW_PRESS) {
         camera.move(Camera::Direction::left, cameraSpeed);
     }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if (window.getKeyState(GLFW_KEY_D) == GLFW_PRESS) {
         camera.move(Camera::Direction::right, cameraSpeed);
     }
-}
 
-void handleMouseInput(GLFWwindow *window, Camera &camera) {
-    double x{};
-    double y{};
-    glfwGetCursorPos(window, &x, &y);
-
-    const auto mousePosition = glm::vec2{static_cast<float>(x), static_cast<float>(y)};
-    camera.updateRotation(mousePosition);
-}
-
-void handleMouseScroll(GLFWwindow *window, double scrollX, double scrollY) {
-    // This function is a workaround to use non-static functions as callbacks with glfw.
-    Camera *camera{reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window))};
-
-    if (camera) {
-        camera->handleMouseScroll(scrollX, scrollY);
-    }
+    camera.rotate(window.getMouseDelta());
+    camera.zoom(window.getMouseScroll());
 }
 
 int main() {
@@ -164,30 +142,7 @@ int main() {
     constexpr int windowWidth{800};
     constexpr int windowHeight{600};
 
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
-
-    if (window == nullptr) {
-        std::cout << "Failed to create GLFW window." << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD." << std::endl;
-        return -1;
-    }
-
-    glViewport(0, 0, windowWidth, windowHeight);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetScrollCallback(window, handleMouseScroll);
+    Window window{windowWidth, windowHeight};
 
     // Create the vertex array object.
     unsigned int vaoID{};
@@ -236,23 +191,20 @@ int main() {
     lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
     lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
 
-    constexpr float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
-    Camera camera{aspectRatio, glm::vec3(0.0f, 0.0f, 3.0f)};
-    glfwSetWindowUserPointer(window, reinterpret_cast<void *>(&camera));
+    Camera camera{window.getAspectRatio(), glm::vec3(0.0f, 0.0f, 3.0f)};
 
-    auto lastFrameTime = static_cast<float>(glfwGetTime());
     constexpr const float cameraMoveSpeed = 2.5f;
 
     glm::vec3 objectColor{1.0f, 0.5f, 0.31f};
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
 
-    while (!glfwWindowShouldClose(window)) {
-        const auto currentFrameTime = static_cast<float>(glfwGetTime());
-        const auto deltaTime = currentFrameTime - lastFrameTime;
-        lastFrameTime = currentFrameTime;
+    auto update = [&](float deltaTime) {
+        if (window.getKeyState(GLFW_KEY_ESCAPE)) {
+            window.close();
+            return;
+        }
 
-        handleKeyboardInput(window, camera, deltaTime * cameraMoveSpeed);
-        handleMouseInput(window, camera);
+        handleInput(window, camera, deltaTime * cameraMoveSpeed);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -281,15 +233,13 @@ int main() {
         shader.setVec3("objectColor", lightColor);
         shader.setMat4("model", lightModelMatrix);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+    };
 
-        glfwPollEvents();
-        glfwSwapBuffers(window);
-    }
+    window.runMainLoop(update);
 
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
     shader.cleanup();
 
-    glfwTerminate();
     return 0;
 }

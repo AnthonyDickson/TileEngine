@@ -57,23 +57,9 @@ void Camera::move(Camera::Direction direction, float speed) {
     }
 }
 
-void Camera::updateRotation(const glm::vec2 mousePosition) {
-    if (!hasInitialisedMousePosition) {
-        // If the window is created in a position away from the mouse, the distance of the mouse from the window will
-        // cause the rotation to be moved by a large amount, likely moving the scene out of view.
-        // The below code is executed on the first update to prevent this from happening.
-        lastMousePosition = mousePosition;
-        hasInitialisedMousePosition = true;
-    }
-
-    glm::vec2 mouseMovement{mousePosition.x - lastMousePosition.x, lastMousePosition.y - mousePosition.y};
-    lastMousePosition = mousePosition;
-
-    const float sensitivity = 0.1f;
-    mouseMovement *= sensitivity;
-
-    rotation.x += mouseMovement.y;
-    rotation.y += mouseMovement.x;
+void Camera::rotate(const glm::vec2 mouseMovement, const float sensitivity) {
+    rotation.x += sensitivity * mouseMovement.y;
+    rotation.y += sensitivity * mouseMovement.x;
 
     if (rotation.x > 89.0f) {
         rotation.x = 89.0f;
@@ -88,8 +74,8 @@ void Camera::updateRotation(const glm::vec2 mousePosition) {
     forward = glm::normalize(direction);
 }
 
-void Camera::handleMouseScroll(double, double scrollY) {
-    fov -= static_cast<float>(scrollY);
+void Camera::zoom(const float scrollDelta) {
+    fov -= static_cast<float>(scrollDelta);
 
     if (fov < 1.0f) {
         fov = 1.0f;

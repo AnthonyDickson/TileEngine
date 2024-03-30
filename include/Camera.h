@@ -41,12 +41,8 @@ private:
     float fov{45.0f};
     /** The ratio between the width and height of the camera viewport. */
     float aspectRatio{1.0f};
-    /** The last recorded position of the mouse pointer. */
-    glm::vec2 lastMousePosition{};
     /** The rotation in Euler angles (xyz, degrees). */
     glm::vec3 rotation{0.f, -90.0f, 0.0f}; // Zero y-axis rotation points to the right, -90deg points forward.
-    /** Indicates whether `Camera.updateRotation(...)` has been called yet. */
-    bool hasInitialisedMousePosition{false};
 public:
     /** Direction used for camera movement. */
     enum class Direction {
@@ -76,18 +72,18 @@ public:
     void move(Direction direction, float speed = 1.0f);
 
     /**
-     * Callback to be used when the user moves the mouse pointer.
+     * Rotate the camera based on mouse movement.
      *
-     * @param mousePosition The new coordinates of the mouse pointer.
+     * @param mouseMovement The new coordinates of the mouse pointer.
+     * @param sensitivity How sensitive the camera should be to the mouse movement. Scales `mouseMovement`.
      */
-    void updateRotation(glm::vec2 mousePosition);
+    void rotate(glm::vec2 mouseMovement, float sensitivity = 0.1f);
 
     /**
-     * React to the user moving the scroll wheel.
-     * @param scrollX The amount scrolled horizontally.
-     * @param scrollY The amount scrolled vertically.
+     * Zoom the camera based on mouse scroll.
+     * @param scrollDelta The amount scrolled vertically.
      */
-    void handleMouseScroll(double scrollX, double scrollY);
+    void zoom(float scrollDelta);
 
     /**
      * Get the perspective matrix of the camera.
