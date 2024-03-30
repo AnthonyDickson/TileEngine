@@ -145,8 +145,7 @@ void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
 }
 
 void Shader::setMaterial(const std::string &name, const Material &value) const {
-    setVec3(name + ".ambient", value.ambient);
-    setVec3(name + ".diffuse", value.diffuse);
+    setInt(name + ".diffuse", value.textureID);
     setVec3(name + ".specular", value.specular);
     setFloat(name + ".shininess", value.shininess);
 }

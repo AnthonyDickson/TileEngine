@@ -29,6 +29,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "Window.h"
+#include "Texture.h"
 
 namespace constants {
     [[maybe_unused]] constexpr float cube[]{
@@ -162,6 +163,51 @@ namespace constants {
             -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
     };
+
+    [[maybe_unused]] float texturedCubeWithNormals[]{
+            // positions          // normals           // texture coords
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+    };
 }
 
 void handleInput(Window &window, Camera &camera, float cameraSpeed) {
@@ -190,6 +236,9 @@ int main() {
 
     Window window{windowWidth, windowHeight};
 
+    Camera camera{window.getAspectRatio(), glm::vec3(0.0f, 0.0f, 3.0f)};
+    constexpr const float cameraMoveSpeed = 2.5f;
+
     // Create the vertex array object.
     unsigned int vaoID{};
     glGenVertexArrays(1, &vaoID);
@@ -200,12 +249,15 @@ int main() {
     glGenBuffers(1, &vboID);
 
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::cubeWithNormals), constants::cubeWithNormals, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::texturedCubeWithNormals), constants::texturedCubeWithNormals,
+                 GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // Setup light cube while reusing the buffered data from the previous cube.
     unsigned int lightVaoID{};
@@ -215,12 +267,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
     // No need to buffer vertex data here since we are reusing the vertex data from the previous cube.
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
-
-
-    Shader shader{"resource/shader/color.vert", "resource/shader/color.frag"};
-    Shader lightShader{"resource/shader/light.vert", "resource/shader/light.frag"};
 
     glm::vec3 cubePositions[]{
             glm::vec3(0.0f, 0.0f, 0.0f),
@@ -235,20 +283,17 @@ int main() {
             glm::vec3(-1.3f, 1.0f, -1.5f)
     };
 
+    Shader shader{"resource/shader/color.vert", "resource/shader/color.frag"};
+    const int textureUnit = GL_TEXTURE0;
+    Texture cubeTexture{"resource/container2.png", textureUnit, GL_RGBA};
+    Material cubeMaterial{textureUnit, glm::vec3{0.5f, 0.5f, 0.5f}, 32.0f};
+
+    Shader lightShader{"resource/shader/light.vert", "resource/shader/light.frag"};
     glm::vec3 lightPosition{1.2f, 1.0f, -2.0f};
     glm::mat4 lightModelMatrix{1.0f};
     lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
     lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
-
-    Camera camera{window.getAspectRatio(), glm::vec3(0.0f, 0.0f, 3.0f)};
-
-    constexpr const float cameraMoveSpeed = 2.5f;
-
-    glm::vec3 objectColor{1.0f, 0.5f, 0.31f};
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
-    glm::vec4 ambientLight{1.0f, 1.0f, 1.0f, 0.2f};
-    Material cubeMaterial{glm::vec3{1.0f, 0.5f, 0.31f}, glm::vec3{1.0f, 0.5f, 0.31f}, glm::vec3{0.5f, 0.5f, 0.5f},
-                          32.0f};
     Light light{lightPosition, glm::vec3{0.2f}, glm::vec3{0.5f}, glm::vec3{1.0f}};
 
     auto update = [&](float deltaTime) {
@@ -274,6 +319,7 @@ int main() {
         shader.setVec3("viewPosition", camera.getPosition());
         shader.setMaterial("material", cubeMaterial);
         shader.setLight("light", light);
+        cubeTexture.use();
 
         glBindVertexArray(vaoID);
 
@@ -303,6 +349,8 @@ int main() {
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
     shader.cleanup();
+    lightShader.cleanup();
+    cubeTexture.cleanup();
 
     return 0;
 }
