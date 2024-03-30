@@ -43,8 +43,10 @@ Window::Window(int windowWidth_, int windowHeight_) : windowWidth(windowWidth_),
     }
 
     glViewport(0, 0, windowWidth, windowHeight);
+    glfwSetWindowSizeCallback(window, Window::onWindowResize);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetScrollCallback(window, Window::onMouseScroll);
+    glfwSetWindowUserPointer(window, this);
 }
 
 Window::~Window() {
@@ -95,11 +97,21 @@ float Window::getAspectRatio() const {
     return static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 }
 
-void Window::onMouseScroll(GLFWwindow *window, double scrollX, double) {
-    auto applicationHandle{reinterpret_cast<Window *>(glfwGetWindowUserPointer(window))};
+void Window::onWindowResize(GLFWwindow *window_, int width, int height) {
+    auto windowHandle{reinterpret_cast<Window *>(glfwGetWindowUserPointer(window_))};
 
-    if (applicationHandle) {
-        applicationHandle->scrollDelta += static_cast<float>(scrollX);
+    if (windowHandle) {
+        windowHandle->windowWidth = width;
+        windowHandle->windowHeight = height;
+        glViewport(0, 0, windowHandle->windowWidth, windowHandle->windowHeight);
+    }
+}
+
+void Window::onMouseScroll(GLFWwindow *window, double, double scrollY) {
+    auto windowHandle{reinterpret_cast<Window *>(glfwGetWindowUserPointer(window))};
+
+    if (windowHandle) {
+        windowHandle->scrollDelta += static_cast<float>(scrollY);
     }
 }
 

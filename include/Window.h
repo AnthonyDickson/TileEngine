@@ -40,32 +40,95 @@ private:
     /** For tracking time between frames (seconds). */
     float lastFrameTime{};
 
+    /**
+     * Whether the mouse position has been set before.
+     *
+     * This is used to prevent issues with mouse movement in the first update step.
+     */
     bool hasInitializedMousePosition{false};
+    /** The position of the mouse cursor since the most recent call to `Window::updateMousePosition(...)`. */
     glm::vec2 lastMousePosition{};
+    /** How much the mouse has moved since the most recent update step. */
     glm::vec2 mouseMovement{};
+    /** The net change in the scroll wheel since the most recent update step. */
     float scrollDelta{};
 public:
+    /**
+     * Create and initialize a GLFW window.
+     * @param windowWidth_ The width of the window to create in pixels.
+     * @param windowHeight_ The height of the window to create in pixels.
+     */
     Window(int windowWidth_, int windowHeight_);
 
+    /**
+     * Releases GLFW window stuff.
+     */
     ~Window();
 
+    /**
+     * Runs the main window loop.
+     *
+     * @note This function call blocks.
+     * @param updateFunction The function to call each update step. It will be given the time since the previous frame.
+     */
     void runMainLoop(const std::function<void(float)> &updateFunction);
 
+    /**
+     * Signal that the application should close. This will happen at the start of the next iteration of the main loop.
+     */
     void close();
 
+    /**
+     * Get the state of a keyboard key.
+     * @param key The integer code for a key on a keyboard (use the GLFW defined keys).
+     * @return The state of the given key as an integer (GLFW defined state enum).
+     */
     [[nodiscard]] int getKeyState(int key);
 
+    /**
+     * The net change in the vertical scroll wheel since the last update step.
+     * @return The net scroll amount.
+     */
     [[nodiscard]] float getMouseScroll() const;
 
+    /**
+     * Get the screen coordinates of the mouse cursor.
+     * @return A 2-vector.
+     */
     [[nodiscard]] glm::vec2 getMousePosition();
 
+    /**
+     * Get the distance the mouse has moved since the last update step measured in pixels.
+     * @return A 2-vector.
+     */
     [[nodiscard]] glm::vec2 getMouseDelta();
 
+    /**
+     * Get the aspect ratio of the window.
+     * @return The aspect ratio in pixels.
+     */
     [[nodiscard]] float getAspectRatio() const;
 
 private:
-    static void onMouseScroll(GLFWwindow *, double scrollX, double);
+    /**
+     * Handle the window being resized by the user.
+     * @param window A handle to the window.
+     * @param width The new width of the window.
+     * @param height The new height of the window.
+     */
+    static void onWindowResize(GLFWwindow *window, int width, int height);
 
+    /**
+     * Handle the user using the mouse scroll wheel.
+     * @param window A handle to the window.
+     * @param scrollX The amount scrolled horizontally.
+     * @param scrollY The amount scrolled vertically.
+     */
+    static void onMouseScroll(GLFWwindow *window, double scrollX, double scrollY);
+
+    /**
+     * Poll and track the cursor position.
+     */
     void updateMousePosition();
 };
 
