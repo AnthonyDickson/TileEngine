@@ -285,7 +285,7 @@ int main() {
 
     Shader shader{"resource/shader/color.vert", "resource/shader/color.frag"};
     const int textureUnit = GL_TEXTURE0;
-    Texture cubeTexture{"resource/container2.png", textureUnit, GL_RGBA};
+    Texture cubeTexture{"resource/container2.png", textureUnit};
     Material cubeMaterial{textureUnit, glm::vec3{0.5f, 0.5f, 0.5f}, 32.0f};
 
     Shader lightShader{"resource/shader/light.vert", "resource/shader/light.frag"};

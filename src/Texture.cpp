@@ -20,13 +20,14 @@
 //
 
 #include <iostream>
+#include <format>
 
 #include "glad/glad.h"
 #include "stb_image.h"
 
 #include "Texture.h"
 
-Texture::Texture(const std::string &imagePath, unsigned int textureUnit_, unsigned int imageFormat_) :
+Texture::Texture(const std::string &imagePath, unsigned int textureUnit_) :
         textureID(0), textureUnit(textureUnit_) {
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -43,11 +44,26 @@ Texture::Texture(const std::string &imagePath, unsigned int textureUnit_, unsign
     stbi_set_flip_vertically_on_load(true);
     unsigned char *imageData = stbi_load(imagePath.c_str(), &width, &height, &channelCount, 0);
 
+    GLenum imageFormat;
+
+    switch (channelCount) {
+        case 1:
+            imageFormat = GL_RED;
+        case 3:
+            imageFormat = GL_RGB;
+            break;
+        case 4:
+            imageFormat = GL_RGBA;
+            break;
+        default:
+            throw std::runtime_error(std::format("Texture does not support image with {0} channels.", channelCount));
+    }
+
     if (imageData == nullptr) {
         std::cout << "Texture failed to load image from " << imagePath << ": " << stbi_failure_reason()
                   << std::endl;
     } else {
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat_), width, height, 0, imageFormat_, GL_UNSIGNED_BYTE,
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), width, height, 0, imageFormat, GL_UNSIGNED_BYTE,
                      imageData);
         glGenerateMipmap(GL_TEXTURE_2D);
     }

@@ -38,10 +38,8 @@ public:
      * Create a texture from an image.
      * @param imagePath The path to an image.
      * @param textureUnit_ (optional) Which texture unit to use. Defaults to GL_TEXTURE0.
-     * @param imageFormat_ (optional) The image format. Defaults to GL_RGB.
      */
-    explicit Texture(const std::string &imagePath, unsigned int textureUnit_ = GL_TEXTURE0,
-                     unsigned int imageFormat_ = GL_RGB);
+    explicit Texture(const std::string &imagePath, unsigned int textureUnit_ = GL_TEXTURE0);
 
     /** Activate the current texture for use in rendering.*/
     void use() const;
