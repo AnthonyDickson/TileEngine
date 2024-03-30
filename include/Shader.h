@@ -85,6 +85,13 @@ public:
     void setVec3(const std::string &name, const glm::vec3 &value) const;
 
     /**
+     * Set a float 4-vector uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setVec4(const std::string &name, const glm::vec4 &value) const;
+
+    /**
      * Set a 4x4 float matrix uniform value.
      * @param name The name of the uniform.
      * @param value The value to set the uniform to.

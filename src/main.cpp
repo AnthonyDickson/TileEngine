@@ -116,6 +116,50 @@ namespace constants {
             -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
     };
+
+    [[maybe_unused]] float cubeWithNormals[]{
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
+    };
 }
 
 void handleInput(Window &window, Camera &camera, float cameraSpeed) {
@@ -172,6 +216,7 @@ int main() {
 
 
     Shader shader{"resource/shader/color.vert", "resource/shader/color.frag"};
+    Shader lightShader{"resource/shader/light.vert", "resource/shader/light.frag"};
 
     glm::vec3 cubePositions[]{
             glm::vec3(0.0f, 0.0f, 0.0f),
@@ -197,6 +242,7 @@ int main() {
 
     glm::vec3 objectColor{1.0f, 0.5f, 0.31f};
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
+    glm::vec4 ambientLight{1.0f, 1.0f, 1.0f, 0.5f};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -206,15 +252,16 @@ int main() {
 
         handleInput(window, camera, deltaTime * cameraMoveSpeed);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
+        const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
+
         shader.use();
-        shader.setMat4("view", camera.getViewMatrix());
-        shader.setMat4("projection", camera.getPerspectiveMatrix());
+        shader.setMat4("projectionViewMatrix", projectionViewMatrix);
         shader.setVec3("objectColor", objectColor);
-        shader.setVec3("lightColor", lightColor);
+        shader.setVec4("ambientLight", ambientLight);
 
         glBindVertexArray(vaoID);
 
@@ -230,8 +277,10 @@ int main() {
         }
 
         // Draw the light source.
-        shader.setVec3("objectColor", lightColor);
-        shader.setMat4("model", lightModelMatrix);
+        lightShader.use();
+        lightShader.setMat4("projectionViewMatrix", projectionViewMatrix);
+        lightShader.setMat4("model", lightModelMatrix);
+        lightShader.setVec3("objectColor", lightColor);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     };
 
