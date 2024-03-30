@@ -25,6 +25,7 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "Camera.h"
+#include "Light.h"
 #include "Material.h"
 #include "Shader.h"
 #include "Window.h"
@@ -248,6 +249,7 @@ int main() {
     glm::vec4 ambientLight{1.0f, 1.0f, 1.0f, 0.2f};
     Material cubeMaterial{glm::vec3{1.0f, 0.5f, 0.31f}, glm::vec3{1.0f, 0.5f, 0.31f}, glm::vec3{0.5f, 0.5f, 0.5f},
                           32.0f};
+    Light light{lightPosition, glm::vec3{0.2f}, glm::vec3{0.5f}, glm::vec3{1.0f}};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -268,12 +270,10 @@ int main() {
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
 
         shader.use();
-        shader.setVec3("lightColor", lightColor);
-        shader.setVec3("lightPosition", lightPosition);
-        shader.setVec3("viewPosition", camera.getPosition());
-        shader.setVec4("ambientLight", ambientLight);
         shader.setMat4("projectionViewMatrix", projectionViewMatrix);
+        shader.setVec3("viewPosition", camera.getPosition());
         shader.setMaterial("material", cubeMaterial);
+        shader.setLight("light", light);
 
         glBindVertexArray(vaoID);
 

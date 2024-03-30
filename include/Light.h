@@ -19,18 +19,20 @@
 // Created by Anthony on 30/03/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_MATERIAL_H
-#define ECONSIMPLUSPLUS_MATERIAL_H
+#ifndef ECONSIMPLUSPLUS_LIGHT_H
+#define ECONSIMPLUSPLUS_LIGHT_H
+
 
 #include "glm/vec3.hpp"
 
-/** The lighting properties of a material. */
-struct Material {
+/** The properties of a basic light source. */
+struct Light {
+    glm::vec3 position;
+
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
-    float shininess;
 };
 
 
-#endif //ECONSIMPLUSPLUS_MATERIAL_H
+#endif //ECONSIMPLUSPLUS_LIGHT_H

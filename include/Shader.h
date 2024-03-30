@@ -25,6 +25,7 @@
 #include <string>
 #include "glm/detail/type_mat4x4.hpp"
 #include "Material.h"
+#include "Light.h"
 
 /**
  * Handles the loading, compilation, linking and usage of an OpenGL shader program.
@@ -86,13 +87,6 @@ public:
     void setVec3(const std::string &name, const glm::vec3 &value) const;
 
     /**
-     * Set a float 4-vector uniform value.
-     * @param name The name of the uniform.
-     * @param value The value to set the uniform to.
-     */
-    void setVec4(const std::string &name, const glm::vec4 &value) const;
-
-    /**
      * Set a 4x4 float matrix uniform value.
      * @param name The name of the uniform.
      * @param value The value to set the uniform to.
@@ -105,6 +99,13 @@ public:
      * @param value The value to set the uniform to.
      */
     void setMaterial(const std::string &name, const Material &value) const;
+
+    /**
+     * Set a light uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setLight(const std::string &name, const Light &value) const;
 };
 
 
