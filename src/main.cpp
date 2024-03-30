@@ -198,10 +198,12 @@ int main() {
     glGenBuffers(1, &vboID);
 
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::cube), constants::cube, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::cubeWithNormals), constants::cubeWithNormals, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // Setup light cube while reusing the buffered data from the previous cube.
     unsigned int lightVaoID{};
@@ -211,7 +213,7 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
     // No need to buffer vertex data here since we are reusing the vertex data from the previous cube.
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
 
@@ -242,7 +244,7 @@ int main() {
 
     glm::vec3 objectColor{1.0f, 0.5f, 0.31f};
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
-    glm::vec4 ambientLight{1.0f, 1.0f, 1.0f, 0.5f};
+    glm::vec4 ambientLight{1.0f, 1.0f, 1.0f, 0.2f};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -261,17 +263,21 @@ int main() {
         shader.use();
         shader.setMat4("projectionViewMatrix", projectionViewMatrix);
         shader.setVec3("objectColor", objectColor);
+        shader.setVec3("lightColor", lightColor);
+        shader.setVec3("lightPosition", lightPosition);
         shader.setVec4("ambientLight", ambientLight);
 
         glBindVertexArray(vaoID);
 
         for (int i = 0; i < 10; i++) {
-            auto model = glm::mat4(1.0f);
+            glm::mat4 model{1.0f};
             model = glm::translate(model, cubePositions[i]);
             model = glm::rotate(model, static_cast<float>(glfwGetTime()) * glm::radians(20.0f * static_cast<float>(i)),
                                 glm::vec3(1.0f, 0.3f, 0.5f));
+            glm::mat4 modelInverse{glm::transpose(glm::inverse(model))};
 
             shader.setMat4("model", model);
+            shader.setMat4("modelInverse", modelInverse);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
