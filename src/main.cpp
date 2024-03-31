@@ -347,7 +347,11 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
     };
 
-    window.runMainLoop(update);
+    try {
+        window.runMainLoop(update);
+    } catch (const std::exception &exception) {
+        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+    }
 
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
