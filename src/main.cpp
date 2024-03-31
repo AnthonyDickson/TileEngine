@@ -30,6 +30,7 @@
 #include "Shader.h"
 #include "Window.h"
 #include "Texture.h"
+#include "VertexArray.h"
 
 namespace constants {
     [[maybe_unused]] constexpr float cube[]{
@@ -240,9 +241,8 @@ int main() {
     constexpr const float cameraMoveSpeed = 2.5f;
 
     // Create the vertex array object.
-    unsigned int vaoID{};
-    glGenVertexArrays(1, &vaoID);
-    glBindVertexArray(vaoID);
+    VertexArray vao{};
+    vao.use();
 
     // Set up and buffer vertices.
     unsigned int vboID{};
@@ -260,9 +260,8 @@ int main() {
     glEnableVertexAttribArray(2);
 
     // Setup light cube while reusing the buffered data from the previous cube.
-    unsigned int lightVaoID{};
-    glGenVertexArrays(1, &lightVaoID);
-    glBindVertexArray(lightVaoID);
+    VertexArray lightVao{};
+    lightVao.use();
 
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
     // No need to buffer vertex data here since we are reusing the vertex data from the previous cube.
@@ -324,7 +323,7 @@ int main() {
         diffuseMap.use();
         specularMap.use();
 
-        glBindVertexArray(vaoID);
+        vao.use();
 
         for (int i = 0; i < 10; i++) {
             glm::mat4 model{1.0f};
@@ -344,6 +343,7 @@ int main() {
         lightShader.setMat4("projectionViewMatrix", projectionViewMatrix);
         lightShader.setMat4("model", lightModelMatrix);
         lightShader.setVec3("objectColor", lightColor);
+        lightVao.use();
         glDrawArrays(GL_TRIANGLES, 0, 36);
     };
 
@@ -352,8 +352,6 @@ int main() {
     } catch (const std::exception &exception) {
         std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
     }
-
-    glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
 
     return 0;

@@ -6,8 +6,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-file(GLOB_RECURSE PROJECT_SOURCE src/*.cpp)
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCE})
+add_executable(${PROJECT_NAME}
+        src/main.cpp
+        src/Camera.cpp
+        src/Shader.cpp
+        src/Texture.cpp
+        src/Window.cpp
+        src/VertexArray.cpp
+        src/stb_image.cpp
+)
 target_include_directories(${PROJECT_NAME} PUBLIC include/)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Wpedantic -Wshadow -Wsign-conversion")
 
