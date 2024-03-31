@@ -26,8 +26,8 @@
 
 /** The lighting properties of a material. */
 struct Material {
-    int textureID;
-    glm::vec3 specular;
+    int diffuseTextureUnit;
+    int specularTextureUnit;
     float shininess;
 };
 

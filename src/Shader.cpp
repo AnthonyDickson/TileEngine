@@ -132,7 +132,7 @@ void Shader::setInt(const std::string &name, int value) const {
     glUniform1i(getUniformLocation(name), value);
 }
 
-[[maybe_unused]] void Shader::setFloat(const std::string &name, float value) const {
+void Shader::setFloat(const std::string &name, float value) const {
     glUniform1f(getUniformLocation(name), value);
 }
 
@@ -145,8 +145,8 @@ void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
 }
 
 void Shader::setMaterial(const std::string &name, const Material &value) const {
-    setInt(name + ".diffuse", value.textureID);
-    setVec3(name + ".specular", value.specular);
+    setInt(name + ".diffuse", value.diffuseTextureUnit);
+    setInt(name + ".specular", value.specularTextureUnit);
     setFloat(name + ".shininess", value.shininess);
 }
 

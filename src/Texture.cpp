@@ -27,7 +27,7 @@
 
 #include "Texture.h"
 
-Texture::Texture(const std::string &imagePath, unsigned int textureUnit_) :
+Texture::Texture(const std::string &imagePath, int textureUnit_) :
         textureID(0), textureUnit(textureUnit_) {
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -78,4 +78,8 @@ void Texture::use() const {
 
 void Texture::cleanup() {
     glDeleteTextures(1, &textureID);
+}
+
+int Texture::getUniformTextureUnit() const {
+    return textureUnit - GL_TEXTURE0;
 }

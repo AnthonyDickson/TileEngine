@@ -31,21 +31,22 @@ private:
     /** The OpenGL ID for the texture.*/
     unsigned int textureID;
     /** The texture unit that the texture should be bound to. */
-    unsigned int textureUnit;
-
+    int textureUnit;
 public:
     /**
      * Create a texture from an image.
      * @param imagePath The path to an image.
      * @param textureUnit_ (optional) Which texture unit to use. Defaults to GL_TEXTURE0.
      */
-    explicit Texture(const std::string &imagePath, unsigned int textureUnit_ = GL_TEXTURE0);
+    explicit Texture(const std::string &imagePath, int textureUnit_ = GL_TEXTURE0);
 
     /** Activate the current texture for use in rendering.*/
     void use() const;
 
     /** Clean up OpenGL related stuff.*/
     void cleanup();
+
+    [[nodiscard]] int getUniformTextureUnit() const;
 };
 
 

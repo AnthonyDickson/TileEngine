@@ -284,11 +284,12 @@ int main() {
     };
 
     Shader shader{"resource/shader/color.vert", "resource/shader/color.frag"};
-    const int textureUnit = GL_TEXTURE0;
-    Texture cubeTexture{"resource/container2.png", textureUnit};
-    Material cubeMaterial{textureUnit, glm::vec3{0.5f, 0.5f, 0.5f}, 32.0f};
-
     Shader lightShader{"resource/shader/light.vert", "resource/shader/light.frag"};
+
+    Texture diffuseMap{"resource/container2.png", GL_TEXTURE0};
+    Texture specularMap{"resource/container2_specular.png", GL_TEXTURE1};
+    Material cubeMaterial{diffuseMap.getUniformTextureUnit(), specularMap.getUniformTextureUnit(), 64.0f};
+
     glm::vec3 lightPosition{1.2f, 1.0f, -2.0f};
     glm::mat4 lightModelMatrix{1.0f};
     lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
@@ -315,11 +316,13 @@ int main() {
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
 
         shader.use();
-        shader.setMat4("projectionViewMatrix", projectionViewMatrix);
         shader.setVec3("viewPosition", camera.getPosition());
-        shader.setMaterial("material", cubeMaterial);
         shader.setLight("light", light);
-        cubeTexture.use();
+        shader.setMaterial("material", cubeMaterial);
+        shader.setMat4("projectionViewMatrix", projectionViewMatrix);
+
+        diffuseMap.use();
+        specularMap.use();
 
         glBindVertexArray(vaoID);
 
@@ -350,7 +353,8 @@ int main() {
     glDeleteBuffers(1, &vboID);
     shader.cleanup();
     lightShader.cleanup();
-    cubeTexture.cleanup();
+    diffuseMap.cleanup();
+    specularMap.cleanup();
 
     return 0;
 }
