@@ -22,7 +22,7 @@
 #ifndef ECONSIMPLUSPLUS_TEXTURE_H
 #define ECONSIMPLUSPLUS_TEXTURE_H
 
-
+#include "glad/glad.h"
 #include <string>
 
 /** Handles the creation and setup of an OpenGL texture from a image on disk.*/
@@ -40,11 +40,11 @@ public:
      */
     explicit Texture(const std::string &imagePath, int textureUnit_ = GL_TEXTURE0);
 
+    /** Clean up OpenGL related stuff.*/
+    ~Texture();
+
     /** Activate the current texture for use in rendering.*/
     void use() const;
-
-    /** Clean up OpenGL related stuff.*/
-    void cleanup();
 
     [[nodiscard]] int getUniformTextureUnit() const;
 };

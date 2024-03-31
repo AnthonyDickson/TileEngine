@@ -112,12 +112,12 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     glDeleteShader(fragmentShaderId);
 }
 
-void Shader::use() const {
-    glUseProgram(shaderProgramID);
+Shader::~Shader() {
+    glDeleteShader(shaderProgramID);
 }
 
-void Shader::cleanup() const {
-    glDeleteShader(shaderProgramID);
+void Shader::use() const {
+    glUseProgram(shaderProgramID);
 }
 
 int Shader::getUniformLocation(const std::string &name) const {

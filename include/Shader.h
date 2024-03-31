@@ -43,13 +43,13 @@ public:
      */
     Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath);
 
+    /** Clean up OpenGL related stuff. */
+    ~Shader();
+
     /**
      * Activate the shader program.
      */
     void use() const;
-
-    /** Clean up OpenGL related stuff. */
-    void cleanup() const;
 
     /**
      * Get the location of a uniform variable in the shader program.

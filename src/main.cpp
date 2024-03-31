@@ -351,10 +351,6 @@ int main() {
 
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
-    shader.cleanup();
-    lightShader.cleanup();
-    diffuseMap.cleanup();
-    specularMap.cleanup();
 
     return 0;
 }

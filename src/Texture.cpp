@@ -22,7 +22,6 @@
 #include <iostream>
 #include <format>
 
-#include "glad/glad.h"
 #include "stb_image.h"
 
 #include "Texture.h"
@@ -71,13 +70,13 @@ Texture::Texture(const std::string &imagePath, int textureUnit_) :
     stbi_image_free(imageData);
 }
 
+Texture::~Texture() {
+    glDeleteTextures(1, &textureID);
+}
+
 void Texture::use() const {
     glActiveTexture(textureUnit);
     glBindTexture(GL_TEXTURE_2D, textureID);
-}
-
-void Texture::cleanup() {
-    glDeleteTextures(1, &textureID);
 }
 
 int Texture::getUniformTextureUnit() const {
