@@ -19,27 +19,36 @@
 // Created by Anthony on 1/04/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_VERTEXARRAY_H
-#define ECONSIMPLUSPLUS_VERTEXARRAY_H
+#ifndef ECONSIMPLUSPLUS_VERTEXBUFFER_H
+#define ECONSIMPLUSPLUS_VERTEXBUFFER_H
 
 
+#include <vector>
 #include "glad/glad.h"
 
-/** Wrapper for OpenGL vertex array objects. */
-class VertexArray {
+/** Wrapper for OpenGL vertex buffer objects. */
+class VertexBuffer {
 private:
-    /** The ID for the bound vertex array object. */
-    GLuint vaoID{};
+    /** The ID for the vertex buffer object. */
+    GLuint vboID{};
+    /** The number of triangles in the buffered vertex data. */
+    const int triangleCount{};
 public:
-    /** Create a vertex array object. */
-    VertexArray();
+    /** Create a vertex buffer object and set it up with the given vertex data. */
+    VertexBuffer(const std::vector<float> &vertexData, int stride, const std::vector<int> &sizes);
 
     /** Cleanup OpenGL stuff. */
-    ~VertexArray();
+    ~VertexBuffer();
 
-    /** Bind the vertex array object. */
+    /** Bind the vertex buffer object. */
     void bind() const;
+
+    /**
+     * Call OpenGL::glDrawArrays with suitable parameters.
+     * @param mode How to draw the vertex data.
+     */
+    void drawArrays(GLenum mode = GL_TRIANGLES) const;
 };
 
 
-#endif //ECONSIMPLUSPLUS_VERTEXARRAY_H
+#endif //ECONSIMPLUSPLUS_VERTEXBUFFER_H

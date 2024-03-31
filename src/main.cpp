@@ -31,6 +31,7 @@
 #include "Window.h"
 #include "Texture.h"
 #include "VertexArray.h"
+#include "VertexBuffer.h"
 
 namespace constants {
     [[maybe_unused]] constexpr float cube[]{
@@ -165,7 +166,7 @@ namespace constants {
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
     };
 
-    [[maybe_unused]] float texturedCubeWithNormals[]{
+    [[maybe_unused]] std::vector<float> texturedCubeWithNormals{
             // positions          // normals           // texture coords
             -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
             0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
@@ -242,30 +243,14 @@ int main() {
 
     // Create the vertex array object.
     VertexArray vao{};
-    vao.use();
-
-    // Set up and buffer vertices.
-    unsigned int vboID{};
-    glGenBuffers(1, &vboID);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(constants::texturedCubeWithNormals), constants::texturedCubeWithNormals,
-                 GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    vao.bind();
+    VertexBuffer vbo{constants::texturedCubeWithNormals, 8, std::vector<int>{3, 3, 2}};
 
     // Setup light cube while reusing the buffered data from the previous cube.
     VertexArray lightVao{};
-    lightVao.use();
-
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    lightVao.bind();
+    vbo.bind();
     // No need to buffer vertex data here since we are reusing the vertex data from the previous cube.
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
@@ -323,7 +308,7 @@ int main() {
         diffuseMap.use();
         specularMap.use();
 
-        vao.use();
+        vao.bind();
 
         for (int i = 0; i < 10; i++) {
             glm::mat4 model{1.0f};
@@ -335,7 +320,7 @@ int main() {
             shader.setMat4("model", model);
             shader.setMat4("modelInverse", modelInverse);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            vbo.drawArrays();
         }
 
         // Draw the light source.
@@ -343,8 +328,8 @@ int main() {
         lightShader.setMat4("projectionViewMatrix", projectionViewMatrix);
         lightShader.setMat4("model", lightModelMatrix);
         lightShader.setVec3("objectColor", lightColor);
-        lightVao.use();
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        lightVao.bind();
+        vbo.drawArrays();
     };
 
     try {
@@ -352,7 +337,6 @@ int main() {
     } catch (const std::exception &exception) {
         std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
     }
-    glDeleteBuffers(1, &vboID);
 
     return 0;
 }

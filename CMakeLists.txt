@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME}
         src/Texture.cpp
         src/Window.cpp
         src/VertexArray.cpp
+        src/VertexBuffer.cpp
         src/stb_image.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include/)

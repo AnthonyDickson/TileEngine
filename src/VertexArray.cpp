@@ -16,7 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Antho on 1/04/2024.
+// Created by Anthony on 1/04/2024.
 //
 
 #include "VertexArray.h"
@@ -29,6 +29,6 @@ VertexArray::~VertexArray() {
     glDeleteVertexArrays(1, &vaoID);
 }
 
-void VertexArray::use() const {
+void VertexArray::bind() const {
     glBindVertexArray(vaoID);
 }
