@@ -27,17 +27,9 @@
 
 Camera::Camera(float aspectRatio_, glm::vec3 position_, glm::vec3 forward_, glm::vec3 up_) :
         position{position_}, forward{forward_}, up{up_}, aspectRatio{aspectRatio_} {
-    if (glm::dot(forward, up) != 0.0f) {
-        throw std::logic_error{"Forward and up vectors are not orthogonal."};
-    }
-
-    if (glm::length(forward) != 1.0f) {
-        throw std::logic_error{"Forward vector is not normalized (length != 1)."};
-    }
-
-    if (glm::length(up) != 1.0f) {
-        throw std::logic_error{"Forward vector is not normalized (length != 1)."};
-    }
+    assert(glm::length(forward) == 1.0f && "Forward vector must be normalized.");
+    assert(glm::length(up) == 1.0f && "Forward vector must be normalized.");
+    assert(glm::dot(forward, up) == 0.0f && "Forward and up vectors must be orthogonal.");
 }
 
 void Camera::move(Camera::Direction direction, float speed) {

@@ -19,10 +19,16 @@
 // Created by Anthony on 1/04/2024.
 //
 
+#include <cassert>
+#include <numeric>
+
 #include "VertexBuffer.h"
 
 VertexBuffer::VertexBuffer(const std::vector<float> &vertexData, int stride, const std::vector<int> &sizes)
         : triangleCount(static_cast<int>(vertexData.size()) / stride) {
+    assert(std::accumulate(sizes.begin(), sizes.end(), 0) == stride &&
+           "The sum of the vertex attribute Sizes must equal the stride.");
+
     glGenBuffers(1, &vboID);
     bind();
 
