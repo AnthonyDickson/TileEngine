@@ -113,10 +113,22 @@ public:
 private:
     /**
      * Parses the shader source code and extracts the names of uniform variables.
+     *
+     * @note Assumes that your source code has been compiled (i.e. it is valid GLSL), has no whitespace (except for
+     * indentation), the code is formatted according to standard conventions, and all uniform and struct declarations
+     * are placed before the main function.
      * @param shaderSource The shader source code as a string.
      * @return A set of uniform variable names.
      */
     static std::unordered_set<std::string> extractUniformNames(const std::string &shaderSource);
+
+    /**
+     * Trim leading and trailing whitespace from a string.
+     * @param string The string to trim.
+     * @param whitespaceChars The characters to consider as whitespace.
+     * @return The trimmed copy of the string.
+     */
+    static std::string trim(const std::string &string, const std::string &whitespaceChars = " \t");
 };
 
 

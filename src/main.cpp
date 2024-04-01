@@ -327,7 +327,6 @@ int main() {
         lightShader.use();
         lightShader.setUniform("projectionViewMatrix", projectionViewMatrix);
         lightShader.setUniform("model", lightModelMatrix);
-        lightShader.setUniform("objectColor", lightColor);
         lightVao.bind();
         vbo.drawArrays();
     };

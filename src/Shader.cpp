@@ -23,6 +23,9 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <unordered_map>
+#include <vector>
+#include <format>
 
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
@@ -120,36 +123,84 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
 
 std::unordered_set<std::string> Shader::extractUniformNames(const std::string &shaderSource) {
     std::unordered_set<std::string> uniformNames{};
+
+    bool isInStruct{false};
+    std::string currentStructName{};
+    std::unordered_map<std::string, std::vector<std::string>> structTypes{};
+
     std::istringstream shaderSourceStream{shaderSource};
-    // TODO: Include struct uniforms.
-    // TODO: Parse structs and store member names.
-    // TODO: If uniform is a struct, add the identifier and the struct member identifiers joined by a period.
 
     for (std::string line; std::getline(shaderSourceStream, line, '\n');) {
-        if (line.empty() or !line.starts_with("uniform")) {
+        const auto trimmedLine{trim(line)};
+
+        if (trimmedLine.empty() or trimmedLine.starts_with("//")) {
             continue;
         }
 
-        if (line.starts_with("void main()")) {
+        if (trimmedLine.starts_with("void main()")) {
             break;
         }
 
-        const auto lastWhitespace{line.rfind(' ')};
+        if (trimmedLine.starts_with("struct")) {
+            isInStruct = true;
 
-        if (lastWhitespace == std::string::npos) {
-            continue;
+            std::istringstream lineStream{trimmedLine};
+            std::string qualifier{};
+            lineStream >> qualifier;
+            // The first token after 'struct' must be the name of the struct.
+            lineStream >> currentStructName;
+            structTypes[currentStructName] = {};
+        } else if (isInStruct and trimmedLine.ends_with("};")) {
+            isInStruct = false;
+            currentStructName.clear();
+        } else if (isInStruct and !trimmedLine.starts_with('{')) {
+            std::istringstream lineStream{trimmedLine};
+            std::string type{};
+            std::string identifier{};
+            lineStream >> type;
+            lineStream >> identifier;
+
+            if (identifier.ends_with(';')) {
+                identifier.pop_back();
+            }
+
+            structTypes[currentStructName].push_back(identifier);
+        } else if (trimmedLine.starts_with("uniform")) {
+            std::istringstream lineStream{trimmedLine};
+            std::string qualifier{};
+            std::string type{};
+            std::string identifier{};
+
+            lineStream >> qualifier;
+            lineStream >> type;
+            lineStream >> identifier;
+
+            if (identifier.ends_with(';')) {
+                identifier.pop_back();
+            }
+
+            if (structTypes.contains(type)) {
+                for (const auto &memberName: structTypes[type]) {
+                    uniformNames.insert(std::format("{}.{}", identifier, memberName));
+                }
+            } else {
+                uniformNames.insert(identifier);
+            }
         }
-
-        std::string identifier{line.substr(lastWhitespace + 1)};
-
-        if (identifier.ends_with(';')) {
-            identifier.pop_back();
-        }
-
-        uniformNames.insert(identifier);
     }
 
     return uniformNames;
+}
+
+std::string Shader::trim(const std::string &string, const std::string &whitespaceChars) {
+    const auto firstNonWhitespace{string.find_first_not_of(whitespaceChars)};
+    const auto lastNonWhitespace{string.find_last_not_of(whitespaceChars)};
+
+    if (firstNonWhitespace == std::string::npos or lastNonWhitespace == std::string::npos) {
+        return std::string{};
+    }
+
+    return {string.substr(firstNonWhitespace, lastNonWhitespace - firstNonWhitespace + 1)};
 }
 
 Shader::~Shader() {
@@ -161,9 +212,7 @@ void Shader::use() const {
 }
 
 int Shader::getUniformLocation(const std::string &name) const {
-#ifdef SHADER_VERIFY_UNIFORM_NAMES
     assert(uniformNames.contains(name) && "Uniform name does not exist in the shader source code.");
-#endif
     return glGetUniformLocation(shaderProgramID, name.c_str());
 }
 
