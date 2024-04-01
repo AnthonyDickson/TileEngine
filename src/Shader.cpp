@@ -24,9 +24,9 @@
 #include <sstream>
 
 #include "glad/glad.h"
+#include "glm/gtc/type_ptr.hpp"
 
 #include "Shader.h"
-#include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath) {
     // Load the shader source code.
@@ -76,7 +76,8 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     if (!vertexShaderCompiled) {
         char infoLog[infoLogSize];
         glGetShaderInfoLog(vertexShaderId, infoLogSize, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED " << vertexShaderSourcePath << "\n" << infoLog
+                  << std::endl;
     }
 
     // Compile the fragment shader.
@@ -90,7 +91,8 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     if (!fragmentShaderCompiled) {
         char infoLog[infoLogSize];
         glGetShaderInfoLog(fragmentShaderId, infoLogSize, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED " << fragmentShaderSourcePath << "\\n" << infoLog
+                  << std::endl;
     }
 
     // Compile the shader program.

@@ -236,7 +236,7 @@ int main() {
     constexpr int windowWidth{800};
     constexpr int windowHeight{600};
 
-    Window window{windowWidth, windowHeight};
+    Window window{windowWidth, windowHeight, "LearnOpenGL"};
 
     Camera camera{window.getAspectRatio(), glm::vec3(0.0f, 0.0f, 3.0f)};
     constexpr const float cameraMoveSpeed = 2.5f;

@@ -59,8 +59,9 @@ public:
      * Create and initialize a GLFW window.
      * @param windowWidth_ The width of the window to create in pixels.
      * @param windowHeight_ The height of the window to create in pixels.
+     * @param windowName The string to display in the window's title bar.
      */
-    Window(int windowWidth_, int windowHeight_);
+    Window(int windowWidth_, int windowHeight_, const std::string &windowName);
 
     /**
      * Releases GLFW window stuff.
@@ -97,7 +98,7 @@ public:
      * Get the screen coordinates of the mouse cursor.
      * @return A 2-vector.
      */
-    [[nodiscard]] glm::vec2 getMousePosition();
+    [[nodiscard, maybe_unused]] glm::vec2 getMousePosition();
 
     /**
      * Get the distance the mouse has moved since the last update step measured in pixels.

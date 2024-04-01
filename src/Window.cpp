@@ -24,13 +24,14 @@
 
 #include "Window.h"
 
-Window::Window(int windowWidth_, int windowHeight_) : windowWidth(windowWidth_), windowHeight(windowHeight_) {
+Window::Window(int windowWidth_, int windowHeight_, const std::string &windowName) : windowWidth(windowWidth_),
+                                                                                     windowHeight(windowHeight_) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
+    window = glfwCreateWindow(windowWidth, windowHeight, windowName.c_str(), nullptr, nullptr);
 
     if (window == nullptr) {
         throw std::runtime_error("Failed to create the GLFW window.");
