@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
@@ -62,6 +63,9 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
 
     const char *vertexShaderSource{vertexShaderString.c_str()};
     const char *fragmentShaderSource{fragmentShaderString.c_str()};
+
+    uniformNames = extractUniformNames(vertexShaderString);
+    uniformNames.merge(extractUniformNames(fragmentShaderString));
 
     // Compile the vertex shader.
     unsigned int vertexShaderId{glCreateShader(GL_VERTEX_SHADER)};
@@ -114,6 +118,40 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     glDeleteShader(fragmentShaderId);
 }
 
+std::unordered_set<std::string> Shader::extractUniformNames(const std::string &shaderSource) {
+    std::unordered_set<std::string> uniformNames{};
+    std::istringstream shaderSourceStream{shaderSource};
+    // TODO: Include struct uniforms.
+    // TODO: Parse structs and store member names.
+    // TODO: If uniform is a struct, add the identifier and the struct member identifiers joined by a period.
+
+    for (std::string line; std::getline(shaderSourceStream, line, '\n');) {
+        if (line.empty() or !line.starts_with("uniform")) {
+            continue;
+        }
+
+        if (line.starts_with("void main()")) {
+            break;
+        }
+
+        const auto lastWhitespace{line.rfind(' ')};
+
+        if (lastWhitespace == std::string::npos) {
+            continue;
+        }
+
+        std::string identifier{line.substr(lastWhitespace + 1)};
+
+        if (identifier.ends_with(';')) {
+            identifier.pop_back();
+        }
+
+        uniformNames.insert(identifier);
+    }
+
+    return uniformNames;
+}
+
 Shader::~Shader() {
     glDeleteShader(shaderProgramID);
 }
@@ -123,6 +161,9 @@ void Shader::use() const {
 }
 
 int Shader::getUniformLocation(const std::string &name) const {
+#ifdef SHADER_VERIFY_UNIFORM_NAMES
+    assert(uniformNames.contains(name) && "Uniform name does not exist in the shader source code.");
+#endif
     return glGetUniformLocation(shaderProgramID, name.c_str());
 }
 

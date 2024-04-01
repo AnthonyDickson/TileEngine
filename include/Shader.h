@@ -23,9 +23,12 @@
 #define ECONSIMPLUSPLUS_SHADER_H
 
 #include <string>
+#include <unordered_set>
+
 #include "glm/detail/type_mat4x4.hpp"
-#include "Material.h"
+
 #include "Light.h"
+#include "Material.h"
 
 /**
  * Handles the loading, compilation, linking and usage of an OpenGL shader program.
@@ -33,8 +36,8 @@
 class Shader {
 private:
     /** The ID of the shader program in OpenGL. */
-    unsigned int shaderProgramID;
-
+    unsigned int shaderProgramID{};
+    std::unordered_set<std::string> uniformNames{};
 public:
     /**
      * Load and compile GLSL shaders from disk.
@@ -106,6 +109,14 @@ public:
      * @param value The value to set the uniform to.
      */
     void setLight(const std::string &name, const Light &value) const;
+
+private:
+    /**
+     * Parses the shader source code and extracts the names of uniform variables.
+     * @param shaderSource The shader source code as a string.
+     * @return A set of uniform variable names.
+     */
+    static std::unordered_set<std::string> extractUniformNames(const std::string &shaderSource);
 };
 
 
