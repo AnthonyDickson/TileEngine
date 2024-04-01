@@ -167,35 +167,35 @@ int Shader::getUniformLocation(const std::string &name) const {
     return glGetUniformLocation(shaderProgramID, name.c_str());
 }
 
-[[maybe_unused]] void Shader::setBool(const std::string &name, bool value) const {
-    setInt(name, value);
+[[maybe_unused]] void Shader::setUniform(const std::string &name, bool value) const {
+    setUniform(name, static_cast<int>(value));
 }
 
-void Shader::setInt(const std::string &name, int value) const {
+void Shader::setUniform(const std::string &name, int value) const {
     glUniform1i(getUniformLocation(name), value);
 }
 
-void Shader::setFloat(const std::string &name, float value) const {
+void Shader::setUniform(const std::string &name, float value) const {
     glUniform1f(getUniformLocation(name), value);
 }
 
-void Shader::setVec3(const std::string &name, const glm::vec3 &value) const {
+void Shader::setUniform(const std::string &name, const glm::vec3 &value) const {
     glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
-void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
+void Shader::setUniform(const std::string &name, const glm::mat4x4 &value) const {
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::setMaterial(const std::string &name, const Material &value) const {
-    setInt(name + ".diffuse", value.diffuseTextureUnit);
-    setInt(name + ".specular", value.specularTextureUnit);
-    setFloat(name + ".shininess", value.shininess);
+void Shader::setUniform(const std::string &name, const Material &value) const {
+    setUniform(name + ".diffuse", value.diffuseTextureUnit);
+    setUniform(name + ".specular", value.specularTextureUnit);
+    setUniform(name + ".shininess", value.shininess);
 }
 
-void Shader::setLight(const std::string &name, const Light &value) const {
-    setVec3(name + ".position", value.position);
-    setVec3(name + ".ambient", value.ambient);
-    setVec3(name + ".diffuse", value.diffuse);
-    setVec3(name + ".specular", value.specular);
+void Shader::setUniform(const std::string &name, const Light &value) const {
+    setUniform(name + ".position", value.position);
+    setUniform(name + ".ambient", value.ambient);
+    setUniform(name + ".diffuse", value.diffuse);
+    setUniform(name + ".specular", value.specular);
 }

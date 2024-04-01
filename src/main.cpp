@@ -300,10 +300,10 @@ int main() {
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
 
         shader.use();
-        shader.setVec3("viewPosition", camera.getPosition());
-        shader.setLight("light", light);
-        shader.setMaterial("material", cubeMaterial);
-        shader.setMat4("projectionViewMatrix", projectionViewMatrix);
+        shader.setUniform("viewPosition", camera.getPosition());
+        shader.setUniform("light", light);
+        shader.setUniform("material", cubeMaterial);
+        shader.setUniform("projectionViewMatrix", projectionViewMatrix);
 
         diffuseMap.use();
         specularMap.use();
@@ -317,17 +317,17 @@ int main() {
                                 glm::vec3(1.0f, 0.3f, 0.5f));
             glm::mat4 modelInverse{glm::transpose(glm::inverse(model))};
 
-            shader.setMat4("model", model);
-            shader.setMat4("modelInverse", modelInverse);
+            shader.setUniform("model", model);
+            shader.setUniform("modelInverse", modelInverse);
 
             vbo.drawArrays();
         }
 
         // Draw the light source.
         lightShader.use();
-        lightShader.setMat4("projectionViewMatrix", projectionViewMatrix);
-        lightShader.setMat4("model", lightModelMatrix);
-        lightShader.setVec3("objectColor", lightColor);
+        lightShader.setUniform("projectionViewMatrix", projectionViewMatrix);
+        lightShader.setUniform("model", lightModelMatrix);
+        lightShader.setUniform("objectColor", lightColor);
         lightVao.bind();
         vbo.drawArrays();
     };
