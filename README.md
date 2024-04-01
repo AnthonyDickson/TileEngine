@@ -1,7 +1,9 @@
 # EconSimPlusPlus
 
-## Requirements
-- OpenGL 3.3+
-- GLFW 3.4
-- GLAD 0.1.36
-- GLM 1.0.1
+## Acknowledgements
+
+Thanks to Joey de Vries for their tutorial on
+OpenGL. [[Tutorial]](https://learnopengl.com/) [[GitHub]](https://github.com/JoeyDeVries/LearnOpenGL)
+Thanks to the contributors
+of [GLFW](https://github.com/glfw/glfw), [GLAD](https://github.com/Dav1dde/glad), [GLM](https://github.com/g-truc/glm)
+and [stb](https://github.com/nothings/stb) for their open source libraries.
