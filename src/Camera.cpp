@@ -19,7 +19,6 @@
 // Created by Anthony on 26/03/2024.
 //
 
-#include <stdexcept>
 #include "Camera.h"
 #include "glm/geometric.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -78,6 +77,10 @@ void Camera::zoom(const float scrollDelta) {
 
 glm::vec3 Camera::getPosition() const {
     return position;
+}
+
+glm::vec3 Camera::getDirection() const {
+    return forward;
 }
 
 glm::mat4 Camera::getPerspectiveMatrix() const {

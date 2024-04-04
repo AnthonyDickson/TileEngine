@@ -25,7 +25,6 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "Camera.h"
-#include "Light.h"
 #include "Material.h"
 #include "Shader.h"
 #include "Window.h"
@@ -300,11 +299,16 @@ int main() {
         glEnable(GL_DEPTH_TEST);
 
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
+        SpotLight spotLight{camera.getPosition(), camera.getDirection(),
+                            glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)),
+                            glm::vec3{0.8f}, glm::vec3{1.0f},
+                            1.0f, 0.09f, 0.032f};
 
         shader.use();
         shader.setUniform("viewPosition", camera.getPosition());
         shader.setUniform("directionalLight", directionalLight);
         shader.setUniform("pointLight", pointLight);
+        shader.setUniform("spotLight", spotLight);
         shader.setUniform("material", cubeMaterial);
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
 

@@ -263,7 +263,6 @@ void Shader::setUniform(const std::string &name, const SpotLight &value) const {
     setUniform(name + ".cutOff", value.cutOff);
     setUniform(name + ".outerCutOff", value.outerCutOff);
 
-    setUniform(name + ".ambient", value.ambient);
     setUniform(name + ".diffuse", value.diffuse);
     setUniform(name + ".specular", value.specular);
 

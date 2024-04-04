@@ -92,6 +92,12 @@ public:
     [[nodiscard]] glm::vec3 getPosition() const;
 
     /**
+     * Get the camera's forward vector.
+     * @return A 3-vector.
+     */
+    [[nodiscard]] glm::vec3 getDirection() const;
+
+    /**
      * Get the perspective matrix of the camera.
      * @return A 4x4 matrix.
      */
