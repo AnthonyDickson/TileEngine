@@ -267,7 +267,7 @@ int main() {
             glm::vec3(-1.3f, 1.0f, -1.5f)
     };
 
-    Shader shader{"resource/shader/color.vert", "resource/shader/color.frag"};
+    Shader shader{"resource/shader/color.vert", "resource/shader/manyLights.frag"};
     Shader lightShader{"resource/shader/light.vert", "resource/shader/light.frag"};
 
     Texture diffuseMap{"resource/container2.png", GL_TEXTURE0};
@@ -279,7 +279,7 @@ int main() {
     lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
     lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
-    Light light{lightPosition, glm::vec3{0.2f}, glm::vec3{0.5f}, glm::vec3{1.0f}};
+    DirectionalLight light{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{0.2f}, glm::vec3{0.5f}, glm::vec3{1.0f}};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
