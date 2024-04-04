@@ -246,7 +246,7 @@ int main() {
     vao.bind();
     VertexBuffer vbo{constants::texturedCubeWithNormals, 8, std::vector<int>{3, 3, 2}};
 
-    // Setup light cube while reusing the buffered data from the previous cube.
+    // Setup directionalLight cube while reusing the buffered data from the previous cube.
     VertexArray lightVao{};
     lightVao.bind();
     vbo.bind();
@@ -279,7 +279,9 @@ int main() {
     lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
     lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
-    DirectionalLight light{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{0.2f}, glm::vec3{0.5f}, glm::vec3{1.0f}};
+    DirectionalLight directionalLight{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{0.01f}, glm::vec3{0.1f},
+                                      glm::vec3{0.5f}};
+    PointLight pointLight{lightPosition, glm::vec3{0.2f}, glm::vec3{0.5f}, glm::vec3{1.0f}, 1.0f, 0.14f, 0.07f};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -301,7 +303,8 @@ int main() {
 
         shader.use();
         shader.setUniform("viewPosition", camera.getPosition());
-        shader.setUniform("light", light);
+        shader.setUniform("directionalLight", directionalLight);
+        shader.setUniform("pointLight", pointLight);
         shader.setUniform("material", cubeMaterial);
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
 
