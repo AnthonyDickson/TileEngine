@@ -28,6 +28,9 @@
 #include "glm/detail/type_mat4x4.hpp"
 
 #include "Light.h"
+#include "DirectionalLight.h"
+#include "SpotLight.h"
+#include "PointLight.h"
 #include "Material.h"
 
 /**
@@ -109,6 +112,27 @@ public:
      * @param value The value to set the uniform to.
      */
     void setUniform(const std::string &name, const Light &value) const;
+
+    /**
+     * Set a directional light uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setUniform(const std::string &name, const DirectionalLight &value) const;
+
+    /**
+     * Set a spotlight uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setUniform(const std::string &name, const SpotLight &value) const;
+
+    /**
+     * Set a point light uniform value.
+     * @param name The name of the uniform.
+     * @param value The value to set the uniform to.
+     */
+    void setUniform(const std::string &name, const PointLight &value) const;
 
 private:
     /**
