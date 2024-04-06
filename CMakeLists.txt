@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
         src/main.cpp
         src/Camera.cpp
         src/Shader.cpp
+        src/ShaderParser.cpp
         src/Texture.cpp
         src/Window.cpp
         src/VertexArray.cpp

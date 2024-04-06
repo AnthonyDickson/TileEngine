@@ -23,7 +23,6 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <unordered_map>
 #include <vector>
 #include <format>
 
@@ -31,6 +30,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Shader.h"
+#include "ShaderParser.h"
 
 Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath) {
     // Load the shader source code.
@@ -67,8 +67,9 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     const char *vertexShaderSource{vertexShaderString.c_str()};
     const char *fragmentShaderSource{fragmentShaderString.c_str()};
 
-    uniformNames = extractUniformNames(vertexShaderString);
-    uniformNames.merge(extractUniformNames(fragmentShaderString));
+    ShaderParser parser{};
+    uniformNames = parser.getUniformNames(vertexShaderString);
+    uniformNames.merge(parser.getUniformNames(fragmentShaderString));
 
     // Compile the vertex shader.
     unsigned int vertexShaderId{glCreateShader(GL_VERTEX_SHADER)};
@@ -119,152 +120,6 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
 
     glDeleteShader(vertexShaderId);
     glDeleteShader(fragmentShaderId);
-}
-
-
-void insertStructIdentifiers(std::unordered_set<std::string> &set, const std::string &identifier,
-                             const std::vector<std::string> &memberNames) {
-    for (const auto &memberName: memberNames) {
-        set.insert(std::format("{}.{}", identifier, memberName));
-    }
-}
-
-void
-insertUniformName(std::unordered_set<std::string> &uniforms, const std::string &identifier, const std::string &type,
-                  const std::unordered_map<std::string, std::vector<std::string>> &structTypes) {
-    if (structTypes.contains(type)) {
-        insertStructIdentifiers(uniforms, identifier, structTypes.at(type));
-    } else {
-        uniforms.insert(identifier);
-    }
-}
-
-struct IndexedIdentifier {
-    std::string identifier;
-    int arraySize;
-};
-
-IndexedIdentifier
-getIndexedIdentifier(const std::string &identifier, const std::unordered_map<std::string, int> &preprocessorVariables) {
-    const auto firstBracketPosition = identifier.find_first_of('[');
-    const auto arraySizeStringStart = firstBracketPosition + 1;
-    const auto arraySizeStringEnd = identifier.find_last_not_of(']');
-    const auto range = arraySizeStringEnd - arraySizeStringStart + 1;
-    const auto arraySizeString = identifier.substr(arraySizeStringStart, range);
-
-    int arraySize;
-
-    if (preprocessorVariables.contains(arraySizeString)) {
-        arraySize = preprocessorVariables.at(arraySizeString);
-    } else {
-        arraySize = std::stoi(arraySizeString);
-    }
-
-    return {identifier.substr(0, firstBracketPosition), arraySize};
-}
-
-std::unordered_set<std::string> Shader::extractUniformNames(const std::string &shaderSource) {
-    std::unordered_set<std::string> uniformNames{};
-
-    bool isInStruct{false};
-    std::string currentStructName{};
-    std::unordered_map<std::string, std::vector<std::string>> structTypes{};
-    std::unordered_map<std::string, int> preprocessorVariables{};
-
-    std::istringstream shaderSourceStream{shaderSource};
-
-    for (std::string line; std::getline(shaderSourceStream, line, '\n');) {
-        const auto trimmedLine{trim(line)};
-
-        if (trimmedLine.empty() or trimmedLine.starts_with("//")) {
-            continue;
-        }
-
-        if (trimmedLine.starts_with("void main()")) {
-            break;
-        }
-
-        if (trimmedLine.starts_with("#define")) {
-            std::string directive{};
-            std::string identifier{};
-            std::string value{};
-
-            std::istringstream lineStream{trimmedLine};
-            lineStream >> directive;
-            lineStream >> identifier;
-            lineStream >> value;
-
-            preprocessorVariables[identifier] = std::stoi(value);
-        } else if (trimmedLine.starts_with("struct")) {
-            isInStruct = true;
-
-            std::istringstream lineStream{trimmedLine};
-            std::string qualifier{};
-            lineStream >> qualifier;
-            // The first token after 'struct' must be the name of the struct.
-            lineStream >> currentStructName;
-            structTypes[currentStructName] = {};
-        } else if (isInStruct and trimmedLine.ends_with("};")) {
-            isInStruct = false;
-            currentStructName.clear();
-        } else if (isInStruct and !trimmedLine.starts_with('{')) {
-            std::istringstream lineStream{trimmedLine};
-            std::string type{};
-            std::string identifier{};
-            lineStream >> type;
-            lineStream >> identifier;
-
-            if (identifier.ends_with(';')) {
-                identifier.pop_back();
-            }
-
-            structTypes[currentStructName].push_back(identifier);
-        } else if (trimmedLine.starts_with("uniform")) {
-            std::istringstream lineStream{trimmedLine};
-            std::string qualifier{};
-            std::string type{};
-            std::string identifier{};
-
-            lineStream >> qualifier;
-            lineStream >> type;
-            lineStream >> identifier;
-
-            if (identifier.ends_with(';')) {
-                identifier.pop_back();
-            }
-
-            int arraySize{0};
-
-            if (identifier.ends_with(']')) {
-                const auto indexedIdentifier = getIndexedIdentifier(identifier, preprocessorVariables);
-                identifier = indexedIdentifier.identifier;
-                arraySize = indexedIdentifier.arraySize;
-            }
-
-            if (arraySize > 0) {
-                for (int i = 0; i < arraySize; ++i) {
-                    std::string indexedIdentifier{std::format("{:s}[{:d}]", identifier, i)};
-
-                    insertUniformName(uniformNames, indexedIdentifier, type, structTypes);
-                }
-            } else {
-                insertUniformName(uniformNames, identifier, type, structTypes);
-            }
-        }
-    }
-
-    return uniformNames;
-}
-
-std::string Shader::trim(const std::string &string, const std::string &whitespaceChars) {
-    const auto firstNonWhitespace{string.find_first_not_of(whitespaceChars)};
-    const auto lastNonWhitespace{string.find_last_not_of(whitespaceChars)};
-
-    if (firstNonWhitespace == std::string::npos or lastNonWhitespace == std::string::npos) {
-        return std::string{};
-    }
-
-    return {string.substr(firstNonWhitespace, lastNonWhitespace - firstNonWhitespace + 1)};
 }
 
 Shader::~Shader() {
