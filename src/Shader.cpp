@@ -30,7 +30,6 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Shader.h"
-#include "ShaderParser.h"
 
 Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath) {
     // Load the shader source code.
@@ -66,10 +65,6 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
 
     const char *vertexShaderSource{vertexShaderString.c_str()};
     const char *fragmentShaderSource{fragmentShaderString.c_str()};
-
-    ShaderParser parser{};
-    uniformNames = parser.getUniformNames(vertexShaderString);
-    uniformNames.merge(parser.getUniformNames(fragmentShaderString));
 
     // Compile the vertex shader.
     unsigned int vertexShaderId{glCreateShader(GL_VERTEX_SHADER)};
@@ -131,8 +126,10 @@ void Shader::use() const {
 }
 
 int Shader::getUniformLocation(const std::string &name) const {
-    assert(uniformNames.contains(name) && "Uniform name does not exist in the shader source code.");
-    return glGetUniformLocation(shaderProgramID, name.c_str());
+    int location{glGetUniformLocation(shaderProgramID, name.c_str())};
+    assert(location != -1 && "Uniform name does not exist in the shader source code.");
+
+    return location;
 }
 
 [[maybe_unused]] void Shader::setUniform(const std::string &name, bool value) const {

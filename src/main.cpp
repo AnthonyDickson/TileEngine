@@ -273,7 +273,6 @@ int main() {
     Texture specularMap{"resource/container2_specular.png", GL_TEXTURE1};
     Material cubeMaterial{diffuseMap.getUniformTextureUnit(), specularMap.getUniformTextureUnit(), 64.0f};
 
-
     DirectionalLight directionalLight{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{1.0f, 1.0f, 0.8f}, 0.3f};
 
     std::vector<glm::vec3> lightPositions{

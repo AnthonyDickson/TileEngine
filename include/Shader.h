@@ -23,7 +23,6 @@
 #define ECONSIMPLUSPLUS_SHADER_H
 
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "glm/detail/type_mat4x4.hpp"
@@ -41,7 +40,6 @@ class Shader {
 private:
     /** The ID of the shader program in OpenGL. */
     unsigned int shaderProgramID{};
-    std::unordered_set<std::string> uniformNames{};
 public:
     /**
      * Load and compile GLSL shaders from disk.
