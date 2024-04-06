@@ -27,10 +27,10 @@
 
 #include "glm/detail/type_mat4x4.hpp"
 
-#include "Light.h"
-#include "DirectionalLight.h"
-#include "SpotLight.h"
-#include "PointLight.h"
+#include "light/Light.h"
+#include "light/DirectionalLight.h"
+#include "light/SpotLight.h"
+#include "light/PointLight.h"
 #include "Material.h"
 
 /**
