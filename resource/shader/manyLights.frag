@@ -22,7 +22,6 @@ struct SpotLight {
 
     vec3 color;
 
-    float constant;
     float linear;
     float quadratic;
 };
@@ -32,7 +31,6 @@ struct PointLight {
 
     vec3 color;
 
-    float constant;
     float linear;
     float quadratic;
 };
@@ -43,10 +41,12 @@ in vec2 TextureCoordinates;
 
 out vec4 FragColor;
 
+#define POINT_LIGHT_COUNT 4
+
 uniform vec3 viewPosition;
 uniform Material material;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLight;
+uniform PointLight pointLight[POINT_LIGHT_COUNT];
 uniform SpotLight spotLight;
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 norm);
@@ -55,11 +55,17 @@ vec3 calculateSpotLight(SpotLight light, vec3 norm);
 
 void main() {
     vec3 norm = normalize(Normal);
-    vec3 directionalLightEffect = calculateDirectionalLight(directionalLight, norm);
-    vec3 pointLightEffect = calculatePointLight(pointLight, norm);
-    vec3 spotLightEffect = calculateSpotLight(spotLight, norm);
+    vec3 lighting = vec3(0.0);
 
-    FragColor = vec4(directionalLightEffect + pointLightEffect + spotLightEffect, 1.0);
+    lighting += calculateDirectionalLight(directionalLight, norm);
+
+    for (int i = 0; i < POINT_LIGHT_COUNT; i++) {
+        lighting += calculatePointLight(pointLight[i], norm);
+    }
+
+    lighting += calculateSpotLight(spotLight, norm);
+
+    FragColor = vec4(lighting, 1.0);
 }
 
 vec3 calculateDiffuse(vec3 diffuse, vec3 norm, vec3 lightDirection) {
@@ -74,9 +80,9 @@ vec3 calculateSpecular(vec3 specular, vec3 norm, vec3 lightDirection) {
     return specular * specularAmount * texture(material.specular, TextureCoordinates).rgb;
 }
 
-float calculateAttenuation(vec3 position, float constant, float linear, float quadratic) {
+float calculateAttenuation(vec3 position, float linear, float quadratic) {
     float distance = length(position - FragPosition);
-    return 1.0 / (constant + linear * distance + quadratic * pow(distance, 2));
+    return 1.0 / (1.0 + linear * distance + quadratic * pow(distance, 2));
 }
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 norm) {
@@ -91,7 +97,7 @@ vec3 calculatePointLight(PointLight light, vec3 norm) {
     vec3 lightDirection = normalize(light.position - FragPosition);
     vec3 diffuse = calculateDiffuse(light.color, norm, lightDirection);
     vec3 specular = calculateSpecular(light.color, norm, lightDirection);
-    float attenuation = calculateAttenuation(light.position, light.constant, light.linear, light.quadratic);
+    float attenuation = calculateAttenuation(light.position, light.linear, light.quadratic);
 
     return attenuation * (diffuse + specular);
 }
@@ -106,7 +112,7 @@ vec3 calculateSpotLight(SpotLight light, vec3 norm) {
 
     float epsilon = light.cutOff - light.outerCutOff;
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-    float attenuation = calculateAttenuation(light.position, light.constant, light.linear, light.quadratic);
+    float attenuation = calculateAttenuation(light.position, light.linear, light.quadratic);
 
     vec3 diffuse = calculateDiffuse(light.color, norm, lightDirection);
     vec3 specular = calculateSpecular(light.color, norm, lightDirection);

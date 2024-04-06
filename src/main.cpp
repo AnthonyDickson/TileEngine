@@ -273,13 +273,28 @@ int main() {
     Texture specularMap{"resource/container2_specular.png", GL_TEXTURE1};
     Material cubeMaterial{diffuseMap.getUniformTextureUnit(), specularMap.getUniformTextureUnit(), 64.0f};
 
-    glm::vec3 lightPosition{1.2f, 1.0f, -2.0f};
-    glm::mat4 lightModelMatrix{1.0f};
-    lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
-    lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
-    glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
+
     DirectionalLight directionalLight{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{1.0f, 1.0f, 0.8f}, 0.3f};
-    PointLight pointLight{lightPosition, glm::vec3{1.0f}, 1.0f, 0.14f, 0.07f};
+
+    std::vector<glm::vec3> lightPositions{
+            {1.2f,  1.0f,  -2.0f},
+            {-2.0f, -1.0f, -4.0f},
+            {3.0f,  1.0f,  -3.0f},
+            {1.0f,  -2.0f, -1.0f}
+    };
+
+    std::vector<glm::vec3> lightColors{
+            {1.0f, 1.0f, 1.0f},
+            {1.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f},
+            {0.0f, 0.0f, 1.0f},
+    };
+
+    std::vector<PointLight> pointLights{};
+
+    for (int i = 0; i < lightPositions.size(); ++i) {
+        pointLights.emplace_back(lightPositions[i], lightColors[i], 0.14f, 0.07f);
+    }
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -301,12 +316,12 @@ int main() {
         SpotLight spotLight{camera.getPosition(), camera.getDirection(),
                             glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)),
                             glm::vec3{1.0f},
-                            1.0f, 0.09f, 0.032f};
+                            0.09f, 0.032f};
 
         shader.use();
         shader.setUniform("viewPosition", camera.getPosition());
         shader.setUniform("directionalLight", directionalLight);
-        shader.setUniform("pointLight", pointLight);
+        shader.setUniform("pointLight", pointLights);
         shader.setUniform("spotLight", spotLight);
         shader.setUniform("material", cubeMaterial);
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
@@ -332,9 +347,17 @@ int main() {
         // Draw the light source.
         lightShader.use();
         lightShader.setUniform("projectionViewMatrix", projectionViewMatrix);
-        lightShader.setUniform("model", lightModelMatrix);
         lightVao.bind();
-        vbo.drawArrays();
+
+        for (const auto &pointLight: pointLights) {
+            glm::mat4 lightModelMatrix{1.0f};
+            lightModelMatrix = glm::translate(lightModelMatrix, pointLight.position);
+            lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
+
+            lightShader.setUniform("model", lightModelMatrix);
+            lightShader.setUniform("color", pointLight.color);
+            vbo.drawArrays();
+        }
     };
 
     try {

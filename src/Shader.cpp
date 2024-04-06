@@ -121,12 +121,55 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     glDeleteShader(fragmentShaderId);
 }
 
+
+void insertStructIdentifiers(std::unordered_set<std::string> &set, const std::string &identifier,
+                             const std::vector<std::string> &memberNames) {
+    for (const auto &memberName: memberNames) {
+        set.insert(std::format("{}.{}", identifier, memberName));
+    }
+}
+
+void
+insertUniformName(std::unordered_set<std::string> &uniforms, const std::string &identifier, const std::string &type,
+                  const std::unordered_map<std::string, std::vector<std::string>> &structTypes) {
+    if (structTypes.contains(type)) {
+        insertStructIdentifiers(uniforms, identifier, structTypes.at(type));
+    } else {
+        uniforms.insert(identifier);
+    }
+}
+
+struct IndexedIdentifier {
+    std::string identifier;
+    int arraySize;
+};
+
+IndexedIdentifier
+getIndexedIdentifier(const std::string &identifier, const std::unordered_map<std::string, int> &preprocessorVariables) {
+    const auto firstBracketPosition = identifier.find_first_of('[');
+    const auto arraySizeStringStart = firstBracketPosition + 1;
+    const auto arraySizeStringEnd = identifier.find_last_not_of(']');
+    const auto range = arraySizeStringEnd - arraySizeStringStart + 1;
+    const auto arraySizeString = identifier.substr(arraySizeStringStart, range);
+
+    int arraySize;
+
+    if (preprocessorVariables.contains(arraySizeString)) {
+        arraySize = preprocessorVariables.at(arraySizeString);
+    } else {
+        arraySize = std::stoi(arraySizeString);
+    }
+
+    return {identifier.substr(0, firstBracketPosition), arraySize};
+}
+
 std::unordered_set<std::string> Shader::extractUniformNames(const std::string &shaderSource) {
     std::unordered_set<std::string> uniformNames{};
 
     bool isInStruct{false};
     std::string currentStructName{};
     std::unordered_map<std::string, std::vector<std::string>> structTypes{};
+    std::unordered_map<std::string, int> preprocessorVariables{};
 
     std::istringstream shaderSourceStream{shaderSource};
 
@@ -141,7 +184,18 @@ std::unordered_set<std::string> Shader::extractUniformNames(const std::string &s
             break;
         }
 
-        if (trimmedLine.starts_with("struct")) {
+        if (trimmedLine.starts_with("#define")) {
+            std::string directive{};
+            std::string identifier{};
+            std::string value{};
+
+            std::istringstream lineStream{trimmedLine};
+            lineStream >> directive;
+            lineStream >> identifier;
+            lineStream >> value;
+
+            preprocessorVariables[identifier] = std::stoi(value);
+        } else if (trimmedLine.starts_with("struct")) {
             isInStruct = true;
 
             std::istringstream lineStream{trimmedLine};
@@ -179,12 +233,22 @@ std::unordered_set<std::string> Shader::extractUniformNames(const std::string &s
                 identifier.pop_back();
             }
 
-            if (structTypes.contains(type)) {
-                for (const auto &memberName: structTypes[type]) {
-                    uniformNames.insert(std::format("{}.{}", identifier, memberName));
+            int arraySize{0};
+
+            if (identifier.ends_with(']')) {
+                const auto indexedIdentifier = getIndexedIdentifier(identifier, preprocessorVariables);
+                identifier = indexedIdentifier.identifier;
+                arraySize = indexedIdentifier.arraySize;
+            }
+
+            if (arraySize > 0) {
+                for (int i = 0; i < arraySize; ++i) {
+                    std::string indexedIdentifier{std::format("{:s}[{:d}]", identifier, i)};
+
+                    insertUniformName(uniformNames, indexedIdentifier, type, structTypes);
                 }
             } else {
-                uniformNames.insert(identifier);
+                insertUniformName(uniformNames, identifier, type, structTypes);
             }
         }
     }
@@ -264,7 +328,6 @@ void Shader::setUniform(const std::string &name, const SpotLight &value) const {
 
     setUniform(name + ".color", value.color);
 
-    setUniform(name + ".constant", value.constant);
     setUniform(name + ".linear", value.linear);
     setUniform(name + ".quadratic", value.quadratic);
 }
@@ -275,7 +338,12 @@ void Shader::setUniform(const std::string &name, const PointLight &value) const 
 
     setUniform(name + ".color", value.color);
 
-    setUniform(name + ".constant", value.constant);
     setUniform(name + ".linear", value.linear);
     setUniform(name + ".quadratic", value.quadratic);
+}
+
+void Shader::setUniform(const std::string &name, const std::vector<PointLight> &value) const {
+    for (int i = 0; i < value.size(); ++i) {
+        setUniform(std::format("{:s}[{:d}]", name, i), value[i]);
+    }
 }
