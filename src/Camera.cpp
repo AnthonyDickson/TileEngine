@@ -20,77 +20,20 @@
 //
 
 #include "Camera.h"
-#include "glm/geometric.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 
-Camera::Camera(float aspectRatio_, glm::vec3 position_, glm::vec3 forward_, glm::vec3 up_) :
-        position{position_}, forward{forward_}, up{up_}, aspectRatio{aspectRatio_} {
-    assert(glm::length(forward) == 1.0f && "Forward vector must be normalized.");
-    assert(glm::length(up) == 1.0f && "Forward vector must be normalized.");
-    assert(glm::dot(forward, up) == 0.0f && "Forward and up vectors must be orthogonal.");
-}
-
-void Camera::move(Camera::Direction direction, float speed) {
-    switch (direction) {
-        case Direction::forward:
-            position += speed * forward;
-            return;
-        case Direction::backward:
-            position -= speed * forward;
-            return;
-        case Direction::left:
-            position -= speed * glm::normalize(glm::cross(forward, up));
-            return;
-        case Direction::right:
-            position += speed * glm::normalize(glm::cross(forward, up));
-            return;
-    }
-}
-
-void Camera::rotate(const glm::vec2 mouseMovement, const float sensitivity) {
-    rotation.x += sensitivity * mouseMovement.y;
-    rotation.y += sensitivity * mouseMovement.x;
-
-    if (rotation.x > 89.0f) {
-        rotation.x = 89.0f;
-    } else if (rotation.x < -89.0f) {
-        rotation.x = -89.0f;
-    }
-
-    glm::vec3 direction{};
-    direction.x = static_cast<float>(cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y)));
-    direction.y = static_cast<float>(sin(glm::radians(rotation.x)));
-    direction.z = static_cast<float>(cos(glm::radians(rotation.x)) * sin(glm::radians(rotation.y)));
-    forward = glm::normalize(direction);
-}
-
-void Camera::zoom(const float scrollDelta) {
-    fov -= static_cast<float>(scrollDelta);
-
-    if (fov < 1.0f) {
-        fov = 1.0f;
-    } else if (fov > 45.0f) {
-        fov = 45.0f;
-    }
-}
-
-glm::vec3 Camera::getPosition() const {
-    return position;
-}
-
-glm::vec3 Camera::getDirection() const {
-    return forward;
-}
+Camera::Camera(Size viewport_, glm::vec3 position_) : viewport(viewport_), position(position_) {}
 
 glm::mat4 Camera::getPerspectiveMatrix() const {
-    return glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 1000.0f);
+    // Putting window height then 0 causing (0, 0) to start from the top left (i.e. y positive points down).
+    return glm::ortho(0.0f, viewport.width, viewport.height, 0.0f, 0.1f, 1000.0f);
 }
 
 glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(position, position + forward, up);
+    return glm::lookAt(position, center, up);
 }
 
-void Camera::setAspectRatio(float aspectRatio_) {
-    aspectRatio = aspectRatio_;
+void Camera::onWindowResize(Size viewport_) {
+    viewport = viewport_;
 }

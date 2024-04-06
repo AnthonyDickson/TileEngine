@@ -95,6 +95,14 @@ glm::vec2 Window::getMouseDelta() {
     return mouseMovement;
 }
 
+int Window::getWidth() const {
+    return windowWidth;
+}
+
+int Window::getHeight() const {
+    return windowHeight;
+}
+
 float Window::getAspectRatio() const {
     return static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 }

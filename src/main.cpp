@@ -25,275 +25,50 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "Camera.h"
-#include "Material.h"
 #include "Shader.h"
 #include "Window.h"
 #include "Texture.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 
-namespace constants {
-    [[maybe_unused]] constexpr float cube[]{
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f,
-    };
-
-    [[maybe_unused]] constexpr float texturedCube[]{
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-
-            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-    };
-
-    [[maybe_unused]] float cubeWithNormals[]{
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
-    };
-
-    [[maybe_unused]] std::vector<float> texturedCubeWithNormals{
-            // positions          // normals           // texture coords
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
-    };
-}
-
-void handleInput(Window &window, Camera &camera, float cameraSpeed) {
-    if (window.getKeyState(GLFW_KEY_W) == GLFW_PRESS) {
-        camera.move(Camera::Direction::forward, cameraSpeed);
-    }
-    if (window.getKeyState(GLFW_KEY_S) == GLFW_PRESS) {
-        camera.move(Camera::Direction::backward, cameraSpeed);
-    }
-    if (window.getKeyState(GLFW_KEY_A) == GLFW_PRESS) {
-        camera.move(Camera::Direction::left, cameraSpeed);
-    }
-    if (window.getKeyState(GLFW_KEY_D) == GLFW_PRESS) {
-        camera.move(Camera::Direction::right, cameraSpeed);
-    }
-
-    camera.rotate(window.getMouseDelta());
-    camera.zoom(window.getMouseScroll());
-}
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
 
-    constexpr int windowWidth{800};
-    constexpr int windowHeight{600};
+    constexpr int windowWidth{1440};
+    constexpr int windowHeight{1080};
 
-    Window window{windowWidth, windowHeight, "LearnOpenGL"};
+    Window window{windowWidth, windowHeight, "EconSimPlusPlus"};
 
-    Camera camera{window.getAspectRatio(), glm::vec3(0.0f, 0.0f, 3.0f)};
-    constexpr const float cameraMoveSpeed = 2.5f;
+    Camera camera{{windowWidth, windowHeight},
+                  {0.0f,        0.0f, 3.0f}};
 
     // Create the vertex array object.
     VertexArray vao{};
     vao.bind();
-    VertexBuffer vbo{constants::texturedCubeWithNormals, 8, std::vector<int>{3, 3, 2}};
 
-    // Setup directionalLight cube while reusing the buffered data from the previous cube.
-    VertexArray lightVao{};
-    lightVao.bind();
-    vbo.bind();
-    // No need to buffer vertex data here since we are reusing the vertex data from the previous cube.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
-    glEnableVertexAttribArray(0);
+    int tilesPerHeight{32};
+    int tileSize{windowHeight / tilesPerHeight};
+    int tilesPerWidth{windowWidth / tileSize};
+    std::vector<float> vertexData{
+            // X, Y, U, V (2D coordinates, Texture coordinates).
+            // [0]    -> [1,4]
+            //         /
+            //       /
+            // [2, 5] -> [3]
+            0.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, 1.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f,
 
-    glm::vec3 cubePositions[]{
-            glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(2.0f, 5.0f, -15.0f),
-            glm::vec3(-1.5f, -2.2f, -2.5f),
-            glm::vec3(-3.8f, -2.0f, -12.3f),
-            glm::vec3(2.4f, -0.4f, -3.5f),
-            glm::vec3(-1.7f, 3.0f, -7.5f),
-            glm::vec3(1.3f, -2.0f, -2.5f),
-            glm::vec3(1.5f, 2.0f, -2.5f),
-            glm::vec3(1.5f, 0.2f, -1.5f),
-            glm::vec3(-1.3f, 1.0f, -1.5f)
+            0.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 0.0f,
+            1.0f, 0.0f, 1.0f, 1.0f,
     };
+    VertexBuffer vbo{vertexData, 4, std::vector<int>{2, 2}};
 
-    Shader shader{"resource/shader/color.vert", "resource/shader/manyLights.frag"};
-    Shader lightShader{"resource/shader/light.vert", "resource/shader/light.frag"};
+    Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
     Texture diffuseMap{"resource/container2.png", GL_TEXTURE0};
-    Texture specularMap{"resource/container2_specular.png", GL_TEXTURE1};
-    Material cubeMaterial{diffuseMap.getUniformTextureUnit(), specularMap.getUniformTextureUnit(), 64.0f};
-
-    DirectionalLight directionalLight{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{1.0f, 1.0f, 0.8f}, 0.3f};
-
-    std::vector<glm::vec3> lightPositions{
-            {1.2f,  1.0f,  -2.0f},
-            {-2.0f, -1.0f, -4.0f},
-            {3.0f,  1.0f,  -3.0f},
-            {1.0f,  -2.0f, -1.0f}
-    };
-
-    std::vector<glm::vec3> lightColors{
-            {1.0f, 1.0f, 1.0f},
-            {1.0f, 0.0f, 0.0f},
-            {0.0f, 1.0f, 0.0f},
-            {0.0f, 0.0f, 1.0f},
-    };
-
-    std::vector<PointLight> pointLights{};
-
-    for (int i = 0; i < lightPositions.size(); ++i) {
-        pointLights.emplace_back(lightPositions[i], lightColors[i], 0.14f, 0.07f);
-    }
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -302,60 +77,35 @@ int main() {
         }
 
         if (window.hasWindowSizeChanged()) {
-            camera.setAspectRatio(window.getAspectRatio());
+            camera.onWindowResize({static_cast<float>(window.getWidth()),
+                                   static_cast<float>(window.getHeight())});
+            tileSize = window.getHeight() / tilesPerHeight;
+            tilesPerWidth = window.getWidth() / tileSize;
         }
-
-        handleInput(window, camera, deltaTime * cameraMoveSpeed);
 
         glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
-        SpotLight spotLight{camera.getPosition(), camera.getDirection(),
-                            glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)),
-                            glm::vec3{1.0f},
-                            0.09f, 0.032f};
 
         shader.use();
-        shader.setUniform("viewPosition", camera.getPosition());
-        shader.setUniform("directionalLight", directionalLight);
-        shader.setUniform("pointLight", pointLights);
-        shader.setUniform("spotLight", spotLight);
-        shader.setUniform("material", cubeMaterial);
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
-
         diffuseMap.use();
-        specularMap.use();
-
         vao.bind();
 
-        for (int i = 0; i < 10; i++) {
-            glm::mat4 model{1.0f};
-            model = glm::translate(model, cubePositions[i]);
-            model = glm::rotate(model, static_cast<float>(glfwGetTime()) * glm::radians(20.0f * static_cast<float>(i)),
-                                glm::vec3(1.0f, 0.3f, 0.5f));
-            glm::mat4 modelInverse{glm::transpose(glm::inverse(model))};
+        for (int row = 0; row < tilesPerHeight; ++row) {
+            for (int col = 0; col < tilesPerWidth; ++col) {
+                glm::mat4 model{1.0f};
+                model = glm::translate(
+                        model,
+                        glm::vec3{static_cast<float>(col * tileSize), static_cast<float>(row * tileSize), 0.0}
+                );
+                model = glm::scale(model, glm::vec3{static_cast<float>(tileSize), static_cast<float>(tileSize), 0.0});
 
-            shader.setUniform("model", model);
-            shader.setUniform("modelInverse", modelInverse);
-
-            vbo.drawArrays();
-        }
-
-        // Draw the light source.
-        lightShader.use();
-        lightShader.setUniform("projectionViewMatrix", projectionViewMatrix);
-        lightVao.bind();
-
-        for (const auto &pointLight: pointLights) {
-            glm::mat4 lightModelMatrix{1.0f};
-            lightModelMatrix = glm::translate(lightModelMatrix, pointLight.position);
-            lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
-
-            lightShader.setUniform("model", lightModelMatrix);
-            lightShader.setUniform("color", pointLight.color);
-            vbo.drawArrays();
+                shader.setUniform("model", model);
+                vbo.drawArrays();
+            }
         }
     };
 

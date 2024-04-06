@@ -92,7 +92,7 @@ public:
      * The net change in the vertical scroll wheel since the last update step.
      * @return The net scroll amount.
      */
-    [[nodiscard]] float getMouseScroll() const;
+    [[nodiscard, maybe_unused]] float getMouseScroll() const;
 
     /**
      * Get the screen coordinates of the mouse cursor.
@@ -104,13 +104,17 @@ public:
      * Get the distance the mouse has moved since the last update step measured in pixels.
      * @return A 2-vector.
      */
-    [[nodiscard]] glm::vec2 getMouseDelta();
+    [[nodiscard, maybe_unused]] glm::vec2 getMouseDelta();
 
     /**
      * Get the aspect ratio of the window.
      * @return The aspect ratio in pixels.
      */
-    [[nodiscard]] float getAspectRatio() const;
+    [[nodiscard, maybe_unused]] float getAspectRatio() const;
+
+    [[nodiscard]] int getWidth() const;
+
+    [[nodiscard]] int getHeight() const;
 
     [[nodiscard]] bool hasWindowSizeChanged() const;
 
