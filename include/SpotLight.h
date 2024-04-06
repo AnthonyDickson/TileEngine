@@ -31,8 +31,7 @@ struct SpotLight {
     float cutOff;
     float outerCutOff;
 
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    glm::vec3 color;
 
     float constant;
     float linear;

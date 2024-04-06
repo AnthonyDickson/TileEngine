@@ -251,9 +251,8 @@ void Shader::setUniform(const std::string &name, const Light &value) const {
 
 void Shader::setUniform(const std::string &name, const DirectionalLight &value) const {
     setUniform(name + ".direction", value.direction);
-    setUniform(name + ".ambient", value.ambient);
-    setUniform(name + ".diffuse", value.diffuse);
-    setUniform(name + ".specular", value.specular);
+    setUniform(name + ".color", value.color);
+    setUniform(name + ".intensity", value.intensity);
 }
 
 void Shader::setUniform(const std::string &name, const SpotLight &value) const {
@@ -263,8 +262,7 @@ void Shader::setUniform(const std::string &name, const SpotLight &value) const {
     setUniform(name + ".cutOff", value.cutOff);
     setUniform(name + ".outerCutOff", value.outerCutOff);
 
-    setUniform(name + ".diffuse", value.diffuse);
-    setUniform(name + ".specular", value.specular);
+    setUniform(name + ".color", value.color);
 
     setUniform(name + ".constant", value.constant);
     setUniform(name + ".linear", value.linear);
@@ -275,9 +273,7 @@ void Shader::setUniform(const std::string &name, const SpotLight &value) const {
 void Shader::setUniform(const std::string &name, const PointLight &value) const {
     setUniform(name + ".position", value.position);
 
-    setUniform(name + ".ambient", value.ambient);
-    setUniform(name + ".diffuse", value.diffuse);
-    setUniform(name + ".specular", value.specular);
+    setUniform(name + ".color", value.color);
 
     setUniform(name + ".constant", value.constant);
     setUniform(name + ".linear", value.linear);

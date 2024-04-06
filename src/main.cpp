@@ -278,9 +278,8 @@ int main() {
     lightModelMatrix = glm::translate(lightModelMatrix, lightPosition);
     lightModelMatrix = glm::scale(lightModelMatrix, glm::vec3{0.2f});
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
-    DirectionalLight directionalLight{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{0.01f}, glm::vec3{0.1f},
-                                      glm::vec3{0.5f}};
-    PointLight pointLight{lightPosition, glm::vec3{0.2f}, glm::vec3{0.5f}, glm::vec3{1.0f}, 1.0f, 0.14f, 0.07f};
+    DirectionalLight directionalLight{glm::vec3{-0.2f, -1.0f, -0.3f}, glm::vec3{1.0f, 1.0f, 0.8f}, 0.3f};
+    PointLight pointLight{lightPosition, glm::vec3{1.0f}, 1.0f, 0.14f, 0.07f};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -301,7 +300,7 @@ int main() {
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
         SpotLight spotLight{camera.getPosition(), camera.getDirection(),
                             glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)),
-                            glm::vec3{0.8f}, glm::vec3{1.0f},
+                            glm::vec3{1.0f},
                             1.0f, 0.09f, 0.032f};
 
         shader.use();
