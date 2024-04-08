@@ -27,13 +27,14 @@
 /** Represents a 2D grid of tile IDs. */
 class TileGrid {
 private:
-    /** How wide the grid is in cells along the x-axis. */
-    int width;
-    /** How tall the grid is in cells along the y-axis. */
-    int height;
     /** A flat array storing the tile IDS. */
     std::vector<int> grid;
 public:
+    /** How wide the grid is in cells along the x-axis. */
+    const int width;
+    /** How tall the grid is in cells along the y-axis. */
+    const int height;
+
     /**
      * Create a TileGrid.
      * @param width_ How wide the grid is in cells along the x-axis.

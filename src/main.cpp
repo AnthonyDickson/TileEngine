@@ -36,7 +36,6 @@
 
 
 int main() {
-    // TODO: Moving 'the camera' should simply change the row/col offset.
     std::cout << "Hello, World!" << std::endl;
 
     constexpr int windowWidth{1440};
@@ -80,8 +79,13 @@ int main() {
     tileRegistry.emplace(awesomeFace);
     TileGrid tileGrid{64, 64};
     tileGrid[0, 0] = 1;
+    tileGrid[15, 15] = 1;
     tileGrid[31, 31] = 1;
+    tileGrid[47, 47] = 1;
     tileGrid[63, 63] = 1;
+
+    int colOffset{0};
+    int rowOffset{0};
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -94,6 +98,18 @@ int main() {
                                    static_cast<float>(window.getHeight())});
             tileSize = window.getHeight() / tilesPerHeight;
             tilesPerWidth = window.getWidth() / tileSize;
+        }
+
+        if (window.getKeyState(GLFW_KEY_W) == GLFW_PRESS) {
+            rowOffset = std::max(rowOffset - 1, 0);
+        } else if (window.getKeyState(GLFW_KEY_S) == GLFW_PRESS) {
+            rowOffset = std::min(rowOffset + 1, tileGrid.height - tilesPerHeight);
+        }
+
+        if (window.getKeyState(GLFW_KEY_A) == GLFW_PRESS) {
+            colOffset = std::max(colOffset - 1, 0);
+        } else if (window.getKeyState(GLFW_KEY_D) == GLFW_PRESS) {
+            colOffset = std::min(colOffset + 1, tileGrid.width - tilesPerWidth);
         }
 
         glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
@@ -116,7 +132,7 @@ int main() {
                 model = glm::scale(model, glm::vec3{static_cast<float>(tileSize), static_cast<float>(tileSize), 0.0});
 
                 shader.setUniform("model", model);
-                const auto tileID = tileGrid[row, col];
+                const auto tileID = tileGrid[row + rowOffset, col + colOffset];
                 tileRegistry[tileID].bind();
                 vbo.drawArrays();
             }
