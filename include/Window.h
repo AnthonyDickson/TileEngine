@@ -83,7 +83,7 @@ public:
 
     /**
      * Get the state of a keyboard key.
-     * @param key The integer code for a key on a keyboard (use the GLFW defined keys).
+     * @param key The integer code for a key on a keyboard (bind the GLFW defined keys).
      * @return The state of the given key as an integer (GLFW defined state enum).
      */
     [[nodiscard]] int getKeyState(int key);

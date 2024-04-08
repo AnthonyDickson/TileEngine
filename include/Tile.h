@@ -16,38 +16,30 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 24/03/2024.
+// Created by Anthony on 7/04/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_TEXTURE_H
-#define ECONSIMPLUSPLUS_TEXTURE_H
+#ifndef ECONSIMPLUSPLUS_TILE_H
+#define ECONSIMPLUSPLUS_TILE_H
 
-#include "glad/glad.h"
-#include <string>
 
-/** Handles the creation and setup of an OpenGL texture from a image on disk.*/
-class Texture {
+#include <memory>
+#include <utility>
+#include "glm/vec2.hpp"
+#include "Texture.h"
+
+class Tile {
 private:
-    /** The OpenGL ID for the texture.*/
-    unsigned int textureID;
-    /** The texture unit that the texture should be bound to. */
-    int textureUnit;
+    /** ID is used in tile arrays for compact storage of maps (levels) and for placing tiles in maps/sets. */
+    int id;
+    /** The texture to bind to draw this tile. */
+    std::shared_ptr<const Texture> texture;
 public:
-    /**
-     * Create a texture from an image.
-     * @param imagePath The path to an image.
-     * @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
-     */
-    explicit Texture(const std::string &imagePath, int textureUnit_ = GL_TEXTURE0);
+    Tile(int id_, std::shared_ptr<const Texture> texture_);
 
-    /** Clean up OpenGL related stuff.*/
-    ~Texture();
-
-    /** Activate the current texture for bind in rendering.*/
+    /** Bind OpenGL related stuff for rendering. */
     void bind() const;
-
-    [[nodiscard]] int getUniformTextureUnit() const;
 };
 
 
-#endif //ECONSIMPLUSPLUS_TEXTURE_H
+#endif //ECONSIMPLUSPLUS_TILE_H

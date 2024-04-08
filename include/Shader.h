@@ -54,7 +54,7 @@ public:
     /**
      * Activate the shader program.
      */
-    void use() const;
+    void bind() const;
 
     /**
      * Get the location of a uniform variable in the shader program.

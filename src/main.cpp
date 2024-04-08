@@ -26,13 +26,17 @@
 
 #include "Camera.h"
 #include "Shader.h"
-#include "Window.h"
 #include "Texture.h"
+#include "Tile.h"
+#include "TileGrid.h"
+#include "TileRegistry.h"
+#include "Window.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 
 
 int main() {
+    // TODO: Moving 'the camera' should simply change the row/col offset.
     std::cout << "Hello, World!" << std::endl;
 
     constexpr int windowWidth{1440};
@@ -68,7 +72,16 @@ int main() {
 
     Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
-    Texture diffuseMap{"resource/container2.png", GL_TEXTURE0};
+    auto container{std::make_shared<const Texture>("resource/container2.png", GL_TEXTURE0)};
+    auto awesomeFace{std::make_shared<const Texture>("resource/awesomeface.png", GL_TEXTURE0)};
+
+    TileRegistry tileRegistry{};
+    tileRegistry.emplace(container);
+    tileRegistry.emplace(awesomeFace);
+    TileGrid tileGrid{64, 64};
+    tileGrid[0, 0] = 1;
+    tileGrid[31, 31] = 1;
+    tileGrid[63, 63] = 1;
 
     auto update = [&](float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
@@ -89,9 +102,8 @@ int main() {
 
         const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
 
-        shader.use();
+        shader.bind();
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
-        diffuseMap.use();
         vao.bind();
 
         for (int row = 0; row < tilesPerHeight; ++row) {
@@ -104,6 +116,8 @@ int main() {
                 model = glm::scale(model, glm::vec3{static_cast<float>(tileSize), static_cast<float>(tileSize), 0.0});
 
                 shader.setUniform("model", model);
+                const auto tileID = tileGrid[row, col];
+                tileRegistry[tileID].bind();
                 vbo.drawArrays();
             }
         }

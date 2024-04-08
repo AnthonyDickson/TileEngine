@@ -11,6 +11,9 @@ add_executable(${PROJECT_NAME}
         src/Camera.cpp
         src/Shader.cpp
         src/Texture.cpp
+        src/Tile.cpp
+        src/TileGrid.cpp
+        src/TileRegistry.cpp
         src/Window.cpp
         src/VertexArray.cpp
         src/VertexBuffer.cpp
