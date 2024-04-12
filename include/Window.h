@@ -136,6 +136,13 @@ private:
     static void onMouseScroll(GLFWwindow *window, double scrollX, double scrollY);
 
     /**
+     * Update the window dimensions.
+     * @param width The width of the window in pixels.
+     * @param height The height of the window in pixels.
+     */
+    void updateWindowSize(int width, int height);
+
+    /**
      * Poll and track the cursor position.
      */
     void updateMousePosition();

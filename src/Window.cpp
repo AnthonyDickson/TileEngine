@@ -43,9 +43,8 @@ Window::Window(int windowWidth_, int windowHeight_, const std::string &windowNam
         throw std::runtime_error("Failed to initialize GLAD.");
     }
 
-    glViewport(0, 0, windowWidth, windowHeight);
+    updateWindowSize(windowWidth_, windowHeight_);
     glfwSetWindowSizeCallback(window, Window::onWindowResize);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetScrollCallback(window, Window::onMouseScroll);
     glfwSetWindowUserPointer(window, this);
 }
@@ -115,11 +114,21 @@ void Window::onWindowResize(GLFWwindow *window_, int width, int height) {
     auto windowHandle{reinterpret_cast<Window *>(glfwGetWindowUserPointer(window_))};
 
     if (windowHandle) {
-        windowHandle->windowWidth = width;
-        windowHandle->windowHeight = height;
-        glViewport(0, 0, windowHandle->windowWidth, windowHandle->windowHeight);
-        windowHandle->hasWindowChangedSize = true;
+        windowHandle->updateWindowSize(width, height);
     }
+}
+
+void Window::updateWindowSize(int width, int height) {
+    windowWidth = width;
+    windowHeight = height;
+
+    // On MacOS the report window size is the scaled width & height.
+    // Using these values for the viewport may result in a viewport that only takes up a small part of window.
+    // Setting the viewport to the framebuffer size ensures the viewport fills the window.
+    int framebuffer_width, framebuffer_height;
+    glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
+    glViewport(0, 0, framebuffer_width, framebuffer_height);
+    hasWindowChangedSize = true;
 }
 
 void Window::onMouseScroll(GLFWwindow *window, double, double scrollY) {
