@@ -22,7 +22,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 #include <vector>
 #include <format>
 
@@ -58,7 +57,7 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
 
         vertexShaderFile.close();
         fragmentShaderFile.close();
-    } catch (std::ifstream::failure &e) {
+    } catch (std::ifstream::failure &) {
         std::cout << "ERROR::SHADER::CANNOT_READ_FILE: " << vertexShaderSourcePath << ", ";
         std::cout << fragmentShaderSourcePath << std::endl;
     }
@@ -126,30 +125,30 @@ void Shader::bind() const {
 }
 
 int Shader::getUniformLocation(const std::string &name) const {
-    int location{glGetUniformLocation(shaderProgramID, name.c_str())};
+    const int location{glGetUniformLocation(shaderProgramID, name.c_str())};
     assert(location != -1 && "Uniform name does not exist in the shader source code.");
 
     return location;
 }
 
-[[maybe_unused]] void Shader::setUniform(const std::string &name, bool value) const {
+[[maybe_unused]] void Shader::setUniform(const std::string &name, const bool value) const {
     setUniform(name, static_cast<int>(value));
 }
 
-void Shader::setUniform(const std::string &name, int value) const {
+void Shader::setUniform(const std::string &name, const int value) const {
     glUniform1i(getUniformLocation(name), value);
 }
 
-void Shader::setUniform(const std::string &name, float value) const {
+void Shader::setUniform(const std::string &name, const float value) const {
     glUniform1f(getUniformLocation(name), value);
 }
 
 void Shader::setUniform(const std::string &name, const glm::vec3 &value) const {
-    glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(value));
+    glUniform3fv(getUniformLocation(name), 1, value_ptr(value));
 }
 
 void Shader::setUniform(const std::string &name, const glm::mat4x4 &value) const {
-    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value_ptr(value));
 }
 
 void Shader::setUniform(const std::string &name, const Material &value) const {

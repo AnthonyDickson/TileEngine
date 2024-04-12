@@ -23,7 +23,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 
-Camera::Camera(Size viewport_, glm::vec3 position_) : viewport(viewport_), position(position_) {}
+Camera::Camera(const Size viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {}
 
 glm::mat4 Camera::getPerspectiveMatrix() const {
     // Putting window height then 0 causing (0, 0) to start from the top left (i.e. y positive points down).
@@ -31,9 +31,9 @@ glm::mat4 Camera::getPerspectiveMatrix() const {
 }
 
 glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(position, center, up);
+    return lookAt(position, center, up);
 }
 
-void Camera::onWindowResize(Size viewport_) {
+void Camera::onWindowResize(const Size viewport_) {
     viewport = viewport_;
 }

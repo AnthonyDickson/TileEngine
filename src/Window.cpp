@@ -24,8 +24,8 @@
 
 #include "Window.h"
 
-Window::Window(int windowWidth_, int windowHeight_, const std::string &windowName) : windowWidth(windowWidth_),
-                                                                                     windowHeight(windowHeight_) {
+Window::Window(const int windowWidth_, const int windowHeight_, const std::string &windowName)
+    : windowWidth(windowWidth_), windowHeight(windowHeight_) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -39,13 +39,13 @@ Window::Window(int windowWidth_, int windowHeight_, const std::string &windowNam
 
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         throw std::runtime_error("Failed to initialize GLAD.");
     }
 
     updateWindowSize(windowWidth_, windowHeight_);
-    glfwSetWindowSizeCallback(window, Window::onWindowResize);
-    glfwSetScrollCallback(window, Window::onMouseScroll);
+    glfwSetWindowSizeCallback(window, onWindowResize);
+    glfwSetScrollCallback(window, onMouseScroll);
     glfwSetWindowUserPointer(window, this);
 }
 
@@ -74,11 +74,11 @@ void Window::runMainLoop(const std::function<void(float)> &updateFunction) {
     }
 }
 
-void Window::close() {
+void Window::close() const {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-int Window::getKeyState(int key) {
+int Window::getKeyState(const int key) const {
     return glfwGetKey(window, key);
 }
 
@@ -86,11 +86,11 @@ float Window::getMouseScroll() const {
     return scrollDelta;
 }
 
-glm::vec2 Window::getMousePosition() {
+glm::vec2 Window::getMousePosition() const {
     return lastMousePosition;
 }
 
-glm::vec2 Window::getMouseDelta() {
+glm::vec2 Window::getMouseDelta() const {
     return mouseMovement;
 }
 
@@ -110,15 +110,13 @@ bool Window::hasWindowSizeChanged() const {
     return hasWindowChangedSize;
 }
 
-void Window::onWindowResize(GLFWwindow *window_, int width, int height) {
-    auto windowHandle{reinterpret_cast<Window *>(glfwGetWindowUserPointer(window_))};
-
-    if (windowHandle) {
+void Window::onWindowResize(GLFWwindow *window, const int width, const int height) {
+    if (auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
         windowHandle->updateWindowSize(width, height);
     }
 }
 
-void Window::updateWindowSize(int width, int height) {
+void Window::updateWindowSize(const int width, const int height) {
     windowWidth = width;
     windowHeight = height;
 
@@ -131,10 +129,8 @@ void Window::updateWindowSize(int width, int height) {
     hasWindowChangedSize = true;
 }
 
-void Window::onMouseScroll(GLFWwindow *window, double, double scrollY) {
-    auto windowHandle{reinterpret_cast<Window *>(glfwGetWindowUserPointer(window))};
-
-    if (windowHandle) {
+void Window::onMouseScroll(GLFWwindow *window, double, const double scrollY) {
+    if (auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
         windowHandle->scrollDelta += static_cast<float>(scrollY);
     }
 }
@@ -144,7 +140,7 @@ void Window::updateMousePosition() {
     double yPosition{};
     glfwGetCursorPos(window, &xPosition, &yPosition);
 
-    glm::vec2 position{static_cast<float>(xPosition), static_cast<float>(yPosition)};
+    const glm::vec2 position{static_cast<float>(xPosition), static_cast<float>(yPosition)};
 
     if (!hasInitializedMousePosition) {
         // If the window is created in a position away from the mouse, the distance of the mouse from the window will

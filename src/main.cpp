@@ -47,13 +47,13 @@ int main() {
                   {0.0f,        0.0f, 3.0f}};
 
     // Create the vertex array object.
-    VertexArray vao{};
+    const VertexArray vao{};
     vao.bind();
 
-    int tilesPerHeight{32};
+    constexpr int tilesPerHeight{32};
     int tileSize{windowHeight / tilesPerHeight};
     int tilesPerWidth{windowWidth / tileSize};
-    std::vector<float> vertexData{
+    const std::vector vertexData{
             // X, Y, U, V (2D coordinates, Texture coordinates).
             // [0]    -> [1,4]
             //         /
@@ -67,9 +67,9 @@ int main() {
             1.0f, 1.0f, 1.0f, 0.0f,
             1.0f, 0.0f, 1.0f, 1.0f,
     };
-    VertexBuffer vbo{vertexData, 4, std::vector<int>{2, 2}};
+    const VertexBuffer vbo{vertexData, 4, std::vector{2, 2}};
 
-    Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
+    const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
     auto container{std::make_shared<const Texture>("resource/container2.png", GL_TEXTURE0)};
     auto awesomeFace{std::make_shared<const Texture>("resource/awesomeface.png", GL_TEXTURE0)};
@@ -78,16 +78,21 @@ int main() {
     tileRegistry.emplace(container);
     tileRegistry.emplace(awesomeFace);
     TileGrid tileGrid{64, 64};
+    // ReSharper disable once CppExpressionWithoutSideEffects
     tileGrid[0, 0] = 1;
+    // ReSharper disable once CppExpressionWithoutSideEffects
     tileGrid[15, 15] = 1;
+    // ReSharper disable once CppExpressionWithoutSideEffects
     tileGrid[31, 31] = 1;
+    // ReSharper disable once CppExpressionWithoutSideEffects
     tileGrid[47, 47] = 1;
+    // ReSharper disable once CppExpressionWithoutSideEffects
     tileGrid[63, 63] = 1;
 
     int colOffset{0};
     int rowOffset{0};
 
-    auto update = [&](float deltaTime) {
+    auto update = [&](float) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
             window.close();
             return;
@@ -125,13 +130,14 @@ int main() {
         for (int row = 0; row < tilesPerHeight; ++row) {
             for (int col = 0; col < tilesPerWidth; ++col) {
                 glm::mat4 model{1.0f};
-                model = glm::translate(
+                model = translate(
                         model,
                         glm::vec3{static_cast<float>(col * tileSize), static_cast<float>(row * tileSize), 0.0}
                 );
-                model = glm::scale(model, glm::vec3{static_cast<float>(tileSize), static_cast<float>(tileSize), 0.0});
+                model = scale(model, glm::vec3{static_cast<float>(tileSize), static_cast<float>(tileSize), 0.0});
 
                 shader.setUniform("model", model);
+                // ReSharper disable once CppExpressionWithoutSideEffects
                 const auto tileID = tileGrid[row + rowOffset, col + colOffset];
                 tileRegistry[tileID].bind();
                 vbo.drawArrays();

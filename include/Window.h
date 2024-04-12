@@ -79,14 +79,14 @@ public:
     /**
      * Signal that the application should close. This will happen at the start of the next iteration of the main loop.
      */
-    void close();
+    void close() const;
 
     /**
      * Get the state of a keyboard key.
      * @param key The integer code for a key on a keyboard (bind the GLFW defined keys).
      * @return The state of the given key as an integer (GLFW defined state enum).
      */
-    [[nodiscard]] int getKeyState(int key);
+    [[nodiscard]] int getKeyState(int key) const;
 
     /**
      * The net change in the vertical scroll wheel since the last update step.
@@ -98,13 +98,13 @@ public:
      * Get the screen coordinates of the mouse cursor.
      * @return A 2-vector.
      */
-    [[nodiscard, maybe_unused]] glm::vec2 getMousePosition();
+    [[nodiscard, maybe_unused]] glm::vec2 getMousePosition() const;
 
     /**
      * Get the distance the mouse has moved since the last update step measured in pixels.
      * @return A 2-vector.
      */
-    [[nodiscard, maybe_unused]] glm::vec2 getMouseDelta();
+    [[nodiscard, maybe_unused]] glm::vec2 getMouseDelta() const;
 
     /**
      * Get the aspect ratio of the window.

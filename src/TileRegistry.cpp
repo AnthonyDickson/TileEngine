@@ -26,6 +26,6 @@ void TileRegistry::emplace(std::shared_ptr<const Texture> &texture) {
     tiles.emplace_back(id, texture);
 }
 
-const Tile &TileRegistry::operator[](int tileID) {
+const Tile &TileRegistry::operator[](const int tileID) {
     return tiles.at(tileID);
 }

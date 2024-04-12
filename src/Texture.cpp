@@ -26,7 +26,7 @@
 
 #include "Texture.h"
 
-Texture::Texture(const std::string &imagePath, int textureUnit_) :
+Texture::Texture(const std::string &imagePath, const int textureUnit_) :
         textureID(0), textureUnit(textureUnit_) {
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);

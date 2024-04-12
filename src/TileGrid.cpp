@@ -21,8 +21,8 @@
 
 #include "TileGrid.h"
 
-TileGrid::TileGrid(int width_, int height_) : width(width_), height(height_), grid(width_ * height_, 0) {}
+TileGrid::TileGrid(const int width_, const int height_) : grid(width_ * height_, 0), width(width_), height(height_) {}
 
-int &TileGrid::operator[](std::size_t row, std::size_t col) {
+int &TileGrid::operator[](const std::size_t row, const std::size_t col) {
     return grid[width * row + col];
 }
