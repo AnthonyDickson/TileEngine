@@ -111,7 +111,7 @@ bool Window::hasWindowSizeChanged() const {
 }
 
 void Window::onWindowResize(GLFWwindow *window, const int width, const int height) {
-    if (auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
+    if (const auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
         windowHandle->updateWindowSize(width, height);
     }
 }
@@ -130,7 +130,7 @@ void Window::updateWindowSize(const int width, const int height) {
 }
 
 void Window::onMouseScroll(GLFWwindow *window, double, const double scrollY) {
-    if (auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
+    if (const auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
         windowHandle->scrollDelta += static_cast<float>(scrollY);
     }
 }

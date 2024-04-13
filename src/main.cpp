@@ -25,6 +25,7 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "Camera.h"
+#include "Game.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Tile.h"
@@ -42,6 +43,7 @@ int main() {
     constexpr int windowHeight{1080};
 
     Window window{windowWidth, windowHeight, "EconSimPlusPlus"};
+    Game game{window};
 
     Camera camera{{windowWidth, windowHeight},
                   {0.0f,        0.0f, 3.0f}};
@@ -92,7 +94,7 @@ int main() {
     int colOffset{0};
     int rowOffset{0};
 
-    auto update = [&](float) {
+    auto update = [&](const float deltaTime) {
         if (window.getKeyState(GLFW_KEY_ESCAPE)) {
             window.close();
             return;
@@ -104,6 +106,8 @@ int main() {
             tileSize = window.getHeight() / tilesPerHeight;
             tilesPerWidth = window.getWidth() / tileSize;
         }
+
+        game.update(deltaTime);
 
         if (window.getKeyState(GLFW_KEY_W) == GLFW_PRESS) {
             rowOffset = std::max(rowOffset - 1, 0);

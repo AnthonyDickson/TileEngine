@@ -9,6 +9,8 @@ set(CMAKE_BUILD_TYPE Debug)
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/Camera.cpp
+        src/Game.cpp
+        src/KeyboardState.cpp
         src/Shader.cpp
         src/Texture.cpp
         src/Tile.cpp
