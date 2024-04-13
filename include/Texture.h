@@ -23,7 +23,6 @@
 #define ECONSIMPLUSPLUS_TEXTURE_H
 
 #include "glad/glad.h"
-#include <string>
 
 /** Handles the creation and setup of an OpenGL texture from a image on disk.*/
 class Texture {

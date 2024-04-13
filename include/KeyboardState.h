@@ -25,8 +25,6 @@
 #include <array>
 #include <Window.h>
 
-#include "GLFW/glfw3.h"
-
 class KeyboardState {
     /** Tracks the current and previous state of common keys on a keyboard. */
 private:

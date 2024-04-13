@@ -45,6 +45,9 @@ public:
 
     /** Update the game by one step. */
     void update(float deltatime);
+
+    /** Run the main game loop (this call blocks). */
+    void run();
 };
 
 
