@@ -22,19 +22,15 @@
 #ifndef ECONSIMPLUSPLUS_CAMERA_H
 #define ECONSIMPLUSPLUS_CAMERA_H
 
-
 #include "glm/vec3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 
-struct Size {
-    float width;
-    float height;
-};
+#include "Size.h"
 
 /** An object used to manipulate the view of a scene in OpenGL. */
 class Camera {
 private:
-    Size viewport;
+    Size<float> viewport;
     /** The position of the camera in world space. */
     glm::vec3 position{};
 
@@ -43,7 +39,7 @@ private:
     /** The up direction of the camera. Used for calculating the view matrix. */
     static constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
 public:
-    Camera(Size viewport_, glm::vec3 position_);
+    Camera(Size<float> viewport_, glm::vec3 position_);
 
     /**
      * Get the perspective matrix of the camera.
@@ -61,7 +57,7 @@ public:
      * Update the camera to match the window size when the user resizes the window.
      * @param viewport_ The new window size.
      */
-    void onWindowResize(Size viewport_);
+    void onWindowResize(Size<float> viewport_);
 };
 
 

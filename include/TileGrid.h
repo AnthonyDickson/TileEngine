@@ -29,6 +29,7 @@ class TileGrid {
 private:
     /** A flat array storing the tile IDS. */
     std::vector<int> grid;
+
 public:
     /** How wide the grid is in cells along the x-axis. */
     const int width;
@@ -48,7 +49,23 @@ public:
      * @param col The grid coordinates along the x-axis.
      * @return The tile ID at the given coordinates.
      */
-    int &operator[](std::size_t row, std::size_t col);
+    int& operator[](std::size_t row, std::size_t col);
+
+    /**
+     * Read-only access to tile cells.
+     * @param row The grid coordinates along the y-axis.
+     * @param col The grid coordinates along the x-axis.
+     * @return The tile ID at the given coordinates.
+     */
+    [[nodiscard]] const int& get(std::size_t row, std::size_t col) const;
+
+    /**
+     * Read and write access to tile cells.
+     * @param row The grid coordinates along the y-axis.
+     * @param col The grid coordinates along the x-axis.
+     * @return The tile ID at the given coordinates.
+     */
+    [[nodiscard]] int& at(std::size_t row, std::size_t col);
 };
 
 

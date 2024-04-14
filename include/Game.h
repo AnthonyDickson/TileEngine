@@ -22,26 +22,36 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <Window.h>
-
 #include "KeyboardState.h"
+#include "TileGrid.h"
+#include "TileGridViewer.h"
+#include "Window.h"
 
 class Game {
     /** This is the main class for the program. Wraps up and coordinates everything. */
 private:
     /** The window we use to display the game. */
-    Window window;
+    std::unique_ptr<Window> window;
     /** Keeps track of state of each standard keyboard key. */
     KeyboardState keyboardState{};
 
+    /** The game 'map'. */
+    std::shared_ptr<TileGrid> tileGrid;
+    TileGridView tileGridView;
+
     /** We only want one instance of `Game`, we use this bool to track whether an instance was already created. */
     static bool isInitialised;
-public:
+
     /**
-     * Create a new game.
+     *
      * @param window_ The window to display the game on.
+     * @param tileGrid_ The tile grid to use as the 'map'.
+     * @param tileGridView_ The view of a tile grid to show the user.
      */
-    explicit Game(const Window& window_);
+    Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, TileGridView tileGridView_);
+
+public:
+    static Game create(Size<int> windowSize, Size<int> tileGridSize, int tileSize);
 
     /** Update the game by one step. */
     void update(float deltatime);

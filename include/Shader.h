@@ -22,10 +22,7 @@
 #ifndef ECONSIMPLUSPLUS_SHADER_H
 #define ECONSIMPLUSPLUS_SHADER_H
 
-#include <string>
 #include <vector>
-
-#include "glm/detail/type_mat4x4.hpp"
 
 #include "light/Light.h"
 #include "light/DirectionalLight.h"

@@ -16,20 +16,16 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 14/04/2024.
 //
-#include <iostream>
 
-#include "Game.h"
-#include "Window.h"
+#ifndef SIZE_H
+#define SIZE_H
 
-int main() {
-    try {
-        auto game{Game::create({1080, 1080}, {64, 64}, 32)};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
-    }
+template<typename T>
+struct Size {
+    T width;
+    T height;
+};
 
-    return 0;
-}
+#endif //SIZE_H

@@ -21,8 +21,18 @@
 
 #include "TileGrid.h"
 
+#include "KeyboardState.h"
+
 TileGrid::TileGrid(const int width_, const int height_) : grid(width_ * height_, 0), width(width_), height(height_) {}
 
 int &TileGrid::operator[](const std::size_t row, const std::size_t col) {
+    return grid[width * row + col];
+}
+
+const int& TileGrid::get(const std::size_t row, const std::size_t col) const {
+    return grid[width * row + col];
+}
+
+int& TileGrid::at(const std::size_t row, const std::size_t col) {
     return grid[width * row + col];
 }

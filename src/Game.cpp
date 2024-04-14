@@ -19,53 +19,67 @@
 // Created by Anthony Dickson on 13/04/2024.
 //
 
-#include "Game.h"
-
-#include <Shader.h>
-#include <TileGrid.h>
-#include <TileRegistry.h>
-#include <VertexArray.h>
-#include <VertexBuffer.h>
+#include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
 
-class Texture;
+#include "Game.h"
+#include "Shader.h"
+#include "Size.h"
+#include "TileRegistry.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+
 bool Game::isInitialised = false;
 
-Game::Game(const Window& window_) : window(window_) {
+Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, TileGridView tileGridView_)
+: window(std::move(window_)), tileGrid(std::move(tileGrid_)), tileGridView(std::move(tileGridView_)) {
     assert(!isInitialised && "Can only have one instance of `Game`.");
     isInitialised = true;
 }
 
+Game Game::create(Size<int> windowSize, Size<int> tileGridSize, int tileSize) {
+    auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
+
+    const auto tileGrid{std::make_shared<TileGrid>(tileGridSize.width, tileGridSize.height)};
+
+    const int tilesPerHeight = windowSize.height / tileSize;
+    const int tilesPerWidth = windowSize.width / tileSize;
+    TileGridView tileGridView{tileGrid, {tilesPerWidth, tilesPerHeight}};
+
+    return {(std::move(window)), tileGrid, tileGridView};
+}
 
 void Game::update(float deltatime) {
     keyboardState.update(window);
+    tileGridView.processInput(keyboardState);
 }
 
 void Game::run() {
-    Camera camera{{static_cast<float>(window.getWidth()), static_cast<float>(window.getHeight())},
-                  {0.0f,        0.0f, 3.0f}};
+    Camera camera{
+        {static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())},
+        {0.0f, 0.0f, 3.0f}
+    };
 
     // Create the vertex array object.
     const VertexArray vao{};
     vao.bind();
 
     constexpr int tilesPerHeight{32};
-    int tileSize{window.getHeight() / tilesPerHeight};
-    int tilesPerWidth{window.getWidth() / tileSize};
+    int tileSize{window->getHeight() / tilesPerHeight};
     const std::vector vertexData{
-            // X, Y, U, V (2D coordinates, Texture coordinates).
-            // [0]    -> [1,4]
-            //         /
-            //       /
-            // [2, 5] -> [3]
-            0.0f, 1.0f, 0.0f, 0.0f,
-            1.0f, 1.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f,
+        // X, Y, U, V (2D coordinates, Texture coordinates).
+        // [0]    -> [1,4]
+        //         /
+        //       /
+        // [2, 5] -> [3]
+        0.0f, 1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f,
 
-            0.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 0.0f,
-            1.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 1.0f,
     };
     const VertexBuffer vbo{vertexData, 4, std::vector{2, 2}};
 
@@ -77,47 +91,28 @@ void Game::run() {
     TileRegistry tileRegistry{};
     tileRegistry.emplace(container);
     tileRegistry.emplace(awesomeFace);
-    TileGrid tileGrid{64, 64};
-    // ReSharper disable once CppExpressionWithoutSideEffects
-    tileGrid[0, 0] = 1;
-    // ReSharper disable once CppExpressionWithoutSideEffects
-    tileGrid[15, 15] = 1;
-    // ReSharper disable once CppExpressionWithoutSideEffects
-    tileGrid[31, 31] = 1;
-    // ReSharper disable once CppExpressionWithoutSideEffects
-    tileGrid[47, 47] = 1;
-    // ReSharper disable once CppExpressionWithoutSideEffects
-    tileGrid[63, 63] = 1;
-
-    int colOffset{0};
-    int rowOffset{0};
+    tileGrid->at(0, 0) = 1;
+    tileGrid->at(15, 15) = 1;
+    tileGrid->at(31, 31) = 1;
+    tileGrid->at(47, 47) = 1;
+    tileGrid->at(63, 63) = 1;
 
     auto update_fn = [&](const float deltaTime) {
-        if (window.getKeyState(GLFW_KEY_ESCAPE)) {
-            window.close();
+        if (window->getKeyState(GLFW_KEY_ESCAPE)) {
+            window->close();
             return;
         }
 
-        if (window.hasWindowSizeChanged()) {
-            camera.onWindowResize({static_cast<float>(window.getWidth()),
-                                   static_cast<float>(window.getHeight())});
-            tileSize = window.getHeight() / tilesPerHeight;
-            tilesPerWidth = window.getWidth() / tileSize;
+        if (window->hasWindowSizeChanged()) {
+            camera.onWindowResize({
+                static_cast<float>(window->getWidth()),
+                static_cast<float>(window->getHeight())
+            });
+            tileSize = window->getHeight() / tilesPerHeight;
+            // TODO: Increase tile view size to fill new screen size.
         }
 
         update(deltaTime);
-
-        if (window.getKeyState(GLFW_KEY_W) == GLFW_PRESS) {
-            rowOffset = std::max(rowOffset - 1, 0);
-        } else if (window.getKeyState(GLFW_KEY_S) == GLFW_PRESS) {
-            rowOffset = std::min(rowOffset + 1, tileGrid.height - tilesPerHeight);
-        }
-
-        if (window.getKeyState(GLFW_KEY_A) == GLFW_PRESS) {
-            colOffset = std::max(colOffset - 1, 0);
-        } else if (window.getKeyState(GLFW_KEY_D) == GLFW_PRESS) {
-            colOffset = std::min(colOffset + 1, tileGrid.width - tilesPerWidth);
-        }
 
         glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -129,24 +124,13 @@ void Game::run() {
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
         vao.bind();
 
-        for (int row = 0; row < tilesPerHeight; ++row) {
-            for (int col = 0; col < tilesPerWidth; ++col) {
-                glm::mat4 model{1.0f};
-                model = translate(
-                        model,
-                        glm::vec3{static_cast<float>(col * tileSize), static_cast<float>(row * tileSize), 0.0}
-                );
-                model = scale(model, glm::vec3{static_cast<float>(tileSize), static_cast<float>(tileSize), 0.0});
-
-                shader.setUniform("model", model);
-                // ReSharper disable once CppExpressionWithoutSideEffects
-                const auto tileID = tileGrid[row + rowOffset, col + colOffset];
-                tileRegistry[tileID].bind();
-                vbo.drawArrays();
-            }
+        for (const auto& [transform, tileID]: tileGridView.getTilePositionAndIds(static_cast<float>(tileSize))) {
+            shader.setUniform("model", transform);
+            tileRegistry[tileID].bind();
+            vbo.drawArrays();
         }
     };
 
     // auto update_fn = [this](float deltaTime) { update(deltaTime); };
-    window.runMainLoop(update_fn);
+    window->runMainLoop(update_fn);
 }

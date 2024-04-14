@@ -23,7 +23,8 @@
 #define KEYBOARDSTATE_H
 
 #include <array>
-#include <Window.h>
+
+#include "Window.h"
 
 class KeyboardState {
     /** Tracks the current and previous state of common keys on a keyboard. */
@@ -162,7 +163,7 @@ public:
      * Poll and update the keyboard state.
      * @param window The window to get keyboard input from.
      */
-    void update(const Window& window);
+    void update(const std::unique_ptr<Window>& window);
 
     /** Whether a key is pressed now. */
     [[nodiscard]] bool isKeyDown(int key) const;

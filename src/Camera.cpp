@@ -19,11 +19,12 @@
 // Created by Anthony on 26/03/2024.
 //
 
-#include "Camera.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 
-Camera::Camera(const Size viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {}
+#include "Camera.h"
+
+Camera::Camera(const Size<float> viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {}
 
 glm::mat4 Camera::getPerspectiveMatrix() const {
     // Putting window height then 0 causing (0, 0) to start from the top left (i.e. y positive points down).
@@ -34,6 +35,6 @@ glm::mat4 Camera::getViewMatrix() const {
     return lookAt(position, center, up);
 }
 
-void Camera::onWindowResize(const Size viewport_) {
+void Camera::onWindowResize(const Size<float> viewport_) {
     viewport = viewport_;
 }

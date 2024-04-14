@@ -64,6 +64,8 @@ public:
      */
     Window(int windowWidth_, int windowHeight_, const std::string &windowName);
 
+    Window(Window&) = delete;
+
     /**
      * Releases GLFW window stuff.
      */

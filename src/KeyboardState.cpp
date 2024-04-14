@@ -21,11 +21,11 @@
 
 #include "KeyboardState.h"
 
-void KeyboardState::update(const Window &window) {
+void KeyboardState::update(const std::unique_ptr<Window>& window) {
     std::swap(currentState, previousState);
 
     for (const auto key: validKeys) {
-        currentState[key] = window.getKeyState(key) == GLFW_PRESS;
+        currentState[key] = window->getKeyState(key) == GLFW_PRESS;
     }
 }
 
