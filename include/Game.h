@@ -24,7 +24,7 @@
 
 #include "KeyboardState.h"
 #include "TileGrid.h"
-#include "TileGridViewer.h"
+#include "TileGridView.h"
 #include "Window.h"
 
 class Game {
@@ -37,6 +37,7 @@ private:
 
     /** The game 'map'. */
     std::shared_ptr<TileGrid> tileGrid;
+    /** The view into the tile grid that is shown to the player, basically a camera. */
     TileGridView tileGridView;
 
     /** We only want one instance of `Game`, we use this bool to track whether an instance was already created. */

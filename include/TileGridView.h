@@ -45,15 +45,24 @@ private:
     /** A pointer to the tile grid this object will view. */
     std::shared_ptr<const TileGrid> tileGrid;
     /** The size of the viewport in tiles. */
-    const Size<int> viewport;
+    Size<int> viewport;
+    /** The size of each tile in pixels. */
+    int tileSize;
 
 public:
     /**
      * Create a view of a tile grid.
      * @param tileGrid_ The tile grid to provide a view of.
      * @param viewport_ The how many tiles to show.
+     * @param tileSize_ The size of the tiles (height and width) in pixels.
      */
-    explicit TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_);
+    TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, int tileSize_);
+
+    /**
+     * Update the viewport size.
+     * @param windowSize The new size of the window in pixels.
+     */
+    void updateViewport(Size<int> windowSize);
 
     /**
      * Respond to user input.
@@ -63,10 +72,21 @@ public:
 
     /**
      * Get the transform and IDs of tiles to draw on screen.
-     * @param tileSize The size (width and height) to draw tiles at (in pixels).
      * @return A list of tile transform and ID pairs to draw.
      */
-    [[nodiscard]] std::vector<MatrixTileIDPair> getTilePositionAndIds(float tileSize) const;
+    [[nodiscard]] std::vector<MatrixTileIDPair> getTilePositionAndIds() const;
+private:
+    /**
+     * Setter for `rowOffset` that ensures that `rowOffset` is always a valid value.
+     * @param value The value to set `rowOffset` to.
+     */
+    void setRowOffset(int value);
+
+    /**
+     * Setter for `colOffset` that ensures that `colOffset` is always a valid value.
+     * @param value The value to set `colOffset` to.
+     */
+    void setColOffset(int value);
 };
 
 

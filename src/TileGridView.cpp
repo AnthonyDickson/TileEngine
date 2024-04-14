@@ -19,29 +19,51 @@
 // Created by Anthony Dickson on 14/04/2024.
 //
 
-#include "TileGridViewer.h"
+#include "TileGridView.h"
 
+#include <iostream>
 #include <utility>
+#include <__algorithm/clamp.h>
 
-TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_): tileGrid(std::move(tileGrid_)), viewport(viewport_) {}
+TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, const int tileSize_)
+    : tileGrid(std::move(tileGrid_)), viewport(viewport_), tileSize(tileSize_) {}
+
+void TileGridView::updateViewport(const Size<int> windowSize) {
+    const int tilesPerHeight = windowSize.height / tileSize;
+    const int tilesPerWidth = windowSize.width / tileSize;
+
+    viewport.width = std::clamp(tilesPerWidth, 1, tileGrid->width);
+    viewport.height = std::clamp(tilesPerHeight, 1, tileGrid->height);
+
+    setRowOffset(rowOffset);
+    setColOffset(colOffset);
+}
 
 void TileGridView::processInput(const KeyboardState& keyboardState) {
     if (keyboardState.isKeyDown(GLFW_KEY_W)) {
-        rowOffset = std::max(rowOffset - 1, 0);
+        setRowOffset(rowOffset - 1);
     }
     else if (keyboardState.isKeyDown(GLFW_KEY_S)) {
-        rowOffset = std::min(rowOffset + 1, tileGrid->height - viewport.height);
+        setRowOffset(rowOffset + 1);
     }
 
     if (keyboardState.isKeyDown(GLFW_KEY_A)) {
-        colOffset = std::max(colOffset - 1, 0);
+        setColOffset(colOffset - 1);
     }
     else if (keyboardState.isKeyDown(GLFW_KEY_D)) {
-        colOffset = std::min(colOffset + 1, tileGrid->width - viewport.width);
+        setColOffset(colOffset + 1);
     }
 }
 
-std::vector<MatrixTileIDPair> TileGridView::getTilePositionAndIds(const float tileSize) const {
+void TileGridView::setRowOffset(const int value) {
+    rowOffset = std::clamp(value, 0, std::max(0, tileGrid->height - viewport.height));
+}
+
+void TileGridView::setColOffset(const int value) {
+    colOffset = std::clamp(value, 0, std::max(0, tileGrid->width - viewport.width));
+}
+
+std::vector<MatrixTileIDPair> TileGridView::getTilePositionAndIds() const {
     std::vector<MatrixTileIDPair> result{};
     result.reserve(viewport.height * viewport.width);
 
@@ -51,7 +73,7 @@ std::vector<MatrixTileIDPair> TileGridView::getTilePositionAndIds(const float ti
         for (int col = 0; col < viewport.width; ++col) {
             glm::mat4 model = translate(
                 identity,
-                glm::vec3{static_cast<float>(col) * tileSize, static_cast<float>(row) * tileSize, 0.0}
+                glm::vec3{static_cast<float>(col * tileSize), static_cast<float>(row * tileSize), 0.0}
             );
             model = scale(model, glm::vec3{tileSize, tileSize, 0.0});
 

@@ -102,6 +102,10 @@ int Window::getHeight() const {
     return windowHeight;
 }
 
+Size<int> Window::getSize() const {
+    return {windowWidth, windowHeight};
+}
+
 float Window::getAspectRatio() const {
     return static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 }

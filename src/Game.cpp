@@ -38,19 +38,19 @@ Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_,
     isInitialised = true;
 }
 
-Game Game::create(Size<int> windowSize, Size<int> tileGridSize, int tileSize) {
+Game Game::create(Size<int> windowSize, Size<int> tileGridSize, const int tileSize) {
     auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
 
     const auto tileGrid{std::make_shared<TileGrid>(tileGridSize.width, tileGridSize.height)};
 
     const int tilesPerHeight = windowSize.height / tileSize;
     const int tilesPerWidth = windowSize.width / tileSize;
-    TileGridView tileGridView{tileGrid, {tilesPerWidth, tilesPerHeight}};
+    TileGridView tileGridView{tileGrid, {tilesPerWidth, tilesPerHeight}, tileSize};
 
     return {(std::move(window)), tileGrid, tileGridView};
 }
 
-void Game::update(float deltatime) {
+void Game::update(float) {
     keyboardState.update(window);
     tileGridView.processInput(keyboardState);
 }
@@ -65,8 +65,6 @@ void Game::run() {
     const VertexArray vao{};
     vao.bind();
 
-    constexpr int tilesPerHeight{32};
-    int tileSize{window->getHeight() / tilesPerHeight};
     const std::vector vertexData{
         // X, Y, U, V (2D coordinates, Texture coordinates).
         // [0]    -> [1,4]
@@ -108,8 +106,7 @@ void Game::run() {
                 static_cast<float>(window->getWidth()),
                 static_cast<float>(window->getHeight())
             });
-            tileSize = window->getHeight() / tilesPerHeight;
-            // TODO: Increase tile view size to fill new screen size.
+            tileGridView.updateViewport(window->getSize());
         }
 
         update(deltaTime);
@@ -124,7 +121,7 @@ void Game::run() {
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
         vao.bind();
 
-        for (const auto& [transform, tileID]: tileGridView.getTilePositionAndIds(static_cast<float>(tileSize))) {
+        for (const auto& [transform, tileID]: tileGridView.getTilePositionAndIds()) {
             shader.setUniform("model", transform);
             tileRegistry[tileID].bind();
             vbo.drawArrays();

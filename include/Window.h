@@ -115,10 +115,28 @@ public:
      */
     [[nodiscard, maybe_unused]] float getAspectRatio() const;
 
+    /**
+     * Get the width of the window.
+     * @return The width of the window in pixels.
+     */
     [[nodiscard]] int getWidth() const;
 
+    /**
+     * Get the height of the window.
+     * @return The height of the window in pixels.
+     */
     [[nodiscard]] int getHeight() const;
 
+    /**
+     * Get the size of the window.
+     * @return The size (width, height) of the window in pixels.
+     */
+    [[nodiscard]] Size<int> getSize() const;
+
+    /**
+     * Check whether the user has resized the window since the last update step.
+     * @return A bool indicating whether the user has resized the window.
+     */
     [[nodiscard]] bool hasWindowSizeChanged() const;
 
 private:
