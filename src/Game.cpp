@@ -19,6 +19,7 @@
 // Created by Anthony Dickson on 13/04/2024.
 //
 
+#include <iostream>
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
@@ -32,8 +33,9 @@
 
 bool Game::isInitialised = false;
 
-Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, TileGridView tileGridView_)
-: window(std::move(window_)), tileGrid(std::move(tileGrid_)), tileGridView(std::move(tileGridView_)) {
+Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, TileGridView tileGridView_):
+    window(std::move(window_)), tileGrid(std::move(tileGrid_)), tileGridView(std::move(tileGridView_)),
+    camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
     assert(!isInitialised && "Can only have one instance of `Game`.");
     isInitialised = true;
 }
@@ -51,16 +53,19 @@ Game Game::create(Size<int> windowSize, Size<int> tileGridSize, const int tileSi
 }
 
 void Game::update(float) {
+    if (window->hasWindowSizeChanged()) {
+        camera.onWindowResize({
+            static_cast<float>(window->getWidth()),
+            static_cast<float>(window->getHeight())
+        });
+        tileGridView.updateViewport(window->getSize());
+    }
+
     keyboardState.update(window);
     tileGridView.processInput(keyboardState);
 }
 
 void Game::run() {
-    Camera camera{
-        {static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())},
-        {0.0f, 0.0f, 3.0f}
-    };
-
     // Create the vertex array object.
     const VertexArray vao{};
     vao.bind();
@@ -95,19 +100,19 @@ void Game::run() {
     tileGrid->at(47, 47) = 1;
     tileGrid->at(63, 63) = 1;
 
-    auto update_fn = [&](const float deltaTime) {
+    auto lastFrameTime{static_cast<float>(glfwGetTime())};
+
+    while (true) {
+        const auto currentTime{static_cast<float>(glfwGetTime())};
+        const auto deltaTime{currentTime - lastFrameTime};
+        lastFrameTime = currentTime;
+
         if (window->getKeyState(GLFW_KEY_ESCAPE)) {
             window->close();
             return;
         }
 
-        if (window->hasWindowSizeChanged()) {
-            camera.onWindowResize({
-                static_cast<float>(window->getWidth()),
-                static_cast<float>(window->getHeight())
-            });
-            tileGridView.updateViewport(window->getSize());
-        }
+        window->preUpdate();
 
         update(deltaTime);
 
@@ -121,13 +126,12 @@ void Game::run() {
         shader.setUniform("projectionViewMatrix", projectionViewMatrix);
         vao.bind();
 
-        for (const auto& [transform, tileID]: tileGridView.getTilePositionAndIds()) {
+        for (const auto &[transform, tileID] : tileGridView.getTilePositionAndIds()) {
             shader.setUniform("model", transform);
             tileRegistry[tileID].bind();
             vbo.drawArrays();
         }
-    };
 
-    // auto update_fn = [this](float deltaTime) { update(deltaTime); };
-    window->runMainLoop(update_fn);
+        window->postUpdate();
+    }
 }

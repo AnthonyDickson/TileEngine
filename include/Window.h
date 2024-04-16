@@ -38,8 +38,6 @@ private:
     int windowWidth{};
     /** The height of the window in pixels. */
     int windowHeight{};
-    /** For tracking time between frames (seconds). */
-    float lastFrameTime{};
 
     /**
      * Whether the mouse position has been set before.
@@ -78,6 +76,16 @@ public:
      * @param updateFunction The function to call each update step. It will be given the time since the previous frame.
      */
     void runMainLoop(const std::function<void(float)> &updateFunction);
+
+    /**
+     * This function should be called before the game's update function.
+     */
+ void preUpdate();
+
+    /**
+     * This function should be called after the game's update function.
+     */
+    void postUpdate();
 
     /**
      * Signal that the application should close. This will happen at the start of the next iteration of the main loop.

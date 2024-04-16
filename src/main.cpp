@@ -25,7 +25,7 @@
 
 int main() {
     try {
-        auto game{Game::create({1080, 1080}, {64, 64}, 32)};
+        auto game{Game::create({1920, 1080}, {64, 64}, 64)};
         game.run();
     } catch (const std::exception &exception) {
         std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;

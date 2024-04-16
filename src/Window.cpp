@@ -54,24 +54,31 @@ Window::~Window() {
 }
 
 void Window::runMainLoop(const std::function<void(float)> &updateFunction) {
-    lastFrameTime = static_cast<float>(glfwGetTime());
+    auto lastFrameTime{static_cast<float>(glfwGetTime())};
 
     while (!glfwWindowShouldClose(window)) {
         const auto currentFrameTime = static_cast<float>(glfwGetTime());
         const auto deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
 
-        updateMousePosition();
-
+        preUpdate();
         updateFunction(deltaTime);
-        // scrollDelta should be reset AFTER the update function is called, otherwise the update function will always
-        // see a zero value for scrollDelta.
-        scrollDelta = 0.0f;
-        hasWindowChangedSize = false;
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        postUpdate();
     }
+}
+
+void Window::preUpdate() {
+    updateMousePosition();
+}
+
+void Window::postUpdate() {
+    // scrollDelta should be reset AFTER the update function is called, otherwise the update function will always
+    // see a zero value for scrollDelta.
+    scrollDelta = 0.0f;
+    hasWindowChangedSize = false;
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
 }
 
 void Window::close() const {
@@ -124,9 +131,11 @@ void Window::updateWindowSize(const int width, const int height) {
     windowWidth = width;
     windowHeight = height;
 
-    // On MacOS the report window size is the scaled width & height.
-    // Using these values for the viewport may result in a viewport that only takes up a small part of window.
-    // Setting the viewport to the framebuffer size ensures the viewport fills the window.
+    // On some disploys (e.g., retina displays on macOS) the reported window resolution is a scaled resolution.
+    // For example, a 3840x2160 screen may be used to display an up-scaled 1920x1080 screen.
+    // GLFW will report 1920x1080 as the fullscreen resolution, but setting the OpenGL viewport to this resolution
+    // results in viewport that only covers a quarter of the screen since OpenGL uses real pixels.
+    // Using the framebuffer resolution ensures the viewport fills the window.
     int framebuffer_width, framebuffer_height;
     glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
     glViewport(0, 0, framebuffer_width, framebuffer_height);

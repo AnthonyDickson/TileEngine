@@ -39,6 +39,8 @@ private:
     std::shared_ptr<TileGrid> tileGrid;
     /** The view into the tile grid that is shown to the player, basically a camera. */
     TileGridView tileGridView;
+    /** The render camera. */
+    Camera camera;
 
     /** We only want one instance of `Game`, we use this bool to track whether an instance was already created. */
     static bool isInitialised;
