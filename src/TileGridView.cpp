@@ -21,12 +21,33 @@
 
 #include "TileGridView.h"
 
+#include <algorithm>
 #include <iostream>
 #include <utility>
-#include <__algorithm/clamp.h>
+
+#include "glm/ext/matrix_transform.hpp"
+
 
 TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, const int tileSize_)
-    : tileGrid(std::move(tileGrid_)), viewport(viewport_), tileSize(tileSize_) {}
+: tileGrid(std::move(tileGrid_)), viewport(viewport_), tileSize(tileSize_) {
+    const std::vector vertexData{
+        // X, Y, U, V (2D coordinates, Texture coordinates).
+        // [0]    -> [1,4]
+        //         /
+        //       /
+        // [2, 5] -> [3]
+        0.0f, 1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f,
+
+        0.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 1.0f,
+    };
+
+    vao.bind();
+    vbo.loadData(vertexData, std::vector{2, 2});
+}
 
 void TileGridView::updateViewport(const Size<int> windowSize) {
     const int tilesPerHeight = windowSize.height / tileSize;
@@ -63,11 +84,12 @@ void TileGridView::setColOffset(const int value) {
     colOffset = std::clamp(value, 0, std::max(0, tileGrid->width - viewport.width));
 }
 
-std::vector<MatrixTileIDPair> TileGridView::getTilePositionAndIds() const {
-    std::vector<MatrixTileIDPair> result{};
-    result.reserve(viewport.height * viewport.width);
-
+void TileGridView::render(const glm::mat4 &projectionViewMatrix, const TileRegistry& tileRegistry) const {
     constexpr glm::mat4 identity{1.0f};
+
+    shader.bind();
+    shader.setUniform("projectionViewMatrix", projectionViewMatrix);
+    vao.bind();
 
     for (int row = 0; row < viewport.height; ++row) {
         for (int col = 0; col < viewport.width; ++col) {
@@ -77,9 +99,10 @@ std::vector<MatrixTileIDPair> TileGridView::getTilePositionAndIds() const {
             );
             model = scale(model, glm::vec3{tileSize, tileSize, 0.0});
 
-            result.push_back({model, tileGrid->get(row + rowOffset, col + colOffset)});
+            shader.setUniform("model", model);
+            const auto tileID{tileGrid->get(row + rowOffset, col + colOffset)};
+            tileRegistry[tileID].bind();
+            vbo.drawArrays();
         }
     }
-
-    return result;
 }

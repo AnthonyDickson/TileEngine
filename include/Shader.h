@@ -45,6 +45,11 @@ public:
      */
     Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath);
 
+    /** Delete copy constructor to avoid OpenGL issues. */
+    Shader(Shader &) = delete;
+    /** Delete move constructor to avoid OpenGL issues. */
+    Shader(Shader &&) = delete;
+
     /** Clean up OpenGL related stuff. */
     ~Shader();
 

@@ -47,7 +47,7 @@ public:
      * @param tileID The ID of the Tile to retrieve.
      * @return A Tile object.
      */
-    const Tile &operator[](int tileID);
+    const Tile &operator[](int tileID) const;
 };
 
 

@@ -24,17 +24,17 @@
 
 #include "VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(const std::vector<float> &vertexData, const int stride, const std::vector<int> &sizes)
-        : triangleCount(static_cast<int>(vertexData.size()) / stride) {
-    assert(std::reduce(sizes.begin(), sizes.end()) == stride &&
-           "The sum of the vertex attribute Sizes must equal the stride.");
-
+VertexBuffer::VertexBuffer() {
     glGenBuffers(1, &vboID);
+}
+
+void VertexBuffer::loadData(const std::vector<float> &vertexData, const std::vector<int> &sizes) {
     bind();
 
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertexData.size() * sizeof(float)), vertexData.data(),
                  GL_STATIC_DRAW);
 
+    const auto stride{std::reduce(sizes.begin(), sizes.end(), 0)};
     const int strideBytes = static_cast<int>(stride * sizeof(float));
     int offset{0};
 
@@ -45,6 +45,8 @@ VertexBuffer::VertexBuffer(const std::vector<float> &vertexData, const int strid
         glEnableVertexAttribArray(i);
         offset += size;
     }
+
+    triangleCount = static_cast<int>(vertexData.size()) / stride;
 }
 
 void VertexBuffer::bind() const {

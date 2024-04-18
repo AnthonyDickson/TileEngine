@@ -34,6 +34,11 @@ public:
     /** Create a vertex array object. */
     VertexArray();
 
+    /** Delete copy constructor to avoid OpenGL issues. */
+    VertexArray(VertexArray &) = delete;
+    /** Delete move constructor to avoid OpenGL issues. */
+    VertexArray(VertexArray &&) = delete;
+
     /** Cleanup OpenGL stuff. */
     ~VertexArray();
 

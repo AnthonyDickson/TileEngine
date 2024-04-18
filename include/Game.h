@@ -25,6 +25,7 @@
 #include "KeyboardState.h"
 #include "TileGrid.h"
 #include "TileGridView.h"
+#include "TileRegistry.h"
 #include "Window.h"
 
 class Game {
@@ -37,8 +38,10 @@ private:
 
     /** The game 'map'. */
     std::shared_ptr<TileGrid> tileGrid;
+    /** Maps tile isntances to IDs. */
+    TileRegistry tileRegistry{};
     /** The view into the tile grid that is shown to the player, basically a camera. */
-    TileGridView tileGridView;
+    std::shared_ptr<TileGridView> tileGridView;
     /** The render camera. */
     Camera camera;
 
@@ -46,18 +49,20 @@ private:
     static bool isInitialised;
 
     /**
-     *
+     * Create a new game instance.
      * @param window_ The window to display the game on.
      * @param tileGrid_ The tile grid to use as the 'map'.
      * @param tileGridView_ The view of a tile grid to show the user.
      */
-    Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, TileGridView tileGridView_);
+    Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, std::shared_ptr<TileGridView> tileGridView_);
 
 public:
     static Game create(Size<int> windowSize, Size<int> tileGridSize, int tileSize);
 
     /** Update the game by one step. */
-    void update(float deltatime);
+    void update();
+    /** Render the game to the screen. */
+    void render() const;
 
     /** Run the main game loop (this call blocks). */
     void run();

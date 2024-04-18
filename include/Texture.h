@@ -39,6 +39,11 @@ public:
      */
     explicit Texture(const std::string &imagePath, int textureUnit_ = GL_TEXTURE0);
 
+    /** Delete copy constructor to avoid OpenGL issues. */
+    Texture(Texture &) = delete;
+    /** Delete move constructor to avoid OpenGL issues. */
+    Texture(Texture &&) = delete;
+
     /** Clean up OpenGL related stuff.*/
     ~Texture();
 

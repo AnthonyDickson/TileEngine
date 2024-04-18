@@ -22,17 +22,13 @@
 #ifndef TILEGRIDVIEWER_H
 #define TILEGRIDVIEWER_H
 
-#include "glm/mat4x4.hpp"
-#include "glm/ext/matrix_transform.hpp"
-
 #include "KeyboardState.h"
+#include "Shader.h"
 #include "Size.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 #include "TileGrid.h"
-
-struct MatrixTileIDPair {
-    glm::mat4 transform;
-    int tileID;
-};
+#include "TileRegistry.h"
 
 class TileGridView {
     /** Handles a 'camera view' of a tile grid. */
@@ -49,6 +45,13 @@ private:
     /** The size of each tile in pixels. */
     int tileSize;
 
+    /** Holds the vertex data for rendering a tile. */
+    const VertexArray vao{};
+    /** The buffer for the vertex data. */
+    VertexBuffer vbo{};
+    /** The shader for rendering tiles. */
+    const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
+
 public:
     /**
      * Create a view of a tile grid.
@@ -57,6 +60,11 @@ public:
      * @param tileSize_ The size of the tiles (height and width) in pixels.
      */
     TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, int tileSize_);
+
+    /** Delete copy constructor to avoid OpenGL issues. */
+    TileGridView(TileGridView&) = delete;
+    /** Delete move constructor to avoid OpenGL issues. */
+    TileGridView(TileGridView&&) = delete;
 
     /**
      * Update the viewport size.
@@ -71,10 +79,11 @@ public:
     void processInput(const KeyboardState& keyboardState);
 
     /**
-     * Get the transform and IDs of tiles to draw on screen.
-     * @return A list of tile transform and ID pairs to draw.
+     * Draw the view of the tile grid on the screen.
+     * @param projectionViewMatrix The perspective matrix multiplied by the view matrix.
+     * @param tileRegistry The mapping between Tile IDs and Tile Instances.
      */
-    [[nodiscard]] std::vector<MatrixTileIDPair> getTilePositionAndIds() const;
+    void render(const glm::mat4& projectionViewMatrix, const TileRegistry& tileRegistry) const;
 private:
     /**
      * Setter for `rowOffset` that ensures that `rowOffset` is always a valid value.

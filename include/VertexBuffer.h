@@ -32,13 +32,25 @@ private:
     /** The ID for the vertex buffer object. */
     GLuint vboID{};
     /** The number of triangles in the buffered vertex data. */
-    const int triangleCount{};
+    int triangleCount{};
 public:
-    /** Create a vertex buffer object and set it up with the given vertex data. */
-    VertexBuffer(const std::vector<float> &vertexData, int stride, const std::vector<int> &sizes);
+    /** Create a vertex buffer object. */
+    VertexBuffer();
+
+    /** Delete copy constructor to avoid OpenGL issues. */
+    VertexBuffer(VertexBuffer &) = delete;
+    /** Delete move constructor to avoid OpenGL issues. */
+    VertexBuffer(VertexBuffer &&) = delete;
 
     /** Cleanup OpenGL stuff. */
     ~VertexBuffer();
+
+    /**
+     * Load vertex data into the vertex buffer.
+     * @param vertexData The vertex data as a flat list.
+     * @param sizes The number of elements per vertex attribute.
+     */
+    void loadData(const std::vector<float>& vertexData, const std::vector<int>& sizes);
 
     /** Bind the vertex buffer object. */
     void bind() const;

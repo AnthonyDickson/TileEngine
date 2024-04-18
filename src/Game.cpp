@@ -25,15 +25,12 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "Game.h"
-#include "Shader.h"
 #include "Size.h"
 #include "TileRegistry.h"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
 
 bool Game::isInitialised = false;
 
-Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, TileGridView tileGridView_):
+Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, std::shared_ptr<TileGridView> tileGridView_):
     window(std::move(window_)), tileGrid(std::move(tileGrid_)), tileGridView(std::move(tileGridView_)),
     camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
     assert(!isInitialised && "Can only have one instance of `Game`.");
@@ -47,51 +44,40 @@ Game Game::create(Size<int> windowSize, Size<int> tileGridSize, const int tileSi
 
     const int tilesPerHeight = windowSize.height / tileSize;
     const int tilesPerWidth = windowSize.width / tileSize;
-    TileGridView tileGridView{tileGrid, {tilesPerWidth, tilesPerHeight}, tileSize};
+    // ReSharper disable once CppTemplateArgumentsCanBeDeduced
+    const Size<int> viewport{tilesPerWidth, tilesPerHeight};
+    const auto tileGridView{std::make_shared<TileGridView>(tileGrid, viewport, tileSize)};
 
-    return {(std::move(window)), tileGrid, tileGridView};
+    return {std::move(window), tileGrid, tileGridView};
 }
 
-void Game::update(float) {
+void Game::update() {
     if (window->hasWindowSizeChanged()) {
         camera.onWindowResize({
             static_cast<float>(window->getWidth()),
             static_cast<float>(window->getHeight())
         });
-        tileGridView.updateViewport(window->getSize());
+        tileGridView->updateViewport(window->getSize());
     }
 
     keyboardState.update(window);
-    tileGridView.processInput(keyboardState);
+    tileGridView->processInput(keyboardState);
+}
+
+void Game::render() const {
+    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+
+    const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
+
+    tileGridView->render(projectionViewMatrix, tileRegistry);
 }
 
 void Game::run() {
-    // Create the vertex array object.
-    const VertexArray vao{};
-    vao.bind();
-
-    const std::vector vertexData{
-        // X, Y, U, V (2D coordinates, Texture coordinates).
-        // [0]    -> [1,4]
-        //         /
-        //       /
-        // [2, 5] -> [3]
-        0.0f, 1.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f,
-
-        0.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 1.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, 1.0f, 1.0f,
-    };
-    const VertexBuffer vbo{vertexData, 4, std::vector{2, 2}};
-
-    const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
-
     auto container{std::make_shared<const Texture>("resource/container2.png", GL_TEXTURE0)};
     auto awesomeFace{std::make_shared<const Texture>("resource/awesomeface.png", GL_TEXTURE0)};
 
-    TileRegistry tileRegistry{};
     tileRegistry.emplace(container);
     tileRegistry.emplace(awesomeFace);
     tileGrid->at(0, 0) = 1;
@@ -114,23 +100,8 @@ void Game::run() {
 
         window->preUpdate();
 
-        update(deltaTime);
-
-        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
-
-        const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
-
-        shader.bind();
-        shader.setUniform("projectionViewMatrix", projectionViewMatrix);
-        vao.bind();
-
-        for (const auto &[transform, tileID] : tileGridView.getTilePositionAndIds()) {
-            shader.setUniform("model", transform);
-            tileRegistry[tileID].bind();
-            vbo.drawArrays();
-        }
+        update();
+        render();
 
         window->postUpdate();
     }
