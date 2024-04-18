@@ -24,11 +24,16 @@
 
 #include <vector>
 
+#include "TileRegistry.h"
+
 /** Represents a 2D grid of tile IDs. */
 class TileGrid {
 private:
     /** A flat array storing the tile IDS. */
     std::vector<int> grid;
+
+    /** Maps tile IDs to Tile intances. */
+    TileRegistry tileRegistry;
 
 public:
     /** How wide the grid is in cells along the x-axis. */
@@ -66,6 +71,16 @@ public:
      * @return The tile ID at the given coordinates.
      */
     [[nodiscard]] int& at(std::size_t row, std::size_t col);
+
+    /** Add a tile type. */
+    void registerTile(std::shared_ptr<const Texture> &texture);
+
+    /**
+     * Bind the texture of tile at the grid coordinates for rendering in OpenGL.
+     * @param row The grid coordinates along the y-axis.
+     * @param col The grid coordinates along the x-axis.
+     */
+    void bindTextureAt(int row, int col) const;
 };
 
 

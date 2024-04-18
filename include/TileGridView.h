@@ -81,9 +81,8 @@ public:
     /**
      * Draw the view of the tile grid on the screen.
      * @param projectionViewMatrix The perspective matrix multiplied by the view matrix.
-     * @param tileRegistry The mapping between Tile IDs and Tile Instances.
      */
-    void render(const glm::mat4& projectionViewMatrix, const TileRegistry& tileRegistry) const;
+    void render(const glm::mat4& projectionViewMatrix) const;
 private:
     /**
      * Setter for `rowOffset` that ensures that `rowOffset` is always a valid value.

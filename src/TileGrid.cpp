@@ -21,8 +21,6 @@
 
 #include "TileGrid.h"
 
-#include "KeyboardState.h"
-
 TileGrid::TileGrid(const int width_, const int height_) : grid(width_ * height_, 0), width(width_), height(height_) {}
 
 int &TileGrid::operator[](const std::size_t row, const std::size_t col) {
@@ -35,4 +33,13 @@ const int& TileGrid::get(const std::size_t row, const std::size_t col) const {
 
 int& TileGrid::at(const std::size_t row, const std::size_t col) {
     return grid[width * row + col];
+}
+
+void TileGrid::registerTile(std::shared_ptr<const Texture> &texture) {
+    tileRegistry.emplace(texture);
+}
+
+void TileGrid::bindTextureAt(const int row, const int col) const {
+    const auto tileID{get(row, col)};
+    tileRegistry[tileID].bind();
 }

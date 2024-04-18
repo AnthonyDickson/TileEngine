@@ -38,8 +38,6 @@ private:
 
     /** The game 'map'. */
     std::shared_ptr<TileGrid> tileGrid;
-    /** Maps tile isntances to IDs. */
-    TileRegistry tileRegistry{};
     /** The view into the tile grid that is shown to the player, basically a camera. */
     std::shared_ptr<TileGridView> tileGridView;
     /** The render camera. */

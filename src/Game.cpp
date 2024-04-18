@@ -71,15 +71,15 @@ void Game::render() const {
 
     const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
 
-    tileGridView->render(projectionViewMatrix, tileRegistry);
+    tileGridView->render(projectionViewMatrix);
 }
 
 void Game::run() {
     auto container{std::make_shared<const Texture>("resource/container2.png", GL_TEXTURE0)};
     auto awesomeFace{std::make_shared<const Texture>("resource/awesomeface.png", GL_TEXTURE0)};
 
-    tileRegistry.emplace(container);
-    tileRegistry.emplace(awesomeFace);
+    tileGrid->registerTile(container);
+    tileGrid->registerTile(awesomeFace);
     tileGrid->at(0, 0) = 1;
     tileGrid->at(15, 15) = 1;
     tileGrid->at(31, 31) = 1;

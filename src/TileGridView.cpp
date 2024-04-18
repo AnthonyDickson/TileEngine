@@ -84,7 +84,7 @@ void TileGridView::setColOffset(const int value) {
     colOffset = std::clamp(value, 0, std::max(0, tileGrid->width - viewport.width));
 }
 
-void TileGridView::render(const glm::mat4 &projectionViewMatrix, const TileRegistry& tileRegistry) const {
+void TileGridView::render(const glm::mat4 &projectionViewMatrix) const {
     constexpr glm::mat4 identity{1.0f};
 
     shader.bind();
@@ -100,8 +100,7 @@ void TileGridView::render(const glm::mat4 &projectionViewMatrix, const TileRegis
             model = scale(model, glm::vec3{tileSize, tileSize, 0.0});
 
             shader.setUniform("model", model);
-            const auto tileID{tileGrid->get(row + rowOffset, col + colOffset)};
-            tileRegistry[tileID].bind();
+            tileGrid->bindTextureAt(row + rowOffset, col + colOffset);
             vbo.drawArrays();
         }
     }
