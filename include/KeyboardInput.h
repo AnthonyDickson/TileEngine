@@ -26,7 +26,7 @@
 
 #include "Window.h"
 
-class KeyboardState {
+class KeyboardInput {
     /** Tracks the current and previous state of common keys on a keyboard. */
 private:
     /** Implicit mapping between GLFW key codes and whether the key is pressed down in this frame. */

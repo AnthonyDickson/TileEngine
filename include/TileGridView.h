@@ -22,7 +22,7 @@
 #ifndef TILEGRIDVIEWER_H
 #define TILEGRIDVIEWER_H
 
-#include "KeyboardState.h"
+#include "KeyboardInput.h"
 #include "Shader.h"
 #include "Size.h"
 #include "VertexArray.h"
@@ -76,7 +76,7 @@ public:
      * Respond to user input.
      * @param keyboardState The state of the keyboard keys.
      */
-    void processInput(const KeyboardState& keyboardState);
+    void processInput(const KeyboardInput& keyboardState);
 
     /**
      * Draw the view of the tile grid on the screen.

@@ -59,7 +59,7 @@ void TileGridView::updateViewport(const Size<int> windowSize) {
     setColOffset(colOffset);
 }
 
-void TileGridView::processInput(const KeyboardState& keyboardState) {
+void TileGridView::processInput(const KeyboardInput& keyboardState) {
     if (keyboardState.isKeyDown(GLFW_KEY_W)) {
         setRowOffset(rowOffset - 1);
     }

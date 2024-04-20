@@ -19,9 +19,9 @@
 // Created by Anthony Dickson on 13/04/2024.
 //
 
-#include "KeyboardState.h"
+#include "KeyboardInput.h"
 
-void KeyboardState::update(const std::unique_ptr<Window>& window) {
+void KeyboardInput::update(const std::unique_ptr<Window>& window) {
     std::swap(currentState, previousState);
 
     for (const auto key: validKeys) {
@@ -29,10 +29,10 @@ void KeyboardState::update(const std::unique_ptr<Window>& window) {
     }
 }
 
-bool KeyboardState::isKeyDown(const int key) const {
+bool KeyboardInput::isKeyDown(const int key) const {
     return currentState[key];
 }
 
-bool KeyboardState::isKeyUp(const int key) const {
+bool KeyboardInput::isKeyUp(const int key) const {
     return !isKeyDown(key);
 }
