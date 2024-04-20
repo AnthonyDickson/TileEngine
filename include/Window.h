@@ -31,7 +31,6 @@
 
 #include "Camera.h"
 #include "InputState.h"
-#include "MouseInput.h"
 
 /** Handles the basic functions of an OpenGL window. */
 class Window {
@@ -159,8 +158,6 @@ private:
      * @param height The height of the window in pixels.
      */
     void updateWindowSize(int width, int height);
-
-    const MouseInput& getMouseInput();
 };
 
 

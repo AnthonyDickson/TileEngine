@@ -21,35 +21,52 @@
 
 #include "InputState.h"
 
-void InputState::update(GLFWwindow *window) {
-    keyboardInput.update(window);
-    mouseInput.update(window);
+void InputState::update(GLFWwindow* window) {
+    double xPosition{};
+    double yPosition{};
+    glfwGetCursorPos(window, &xPosition, &yPosition);
+
+    const glm::vec2 position{static_cast<float>(xPosition), static_cast<float>(yPosition)};
+
+    if (!hasInitializedMousePosition) {
+        // If the window is created in a position away from the mouse, the distance of the mouse from the window will
+        // cause the rotation to be moved by a large amount, likely moving the scene out of view.
+        // The below code is executed on the first update to prevent this from happening.
+        mousePosition = position;
+        hasInitializedMousePosition = true;
+    }
+
+    mouseMovement.x = position.x - mousePosition.x;
+    mouseMovement.y = mousePosition.y - position.y;
+    mousePosition = position;
+
+    std::swap(currentKeyState, previousKeyState);
+
+    for (const auto key : validKeys) {
+        currentKeyState[key] = glfwGetKey(window, key) == GLFW_PRESS;
+    }
 }
 
-
 void InputState::postUpdate() {
-    // scrollDelta should be reset AFTER the update function is called, otherwise the update function will always
-    // see a zero value for scrollDelta.
-    mouseInput.resetScrollDelta();
+    scrollDelta = 0.0f;
+}
+
+void InputState::updateScroll(const double, const double scrollY) {
+    scrollDelta += static_cast<float>(scrollY);
+}
+
+const glm::vec2& InputState::getMousePosition() const {
+    return mousePosition;
+}
+
+const glm::vec2& InputState::getMouseMovement() const {
+    return mouseMovement;
 }
 
 bool InputState::isKeyDown(const int key) const {
-    return keyboardInput.isKeyDown(key);
+    return currentKeyState[key];
 }
 
 bool InputState::isKeyUp(const int key) const {
-    return keyboardInput.isKeyUp(key);
+    return !isKeyDown(key);
 }
-
-glm::vec2 InputState::getMousePosition() const {
-    return mouseInput.getPosition();
-}
-
-glm::vec2 InputState::getMouseMovement() const {
-    return mouseInput.getMovement();
-}
-
-void InputState::updateScroll(const double scrollX, const double scrollY) {
-    mouseInput.updateScroll(scrollX, scrollY);
-}
-
