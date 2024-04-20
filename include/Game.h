@@ -25,7 +25,6 @@
 #include "KeyboardState.h"
 #include "TileGrid.h"
 #include "TileGridView.h"
-#include "TileRegistry.h"
 #include "Window.h"
 
 class Game {

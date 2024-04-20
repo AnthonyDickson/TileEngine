@@ -70,14 +70,6 @@ public:
     ~Window();
 
     /**
-     * Runs the main window loop.
-     *
-     * @note This function call blocks.
-     * @param updateFunction The function to call each update step. It will be given the time since the previous frame.
-     */
-    void runMainLoop(const std::function<void(float)> &updateFunction);
-
-    /**
      * This function should be called before the game's update function.
      */
  void preUpdate();

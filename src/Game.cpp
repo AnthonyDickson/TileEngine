@@ -20,6 +20,7 @@
 //
 
 #include <iostream>
+#include <thread>
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
@@ -86,12 +87,19 @@ void Game::run() {
     tileGrid->at(47, 47) = 1;
     tileGrid->at(63, 63) = 1;
 
-    auto lastFrameTime{static_cast<float>(glfwGetTime())};
+    constexpr auto targetFramesPerSecond{60};
+    constexpr std::chrono::milliseconds targetFrameTime{1000/targetFramesPerSecond};
+
+    auto lastFrameTime{std::chrono::steady_clock::now()};
 
     while (true) {
-        const auto currentTime{static_cast<float>(glfwGetTime())};
+        const auto currentTime{std::chrono::steady_clock::now()};
         const auto deltaTime{currentTime - lastFrameTime};
         lastFrameTime = currentTime;
+
+        if (deltaTime < targetFrameTime) {
+            std::this_thread::sleep_for(targetFrameTime - deltaTime);
+        }
 
         if (window->getKeyState(GLFW_KEY_ESCAPE)) {
             window->close();
@@ -99,10 +107,8 @@ void Game::run() {
         }
 
         window->preUpdate();
-
         update();
         render();
-
         window->postUpdate();
     }
 }

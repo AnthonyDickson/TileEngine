@@ -47,24 +47,11 @@ Window::Window(const int windowWidth_, const int windowHeight_, const std::strin
     glfwSetWindowSizeCallback(window, onWindowResize);
     glfwSetScrollCallback(window, onMouseScroll);
     glfwSetWindowUserPointer(window, this);
+    glfwSwapInterval(0);  // Let the game handle vsync
 }
 
 Window::~Window() {
     glfwTerminate();
-}
-
-void Window::runMainLoop(const std::function<void(float)> &updateFunction) {
-    auto lastFrameTime{static_cast<float>(glfwGetTime())};
-
-    while (!glfwWindowShouldClose(window)) {
-        const auto currentFrameTime = static_cast<float>(glfwGetTime());
-        const auto deltaTime = currentFrameTime - lastFrameTime;
-        lastFrameTime = currentFrameTime;
-
-        preUpdate();
-        updateFunction(deltaTime);
-        postUpdate();
-    }
 }
 
 void Window::preUpdate() {
