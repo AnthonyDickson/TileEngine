@@ -22,6 +22,8 @@
 #ifndef TILEGRIDVIEWER_H
 #define TILEGRIDVIEWER_H
 
+#include "glm/mat4x4.hpp"
+
 #include "KeyboardInput.h"
 #include "Shader.h"
 #include "Size.h"

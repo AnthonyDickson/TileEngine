@@ -21,11 +21,11 @@
 
 #include "KeyboardInput.h"
 
-void KeyboardInput::update(const std::unique_ptr<Window>& window) {
+void KeyboardInput::update(GLFWwindow* window) {
     std::swap(currentState, previousState);
 
     for (const auto key: validKeys) {
-        currentState[key] = window->getKeyState(key) == GLFW_PRESS;
+        currentState[key] = glfwGetKey(window, key) == GLFW_PRESS;
     }
 }
 

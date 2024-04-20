@@ -24,7 +24,8 @@
 
 #include <array>
 
-#include "Window.h"
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
 
 class KeyboardInput {
     /** Tracks the current and previous state of common keys on a keyboard. */
@@ -161,9 +162,9 @@ private:
 public:
     /**
      * Poll and update the keyboard state.
-     * @param window The window to get keyboard input from.
+     * @param window The GLFW window to get keyboard input from.
      */
-    void update(const std::unique_ptr<Window>& window);
+    void update(GLFWwindow* window);
 
     /** Whether a key is pressed now. */
     [[nodiscard]] bool isKeyDown(int key) const;

@@ -22,7 +22,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "KeyboardInput.h"
 #include "TileGrid.h"
 #include "TileGridView.h"
 #include "Window.h"
@@ -32,8 +31,6 @@ class Game {
 private:
     /** The window we use to display the game. */
     std::unique_ptr<Window> window;
-    /** Keeps track of state of each standard keyboard key. */
-    KeyboardInput keyboardState{};
 
     /** The game 'map'. */
     std::shared_ptr<TileGrid> tileGrid;

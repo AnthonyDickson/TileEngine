@@ -61,8 +61,7 @@ void Game::update() {
         tileGridView->updateViewport(window->getSize());
     }
 
-    keyboardState.update(window);
-    tileGridView->processInput(keyboardState);
+    tileGridView->processInput(window->getKeyInput());
 }
 
 void Game::render() const {
@@ -101,7 +100,7 @@ void Game::run() {
             std::this_thread::sleep_for(targetFrameTime - deltaTime);
         }
 
-        if (window->getKeyState(GLFW_KEY_ESCAPE)) {
+        if (window->getKeyInput().isKeyDown(GLFW_KEY_ESCAPE)) {
             window->close();
             return;
         }

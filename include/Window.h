@@ -29,6 +29,7 @@
 #include "GLFW/glfw3.h"
 
 #include "Camera.h"
+#include "KeyboardInput.h"
 #include "MouseInput.h"
 
 /** Handles the basic functions of an OpenGL window. */
@@ -43,6 +44,8 @@ private:
     /** Whether the user changed the window size since the most recent update step. */
     bool hasWindowChangedSize{false};
 
+    /** Keeps track of state of each standard keyboard key. */
+    KeyboardInput keyboardInput{};
     /** Keeps track of the mouse input state such as position. */
     MouseInput mouseInput{};
 
@@ -82,10 +85,9 @@ public:
 
     /**
      * Get the state of a keyboard key.
-     * @param key The integer code for a key on a keyboard (bind the GLFW defined keys).
      * @return The state of the given key as an integer (GLFW defined state enum).
      */
-    [[nodiscard]] int getKeyState(int key) const;
+    [[nodiscard]] const KeyboardInput& getKeyInput() const;
 
     /**
      * The net change in the vertical scroll wheel since the last update step.

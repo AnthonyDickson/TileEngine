@@ -60,6 +60,7 @@ Window::~Window() {
 }
 
 void Window::preUpdate() {
+    keyboardInput.update(window);
     mouseInput.update(window);
 }
 
@@ -77,8 +78,8 @@ void Window::close() const {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-int Window::getKeyState(const int key) const {
-    return glfwGetKey(window, key);
+const KeyboardInput &Window::getKeyInput() const {
+    return keyboardInput;
 }
 
 int Window::getWidth() const {
