@@ -24,8 +24,13 @@
 
 #include "Window.h"
 
+
+bool Window::isInitialised = false;
+
 Window::Window(const int windowWidth_, const int windowHeight_, const std::string &windowName)
     : windowWidth(windowWidth_), windowHeight(windowHeight_) {
+    assert(!isInitialised && "Cannot have more than one instance of `Window`.");
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -55,13 +60,13 @@ Window::~Window() {
 }
 
 void Window::preUpdate() {
-    updateMousePosition();
+    mouseInput.update(window);
 }
 
 void Window::postUpdate() {
     // scrollDelta should be reset AFTER the update function is called, otherwise the update function will always
     // see a zero value for scrollDelta.
-    scrollDelta = 0.0f;
+    mouseInput.resetScrollDelta();
     hasWindowChangedSize = false;
 
     glfwSwapBuffers(window);
@@ -74,18 +79,6 @@ void Window::close() const {
 
 int Window::getKeyState(const int key) const {
     return glfwGetKey(window, key);
-}
-
-float Window::getMouseScroll() const {
-    return scrollDelta;
-}
-
-glm::vec2 Window::getMousePosition() const {
-    return lastMousePosition;
-}
-
-glm::vec2 Window::getMouseDelta() const {
-    return mouseMovement;
 }
 
 int Window::getWidth() const {
@@ -129,28 +122,8 @@ void Window::updateWindowSize(const int width, const int height) {
     hasWindowChangedSize = true;
 }
 
-void Window::onMouseScroll(GLFWwindow *window, double, const double scrollY) {
+void Window::onMouseScroll(GLFWwindow *window, double scrollX, const double scrollY) {
     if (const auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
-        windowHandle->scrollDelta += static_cast<float>(scrollY);
+        windowHandle->mouseInput.updateScroll(scrollX, scrollY);
     }
-}
-
-void Window::updateMousePosition() {
-    double xPosition{};
-    double yPosition{};
-    glfwGetCursorPos(window, &xPosition, &yPosition);
-
-    const glm::vec2 position{static_cast<float>(xPosition), static_cast<float>(yPosition)};
-
-    if (!hasInitializedMousePosition) {
-        // If the window is created in a position away from the mouse, the distance of the mouse from the window will
-        // cause the rotation to be moved by a large amount, likely moving the scene out of view.
-        // The below code is executed on the first update to prevent this from happening.
-        lastMousePosition = position;
-        hasInitializedMousePosition = true;
-    }
-
-    mouseMovement.x = position.x - lastMousePosition.x;
-    mouseMovement.y = lastMousePosition.y - position.y;
-    lastMousePosition = position;
 }

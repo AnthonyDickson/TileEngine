@@ -22,12 +22,14 @@
 #ifndef ECONSIMPLUSPLUS_WINDOW_H
 #define ECONSIMPLUSPLUS_WINDOW_H
 
-#include <functional>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <memory>
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 #include "Camera.h"
+#include "MouseInput.h"
 
 /** Handles the basic functions of an OpenGL window. */
 class Window {
@@ -38,21 +40,14 @@ private:
     int windowWidth{};
     /** The height of the window in pixels. */
     int windowHeight{};
-
-    /**
-     * Whether the mouse position has been set before.
-     *
-     * This is used to prevent issues with mouse movement in the first update step.
-     */
-    bool hasInitializedMousePosition{false};
-    /** The position of the mouse cursor since the most recent call to `Window::updateMousePosition(...)`. */
-    glm::vec2 lastMousePosition{};
-    /** How much the mouse has moved since the most recent update step. */
-    glm::vec2 mouseMovement{};
-    /** The net change in the scroll wheel since the most recent update step. */
-    float scrollDelta{};
     /** Whether the user changed the window size since the most recent update step. */
     bool hasWindowChangedSize{false};
+
+    /** Keeps track of the mouse input state such as position. */
+    MouseInput mouseInput{};
+
+    /** We only want one instance of `Window`, we use this bool to track whether an instance was already created. */
+    static bool isInitialised;
 public:
     /**
      * Create and initialize a GLFW window.
@@ -63,6 +58,7 @@ public:
     Window(int windowWidth_, int windowHeight_, const std::string &windowName);
 
     Window(Window&) = delete;
+    Window(Window&&) = delete;
 
     /**
      * Releases GLFW window stuff.
@@ -163,10 +159,7 @@ private:
      */
     void updateWindowSize(int width, int height);
 
-    /**
-     * Poll and track the cursor position.
-     */
-    void updateMousePosition();
+    const MouseInput& getMouseInput();
 };
 
 

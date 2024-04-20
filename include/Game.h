@@ -56,6 +56,9 @@ private:
 public:
     static Game create(Size<int> windowSize, Size<int> tileGridSize, int tileSize);
 
+    Game(Game&) = delete;
+    Game(Game&&) = delete;
+
     /** Update the game by one step. */
     void update();
     /** Render the game to the screen. */

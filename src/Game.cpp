@@ -34,7 +34,7 @@ bool Game::isInitialised = false;
 Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, std::shared_ptr<TileGridView> tileGridView_):
     window(std::move(window_)), tileGrid(std::move(tileGrid_)), tileGridView(std::move(tileGridView_)),
     camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
-    assert(!isInitialised && "Can only have one instance of `Game`.");
+    assert(!isInitialised && "Cannot have more than one instance of `Game`.");
     isInitialised = true;
 }
 
