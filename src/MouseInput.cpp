@@ -49,3 +49,11 @@ void MouseInput::resetScrollDelta() {
     scrollDelta = 0.0f;
 }
 
+const glm::vec2& MouseInput::getPosition() const {
+    return lastMousePosition;
+}
+
+const glm::vec2& MouseInput::getMovement() const {
+    return mouseMovement;
+}
+

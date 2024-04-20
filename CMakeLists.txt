@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
         src/Camera.cpp
         src/Game.cpp
         src/KeyboardInput.cpp
+        src/InputState.cpp
         src/MouseInput.cpp
         src/Shader.cpp
         src/Texture.cpp

@@ -19,13 +19,13 @@
 // Created by Anthony Dickson on 14/04/2024.
 //
 
-#include "TileGridView.h"
-
 #include <algorithm>
 #include <iostream>
 
 #include "glm/ext/matrix_transform.hpp"
 
+#include "InputState.h"
+#include "TileGridView.h"
 
 TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, const int tileSize_)
 : tileGrid(std::move(tileGrid_)), viewport(viewport_), tileSize(tileSize_) {
@@ -59,18 +59,18 @@ void TileGridView::updateViewport(const Size<int> windowSize) {
     setColOffset(colOffset);
 }
 
-void TileGridView::processInput(const KeyboardInput& keyboardState) {
-    if (keyboardState.isKeyDown(GLFW_KEY_W)) {
+void TileGridView::processInput(const InputState& inputState) {
+    if (inputState.isKeyDown(GLFW_KEY_W)) {
         setRowOffset(rowOffset - 1);
     }
-    else if (keyboardState.isKeyDown(GLFW_KEY_S)) {
+    else if (inputState.isKeyDown(GLFW_KEY_S)) {
         setRowOffset(rowOffset + 1);
     }
 
-    if (keyboardState.isKeyDown(GLFW_KEY_A)) {
+    if (inputState.isKeyDown(GLFW_KEY_A)) {
         setColOffset(colOffset - 1);
     }
-    else if (keyboardState.isKeyDown(GLFW_KEY_D)) {
+    else if (inputState.isKeyDown(GLFW_KEY_D)) {
         setColOffset(colOffset + 1);
     }
 }

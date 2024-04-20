@@ -24,7 +24,6 @@
 
 #include "Window.h"
 
-
 bool Window::isInitialised = false;
 
 Window::Window(const int windowWidth_, const int windowHeight_, const std::string &windowName)
@@ -53,6 +52,8 @@ Window::Window(const int windowWidth_, const int windowHeight_, const std::strin
     glfwSetScrollCallback(window, onMouseScroll);
     glfwSetWindowUserPointer(window, this);
     glfwSwapInterval(0);  // Let the game handle vsync
+
+    isInitialised = true;
 }
 
 Window::~Window() {
@@ -60,14 +61,11 @@ Window::~Window() {
 }
 
 void Window::preUpdate() {
-    keyboardInput.update(window);
-    mouseInput.update(window);
+    inputState.update(window);
 }
 
 void Window::postUpdate() {
-    // scrollDelta should be reset AFTER the update function is called, otherwise the update function will always
-    // see a zero value for scrollDelta.
-    mouseInput.resetScrollDelta();
+    inputState.postUpdate();
     hasWindowChangedSize = false;
 
     glfwSwapBuffers(window);
@@ -78,8 +76,8 @@ void Window::close() const {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-const KeyboardInput &Window::getKeyInput() const {
-    return keyboardInput;
+const InputState &Window::getInputState() const {
+    return inputState;
 }
 
 int Window::getWidth() const {
@@ -123,8 +121,8 @@ void Window::updateWindowSize(const int width, const int height) {
     hasWindowChangedSize = true;
 }
 
-void Window::onMouseScroll(GLFWwindow *window, double scrollX, const double scrollY) {
+void Window::onMouseScroll(GLFWwindow *window, const double scrollX, const double scrollY) {
     if (const auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
-        windowHandle->mouseInput.updateScroll(scrollX, scrollY);
+        windowHandle->inputState.updateScroll(scrollX, scrollY);
     }
 }

@@ -24,7 +24,7 @@
 
 #include "glm/mat4x4.hpp"
 
-#include "KeyboardInput.h"
+#include "InputState.h"
 #include "Shader.h"
 #include "Size.h"
 #include "VertexArray.h"
@@ -76,9 +76,9 @@ public:
 
     /**
      * Respond to user input.
-     * @param keyboardState The state of the keyboard keys.
+     * @param inputState The state of the keyboard keys.
      */
-    void processInput(const KeyboardInput& keyboardState);
+    void processInput(const InputState& inputState);
 
     /**
      * Draw the view of the tile grid on the screen.
@@ -98,7 +98,5 @@ private:
      */
     void setColOffset(int value);
 };
-
-
 
 #endif //TILEGRIDVIEWER_H

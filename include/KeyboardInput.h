@@ -166,10 +166,18 @@ public:
      */
     void update(GLFWwindow* window);
 
-    /** Whether a key is pressed now. */
+    /**
+     * Check whether a key is currently pressed down.
+     * @param key A GLFW key code.
+     * @return `true` if the key is currently pressed down, otherwise `false`.
+     */
     [[nodiscard]] bool isKeyDown(int key) const;
 
-    /** Whether a key is released now. */
+    /**
+     * Check whether a key is currently released.
+     * @param key A GLFW key code.
+     * @return `true` if the key is currently released, otherwise `false`.
+     */
     [[nodiscard]] bool isKeyUp(int key) const;
 };
 

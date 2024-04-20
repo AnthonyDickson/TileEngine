@@ -26,10 +26,11 @@
 #include <memory>
 
 #define GLFW_INCLUDE_NONE
+
 #include "GLFW/glfw3.h"
 
 #include "Camera.h"
-#include "KeyboardInput.h"
+#include "InputState.h"
 #include "MouseInput.h"
 
 /** Handles the basic functions of an OpenGL window. */
@@ -44,10 +45,8 @@ private:
     /** Whether the user changed the window size since the most recent update step. */
     bool hasWindowChangedSize{false};
 
-    /** Keeps track of state of each standard keyboard key. */
-    KeyboardInput keyboardInput{};
-    /** Keeps track of the mouse input state such as position. */
-    MouseInput mouseInput{};
+    /** Keeps track of keyboard and mouse input. */
+    InputState inputState{};
 
     /** We only want one instance of `Window`, we use this bool to track whether an instance was already created. */
     static bool isInitialised;
@@ -87,7 +86,7 @@ public:
      * Get the state of a keyboard key.
      * @return The state of the given key as an integer (GLFW defined state enum).
      */
-    [[nodiscard]] const KeyboardInput& getKeyInput() const;
+    [[nodiscard]] const InputState& getInputState() const;
 
     /**
      * The net change in the vertical scroll wheel since the last update step.

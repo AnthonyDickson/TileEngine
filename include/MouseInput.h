@@ -60,6 +60,18 @@ public:
      * correct cumulative scroll wheel movement since the last frame.
      */
     void resetScrollDelta();
+
+    /**
+     * Get the mouse cursor position.
+     * @return the screen coordinates of the mouse cursor in pixels.
+     */
+    [[nodiscard]] const glm::vec2& getPosition() const;
+
+    /**
+     * Get the mouse cursor movement since the last frame.
+     * @return the movement of the mouse in pixels.
+     */
+    [[nodiscard]] const glm::vec2& getMovement() const;
 };
 
 
