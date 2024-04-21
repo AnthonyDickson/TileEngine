@@ -69,20 +69,26 @@ const glm::vec2& InputState::getMouseMovement() const {
     return mouseMovement;
 }
 
-bool InputState::isKeyDown(const int key) const {
+bool InputState::getKey(const int key) const {
     return currentKeyState[key];
 }
 
-bool InputState::isKeyUp(const int key) const {
-    return !isKeyDown(key);
+bool InputState::getKeyDown(const int key) const {
+    return currentKeyState[key] and !previousKeyState[key];
 }
 
-bool InputState::isMouseButtonDown(const int button) const {
-    return currentMouseButtonState[button] == GLFW_PRESS;
+bool InputState::getKeyUp(const int key) const {
+    return !currentKeyState[key] and previousKeyState[key];
 }
 
-bool InputState::isMouseButtonUp(const int button) const {
-    return !isMouseButtonDown(button);
+bool InputState::getMouseButton(const int button) const {
+    return currentMouseButtonState[button];
 }
 
+bool InputState::getMouseButtonDown(const int button) const {
+    return currentMouseButtonState[button] and !previousMouseButtonState[button];
+}
 
+bool InputState::getMouseButtonUp(const int button) const {
+    return !currentMouseButtonState[button] and previousMouseButtonState[button];
+}

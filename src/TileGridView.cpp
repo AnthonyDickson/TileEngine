@@ -27,8 +27,8 @@
 #include "InputState.h"
 #include "TileGridView.h"
 
-TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, const int tileSize_)
-: tileGrid(std::move(tileGrid_)), viewport(viewport_), tileSize(tileSize_) {
+TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, const int tileSize_) :
+    tileGrid(std::move(tileGrid_)), viewport(viewport_), tileSize(tileSize_) {
     const std::vector vertexData{
         // X, Y, U, V (2D coordinates, Texture coordinates).
         // [0]    -> [1,4]
@@ -60,17 +60,17 @@ void TileGridView::updateViewport(const Size<int> windowSize) {
 }
 
 void TileGridView::processInput(const InputState& inputState) {
-    if (inputState.isKeyDown(GLFW_KEY_W)) {
+    if (inputState.getKeyDown(GLFW_KEY_W)) {
         setRowOffset(rowOffset - 1);
     }
-    else if (inputState.isKeyDown(GLFW_KEY_S)) {
+    else if (inputState.getKeyDown(GLFW_KEY_S)) {
         setRowOffset(rowOffset + 1);
     }
 
-    if (inputState.isKeyDown(GLFW_KEY_A)) {
+    if (inputState.getKeyDown(GLFW_KEY_A)) {
         setColOffset(colOffset - 1);
     }
-    else if (inputState.isKeyDown(GLFW_KEY_D)) {
+    else if (inputState.getKeyDown(GLFW_KEY_D)) {
         setColOffset(colOffset + 1);
     }
 }
@@ -83,7 +83,7 @@ void TileGridView::setColOffset(const int value) {
     colOffset = std::clamp(value, 0, std::max(0, tileGrid->width - viewport.width));
 }
 
-void TileGridView::render(const glm::mat4 &projectionViewMatrix) const {
+void TileGridView::render(const glm::mat4& projectionViewMatrix) const {
     constexpr glm::mat4 identity{1.0f};
 
     shader.bind();

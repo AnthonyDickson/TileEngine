@@ -98,7 +98,7 @@ void Game::run() {
             std::this_thread::sleep_for(targetFrameTime - deltaTime);
         }
 
-        if (window->getInputState().isKeyDown(GLFW_KEY_ESCAPE)) {
+        if (window->getInputState().getKey(GLFW_KEY_ESCAPE)) {
             window->close();
             return;
         }

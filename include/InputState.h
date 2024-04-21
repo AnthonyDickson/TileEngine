@@ -197,18 +197,25 @@ public:
     void postUpdate();
 
     /**
-     * Check whether a key is currently released.
+     * Check whether a key is pressed down.
      * @param key A GLFW key code.
-     * @return `true` if the key is currently released, otherwise `false`.
+     * @return `true` if the key is pressed down, otherwise `false`.
      */
-    [[nodiscard]] bool isKeyUp(int key) const;
+    [[nodiscard]] bool getKey(int key) const;
 
     /**
-     * Check whether a key is currently pressed down.
+     * Check whether a key was pressed during this frame.
      * @param key A GLFW key code.
-     * @return `true` if the key is currently pressed down, otherwise `false`.
+     * @return `true` if the key was pressed down during this frame, otherwise `false`.
      */
-    [[nodiscard]] bool isKeyDown(int key) const;
+    [[nodiscard]] bool getKeyDown(int key) const;
+
+    /**
+     * Check whether a key was released during this frame.
+     * @param key A GLFW key code.
+     * @return `true` if the key was released during this frame, otherwise `false`.
+     */
+    [[nodiscard]] bool getKeyUp(int key) const;
 
     /**
      * Get the position of the mouse cursor.
@@ -238,18 +245,25 @@ public:
     void resetScrollDelta();
 
     /**
-     * Check whether a mouse button is currently pressed down.
+     * Check whether a mouse button is pressed down.
      * @param button A GLFW mouse button code.
-     * @return `true` if the mouse button is currently pressed down, otherwise `false`.
+     * @return `true` if the mouse button is pressed down, otherwise `false`.
      */
-    [[nodiscard]] bool isMouseButtonDown(int button) const;
+    [[nodiscard]] bool getMouseButton(int button) const;
 
     /**
-     * Check whether a mouse button is currently released.
+     * Check whether a mouse button was pressed during this frame.
      * @param button A GLFW mouse button code.
-     * @return `true` if the mouse button is currently released, otherwise `false`.
+     * @return `true` if the mouse button was pressed down during this frame, otherwise `false`.
      */
-    [[nodiscard]] bool isMouseButtonUp(int button) const;
+    [[nodiscard]] bool getMouseButtonDown(int button) const;
+
+    /**
+     * Check whether a mouse button was released during this frame.
+     * @param button A GLFW mouse button code.
+     * @return `true` if the mouse button was released during this frame, otherwise `false`.
+     */
+    [[nodiscard]] bool getMouseButtonUp(int button) const;
 };
 
 
