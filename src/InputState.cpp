@@ -45,6 +45,12 @@ void InputState::update(GLFWwindow* window) {
     for (const auto key : validKeys) {
         currentKeyState[key] = glfwGetKey(window, key) == GLFW_PRESS;
     }
+
+    std::swap(currentMouseButtonState, previousMouseButtonState);
+
+    for (const auto button : validMouseButtons) {
+        currentMouseButtonState[button] = glfwGetMouseButton(window, button) == GLFW_PRESS;
+    }
 }
 
 void InputState::postUpdate() {
@@ -70,3 +76,13 @@ bool InputState::isKeyDown(const int key) const {
 bool InputState::isKeyUp(const int key) const {
     return !isKeyDown(key);
 }
+
+bool InputState::isMouseButtonDown(const int button) const {
+    return currentMouseButtonState[button] == GLFW_PRESS;
+}
+
+bool InputState::isMouseButtonUp(const int button) const {
+    return !isMouseButtonDown(button);
+}
+
+

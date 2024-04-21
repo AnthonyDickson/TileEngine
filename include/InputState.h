@@ -160,6 +160,17 @@ private:
         GLFW_KEY_MENU,
     };
 
+    /** Implicit mapping between GLFW key codes and whether the mouse button is pressed down in this frame. */
+    std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> currentMouseButtonState{};
+    /** Implicit mapping between GLFW key codes and whether the mouse button is pressed down in the previous frame. */
+    std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> previousMouseButtonState{};
+
+    /** The integer codes that map to a valid mouse button code in GLFW. */
+    constexpr static std::array validMouseButtons{
+        GLFW_MOUSE_BUTTON_1, GLFW_MOUSE_BUTTON_2, GLFW_MOUSE_BUTTON_3, GLFW_MOUSE_BUTTON_4,
+        GLFW_MOUSE_BUTTON_5, GLFW_MOUSE_BUTTON_6, GLFW_MOUSE_BUTTON_7, GLFW_MOUSE_BUTTON_8,
+    };
+
     /**
      * Whether the mouse position has been set before.
      *
@@ -225,6 +236,20 @@ public:
      * correct cumulative scroll wheel movement since the last frame.
      */
     void resetScrollDelta();
+
+    /**
+     * Check whether a mouse button is currently pressed down.
+     * @param button A GLFW mouse button code.
+     * @return `true` if the mouse button is currently pressed down, otherwise `false`.
+     */
+    [[nodiscard]] bool isMouseButtonDown(int button) const;
+
+    /**
+     * Check whether a mouse button is currently released.
+     * @param button A GLFW mouse button code.
+     * @return `true` if the mouse button is currently released, otherwise `false`.
+     */
+    [[nodiscard]] bool isMouseButtonUp(int button) const;
 };
 
 
