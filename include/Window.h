@@ -36,7 +36,7 @@
 class Window {
 private:
     /** Handle to the GLFW window object. */
-    GLFWwindow *window{};
+    GLFWwindow* window{};
     /** The width of the window in pixels. */
     int windowWidth{};
     /** The height of the window in pixels. */
@@ -49,6 +49,7 @@ private:
 
     /** We only want one instance of `Window`, we use this bool to track whether an instance was already created. */
     static bool isInitialised;
+
 public:
     /**
      * Create and initialize a GLFW window.
@@ -56,7 +57,7 @@ public:
      * @param windowHeight_ The height of the window to create in pixels.
      * @param windowName The string to display in the window's title bar.
      */
-    Window(int windowWidth_, int windowHeight_, const std::string &windowName);
+    Window(int windowWidth_, int windowHeight_, const std::string& windowName);
 
     Window(Window&) = delete;
     Window(Window&&) = delete;
@@ -69,7 +70,7 @@ public:
     /**
      * This function should be called before the game's update function.
      */
- void preUpdate();
+    void preUpdate();
 
     /**
      * This function should be called after the game's update function.
@@ -142,7 +143,7 @@ private:
      * @param width The new width of the window.
      * @param height The new height of the window.
      */
-    static void onWindowResize(GLFWwindow *window, int width, int height);
+    static void onWindowResize(GLFWwindow* window, int width, int height);
 
     /**
      * Handle the user using the mouse scroll wheel.
@@ -150,7 +151,7 @@ private:
      * @param scrollX The amount scrolled horizontally.
      * @param scrollY The amount scrolled vertically.
      */
-    static void onMouseScroll(GLFWwindow *window, double scrollX, double scrollY);
+    static void onMouseScroll(GLFWwindow* window, double scrollX, double scrollY);
 
     /**
      * Update the window dimensions.
@@ -161,4 +162,4 @@ private:
 };
 
 
-#endif //ECONSIMPLUSPLUS_WINDOW_H
+#endif // ECONSIMPLUSPLUS_WINDOW_H

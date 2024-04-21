@@ -27,10 +27,10 @@
 #include "InputState.h"
 #include "Shader.h"
 #include "Size.h"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
 #include "TileGrid.h"
 #include "TileRegistry.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 
 class TileGridView {
     /** Handles a 'camera view' of a tile grid. */
@@ -85,6 +85,7 @@ public:
      * @param projectionViewMatrix The perspective matrix multiplied by the view matrix.
      */
     void render(const glm::mat4& projectionViewMatrix) const;
+
 private:
     /**
      * Setter for `rowOffset` that ensures that `rowOffset` is always a valid value.
@@ -99,4 +100,4 @@ private:
     void setColOffset(int value);
 };
 
-#endif //TILEGRIDVIEWER_H
+#endif // TILEGRIDVIEWER_H

@@ -18,7 +18,7 @@
 //
 // Created by Anthony on 30/03/2024.
 //
-# include <iostream>
+#include <iostream>
 
 #include "glad/glad.h"
 
@@ -26,8 +26,8 @@
 
 bool Window::isInitialised = false;
 
-Window::Window(const int windowWidth_, const int windowHeight_, const std::string &windowName)
-    : windowWidth(windowWidth_), windowHeight(windowHeight_) {
+Window::Window(const int windowWidth_, const int windowHeight_, const std::string& windowName) :
+    windowWidth(windowWidth_), windowHeight(windowHeight_) {
     assert(!isInitialised && "Cannot have more than one instance of `Window`.");
 
     glfwInit();
@@ -51,7 +51,7 @@ Window::Window(const int windowWidth_, const int windowHeight_, const std::strin
     glfwSetWindowSizeCallback(window, onWindowResize);
     glfwSetScrollCallback(window, onMouseScroll);
     glfwSetWindowUserPointer(window, this);
-    glfwSwapInterval(0);  // Let the game handle vsync
+    glfwSwapInterval(0); // Let the game handle vsync
 
     isInitialised = true;
 }
@@ -76,7 +76,7 @@ void Window::close() const {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-const InputState &Window::getInputState() const {
+const InputState& Window::getInputState() const {
     return inputState;
 }
 
@@ -100,8 +100,8 @@ bool Window::hasWindowSizeChanged() const {
     return hasWindowChangedSize;
 }
 
-void Window::onWindowResize(GLFWwindow *window, const int width, const int height) {
-    if (const auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
+void Window::onWindowResize(GLFWwindow* window, const int width, const int height) {
+    if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
         windowHandle->updateWindowSize(width, height);
     }
 }
@@ -121,8 +121,8 @@ void Window::updateWindowSize(const int width, const int height) {
     hasWindowChangedSize = true;
 }
 
-void Window::onMouseScroll(GLFWwindow *window, const double scrollX, const double scrollY) {
-    if (const auto windowHandle{static_cast<Window *>(glfwGetWindowUserPointer(window))}) {
+void Window::onMouseScroll(GLFWwindow* window, const double scrollX, const double scrollY) {
+    if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
         windowHandle->inputState.updateScroll(scrollX, scrollY);
     }
 }

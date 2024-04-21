@@ -35,4 +35,3 @@ cmake-build-debug/
 
 .idea/editor.xml
 .idea/codeStyles/
-.clang-format

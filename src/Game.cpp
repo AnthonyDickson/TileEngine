@@ -31,7 +31,8 @@
 
 bool Game::isInitialised = false;
 
-Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, std::shared_ptr<TileGridView> tileGridView_):
+Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_,
+           std::shared_ptr<TileGridView> tileGridView_) :
     window(std::move(window_)), tileGrid(std::move(tileGrid_)), tileGridView(std::move(tileGridView_)),
     camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
     assert(!isInitialised && "Cannot have more than one instance of `Game`.");
@@ -54,10 +55,7 @@ Game Game::create(Size<int> windowSize, Size<int> tileGridSize, const int tileSi
 
 void Game::update() {
     if (window->hasWindowSizeChanged()) {
-        camera.onWindowResize({
-            static_cast<float>(window->getWidth()),
-            static_cast<float>(window->getHeight())
-        });
+        camera.onWindowResize({static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())});
         tileGridView->updateViewport(window->getSize());
     }
 
@@ -87,7 +85,7 @@ void Game::run() {
     tileGrid->at(63, 63) = 1;
 
     constexpr auto targetFramesPerSecond{60};
-    constexpr std::chrono::milliseconds targetFrameTime{1000/targetFramesPerSecond};
+    constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
 
     auto lastFrameTime{std::chrono::steady_clock::now()};
 
