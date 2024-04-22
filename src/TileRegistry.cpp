@@ -21,7 +21,7 @@
 
 #include "TileRegistry.h"
 
-void TileRegistry::emplace(std::shared_ptr<const Texture> &texture) {
+void TileRegistry::emplace(std::shared_ptr<Texture> &texture) {
     int id{static_cast<int>(tiles.size())};
     tiles.emplace_back(id, texture);
 }

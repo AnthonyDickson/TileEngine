@@ -73,8 +73,8 @@ void Game::render() const {
 }
 
 void Game::run() {
-    auto container{std::make_shared<const Texture>("resource/container2.png", GL_TEXTURE0)};
-    auto awesomeFace{std::make_shared<const Texture>("resource/awesomeface.png", GL_TEXTURE0)};
+    auto container{Texture::create("resource/container2.png", GL_TEXTURE0)};
+    auto awesomeFace{Texture::create("resource/awesomeface.png", GL_TEXTURE0)};
 
     tileGrid->registerTile(container);
     tileGrid->registerTile(awesomeFace);

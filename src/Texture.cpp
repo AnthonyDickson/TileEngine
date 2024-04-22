@@ -19,15 +19,46 @@
 // Created by Anthony on 24/03/2024.
 //
 
-#include <iostream>
 #include <format>
+#include <iostream>
 
 #include "stb_image.h"
 
 #include "Texture.h"
 
-Texture::Texture(const std::string &imagePath, const int textureUnit_) :
-        textureID(0), textureUnit(textureUnit_) {
+Texture::Texture(const unsigned int textureID_, const int textureUnit_, const Size<int> resolution_) :
+    textureID(textureID_), textureUnit(textureUnit_), resolution(resolution_) {
+}
+
+
+std::shared_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
+    int width{};
+    int height{};
+    int channelCount{};
+    stbi_set_flip_vertically_on_load(true);
+    const auto imageData{stbi_load(imagePath.c_str(), &width, &height, &channelCount, 0)};
+
+    GLenum imageFormat;
+
+    switch (channelCount) {
+    case 1:
+        imageFormat = GL_RED;
+    case 3:
+        imageFormat = GL_RGB;
+        break;
+    case 4:
+        imageFormat = GL_RGBA;
+        break;
+    default:
+        throw std::runtime_error(std::format("Texture does not support image with {0} channels.", channelCount));
+    }
+
+    if (imageData == nullptr) {
+        throw std::runtime_error(
+            std::format("Texture failed to load image from {0}: {1}", imagePath, stbi_failure_reason()));
+    }
+
+    GLuint textureID{};
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -37,37 +68,16 @@ Texture::Texture(const std::string &imagePath, const int textureUnit_) :
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int width{};
-    int height{};
-    int channelCount{};
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char *imageData = stbi_load(imagePath.c_str(), &width, &height, &channelCount, 0);
-
-    GLenum imageFormat;
-
-    switch (channelCount) {
-        case 1:
-            imageFormat = GL_RED;
-        case 3:
-            imageFormat = GL_RGB;
-            break;
-        case 4:
-            imageFormat = GL_RGBA;
-            break;
-        default:
-            throw std::runtime_error(std::format("Texture does not support image with {0} channels.", channelCount));
-    }
-
-    if (imageData == nullptr) {
-        std::cout << "Texture failed to load image from " << imagePath << ": " << stbi_failure_reason()
-                  << std::endl;
-    } else {
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), width, height, 0, imageFormat, GL_UNSIGNED_BYTE,
-                     imageData);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), width, height, 0, imageFormat, GL_UNSIGNED_BYTE,
+                 imageData);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(imageData);
+
+    // ReSharper disable once CppTemplateArgumentsCanBeDeduced
+    const Size<int> resolution{width, height};
+
+    return std::make_shared<Texture>(textureID, textureUnit_, resolution);
 }
 
 Texture::~Texture() {

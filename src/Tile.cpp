@@ -23,7 +23,7 @@
 
 #include <utility>
 
-Tile::Tile(const int id_, std::shared_ptr<const Texture> texture_) : id(id_), texture(std::move(texture_)) {}
+Tile::Tile(const int id_, std::shared_ptr<Texture> texture_) : id(id_), texture(std::move(texture_)) {}
 
 void Tile::bind() const {
     texture->bind();

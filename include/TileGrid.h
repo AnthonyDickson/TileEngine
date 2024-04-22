@@ -73,7 +73,7 @@ public:
     [[nodiscard]] int& at(std::size_t row, std::size_t col);
 
     /** Add a tile type. */
-    void registerTile(std::shared_ptr<const Texture> &texture);
+    void registerTile(std::shared_ptr<Texture> &texture);
 
     /**
      * Bind the texture of tile at the grid coordinates for rendering in OpenGL.

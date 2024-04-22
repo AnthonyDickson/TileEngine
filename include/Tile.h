@@ -24,8 +24,6 @@
 
 
 #include <memory>
-#include <utility>
-#include "glm/vec2.hpp"
 #include "Texture.h"
 
 class Tile {
@@ -33,9 +31,9 @@ private:
     /** ID is used in tile arrays for compact storage of maps (levels) and for placing tiles in maps/sets. */
     int id;
     /** The texture to bind to draw this tile. */
-    std::shared_ptr<const Texture> texture;
+    std::shared_ptr<Texture> texture;
 public:
-    Tile(int id_, std::shared_ptr<const Texture> texture_);
+    Tile(int id_, std::shared_ptr<Texture> texture_);
 
     /** Bind OpenGL related stuff for rendering. */
     void bind() const;

@@ -24,25 +24,39 @@
 
 #include "glad/glad.h"
 
+#include "Size.h"
+
 /** Handles the creation and setup of an OpenGL texture from a image on disk.*/
 class Texture {
 private:
     /** The OpenGL ID for the texture.*/
-    unsigned int textureID;
+    const unsigned int textureID;
     /** The texture unit that the texture should be bound to. */
-    int textureUnit;
+    const int textureUnit;
+
 public:
+    /** The size (width, height) of the texture in pixels. */
+    const Size<int> resolution;
+
+    /**
+     *
+     * @param textureID_ The OpenGL ID for the texture.
+     * @param textureUnit_ The texture unit to bind the texture to.
+     * @param resolution_ The resolution of the texture.
+     */
+    Texture(unsigned int textureID_, int textureUnit_, Size<int> resolution_);
+
     /**
      * Create a texture from an image.
      * @param imagePath The path to an image.
      * @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
      */
-    explicit Texture(const std::string &imagePath, int textureUnit_ = GL_TEXTURE0);
+    static std::shared_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
 
     /** Delete copy constructor to avoid OpenGL issues. */
-    Texture(Texture &) = delete;
+    Texture(Texture&) = delete;
     /** Delete move constructor to avoid OpenGL issues. */
-    Texture(Texture &&) = delete;
+    Texture(Texture&&) = delete;
 
     /** Clean up OpenGL related stuff.*/
     ~Texture();
@@ -54,4 +68,4 @@ public:
 };
 
 
-#endif //ECONSIMPLUSPLUS_TEXTURE_H
+#endif // ECONSIMPLUSPLUS_TEXTURE_H

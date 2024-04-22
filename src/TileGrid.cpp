@@ -35,7 +35,7 @@ int& TileGrid::at(const std::size_t row, const std::size_t col) {
     return grid[width * row + col];
 }
 
-void TileGrid::registerTile(std::shared_ptr<const Texture> &texture) {
+void TileGrid::registerTile(std::shared_ptr<Texture> &texture) {
     tileRegistry.emplace(texture);
 }
 
