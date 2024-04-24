@@ -60,17 +60,17 @@ void TileGridView::updateViewport(const Size<int> windowSize) {
 }
 
 void TileGridView::processInput(const InputState& inputState) {
-    if (inputState.getKeyDown(GLFW_KEY_W)) {
+    if (inputState.getKey(GLFW_KEY_W)) {
         setRowOffset(rowOffset - 1);
     }
-    else if (inputState.getKeyDown(GLFW_KEY_S)) {
+    else if (inputState.getKey(GLFW_KEY_S)) {
         setRowOffset(rowOffset + 1);
     }
 
-    if (inputState.getKeyDown(GLFW_KEY_A)) {
+    if (inputState.getKey(GLFW_KEY_A)) {
         setColOffset(colOffset - 1);
     }
-    else if (inputState.getKeyDown(GLFW_KEY_D)) {
+    else if (inputState.getKey(GLFW_KEY_D)) {
         setColOffset(colOffset + 1);
     }
 }

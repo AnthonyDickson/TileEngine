@@ -40,7 +40,7 @@ public:
      * Instantiate and add a new Tile object with the given texture.
      * @param texture The texture to use for the tile.
      */
-    void emplace(std::shared_ptr<const Texture> &texture);
+    void emplace(std::shared_ptr<Texture> &texture);
 
     /**
      * Access a tile by ID.

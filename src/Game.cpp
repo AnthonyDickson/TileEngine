@@ -28,6 +28,7 @@
 #include "Game.h"
 #include "Size.h"
 #include "TileRegistry.h"
+#include "TileMap.h"
 
 bool Game::isInitialised = false;
 
@@ -43,6 +44,8 @@ Game Game::create(Size<int> windowSize, Size<int> tileGridSize, const int tileSi
     auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
 
     const auto tileGrid{std::make_shared<TileGrid>(tileGridSize.width, tileGridSize.height)};
+    // TODO: Use the below tileMap instead of tileGrid.
+    const auto tileMap{TileMap::create("resource/terrain.yaml")};
 
     const int tilesPerHeight = windowSize.height / tileSize;
     const int tilesPerWidth = windowSize.width / tileSize;

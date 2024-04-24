@@ -22,7 +22,7 @@
 #ifndef SIZE_H
 #define SIZE_H
 
-template<typename T>
+template <typename T>
 struct Size {
     T width;
     T height;
