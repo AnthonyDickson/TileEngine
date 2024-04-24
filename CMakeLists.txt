@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
         src/TileGrid.cpp
         src/TileGridView.cpp
         src/TileRegistry.cpp
+        src/TileMap.cpp
         src/Window.cpp
         src/VertexArray.cpp
         src/VertexBuffer.cpp
@@ -35,3 +36,4 @@ target_link_libraries(${PROJECT_NAME} glad)
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} glm)
 target_link_libraries(${PROJECT_NAME} stb_image)
+target_link_libraries(${PROJECT_NAME} yaml-cpp)

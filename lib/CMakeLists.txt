@@ -23,3 +23,11 @@ target_include_directories(glad PUBLIC glad/include)
 ## stb_image
 add_library(stb_image INTERFACE)
 target_include_directories(stb_image INTERFACE stb_image/include)
+
+# YAML-CPP
+FetchContent_Declare(
+        yaml-cpp
+        GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+        GIT_TAG 0.8.0
+)
+FetchContent_MakeAvailable(yaml-cpp)
