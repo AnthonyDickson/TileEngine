@@ -62,6 +62,24 @@ void Camera::update(const float deltaTime, const InputState& inputState) {
         move(Direction::Right, deltaTime * speed);
     }
 
+    const auto& mouseMovement{inputState.getMouseMovement()};
+
+    if (inputState.getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) or inputState.getKey(GLFW_KEY_LEFT_ALT)) {
+        if (mouseMovement.x > 0.0f) {
+            move(Direction::Left, abs(mouseMovement.x));
+        }
+        else {
+            move(Direction::Right, abs(mouseMovement.x));
+        }
+
+        if (mouseMovement.y < 0.0f) {
+            move(Direction::Up, abs(mouseMovement.y));
+        }
+        else {
+            move(Direction::Down, abs(mouseMovement.y));
+        }
+    }
+
     if (inputState.getKeyDown(GLFW_KEY_C)) {
         resetPosition();
     }

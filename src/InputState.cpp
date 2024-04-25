@@ -40,16 +40,16 @@ void InputState::update(GLFWwindow* window) {
     mouseMovement.y = mousePosition.y - position.y;
     mousePosition = position;
 
-    std::swap(currentKeyState, previousKeyState);
-
-    for (const auto key : validKeys) {
-        currentKeyState[key] = glfwGetKey(window, key) == GLFW_PRESS;
-    }
-
     std::swap(currentMouseButtonState, previousMouseButtonState);
 
     for (const auto button : validMouseButtons) {
         currentMouseButtonState[button] = glfwGetMouseButton(window, button) == GLFW_PRESS;
+    }
+
+    std::swap(currentKeyState, previousKeyState);
+
+    for (const auto key : validKeys) {
+        currentKeyState[key] = glfwGetKey(window, key) == GLFW_PRESS;
     }
 }
 
