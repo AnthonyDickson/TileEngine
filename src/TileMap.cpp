@@ -60,9 +60,8 @@ void TileMap::render(const Camera& camera) const {
 
     // TODO: Change underlying Size types to glm::vec2.
     const auto cameraPosition{camera.getPosition()};
-    const auto [viewportWidth, viewportHeight]{camera.getViewportSize()};
     const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
-    const glm::vec2 viewport{viewportWidth, viewportHeight};
+    const glm::vec2 viewport{camera.getViewportSize()};
     const glm::vec2 tileSizeVec{tileSize.width, tileSize.height};
     const glm::vec2 mapSizeVec{mapSize.width, mapSize.height};
 

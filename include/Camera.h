@@ -28,10 +28,13 @@
 #include "Direction.h"
 #include "Size.h"
 
+#include <Camera.h>
+
 /** An object used to manipulate the view of a scene in OpenGL. */
 class Camera {
 private:
-    Size<float> viewport;
+    /** The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport. */
+    glm::vec2 viewport;
     /** The position of the camera in world space. */
     glm::vec3 position{};
 
@@ -41,7 +44,7 @@ private:
     static constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
 
 public:
-    Camera(Size<float> viewport_, glm::vec3 position_);
+    Camera(glm::vec2 viewport_, glm::vec3 position_);
 
     /**
      * Get the perspective matrix of the camera.
@@ -65,7 +68,7 @@ public:
      * Get the viewport size.
      * @return the width and height in pixels.
      */
-    [[nodiscard]] Size<float> getViewportSize() const;
+    [[nodiscard]] glm::vec2 getViewportSize() const;
 
     /**
      * Move/translate the camera.
@@ -83,7 +86,7 @@ public:
      * Update the camera to match the window size when the user resizes the window.
      * @param viewport_ The new window size.
      */
-    void onWindowResize(Size<float> viewport_);
+    void onWindowResize(const glm::vec2 viewport_);
 };
 
 

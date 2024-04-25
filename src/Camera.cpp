@@ -24,11 +24,11 @@
 
 #include "Camera.h"
 
-Camera::Camera(const Size<float> viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {
+Camera::Camera(const glm::vec2 viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {
 }
 
 glm::mat4 Camera::getPerspectiveMatrix() const {
-    return glm::ortho(-viewport.width / 2.0f, viewport.width / 2.0f, -viewport.height / 2.0f, viewport.height / 2.0f,
+    return glm::ortho(-viewport.x / 2.0f, viewport.x / 2.0f, -viewport.y / 2.0f, viewport.y / 2.0f,
                       0.1f, 1000.0f);
 }
 
@@ -40,7 +40,7 @@ glm::vec3 Camera::getPosition() const {
     return position;
 }
 
-Size<float> Camera::getViewportSize() const {
+glm::vec2 Camera::getViewportSize() const {
     return viewport;
 }
 
@@ -66,6 +66,6 @@ void Camera::resetPosition() {
     position.y = 0.0f;
 }
 
-void Camera::onWindowResize(const Size<float> viewport_) {
+void Camera::onWindowResize(const glm::vec2 viewport_) {
     viewport = viewport_;
 }
