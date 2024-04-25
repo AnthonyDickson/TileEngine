@@ -22,7 +22,7 @@
 
 #include "glad/glad.h"
 
-#include "Window.h"
+#include <EconSimPlusPlus/Window.h>
 
 bool Window::isInitialised = false;
 

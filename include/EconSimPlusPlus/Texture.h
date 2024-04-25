@@ -24,7 +24,7 @@
 
 #include "glad/glad.h"
 
-#include "Size.h"
+#include <EconSimPlusPlus/Size.h>
 
 /** Handles the creation and setup of an OpenGL texture from a image on disk.*/
 class Texture {

@@ -19,7 +19,7 @@
 // Created by Anthony Dickson on 20/04/2024.
 //
 
-#include "InputState.h"
+#include <EconSimPlusPlus/InputState.h>
 
 void InputState::update(GLFWwindow* window) {
     double xPosition{};

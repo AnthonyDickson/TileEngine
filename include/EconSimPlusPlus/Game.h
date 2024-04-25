@@ -22,8 +22,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "TileMap.h"
-#include "Window.h"
+#include <EconSimPlusPlus/TileMap.h>
+#include <EconSimPlusPlus/Window.h>
 
 class Game {
     /** This is the main class for the program. Wraps up and coordinates everything. */

@@ -30,7 +30,7 @@
 #include "light/DirectionalLight.h"
 #include "light/SpotLight.h"
 #include "light/PointLight.h"
-#include "Material.h"
+#include <EconSimPlusPlus/Material.h>
 
 /**
  * Handles the loading, compilation, linking and usage of an OpenGL shader program.

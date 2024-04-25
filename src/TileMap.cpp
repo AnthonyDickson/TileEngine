@@ -24,9 +24,9 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "yaml-cpp/yaml.h"
 
-#include "TileMap.h"
+#include <EconSimPlusPlus/TileMap.h>
 
-#include "Shader.h"
+#include <EconSimPlusPlus/Shader.h>
 
 TileMap::TileMap(std::shared_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
                  const std::vector<int>& tiles_) :

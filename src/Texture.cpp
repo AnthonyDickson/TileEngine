@@ -24,7 +24,7 @@
 
 #include "stb_image.h"
 
-#include "Texture.h"
+#include <EconSimPlusPlus/Texture.h>
 
 Texture::Texture(const unsigned int textureID_, const int textureUnit_, const Size<int> resolution_) :
     textureID(textureID_), textureUnit(textureUnit_), resolution(resolution_) {

@@ -28,7 +28,7 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "Shader.h"
+#include <EconSimPlusPlus/Shader.h>
 
 Shader::Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath) {
     // Load the shader source code.

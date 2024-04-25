@@ -22,7 +22,7 @@
 #include <cassert>
 #include <numeric>
 
-#include "VertexBuffer.h"
+#include <EconSimPlusPlus/VertexBuffer.h>
 
 VertexBuffer::VertexBuffer() {
     glGenBuffers(1, &vboID);

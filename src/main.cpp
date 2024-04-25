@@ -20,7 +20,7 @@
 //
 #include <iostream>
 
-#include "Game.h"
+#include <EconSimPlusPlus/Game.h>
 
 int main() {
     try {

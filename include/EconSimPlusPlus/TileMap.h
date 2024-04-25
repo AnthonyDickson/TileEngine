@@ -22,11 +22,11 @@
 #ifndef TILEMAP_H
 #define TILEMAP_H
 
-#include "Camera.h"
-#include "Shader.h"
-#include "Size.h"
-#include "Texture.h"
-#include "TileTypes.h"
+#include <EconSimPlusPlus/Camera.h>
+#include <EconSimPlusPlus/Shader.h>
+#include <EconSimPlusPlus/Size.h>
+#include <EconSimPlusPlus/Texture.h>
+#include <EconSimPlusPlus/TileTypes.h>
 
 /** Handles loading and accessing a textured-based tile map. */
 class TileMap {

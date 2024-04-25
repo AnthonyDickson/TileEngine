@@ -22,7 +22,7 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
-#include "Camera.h"
+#include <EconSimPlusPlus/Camera.h>
 
 Camera::Camera(const glm::vec2 viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {
 }

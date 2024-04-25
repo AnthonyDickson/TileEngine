@@ -22,8 +22,8 @@
 #ifndef TILETYPE_H
 #define TILETYPE_H
 
-#include "VertexArray.h"
-#include "VertexBuffer.h"
+#include <EconSimPlusPlus/VertexArray.h>
+#include <EconSimPlusPlus/VertexBuffer.h>
 
 /** Hold the properties of a tile type. */
 struct TileType {
