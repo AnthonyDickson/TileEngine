@@ -59,7 +59,6 @@ void TileMap::render(const Camera& camera) const {
     shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * camera.getViewMatrix());
     texture->bind();
 
-    // TODO: Change underlying Size types to glm::vec2.
     const auto cameraPosition{camera.getPosition()};
     const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
     const glm::vec2 viewport{camera.getViewportSize()};
@@ -79,14 +78,13 @@ void TileMap::render(const Camera& camera) const {
     const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.width);
 
     constexpr glm::mat4 identity{1.0f};
+    const auto scale{glm::scale(identity, glm::vec3{tileSize.x, tileSize.y, 0.0})};
 
     for (int row = rowStart; row < rowEnd; ++row) {
         for (int col = colStart; col < colEnd; ++col) {
-            glm::mat4 model =
-                glm::translate(identity,
-                               glm::vec3{(static_cast<float>(col) - mapSizeVec.x / 2.0f) * tileSize.x,
-                                         (static_cast<float>(row) - mapSizeVec.y / 2.0f) * tileSize.y, 0.0});
-            model = glm::scale(model, glm::vec3{tileSize.x, tileSize.y, 0.0});
+            glm::mat4 model = glm::translate(scale,
+                                             glm::vec3{(static_cast<float>(col) - mapSizeVec.x / 2.0f),
+                                                       (static_cast<float>(row) - mapSizeVec.y / 2.0f), 0.0});
 
             shader.setUniform("model", model);
             const int tileID{tiles.at(row * mapSize.width + col)};

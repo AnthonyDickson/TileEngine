@@ -26,9 +26,9 @@
 #include "glm/vec3.hpp"
 
 #include "Direction.h"
-#include "Size.h"
 
 #include <Camera.h>
+#include <InputState.h>
 
 /** An object used to manipulate the view of a scene in OpenGL. */
 class Camera {
@@ -71,6 +71,13 @@ public:
     [[nodiscard]] glm::vec2 getViewportSize() const;
 
     /**
+     * Update
+     * @param deltaTime The size of the step to take in terms of time (seconds).
+     * @param inputState The state of keyboard and mouse input.
+     */
+    void update(float deltaTime, const InputState& inputState);
+
+    /**
      * Move/translate the camera.
      * @param direction The direction to move the camera in.
      * @param speed How fast to move the camera.
@@ -86,7 +93,7 @@ public:
      * Update the camera to match the window size when the user resizes the window.
      * @param viewport_ The new window size.
      */
-    void onWindowResize(const glm::vec2 viewport_);
+    void onWindowResize(glm::vec2 viewport_);
 };
 
 

@@ -43,6 +43,29 @@ glm::vec3 Camera::getPosition() const {
 glm::vec2 Camera::getViewportSize() const {
     return viewport;
 }
+void Camera::update(const float deltaTime, const InputState& inputState) {
+    constexpr float speed = 512.0f;
+
+    if (inputState.getKey(GLFW_KEY_W)) {
+        move(Direction::Up, deltaTime * speed);
+    }
+
+    if (inputState.getKey(GLFW_KEY_S)) {
+        move(Direction::Down, deltaTime * speed);
+    }
+
+    if (inputState.getKey(GLFW_KEY_A)) {
+        move(Direction::Left, deltaTime * speed);
+    }
+
+    if (inputState.getKey(GLFW_KEY_D)) {
+        move(Direction::Right, deltaTime * speed);
+    }
+
+    if (inputState.getKeyDown(GLFW_KEY_C)) {
+        resetPosition();
+    }
+}
 
 void Camera::move(const Direction direction, const float speed) {
     switch (direction) {

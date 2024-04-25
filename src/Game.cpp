@@ -51,29 +51,7 @@ void Game::update(const float deltaTime) {
         camera.onWindowResize({static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())});
     }
 
-    const auto inputState = window->getInputState();
-
-    constexpr float speed = 512.0f;
-
-    if (inputState.getKey(GLFW_KEY_W)) {
-        camera.move(Direction::Up, deltaTime * speed);
-    }
-
-    if (inputState.getKey(GLFW_KEY_S)) {
-        camera.move(Direction::Down, deltaTime * speed);
-    }
-
-    if (inputState.getKey(GLFW_KEY_A)) {
-        camera.move(Direction::Left, deltaTime * speed);
-    }
-
-    if (inputState.getKey(GLFW_KEY_D)) {
-        camera.move(Direction::Right, deltaTime * speed);
-    }
-
-    if (inputState.getKeyDown(GLFW_KEY_C)) {
-        camera.resetPosition();
-    }
+    camera.update(deltaTime, window->getInputState());
 }
 
 void Game::render() const {

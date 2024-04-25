@@ -31,19 +31,19 @@
 /** Handles loading and accessing a textured-based tile map. */
 class TileMap {
 private:
-    std::shared_ptr<Texture> texture;
+    const std::shared_ptr<Texture> texture;
     /** The size (width and height) of a single tile in pixels. */
-    glm::vec2 tileSize;
+    const glm::vec2 tileSize;
     /** The size (width, height) of the tile sheet in tiles. */
-    Size<int> sheetSize;
+    const Size<int> sheetSize;
     /** The size (width, height) of the tile map in tiles. */
-    Size<int> mapSize;
+    const Size<int> mapSize;
     /** The tiles of the tile map. */
-    std::vector<int> tiles;
+    const std::vector<int> tiles;
     /** The info on the tile types. */
-    std::shared_ptr<TileTypes> tileTypes;
+    const std::shared_ptr<TileTypes> tileTypes;
     /** Shader to render textured tiles. */
-    Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
+    const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
 public:
     /**

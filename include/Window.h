@@ -22,15 +22,13 @@
 #ifndef ECONSIMPLUSPLUS_WINDOW_H
 #define ECONSIMPLUSPLUS_WINDOW_H
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <memory>
-
 #define GLFW_INCLUDE_NONE
 
 #include "GLFW/glfw3.h"
 
 #include "Camera.h"
 #include "InputState.h"
+#include "Size.h"
 
 /** Handles the basic functions of an OpenGL window. */
 class Window {
