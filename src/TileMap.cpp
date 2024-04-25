@@ -24,14 +24,15 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "yaml-cpp/yaml.h"
 
-#include "Shader.h"
 #include "TileMap.h"
+
+#include "Shader.h"
 
 TileMap::TileMap(std::shared_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
                  const std::vector<int>& tiles_) :
     texture(std::move(texture_)), tileSize(tileSize_),
-    sheetSize{static_cast<int>(texture->resolution.width / tileSize_.x),
-              static_cast<int>(texture->resolution.height / tileSize_.y)},
+    sheetSize{texture->resolution.width / static_cast<int>(tileSize_.x),
+              texture->resolution.height / static_cast<int>(tileSize_.y)},
     mapSize(mapSize_), tiles(tiles_), tileTypes(TileTypes::create(sheetSize)) {
 }
 
