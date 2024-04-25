@@ -16,8 +16,9 @@ add_executable(${PROJECT_NAME}
         src/Tile.cpp
         src/TileGrid.cpp
         src/TileGridView.cpp
-        src/TileRegistry.cpp
         src/TileMap.cpp
+        src/TileRegistry.cpp
+        src/TileTypes.cpp
         src/Window.cpp
         src/VertexArray.cpp
         src/VertexBuffer.cpp

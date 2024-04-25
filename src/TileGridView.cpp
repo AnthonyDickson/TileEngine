@@ -24,8 +24,8 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
-#include "InputState.h"
 #include "TileGridView.h"
+#include "InputState.h"
 
 TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size<int>& viewport_, const int tileSize_) :
     tileGrid(std::move(tileGrid_)), viewport(viewport_), tileSize(tileSize_) {
@@ -35,13 +35,9 @@ TileGridView::TileGridView(std::shared_ptr<const TileGrid> tileGrid_, const Size
         //         /
         //       /
         // [2, 5] -> [3]
-        0.0f, 1.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 
-        0.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 1.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
     };
 
     vao.bind();
@@ -93,9 +89,7 @@ void TileGridView::render(const glm::mat4& projectionViewMatrix) const {
     for (int row = 0; row < viewport.height; ++row) {
         for (int col = 0; col < viewport.width; ++col) {
             glm::mat4 model = translate(
-                identity,
-                glm::vec3{static_cast<float>(col * tileSize), static_cast<float>(row * tileSize), 0.0}
-            );
+                identity, glm::vec3{static_cast<float>(col * tileSize), static_cast<float>(row * tileSize), 0.0});
             model = scale(model, glm::vec3{tileSize, tileSize, 0.0});
 
             shader.setUniform("model", model);

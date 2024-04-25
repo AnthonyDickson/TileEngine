@@ -22,9 +22,10 @@
 #ifndef ECONSIMPLUSPLUS_CAMERA_H
 #define ECONSIMPLUSPLUS_CAMERA_H
 
-#include "glm/vec3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
+#include "glm/vec3.hpp"
 
+#include "Direction.h"
 #include "Size.h"
 
 /** An object used to manipulate the view of a scene in OpenGL. */
@@ -35,9 +36,10 @@ private:
     glm::vec3 position{};
 
     /** The point of interest that the camera is "looking at". Used for calculating the view matrix. */
-    static constexpr glm::vec3 center{0.0f, 0.0f, 0.0f};
+    static constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
     /** The up direction of the camera. Used for calculating the view matrix. */
     static constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
+
 public:
     Camera(Size<float> viewport_, glm::vec3 position_);
 
@@ -54,6 +56,30 @@ public:
     [[nodiscard]] glm::mat4 getViewMatrix() const;
 
     /**
+     * Get the camera position.
+     * @return A 3-vector position in world coordinates.
+     */
+    [[nodiscard]] glm::vec3 getPosition() const;
+
+    /**
+     * Get the viewport size.
+     * @return the width and height in pixels.
+     */
+    [[nodiscard]] Size<float> getViewportSize() const;
+
+    /**
+     * Move/translate the camera.
+     * @param direction The direction to move the camera in.
+     * @param speed How fast to move the camera.
+     */
+    void move(Direction direction, float speed);
+
+    /**
+     * Moves the camera back to origin.
+     */
+    void resetPosition();
+
+    /**
      * Update the camera to match the window size when the user resizes the window.
      * @param viewport_ The new window size.
      */
@@ -61,4 +87,4 @@ public:
 };
 
 
-#endif //ECONSIMPLUSPLUS_CAMERA_H
+#endif // ECONSIMPLUSPLUS_CAMERA_H

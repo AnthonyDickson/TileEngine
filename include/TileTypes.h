@@ -16,19 +16,26 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 25/04/2024.
 //
-#include <iostream>
 
-#include "Game.h"
+#ifndef TILETYPES_H
+#define TILETYPES_H
 
-int main() {
-    try {
-        auto game{Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
-    }
+#include "Size.h"
+#include "TileType.h"
 
-    return 0;
-}
+/** A collection of tile types. */
+class TileTypes {
+private:
+    std::vector<TileType> tileTypes{};
+
+public:
+    static std::shared_ptr<TileTypes> create(Size<int> sheetSize);
+
+    void render(int tileID) const;
+};
+
+
+
+#endif //TILETYPES_H

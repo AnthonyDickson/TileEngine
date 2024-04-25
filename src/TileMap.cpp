@@ -21,15 +21,17 @@
 
 #include <utility>
 
+#include "glm/ext/matrix_transform.hpp"
 #include "yaml-cpp/yaml.h"
 
 #include "TileMap.h"
+#include "Shader.h"
 
 TileMap::TileMap(std::shared_ptr<Texture> texture_, const Size<int> tileSize_, const Size<int> mapSize_,
                  const std::vector<int>& tiles_) :
     texture(std::move(texture_)), tileSize(tileSize_),
     sheetSize{texture->resolution.width / tileSize_.width, texture->resolution.height / tileSize_.height},
-    mapSize(mapSize_), tiles(tiles_) {
+    mapSize(mapSize_), tiles(tiles_), tileTypes(TileTypes::create(sheetSize)) {
 }
 
 std::shared_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
@@ -49,4 +51,46 @@ std::shared_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
     const auto tiles{tileMapNode["tiles"].as<std::vector<int>>()};
 
     return std::make_shared<TileMap>(texture, tileSize, tileMapSize, tiles);
+}
+
+void TileMap::render(const Camera& camera) const {
+    shader.bind();
+    shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * camera.getViewMatrix());
+    texture->bind();
+
+    // TODO: Change underlying Size types to glm::vec2.
+    const auto cameraPosition{camera.getPosition()};
+    const auto [viewportWidth, viewportHeight]{camera.getViewportSize()};
+    const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
+    const glm::vec2 viewport{viewportWidth, viewportHeight};
+    const glm::vec2 tileSizeVec{tileSize.width, tileSize.height};
+    const glm::vec2 mapSizeVec{mapSize.width, mapSize.height};
+
+    const auto viewBottomLeft{cameraPosition2D - viewport / 2.0f};
+    const auto viewTopRight{cameraPosition2D + viewport / 2.0f};
+    const auto gridOffsetMin{viewBottomLeft / tileSizeVec};
+    const auto gridOffsetMax{viewTopRight / tileSizeVec};
+    const glm::vec2 gridCoordinatesMin{gridOffsetMin + mapSizeVec / 2.0f};
+    const glm::vec2 gridCoordinatesMax{gridOffsetMax + mapSizeVec / 2.0f};
+
+    const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
+    const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + 1, mapSize.height);
+
+    const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
+    const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.width);
+
+    constexpr glm::mat4 identity{1.0f};
+
+    for (int row = rowStart; row < rowEnd; ++row) {
+        for (int col = colStart; col < colEnd; ++col) {
+            glm::mat4 model = glm::translate(identity,
+                                             glm::vec3{(static_cast<float>(col) - mapSizeVec.x / 2.0f) * tileSizeVec.x,
+                                                       (static_cast<float>(row) - mapSizeVec.y / 2.0f) * tileSizeVec.y, 0.0});
+            model = glm::scale(model, glm::vec3{tileSize.width, tileSize.height, 0.0});
+
+            shader.setUniform("model", model);
+            const int tileID{tiles.at(row * mapSize.width + col)};
+            tileTypes->render(tileID);
+        }
+    }
 }

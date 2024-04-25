@@ -19,20 +19,51 @@
 // Created by Anthony on 26/03/2024.
 //
 
-#include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
 
 #include "Camera.h"
 
-Camera::Camera(const Size<float> viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {}
+Camera::Camera(const Size<float> viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {
+}
 
 glm::mat4 Camera::getPerspectiveMatrix() const {
-    // Putting window height then 0 causing (0, 0) to start from the top left (i.e. y positive points down).
-    return glm::ortho(0.0f, viewport.width, viewport.height, 0.0f, 0.1f, 1000.0f);
+    return glm::ortho(-viewport.width / 2.0f, viewport.width / 2.0f, -viewport.height / 2.0f, viewport.height / 2.0f,
+                      0.1f, 1000.0f);
 }
 
 glm::mat4 Camera::getViewMatrix() const {
-    return lookAt(position, center, up);
+    return lookAt(position, forward + position, up);
+}
+
+glm::vec3 Camera::getPosition() const {
+    return position;
+}
+
+Size<float> Camera::getViewportSize() const {
+    return viewport;
+}
+
+void Camera::move(const Direction direction, const float speed) {
+    switch (direction) {
+    case Direction::Up:
+        position.y += speed;
+        break;
+    case Direction::Down:
+        position.y -= speed;
+        break;
+    case Direction::Left:
+        position.x -= speed;
+        break;
+    case Direction::Right:
+        position.x += speed;
+        break;
+    }
+}
+
+void Camera::resetPosition() {
+    position.x = 0.0f;
+    position.y = 0.0f;
 }
 
 void Camera::onWindowResize(const Size<float> viewport_) {

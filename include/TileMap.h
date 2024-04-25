@@ -22,8 +22,12 @@
 #ifndef TILEMAP_H
 #define TILEMAP_H
 
+#include "Camera.h"
+#include "Shader.h"
 #include "Size.h"
 #include "Texture.h"
+#include "TileType.h"
+#include "TileTypes.h"
 
 /** Handles loading and accessing a textured-based tile map. */
 class TileMap {
@@ -37,6 +41,10 @@ private:
     Size<int> mapSize;
     /** The tiles of the tile map. */
     std::vector<int> tiles;
+    /** The info on the tile types. */
+    std::shared_ptr<TileTypes> tileTypes;
+    /** Shader to render textured tiles. */
+    Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
 public:
     /**
@@ -53,6 +61,12 @@ public:
      * @return A `TileMap` pointer.
      */
     static std::shared_ptr<TileMap> create(const std::string& yamlPath);
+
+    /**
+     * Draw the tile map on screen.
+     * @param camera The camera to render the tile map with.
+     */
+    void render(const Camera& camera) const;
 };
 
 #endif // TILEMAP_H

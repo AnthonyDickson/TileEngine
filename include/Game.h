@@ -22,8 +22,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "TileGrid.h"
-#include "TileGridView.h"
+#include "TileMap.h"
 #include "Window.h"
 
 class Game {
@@ -33,9 +32,7 @@ private:
     std::unique_ptr<Window> window;
 
     /** The game 'map'. */
-    std::shared_ptr<TileGrid> tileGrid;
-    /** The view into the tile grid that is shown to the player, basically a camera. */
-    std::shared_ptr<TileGridView> tileGridView;
+    std::shared_ptr<TileMap> tileMap;
     /** The render camera. */
     Camera camera;
 
@@ -45,19 +42,22 @@ private:
     /**
      * Create a new game instance.
      * @param window_ The window to display the game on.
-     * @param tileGrid_ The tile grid to use as the 'map'.
-     * @param tileGridView_ The view of a tile grid to show the user.
+     * @param tileMap_ The game map made up of square tiles.
      */
-    Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_, std::shared_ptr<TileGridView> tileGridView_);
+    Game(std::unique_ptr<Window> window_,  std::shared_ptr<TileMap> tileMap_);
 
 public:
-    static Game create(Size<int> windowSize, Size<int> tileGridSize, int tileSize);
+    static Game create(Size<int> windowSize);
 
     Game(Game&) = delete;
     Game(Game&&) = delete;
 
-    /** Update the game by one step. */
-    void update();
+    /**
+     * Update the game by one step.
+     * @param deltaTime the size of the step to take in term of time (seconds).
+     */
+    void update(float deltaTime);
+
     /** Render the game to the screen. */
     void render() const;
 

@@ -16,19 +16,18 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 25/04/2024.
 //
-#include <iostream>
 
-#include "Game.h"
+#ifndef DIRECTION_H
+#define DIRECTION_H
 
-int main() {
-    try {
-        auto game{Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
-    }
 
-    return 0;
-}
+
+enum class Direction {
+Up, Down, Left, Right
+};
+
+
+
+#endif //DIRECTION_H

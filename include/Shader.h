@@ -24,6 +24,8 @@
 
 #include <vector>
 
+#include "glm/mat4x4.hpp"
+
 #include "light/Light.h"
 #include "light/DirectionalLight.h"
 #include "light/SpotLight.h"

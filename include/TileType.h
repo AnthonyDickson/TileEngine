@@ -16,19 +16,24 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 25/04/2024.
 //
-#include <iostream>
 
-#include "Game.h"
+#ifndef TILETYPE_H
+#define TILETYPE_H
 
-int main() {
-    try {
-        auto game{Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+
+/** Hold the properties of a tile type. */
+struct TileType {
+    std::unique_ptr<VertexArray> vao;
+    std::unique_ptr<VertexBuffer> vbo;
+
+    explicit TileType(std::unique_ptr<VertexArray> vao_, std::unique_ptr<VertexBuffer> vbo_) :
+        vao(std::move(vao_)), vbo(std::move(vbo_)) {
     }
+};
 
-    return 0;
-}
+
+#endif // TILETYPE_H

@@ -19,18 +19,18 @@
 // Created by Anthony on 23/03/2024.
 //
 
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <format>
 
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Shader.h"
 
-Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fragmentShaderSourcePath) {
+Shader::Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath) {
     // Load the shader source code.
     std::ifstream vertexShaderFile{};
     std::ifstream fragmentShaderFile{};
@@ -57,13 +57,14 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
 
         vertexShaderFile.close();
         fragmentShaderFile.close();
-    } catch (std::ifstream::failure &) {
+    }
+    catch (std::ifstream::failure&) {
         std::cout << "ERROR::SHADER::CANNOT_READ_FILE: " << vertexShaderSourcePath << ", ";
         std::cout << fragmentShaderSourcePath << std::endl;
     }
 
-    const char *vertexShaderSource{vertexShaderString.c_str()};
-    const char *fragmentShaderSource{fragmentShaderString.c_str()};
+    const char* vertexShaderSource{vertexShaderString.c_str()};
+    const char* fragmentShaderSource{fragmentShaderString.c_str()};
 
     // Compile the vertex shader.
     unsigned int vertexShaderId{glCreateShader(GL_VERTEX_SHADER)};
@@ -78,8 +79,8 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     if (!vertexShaderCompiled) {
         char infoLog[infoLogSize];
         glGetShaderInfoLog(vertexShaderId, infoLogSize, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED " << vertexShaderSourcePath << "\n" << infoLog
-                  << std::endl;
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED " << vertexShaderSourcePath << "\n"
+                  << infoLog << std::endl;
     }
 
     // Compile the fragment shader.
@@ -93,8 +94,8 @@ Shader::Shader(const std::string &vertexShaderSourcePath, const std::string &fra
     if (!fragmentShaderCompiled) {
         char infoLog[infoLogSize];
         glGetShaderInfoLog(fragmentShaderId, infoLogSize, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED " << fragmentShaderSourcePath << "\\n" << infoLog
-                  << std::endl;
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED " << fragmentShaderSourcePath << "\\n"
+                  << infoLog << std::endl;
     }
 
     // Compile the shader program.
@@ -124,53 +125,53 @@ void Shader::bind() const {
     glUseProgram(shaderProgramID);
 }
 
-int Shader::getUniformLocation(const std::string &name) const {
+int Shader::getUniformLocation(const std::string& name) const {
     const int location{glGetUniformLocation(shaderProgramID, name.c_str())};
     assert(location != -1 && "Uniform name does not exist in the shader source code.");
 
     return location;
 }
 
-[[maybe_unused]] void Shader::setUniform(const std::string &name, const bool value) const {
+[[maybe_unused]] void Shader::setUniform(const std::string& name, const bool value) const {
     setUniform(name, static_cast<int>(value));
 }
 
-void Shader::setUniform(const std::string &name, const int value) const {
+void Shader::setUniform(const std::string& name, const int value) const {
     glUniform1i(getUniformLocation(name), value);
 }
 
-void Shader::setUniform(const std::string &name, const float value) const {
+void Shader::setUniform(const std::string& name, const float value) const {
     glUniform1f(getUniformLocation(name), value);
 }
 
-void Shader::setUniform(const std::string &name, const glm::vec3 &value) const {
+void Shader::setUniform(const std::string& name, const glm::vec3& value) const {
     glUniform3fv(getUniformLocation(name), 1, value_ptr(value));
 }
 
-void Shader::setUniform(const std::string &name, const glm::mat4x4 &value) const {
+void Shader::setUniform(const std::string& name, const glm::mat4x4& value) const {
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value_ptr(value));
 }
 
-void Shader::setUniform(const std::string &name, const Material &value) const {
+void Shader::setUniform(const std::string& name, const Material& value) const {
     setUniform(name + ".diffuse", value.diffuseTextureUnit);
     setUniform(name + ".specular", value.specularTextureUnit);
     setUniform(name + ".shininess", value.shininess);
 }
 
-void Shader::setUniform(const std::string &name, const Light &value) const {
+void Shader::setUniform(const std::string& name, const Light& value) const {
     setUniform(name + ".position", value.position);
     setUniform(name + ".ambient", value.ambient);
     setUniform(name + ".diffuse", value.diffuse);
     setUniform(name + ".specular", value.specular);
 }
 
-void Shader::setUniform(const std::string &name, const DirectionalLight &value) const {
+void Shader::setUniform(const std::string& name, const DirectionalLight& value) const {
     setUniform(name + ".direction", value.direction);
     setUniform(name + ".color", value.color);
     setUniform(name + ".intensity", value.intensity);
 }
 
-void Shader::setUniform(const std::string &name, const SpotLight &value) const {
+void Shader::setUniform(const std::string& name, const SpotLight& value) const {
     setUniform(name + ".position", value.position);
     setUniform(name + ".direction", value.direction);
 
@@ -184,7 +185,7 @@ void Shader::setUniform(const std::string &name, const SpotLight &value) const {
 }
 
 
-void Shader::setUniform(const std::string &name, const PointLight &value) const {
+void Shader::setUniform(const std::string& name, const PointLight& value) const {
     setUniform(name + ".position", value.position);
 
     setUniform(name + ".color", value.color);
@@ -193,7 +194,7 @@ void Shader::setUniform(const std::string &name, const PointLight &value) const 
     setUniform(name + ".quadratic", value.quadratic);
 }
 
-void Shader::setUniform(const std::string &name, const std::vector<PointLight> &value) const {
+void Shader::setUniform(const std::string& name, const std::vector<PointLight>& value) const {
     for (int i = 0; i < value.size(); ++i) {
         setUniform(std::format("{:s}[{:d}]", name, i), value[i]);
     }

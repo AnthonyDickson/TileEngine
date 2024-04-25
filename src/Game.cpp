@@ -27,42 +27,53 @@
 
 #include "Game.h"
 #include "Size.h"
-#include "TileRegistry.h"
-#include "TileMap.h"
 
 bool Game::isInitialised = false;
 
-Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileGrid> tileGrid_,
-           std::shared_ptr<TileGridView> tileGridView_) :
-    window(std::move(window_)), tileGrid(std::move(tileGrid_)), tileGridView(std::move(tileGridView_)),
+Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileMap> tileMap_) :
+    window(std::move(window_)),
+    tileMap(std::move(tileMap_)),
     camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
     assert(!isInitialised && "Cannot have more than one instance of `Game`.");
     isInitialised = true;
 }
 
-Game Game::create(Size<int> windowSize, Size<int> tileGridSize, const int tileSize) {
+Game Game::create(Size<int> windowSize) {
     auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
 
-    const auto tileGrid{std::make_shared<TileGrid>(tileGridSize.width, tileGridSize.height)};
-    // TODO: Use the below tileMap instead of tileGrid.
     const auto tileMap{TileMap::create("resource/terrain.yaml")};
 
-    const int tilesPerHeight = windowSize.height / tileSize;
-    const int tilesPerWidth = windowSize.width / tileSize;
-    // ReSharper disable once CppTemplateArgumentsCanBeDeduced
-    const Size<int> viewport{tilesPerWidth, tilesPerHeight};
-    const auto tileGridView{std::make_shared<TileGridView>(tileGrid, viewport, tileSize)};
-
-    return {std::move(window), tileGrid, tileGridView};
+    return {std::move(window), tileMap};
 }
 
-void Game::update() {
+void Game::update(const float deltaTime) {
     if (window->hasWindowSizeChanged()) {
         camera.onWindowResize({static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())});
-        tileGridView->updateViewport(window->getSize());
     }
 
-    tileGridView->processInput(window->getInputState());
+    const auto inputState = window->getInputState();
+
+    constexpr float speed = 512.0f;
+
+    if (inputState.getKey(GLFW_KEY_W)) {
+        camera.move(Direction::Up, deltaTime * speed);
+    }
+
+    if (inputState.getKey(GLFW_KEY_S)) {
+        camera.move(Direction::Down, deltaTime * speed);
+    }
+
+    if (inputState.getKey(GLFW_KEY_A)) {
+        camera.move(Direction::Left, deltaTime * speed);
+    }
+
+    if (inputState.getKey(GLFW_KEY_D)) {
+        camera.move(Direction::Right, deltaTime * speed);
+    }
+
+    if (inputState.getKeyDown(GLFW_KEY_C)) {
+        camera.resetPosition();
+    }
 }
 
 void Game::render() const {
@@ -70,23 +81,15 @@ void Game::render() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    const glm::mat4 projectionViewMatrix = camera.getPerspectiveMatrix() * camera.getViewMatrix();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    tileGridView->render(projectionViewMatrix);
+    glEnable(GL_CULL_FACE);
+
+    tileMap->render(camera);
 }
 
 void Game::run() {
-    auto container{Texture::create("resource/container2.png", GL_TEXTURE0)};
-    auto awesomeFace{Texture::create("resource/awesomeface.png", GL_TEXTURE0)};
-
-    tileGrid->registerTile(container);
-    tileGrid->registerTile(awesomeFace);
-    tileGrid->at(0, 0) = 1;
-    tileGrid->at(15, 15) = 1;
-    tileGrid->at(31, 31) = 1;
-    tileGrid->at(47, 47) = 1;
-    tileGrid->at(63, 63) = 1;
-
     constexpr auto targetFramesPerSecond{60};
     constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
 
@@ -96,6 +99,7 @@ void Game::run() {
         const auto currentTime{std::chrono::steady_clock::now()};
         const auto deltaTime{currentTime - lastFrameTime};
         lastFrameTime = currentTime;
+        const auto deltaTimeSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime);
 
         if (deltaTime < targetFrameTime) {
             std::this_thread::sleep_for(targetFrameTime - deltaTime);
@@ -107,7 +111,7 @@ void Game::run() {
         }
 
         window->preUpdate();
-        update();
+        update(deltaTimeSeconds.count());
         render();
         window->postUpdate();
     }
