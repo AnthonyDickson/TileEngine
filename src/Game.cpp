@@ -92,6 +92,7 @@ void Game::render() const {
 void Game::run() {
     constexpr auto targetFramesPerSecond{60};
     constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
+    constexpr auto timeStep{1.0f / targetFramesPerSecond};
 
     auto lastFrameTime{std::chrono::steady_clock::now()};
 
@@ -99,7 +100,6 @@ void Game::run() {
         const auto currentTime{std::chrono::steady_clock::now()};
         const auto deltaTime{currentTime - lastFrameTime};
         lastFrameTime = currentTime;
-        const auto deltaTimeSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime);
 
         if (deltaTime < targetFrameTime) {
             std::this_thread::sleep_for(targetFrameTime - deltaTime);
@@ -111,7 +111,7 @@ void Game::run() {
         }
 
         window->preUpdate();
-        update(deltaTimeSeconds.count());
+        update(timeStep);
         render();
         window->postUpdate();
     }
