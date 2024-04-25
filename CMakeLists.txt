@@ -13,11 +13,7 @@ add_executable(${PROJECT_NAME}
         src/InputState.cpp
         src/Shader.cpp
         src/Texture.cpp
-        src/Tile.cpp
-        src/TileGrid.cpp
-        src/TileGridView.cpp
         src/TileMap.cpp
-        src/TileRegistry.cpp
         src/TileTypes.cpp
         src/Window.cpp
         src/VertexArray.cpp
