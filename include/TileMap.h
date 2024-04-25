@@ -26,7 +26,6 @@
 #include "Shader.h"
 #include "Size.h"
 #include "Texture.h"
-#include "TileType.h"
 #include "TileTypes.h"
 
 /** Handles loading and accessing a textured-based tile map. */
@@ -34,7 +33,7 @@ class TileMap {
 private:
     std::shared_ptr<Texture> texture;
     /** The size (width and height) of a single tile in pixels. */
-    Size<int> tileSize;
+    glm::vec2 tileSize;
     /** The size (width, height) of the tile sheet in tiles. */
     Size<int> sheetSize;
     /** The size (width, height) of the tile map in tiles. */
@@ -53,7 +52,7 @@ public:
      * @param mapSize_ The size (width, height) of the tile map in tiles.
      * @param tiles_ The tiles in the tile map by integer ID. Zero indicates an empty tile.
      */
-    TileMap(std::shared_ptr<Texture> texture_, Size<int> tileSize_, Size<int> mapSize_, const std::vector<int>& tiles_);
+    TileMap(std::shared_ptr<Texture> texture_, glm::vec2 tileSize_, Size<int> mapSize_, const std::vector<int>& tiles_);
 
     /**
      * Construct a `TileMap` object from a YAML file.

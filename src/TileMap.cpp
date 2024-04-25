@@ -24,13 +24,14 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "yaml-cpp/yaml.h"
 
-#include "TileMap.h"
 #include "Shader.h"
+#include "TileMap.h"
 
-TileMap::TileMap(std::shared_ptr<Texture> texture_, const Size<int> tileSize_, const Size<int> mapSize_,
+TileMap::TileMap(std::shared_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
                  const std::vector<int>& tiles_) :
     texture(std::move(texture_)), tileSize(tileSize_),
-    sheetSize{texture->resolution.width / tileSize_.width, texture->resolution.height / tileSize_.height},
+    sheetSize{static_cast<int>(texture->resolution.width / tileSize_.x),
+              static_cast<int>(texture->resolution.height / tileSize_.y)},
     mapSize(mapSize_), tiles(tiles_), tileTypes(TileTypes::create(sheetSize)) {
 }
 
@@ -43,7 +44,7 @@ std::shared_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
 
     const auto tileSizeNode{tileSheetNode["tile-size"]};
     // ReSharper disable once CppTemplateArgumentsCanBeDeduced
-    const Size<int> tileSize{tileSizeNode["width"].as<int>(), tileSizeNode["height"].as<int>()};
+    const glm::vec2 tileSize{tileSizeNode["width"].as<int>(), tileSizeNode["height"].as<int>()};
 
     const auto tileMapNode{tileMapConfig["tile-map"]};
     // ReSharper disable once CppTemplateArgumentsCanBeDeduced
@@ -62,13 +63,12 @@ void TileMap::render(const Camera& camera) const {
     const auto cameraPosition{camera.getPosition()};
     const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
     const glm::vec2 viewport{camera.getViewportSize()};
-    const glm::vec2 tileSizeVec{tileSize.width, tileSize.height};
     const glm::vec2 mapSizeVec{mapSize.width, mapSize.height};
 
     const auto viewBottomLeft{cameraPosition2D - viewport / 2.0f};
     const auto viewTopRight{cameraPosition2D + viewport / 2.0f};
-    const auto gridOffsetMin{viewBottomLeft / tileSizeVec};
-    const auto gridOffsetMax{viewTopRight / tileSizeVec};
+    const auto gridOffsetMin{viewBottomLeft / tileSize};
+    const auto gridOffsetMax{viewTopRight / tileSize};
     const glm::vec2 gridCoordinatesMin{gridOffsetMin + mapSizeVec / 2.0f};
     const glm::vec2 gridCoordinatesMax{gridOffsetMax + mapSizeVec / 2.0f};
 
@@ -82,10 +82,11 @@ void TileMap::render(const Camera& camera) const {
 
     for (int row = rowStart; row < rowEnd; ++row) {
         for (int col = colStart; col < colEnd; ++col) {
-            glm::mat4 model = glm::translate(identity,
-                                             glm::vec3{(static_cast<float>(col) - mapSizeVec.x / 2.0f) * tileSizeVec.x,
-                                                       (static_cast<float>(row) - mapSizeVec.y / 2.0f) * tileSizeVec.y, 0.0});
-            model = glm::scale(model, glm::vec3{tileSize.width, tileSize.height, 0.0});
+            glm::mat4 model =
+                glm::translate(identity,
+                               glm::vec3{(static_cast<float>(col) - mapSizeVec.x / 2.0f) * tileSize.x,
+                                         (static_cast<float>(row) - mapSizeVec.y / 2.0f) * tileSize.y, 0.0});
+            model = glm::scale(model, glm::vec3{tileSize.x, tileSize.y, 0.0});
 
             shader.setUniform("model", model);
             const int tileID{tiles.at(row * mapSize.width + col)};
