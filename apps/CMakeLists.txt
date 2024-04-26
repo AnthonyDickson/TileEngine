@@ -1,2 +1,2 @@
-add_executable(Game game.cpp)
-target_link_libraries(Game LibEconSimPlusPlus)
+add_executable(EconSimPlusPlus game.cpp)
+target_link_libraries(EconSimPlusPlus LibEconSimPlusPlus)

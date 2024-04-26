@@ -22,6 +22,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
@@ -36,6 +37,8 @@ namespace EconSimPlusPlus {
         std::unique_ptr<TileMap> tileMap;
         /// The render camera.
         Camera camera;
+        /// The font for rendering text on screen.
+        std::unique_ptr<Font> font{Font::create("resource/VCR_OSD_MONO_1.001.ttf")};
 
         /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
         static bool isInitialised;

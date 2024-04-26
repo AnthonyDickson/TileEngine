@@ -40,7 +40,6 @@ namespace EconSimPlusPlus {
 
     Game Game::create(Size<int> windowSize) {
         auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
-
         auto tileMap{TileMap::create("resource/terrain.yaml")};
 
         return {std::move(window), std::move(tileMap)};
@@ -64,7 +63,10 @@ namespace EconSimPlusPlus {
 
         glEnable(GL_CULL_FACE);
 
+        // TODO: Profile render steps.
+        // TODO: Add mechanism to ensure different layers, such text and tile maps, are not rendered on top of each other (e.g., specify z coordinates).
         tileMap->render(camera);
+        font->render("Hello, world!", {}, 1.0f, {1.0f, 0.0f, 1.0f});
     }
 
     void Game::run() {

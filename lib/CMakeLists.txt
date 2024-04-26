@@ -32,6 +32,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(yaml-cpp)
 
+# TODO: Make sure freetype uses this harfbuzz instead of system harfbuzz.
 # HarfBuzz, a dependency of FreeType.
 FetchContent_Declare(
         harfbuzz
