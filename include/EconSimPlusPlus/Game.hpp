@@ -33,7 +33,7 @@ namespace EconSimPlusPlus {
         std::unique_ptr<Window> window;
 
         /// The game 'map'.
-        std::shared_ptr<TileMap> tileMap;
+        std::unique_ptr<TileMap> tileMap;
         /// The render camera.
         Camera camera;
 
@@ -45,7 +45,7 @@ namespace EconSimPlusPlus {
          * @param window_ The window to display the game on.
          * @param tileMap_ The game map made up of square tiles.
          */
-        Game(std::unique_ptr<Window> window_, std::shared_ptr<TileMap> tileMap_);
+        Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_);
 
     public:
         static Game create(Size<int> windowSize);

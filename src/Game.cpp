@@ -31,7 +31,7 @@
 namespace EconSimPlusPlus {
     bool Game::isInitialised = false;
 
-    Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileMap> tileMap_) :
+    Game::Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_) :
         window(std::move(window_)), tileMap(std::move(tileMap_)),
         camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
         assert(!isInitialised && "Cannot have more than one instance of `Game`.");
@@ -41,9 +41,9 @@ namespace EconSimPlusPlus {
     Game Game::create(Size<int> windowSize) {
         auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
 
-        const auto tileMap{TileMap::create("resource/terrain.yaml")};
+        auto tileMap{TileMap::create("resource/terrain.yaml")};
 
-        return {std::move(window), tileMap};
+        return {std::move(window), std::move(tileMap)};
     }
 
     void Game::update(const float deltaTime) {

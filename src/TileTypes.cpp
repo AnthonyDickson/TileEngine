@@ -24,7 +24,7 @@
 #include <EconSimPlusPlus/TileTypes.hpp>
 
 namespace EconSimPlusPlus {
-    std::shared_ptr<TileTypes> TileTypes::create(const Size<int> sheetSize) {
+    std::unique_ptr<TileTypes> TileTypes::create(const Size<int> sheetSize) {
         const std::vector vertexAttributeSizes{2, 2};
         const auto dataPointsPerVertex{std::reduce(vertexAttributeSizes.begin(), vertexAttributeSizes.end())};
 
@@ -32,7 +32,7 @@ namespace EconSimPlusPlus {
         const auto height{1.0f / static_cast<float>(sheetSize.height)};
         std::vector<float> vertexData(dataPointsPerVertex * 6);
 
-        auto tileTypes{std::make_shared<TileTypes>()};
+        auto tileTypes{std::make_unique<TileTypes>()};
         tileTypes->tileTypes.reserve(sheetSize.width * sheetSize.height);
 
         for (int row = 0; row < sheetSize.height; ++row) {

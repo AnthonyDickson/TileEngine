@@ -32,7 +32,7 @@ namespace EconSimPlusPlus {
     }
 
 
-    std::shared_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
+    std::unique_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
         int width{};
         int height{};
         int channelCount{};
@@ -78,7 +78,7 @@ namespace EconSimPlusPlus {
         // ReSharper disable once CppTemplateArgumentsCanBeDeduced
         const Size<int> resolution{width, height};
 
-        return std::make_shared<Texture>(textureID, textureUnit_, resolution);
+        return std::make_unique<Texture>(textureID, textureUnit_, resolution);
     }
 
     Texture::~Texture() {

@@ -52,7 +52,7 @@ namespace EconSimPlusPlus {
          * @param imagePath The path to an image.
          * @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
          */
-        static std::shared_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
+        static std::unique_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
 
         /// Delete copy constructor to avoid OpenGL issues.
         Texture(Texture&) = delete;

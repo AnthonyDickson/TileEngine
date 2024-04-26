@@ -32,7 +32,7 @@ namespace EconSimPlusPlus {
     /** Handles loading and accessing a textured-based tile map. */
     class TileMap {
     private:
-        const std::shared_ptr<Texture> texture;
+        const std::unique_ptr<Texture> texture;
         /// The size (width and height) of a single tile in pixels.
         const glm::vec2 tileSize;
         /// The size (width, height) of the tile sheet in tiles.
@@ -42,7 +42,7 @@ namespace EconSimPlusPlus {
         /// The tiles of the tile map.
         const std::vector<int> tiles;
         /// The info on the tile types.
-        const std::shared_ptr<TileTypes> tileTypes;
+        const std::unique_ptr<TileTypes> tileTypes;
         /// Shader to render textured tiles.
         const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
@@ -53,7 +53,7 @@ namespace EconSimPlusPlus {
          * @param mapSize_ The size (width, height) of the tile map in tiles.
          * @param tiles_ The tiles in the tile map by integer ID. Zero indicates an empty tile.
          */
-        TileMap(std::shared_ptr<Texture> texture_, glm::vec2 tileSize_, Size<int> mapSize_,
+        TileMap(std::unique_ptr<Texture> texture_, glm::vec2 tileSize_, Size<int> mapSize_,
                 const std::vector<int>& tiles_);
 
         /**
@@ -61,7 +61,7 @@ namespace EconSimPlusPlus {
          * @param yamlPath The path to a YAML formatted tile map document.
          * @return A `TileMap` pointer.
          */
-        static std::shared_ptr<TileMap> create(const std::string& yamlPath);
+        static std::unique_ptr<TileMap> create(const std::string& yamlPath);
 
         /**
          * Draw the tile map on screen.

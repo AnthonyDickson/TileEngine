@@ -32,7 +32,7 @@ namespace EconSimPlusPlus {
         std::vector<TileType> tileTypes{};
 
     public:
-        static std::shared_ptr<TileTypes> create(Size<int> sheetSize);
+        static std::unique_ptr<TileTypes> create(Size<int> sheetSize);
 
         void render(int tileID) const;
     };

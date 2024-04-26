@@ -29,7 +29,7 @@
 #include <EconSimPlusPlus/Shader.hpp>
 
 namespace EconSimPlusPlus {
-    TileMap::TileMap(std::shared_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
+    TileMap::TileMap(std::unique_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
                      const std::vector<int>& tiles_) :
         texture(std::move(texture_)), tileSize(tileSize_),
         sheetSize{texture->resolution.width / static_cast<int>(tileSize_.x),
@@ -37,12 +37,12 @@ namespace EconSimPlusPlus {
         mapSize(mapSize_), tiles(tiles_), tileTypes(TileTypes::create(sheetSize)) {
     }
 
-    std::shared_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
+    std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
         const auto tileMapConfig{YAML::LoadFile(yamlPath)};
         const auto tileSheetNode{tileMapConfig["tile-sheet"]};
 
         const auto texturePath{tileSheetNode["path"].as<std::string>()};
-        const auto texture{Texture::create(texturePath)};
+        auto texture{Texture::create(texturePath)};
 
         const auto tileSizeNode{tileSheetNode["tile-size"]};
         // ReSharper disable once CppTemplateArgumentsCanBeDeduced
@@ -53,7 +53,7 @@ namespace EconSimPlusPlus {
         const Size<int> tileMapSize{tileMapNode["width"].as<int>(), tileMapNode["height"].as<int>()};
         const auto tiles{tileMapNode["tiles"].as<std::vector<int>>()};
 
-        return std::make_shared<TileMap>(texture, tileSize, tileMapSize, tiles);
+        return std::make_unique<TileMap>(std::move(texture), tileSize, tileMapSize, tiles);
     }
 
     void TileMap::render(const Camera& camera) const {
