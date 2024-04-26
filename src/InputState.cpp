@@ -55,6 +55,9 @@ namespace EconSimPlusPlus {
     }
 
     void InputState::postUpdate() {
+        // Since scroll wheel movement cannot be polled, it must be accumulated between update steps.
+        // This function must be called AFTER the main game update step to ensure that the update steps have access to
+        // the correct cumulative scroll wheel movement since the last frame.
         scrollDelta = 0.0f;
     }
 

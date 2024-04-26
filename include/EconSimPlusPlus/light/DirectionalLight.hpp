@@ -24,7 +24,7 @@
 
 #include "glm/vec3.hpp"
 
-/** The properties of a directional light source. */
+/// The properties of a directional light source.
 struct DirectionalLight {
     glm::vec3 direction;
 

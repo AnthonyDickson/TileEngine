@@ -26,7 +26,7 @@
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
-    /** Hold the properties of a tile type. */
+    /// Hold the properties of a tile type.
     struct TileType {
         std::unique_ptr<VertexArray> vao;
         std::unique_ptr<VertexBuffer> vbo;

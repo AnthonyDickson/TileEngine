@@ -26,7 +26,7 @@
 #include <EconSimPlusPlus/TileType.hpp>
 
 namespace EconSimPlusPlus {
-    /** A collection of tile types. */
+    /// A collection of tile types.
     class TileTypes {
     private:
         std::vector<TileType> tileTypes{};

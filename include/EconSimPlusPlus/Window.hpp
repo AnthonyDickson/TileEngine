@@ -31,22 +31,22 @@
 #include <EconSimPlusPlus/Size.hpp>
 
 namespace EconSimPlusPlus {
-    /** Handles the basic functions of an OpenGL window. */
+    /// Handles the basic functions of an OpenGL window.
     class Window {
     private:
-        /** Handle to the GLFW window object. */
+        /// Handle to the GLFW window object.
         GLFWwindow* window{};
-        /** The width of the window in pixels. */
+        /// The width of the window in pixels.
         int windowWidth{};
-        /** The height of the window in pixels. */
+        /// The height of the window in pixels.
         int windowHeight{};
-        /** Whether the user changed the window size since the most recent update step. */
+        /// Whether the user changed the window size since the most recent update step.
         bool hasWindowChangedSize{false};
 
-        /** Keeps track of keyboard and mouse input. */
+        /// Keeps track of keyboard and mouse input.
         InputState inputState{};
 
-        /** We only want one instance of `Window`, we use this bool to track whether an instance was already created. */
+        /// We only want one instance of `Window`, we use this bool to track whether an instance was already created.
         static bool isInitialised;
 
     public:

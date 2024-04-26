@@ -25,7 +25,7 @@
 
 #include "glm/vec3.hpp"
 
-/** The properties of a basic light source. */
+/// The properties of a basic light source.
 struct Light {
     glm::vec3 position;
 

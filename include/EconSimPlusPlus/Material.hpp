@@ -23,7 +23,7 @@
 #define ECONSIMPLUSPLUS_MATERIAL_H
 
 namespace EconSimPlusPlus {
-    /** The lighting properties of a material. */
+    /// The lighting properties of a material.
     struct Material {
         int diffuseTextureUnit;
         int specularTextureUnit;

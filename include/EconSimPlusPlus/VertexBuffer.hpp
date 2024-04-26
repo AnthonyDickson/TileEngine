@@ -27,24 +27,24 @@
 #include "glad/glad.h"
 
 namespace EconSimPlusPlus {
-    /** Wrapper for OpenGL vertex buffer objects. */
+    /// Wrapper for OpenGL vertex buffer objects.
     class VertexBuffer {
     private:
-        /** The ID for the vertex buffer object. */
+        /// The ID for the vertex buffer object.
         GLuint vboID{};
-        /** The number of triangles in the buffered vertex data. */
+        /// The number of triangles in the buffered vertex data.
         int triangleCount{};
 
     public:
-        /** Create a vertex buffer object. */
+        /// Create a vertex buffer object.
         VertexBuffer();
 
-        /** Delete copy constructor to avoid OpenGL issues. */
+        /// Delete copy constructor to avoid OpenGL issues.
         VertexBuffer(VertexBuffer&) = delete;
-        /** Delete move constructor to avoid OpenGL issues. */
+        /// Delete move constructor to avoid OpenGL issues.
         VertexBuffer(VertexBuffer&&) = delete;
 
-        /** Cleanup OpenGL stuff. */
+        /// Cleanup OpenGL stuff.
         ~VertexBuffer();
 
         /**
@@ -54,7 +54,7 @@ namespace EconSimPlusPlus {
          */
         void loadData(const std::vector<float>& vertexData, const std::vector<int>& sizes);
 
-        /** Bind the vertex buffer object. */
+        /// Bind the vertex buffer object.
         void bind() const;
 
         /**

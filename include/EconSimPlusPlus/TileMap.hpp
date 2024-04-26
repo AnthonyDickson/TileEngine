@@ -33,17 +33,17 @@ namespace EconSimPlusPlus {
     class TileMap {
     private:
         const std::shared_ptr<Texture> texture;
-        /** The size (width and height) of a single tile in pixels. */
+        /// The size (width and height) of a single tile in pixels.
         const glm::vec2 tileSize;
-        /** The size (width, height) of the tile sheet in tiles. */
+        /// The size (width, height) of the tile sheet in tiles.
         const Size<int> sheetSize;
-        /** The size (width, height) of the tile map in tiles. */
+        /// The size (width, height) of the tile map in tiles.
         const Size<int> mapSize;
-        /** The tiles of the tile map. */
+        /// The tiles of the tile map.
         const std::vector<int> tiles;
-        /** The info on the tile types. */
+        /// The info on the tile types.
         const std::shared_ptr<TileTypes> tileTypes;
-        /** Shader to render textured tiles. */
+        /// Shader to render textured tiles.
         const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
     public:

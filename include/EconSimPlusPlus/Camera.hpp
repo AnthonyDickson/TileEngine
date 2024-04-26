@@ -29,17 +29,17 @@
 #include <EconSimPlusPlus/InputState.hpp>
 
 namespace EconSimPlusPlus {
-    /** An object used to manipulate the view of a scene in OpenGL. */
+    /// An object used to manipulate the view of a scene in OpenGL.
     class Camera {
     private:
-        /** The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport. */
+        /// The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport.
         glm::vec2 viewport;
-        /** The position of the camera in world space. */
+        /// The position of the camera in world space.
         glm::vec3 position{};
 
-        /** The point of interest that the camera is "looking at". Used for calculating the view matrix. */
+        /// The point of interest that the camera is "looking at". Used for calculating the view matrix.
         static constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
-        /** The up direction of the camera. Used for calculating the view matrix. */
+        /// The up direction of the camera. Used for calculating the view matrix.
         static constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
 
     public:

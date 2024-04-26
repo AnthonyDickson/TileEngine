@@ -29,15 +29,15 @@
 #include "glm/vec2.hpp"
 
 namespace EconSimPlusPlus {
-    /** Keeps track of keyboard and mouse input. */
+    /// Keeps track of keyboard and mouse input.
     class InputState {
     private:
-        /** Implicit mapping between GLFW key codes and whether the key is pressed down in this frame. */
+        /// Implicit mapping between GLFW key codes and whether the key is pressed down in this frame.
         std::array<bool, GLFW_KEY_LAST + 1> currentKeyState{};
-        /** Implicit mapping between GLFW key codes and whether the key is pressed down in the previous frame. */
+        /// Implicit mapping between GLFW key codes and whether the key is pressed down in the previous frame.
         std::array<bool, GLFW_KEY_LAST + 1> previousKeyState{};
 
-        /** The integer codes that map to a valid key code in GLFW. */
+        /// The integer codes that map to a valid key code in GLFW.
         constexpr static std::array validKeys{
             GLFW_KEY_SPACE,
             GLFW_KEY_APOSTROPHE,
@@ -161,13 +161,13 @@ namespace EconSimPlusPlus {
             GLFW_KEY_MENU,
         };
 
-        /** Implicit mapping between GLFW key codes and whether the mouse button is pressed down in this frame. */
+        /// Implicit mapping between GLFW key codes and whether the mouse button is pressed down in this frame.
         std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> currentMouseButtonState{};
         /** Implicit mapping between GLFW key codes and whether the mouse button is pressed down in the previous frame.
          */
         std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> previousMouseButtonState{};
 
-        /** The integer codes that map to a valid mouse button code in GLFW. */
+        /// The integer codes that map to a valid mouse button code in GLFW.
         constexpr static std::array validMouseButtons{
             GLFW_MOUSE_BUTTON_1, GLFW_MOUSE_BUTTON_2, GLFW_MOUSE_BUTTON_3, GLFW_MOUSE_BUTTON_4,
             GLFW_MOUSE_BUTTON_5, GLFW_MOUSE_BUTTON_6, GLFW_MOUSE_BUTTON_7, GLFW_MOUSE_BUTTON_8,
@@ -179,11 +179,11 @@ namespace EconSimPlusPlus {
          * This is used to prevent issues with mouse movement in the first update step.
          */
         bool hasInitializedMousePosition{false};
-        /** The position of the mouse cursor since the most recent call to `InputState::update(...)`. */
+        /// The position of the mouse cursor since the most recent call to `InputState::update(...)`.
         glm::vec2 mousePosition{};
-        /** How much the mouse has moved since the most recent update step. */
+        /// How much the mouse has moved since the most recent update step.
         glm::vec2 mouseMovement{};
-        /** The net change in the scroll wheel since the most recent update step. */
+        /// The net change in the scroll wheel since the most recent update step.
         float scrollDelta{};
 
     public:
@@ -237,14 +237,6 @@ namespace EconSimPlusPlus {
          * @param scrollY The amount of vertical scroll input.
          */
         void updateScroll(double scrollX, double scrollY);
-
-        /**
-         * Reset the scroll wheel movement.
-         * Since scroll wheel movement cannot be polled, it must be accumulated between update steps.
-         * This function must be called AFTER the main game update step to ensure that the update steps have access to
-         * the correct cumulative scroll wheel movement since the last frame.
-         */
-        void resetScrollDelta();
 
         /**
          * Check whether a mouse button is pressed down.

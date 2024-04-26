@@ -38,7 +38,7 @@ namespace EconSimPlusPlus {
      */
     class Shader {
     private:
-        /** The ID of the shader program in OpenGL. */
+        /// The ID of the shader program in OpenGL.
         unsigned int shaderProgramID{};
 
     public:
@@ -49,12 +49,12 @@ namespace EconSimPlusPlus {
          */
         Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath);
 
-        /** Delete copy constructor to avoid OpenGL issues. */
+        /// Delete copy constructor to avoid OpenGL issues.
         Shader(Shader&) = delete;
-        /** Delete move constructor to avoid OpenGL issues. */
+        /// Delete move constructor to avoid OpenGL issues.
         Shader(Shader&&) = delete;
 
-        /** Clean up OpenGL related stuff. */
+        /// Clean up OpenGL related stuff.
         ~Shader();
 
         /**

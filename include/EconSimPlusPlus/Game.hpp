@@ -27,17 +27,17 @@
 
 namespace EconSimPlusPlus {
     class Game {
-        /** This is the main class for the program. Wraps up and coordinates everything. */
+        /// This is the main class for the program. Wraps up and coordinates everything.
     private:
-        /** The window we use to display the game. */
+        /// The window we use to display the game.
         std::unique_ptr<Window> window;
 
-        /** The game 'map'. */
+        /// The game 'map'.
         std::shared_ptr<TileMap> tileMap;
-        /** The render camera. */
+        /// The render camera.
         Camera camera;
 
-        /** We only want one instance of `Game`, we use this bool to track whether an instance was already created. */
+        /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
         static bool isInitialised;
 
         /**
@@ -59,10 +59,10 @@ namespace EconSimPlusPlus {
          */
         void update(float deltaTime);
 
-        /** Render the game to the screen. */
+        /// Render the game to the screen.
         void render() const;
 
-        /** Run the main game loop (this call blocks). */
+        /// Run the main game loop (this call blocks).
         void run();
     };
 } // namespace EconSimPlusPlus

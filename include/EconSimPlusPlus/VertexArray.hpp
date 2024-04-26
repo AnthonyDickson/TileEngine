@@ -25,25 +25,25 @@
 #include "glad/glad.h"
 
 namespace EconSimPlusPlus {
-    /** Wrapper for OpenGL vertex array objects. */
+    /// Wrapper for OpenGL vertex array objects.
     class VertexArray {
     private:
-        /** The ID for the bound vertex array object. */
+        /// The ID for the bound vertex array object.
         GLuint vaoID{};
 
     public:
-        /** Create a vertex array object. */
+        /// Create a vertex array object.
         VertexArray();
 
-        /** Delete copy constructor to avoid OpenGL issues. */
+        /// Delete copy constructor to avoid OpenGL issues.
         VertexArray(VertexArray&) = delete;
-        /** Delete move constructor to avoid OpenGL issues. */
+        /// Delete move constructor to avoid OpenGL issues.
         VertexArray(VertexArray&&) = delete;
 
-        /** Cleanup OpenGL stuff. */
+        /// Cleanup OpenGL stuff.
         ~VertexArray();
 
-        /** Bind the vertex array object. */
+        /// Bind the vertex array object.
         void bind() const;
     };
 } // namespace EconSimPlusPlus

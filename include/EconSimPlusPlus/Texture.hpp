@@ -27,16 +27,16 @@
 #include <EconSimPlusPlus/Size.hpp>
 
 namespace EconSimPlusPlus {
-    /** Handles the creation and setup of an OpenGL texture from a image on disk.*/
+    /// Handles the creation and setup of an OpenGL texture from a image on disk.
     class Texture {
     private:
-        /** The OpenGL ID for the texture.*/
+        /// The OpenGL ID for the texture.
         const unsigned int textureID;
-        /** The texture unit that the texture should be bound to. */
+        /// The texture unit that the texture should be bound to.
         const int textureUnit;
 
     public:
-        /** The size (width, height) of the texture in pixels. */
+        /// The size (width, height) of the texture in pixels.
         const Size<int> resolution;
 
         /**
@@ -54,15 +54,15 @@ namespace EconSimPlusPlus {
          */
         static std::shared_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
 
-        /** Delete copy constructor to avoid OpenGL issues. */
+        /// Delete copy constructor to avoid OpenGL issues.
         Texture(Texture&) = delete;
-        /** Delete move constructor to avoid OpenGL issues. */
+        /// Delete move constructor to avoid OpenGL issues.
         Texture(Texture&&) = delete;
 
-        /** Clean up OpenGL related stuff.*/
+        /// Clean up OpenGL related stuff.
         ~Texture();
 
-        /** Activate the current texture for bind in rendering.*/
+        /// Activate the current texture for bind in rendering.
         void bind() const;
 
         [[nodiscard]] int getUniformTextureUnit() const;
