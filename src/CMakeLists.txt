@@ -17,4 +17,4 @@ set_property(TARGET LibEconSimPlusPlus PROPERTY CMAKE_CXX_FLAGS "-Werror -Wall -
 
 # Libraries
 find_package(OpenGL REQUIRED)
-target_link_libraries(LibEconSimPlusPlus PUBLIC OpenGL::GL glad glfw glm stb_image yaml-cpp)
+target_link_libraries(LibEconSimPlusPlus PUBLIC OpenGL::GL glad glfw glm stb_image yaml-cpp freetype)

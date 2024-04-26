@@ -31,3 +31,13 @@ FetchContent_Declare(
         GIT_TAG 0.8.0
 )
 FetchContent_MakeAvailable(yaml-cpp)
+
+# HarfBuzz, a dependency of FreeType.
+FetchContent_Declare(
+        harfbuzz
+        GIT_REPOSITORY https://github.com/harfbuzz/harfbuzz.git
+        GIT_TAG 8.4.0
+)
+FetchContent_MakeAvailable(harfbuzz)
+# FreeType Fonts
+add_subdirectory(freetype)
