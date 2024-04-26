@@ -25,8 +25,8 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/vec3.hpp"
 
-#include <EconSimPlusPlus/Direction.h>
-#include <EconSimPlusPlus/InputState.h>
+#include <EconSimPlusPlus/Direction.hpp>
+#include <EconSimPlusPlus/InputState.hpp>
 
 /** An object used to manipulate the view of a scene in OpenGL. */
 class Camera {

@@ -21,7 +21,7 @@
 
 #include <numeric>
 
-#include <EconSimPlusPlus/TileTypes.h>
+#include <EconSimPlusPlus/TileTypes.hpp>
 
 std::shared_ptr<TileTypes> TileTypes::create(const Size<int> sheetSize) {
     const std::vector vertexAttributeSizes{2, 2};

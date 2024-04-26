@@ -26,9 +26,9 @@
 
 #include "GLFW/glfw3.h"
 
-#include <EconSimPlusPlus/Camera.h>
-#include <EconSimPlusPlus/InputState.h>
-#include <EconSimPlusPlus/Size.h>
+#include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/InputState.hpp>
+#include <EconSimPlusPlus/Size.hpp>
 
 /** Handles the basic functions of an OpenGL window. */
 class Window {

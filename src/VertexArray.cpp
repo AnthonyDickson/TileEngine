@@ -19,7 +19,7 @@
 // Created by Anthony on 1/04/2024.
 //
 
-#include <EconSimPlusPlus/VertexArray.h>
+#include <EconSimPlusPlus/VertexArray.hpp>
 
 VertexArray::VertexArray() {
     glGenVertexArrays(1, &vaoID);

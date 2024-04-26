@@ -25,8 +25,8 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
-#include <EconSimPlusPlus/Game.h>
-#include <EconSimPlusPlus/Size.h>
+#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/Size.hpp>
 
 bool Game::isInitialised = false;
 

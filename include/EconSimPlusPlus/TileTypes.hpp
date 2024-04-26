@@ -22,8 +22,8 @@
 #ifndef TILETYPES_H
 #define TILETYPES_H
 
-#include <EconSimPlusPlus/Size.h>
-#include <EconSimPlusPlus/TileType.h>
+#include <EconSimPlusPlus/Size.hpp>
+#include <EconSimPlusPlus/TileType.hpp>
 
 /** A collection of tile types. */
 class TileTypes {

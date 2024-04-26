@@ -26,11 +26,11 @@
 
 #include "glm/mat4x4.hpp"
 
-#include "light/Light.h"
-#include "light/DirectionalLight.h"
-#include "light/SpotLight.h"
-#include "light/PointLight.h"
-#include <EconSimPlusPlus/Material.h>
+#include <EconSimPlusPlus/Material.hpp>
+#include "light/DirectionalLight.hpp"
+#include "light/Light.hpp"
+#include "light/PointLight.hpp"
+#include "light/SpotLight.hpp"
 
 /**
  * Handles the loading, compilation, linking and usage of an OpenGL shader program.
