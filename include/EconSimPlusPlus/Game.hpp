@@ -25,45 +25,46 @@
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
-class Game {
-    /** This is the main class for the program. Wraps up and coordinates everything. */
-private:
-    /** The window we use to display the game. */
-    std::unique_ptr<Window> window;
+namespace EconSimPlusPlus {
+    class Game {
+        /** This is the main class for the program. Wraps up and coordinates everything. */
+    private:
+        /** The window we use to display the game. */
+        std::unique_ptr<Window> window;
 
-    /** The game 'map'. */
-    std::shared_ptr<TileMap> tileMap;
-    /** The render camera. */
-    Camera camera;
+        /** The game 'map'. */
+        std::shared_ptr<TileMap> tileMap;
+        /** The render camera. */
+        Camera camera;
 
-    /** We only want one instance of `Game`, we use this bool to track whether an instance was already created. */
-    static bool isInitialised;
+        /** We only want one instance of `Game`, we use this bool to track whether an instance was already created. */
+        static bool isInitialised;
 
-    /**
-     * Create a new game instance.
-     * @param window_ The window to display the game on.
-     * @param tileMap_ The game map made up of square tiles.
-     */
-    Game(std::unique_ptr<Window> window_,  std::shared_ptr<TileMap> tileMap_);
+        /**
+         * Create a new game instance.
+         * @param window_ The window to display the game on.
+         * @param tileMap_ The game map made up of square tiles.
+         */
+        Game(std::unique_ptr<Window> window_, std::shared_ptr<TileMap> tileMap_);
 
-public:
-    static Game create(Size<int> windowSize);
+    public:
+        static Game create(Size<int> windowSize);
 
-    Game(Game&) = delete;
-    Game(Game&&) = delete;
+        Game(Game&) = delete;
+        Game(Game&&) = delete;
 
-    /**
-     * Update the game by one step.
-     * @param deltaTime the size of the step to take in term of time (seconds).
-     */
-    void update(float deltaTime);
+        /**
+         * Update the game by one step.
+         * @param deltaTime the size of the step to take in term of time (seconds).
+         */
+        void update(float deltaTime);
 
-    /** Render the game to the screen. */
-    void render() const;
+        /** Render the game to the screen. */
+        void render() const;
 
-    /** Run the main game loop (this call blocks). */
-    void run();
-};
+        /** Run the main game loop (this call blocks). */
+        void run();
+    };
+} // namespace EconSimPlusPlus
 
-
-#endif //GAME_H
+#endif // GAME_H

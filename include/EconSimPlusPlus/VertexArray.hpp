@@ -22,29 +22,31 @@
 #ifndef ECONSIMPLUSPLUS_VERTEXARRAY_H
 #define ECONSIMPLUSPLUS_VERTEXARRAY_H
 
-
 #include "glad/glad.h"
 
-/** Wrapper for OpenGL vertex array objects. */
-class VertexArray {
-private:
-    /** The ID for the bound vertex array object. */
-    GLuint vaoID{};
-public:
-    /** Create a vertex array object. */
-    VertexArray();
+namespace EconSimPlusPlus {
+    /** Wrapper for OpenGL vertex array objects. */
+    class VertexArray {
+    private:
+        /** The ID for the bound vertex array object. */
+        GLuint vaoID{};
 
-    /** Delete copy constructor to avoid OpenGL issues. */
-    VertexArray(VertexArray &) = delete;
-    /** Delete move constructor to avoid OpenGL issues. */
-    VertexArray(VertexArray &&) = delete;
+    public:
+        /** Create a vertex array object. */
+        VertexArray();
 
-    /** Cleanup OpenGL stuff. */
-    ~VertexArray();
+        /** Delete copy constructor to avoid OpenGL issues. */
+        VertexArray(VertexArray&) = delete;
+        /** Delete move constructor to avoid OpenGL issues. */
+        VertexArray(VertexArray&&) = delete;
 
-    /** Bind the vertex array object. */
-    void bind() const;
-};
+        /** Cleanup OpenGL stuff. */
+        ~VertexArray();
+
+        /** Bind the vertex array object. */
+        void bind() const;
+    };
+} // namespace EconSimPlusPlus
 
 
-#endif //ECONSIMPLUSPLUS_VERTEXARRAY_H
+#endif // ECONSIMPLUSPLUS_VERTEXARRAY_H

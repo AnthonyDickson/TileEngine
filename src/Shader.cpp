@@ -30,172 +30,174 @@
 
 #include <EconSimPlusPlus/Shader.hpp>
 
-Shader::Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath) {
-    // Load the shader source code.
-    std::ifstream vertexShaderFile{};
-    std::ifstream fragmentShaderFile{};
+namespace EconSimPlusPlus {
+    Shader::Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath) {
+        // Load the shader source code.
+        std::ifstream vertexShaderFile{};
+        std::ifstream fragmentShaderFile{};
 
-    std::string vertexShaderString{};
-    std::string fragmentShaderString{};
+        std::string vertexShaderString{};
+        std::string fragmentShaderString{};
 
-    // ensure stream objects can throw exceptions:
-    vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        // ensure stream objects can throw exceptions:
+        vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-    try {
-        vertexShaderFile.open(vertexShaderSourcePath);
-        fragmentShaderFile.open(fragmentShaderSourcePath);
+        try {
+            vertexShaderFile.open(vertexShaderSourcePath);
+            fragmentShaderFile.open(fragmentShaderSourcePath);
 
-        std::stringstream vertexShaderStream{};
-        std::stringstream fragmentShaderStream{};
+            std::stringstream vertexShaderStream{};
+            std::stringstream fragmentShaderStream{};
 
-        vertexShaderStream << vertexShaderFile.rdbuf();
-        fragmentShaderStream << fragmentShaderFile.rdbuf();
+            vertexShaderStream << vertexShaderFile.rdbuf();
+            fragmentShaderStream << fragmentShaderFile.rdbuf();
 
-        vertexShaderString = vertexShaderStream.str();
-        fragmentShaderString = fragmentShaderStream.str();
+            vertexShaderString = vertexShaderStream.str();
+            fragmentShaderString = fragmentShaderStream.str();
 
-        vertexShaderFile.close();
-        fragmentShaderFile.close();
+            vertexShaderFile.close();
+            fragmentShaderFile.close();
+        }
+        catch (std::ifstream::failure&) {
+            std::cout << "ERROR::SHADER::CANNOT_READ_FILE: " << vertexShaderSourcePath << ", ";
+            std::cout << fragmentShaderSourcePath << std::endl;
+        }
+
+        const char* vertexShaderSource{vertexShaderString.c_str()};
+        const char* fragmentShaderSource{fragmentShaderString.c_str()};
+
+        // Compile the vertex shader.
+        unsigned int vertexShaderId{glCreateShader(GL_VERTEX_SHADER)};
+        glShaderSource(vertexShaderId, 1, &vertexShaderSource, nullptr);
+        glCompileShader(vertexShaderId);
+
+        int vertexShaderCompiled{};
+        glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &vertexShaderCompiled);
+
+        constexpr int infoLogSize{512};
+
+        if (!vertexShaderCompiled) {
+            char infoLog[infoLogSize];
+            glGetShaderInfoLog(vertexShaderId, infoLogSize, nullptr, infoLog);
+            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED " << vertexShaderSourcePath << "\n"
+                      << infoLog << std::endl;
+        }
+
+        // Compile the fragment shader.
+        unsigned int fragmentShaderId{glCreateShader(GL_FRAGMENT_SHADER)};
+        glShaderSource(fragmentShaderId, 1, &fragmentShaderSource, nullptr);
+        glCompileShader(fragmentShaderId);
+
+        int fragmentShaderCompiled{};
+        glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &fragmentShaderCompiled);
+
+        if (!fragmentShaderCompiled) {
+            char infoLog[infoLogSize];
+            glGetShaderInfoLog(fragmentShaderId, infoLogSize, nullptr, infoLog);
+            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED " << fragmentShaderSourcePath << "\\n"
+                      << infoLog << std::endl;
+        }
+
+        // Compile the shader program.
+        shaderProgramID = glCreateProgram();
+        glAttachShader(shaderProgramID, vertexShaderId);
+        glAttachShader(shaderProgramID, fragmentShaderId);
+        glLinkProgram(shaderProgramID);
+
+        int linkingWasSuccessful{};
+        glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &linkingWasSuccessful);
+
+        if (!linkingWasSuccessful) {
+            char infoLog[infoLogSize];
+            glGetProgramInfoLog(shaderProgramID, infoLogSize, nullptr, infoLog);
+            std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        }
+
+        glDeleteShader(vertexShaderId);
+        glDeleteShader(fragmentShaderId);
     }
-    catch (std::ifstream::failure&) {
-        std::cout << "ERROR::SHADER::CANNOT_READ_FILE: " << vertexShaderSourcePath << ", ";
-        std::cout << fragmentShaderSourcePath << std::endl;
+
+    Shader::~Shader() {
+        glDeleteShader(shaderProgramID);
     }
 
-    const char* vertexShaderSource{vertexShaderString.c_str()};
-    const char* fragmentShaderSource{fragmentShaderString.c_str()};
-
-    // Compile the vertex shader.
-    unsigned int vertexShaderId{glCreateShader(GL_VERTEX_SHADER)};
-    glShaderSource(vertexShaderId, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShaderId);
-
-    int vertexShaderCompiled{};
-    glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &vertexShaderCompiled);
-
-    constexpr int infoLogSize{512};
-
-    if (!vertexShaderCompiled) {
-        char infoLog[infoLogSize];
-        glGetShaderInfoLog(vertexShaderId, infoLogSize, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED " << vertexShaderSourcePath << "\n"
-                  << infoLog << std::endl;
+    void Shader::bind() const {
+        glUseProgram(shaderProgramID);
     }
 
-    // Compile the fragment shader.
-    unsigned int fragmentShaderId{glCreateShader(GL_FRAGMENT_SHADER)};
-    glShaderSource(fragmentShaderId, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShaderId);
+    int Shader::getUniformLocation(const std::string& name) const {
+        const int location{glGetUniformLocation(shaderProgramID, name.c_str())};
+        assert(location != -1 && "Uniform name does not exist in the shader source code.");
 
-    int fragmentShaderCompiled{};
-    glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &fragmentShaderCompiled);
-
-    if (!fragmentShaderCompiled) {
-        char infoLog[infoLogSize];
-        glGetShaderInfoLog(fragmentShaderId, infoLogSize, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED " << fragmentShaderSourcePath << "\\n"
-                  << infoLog << std::endl;
+        return location;
     }
 
-    // Compile the shader program.
-    shaderProgramID = glCreateProgram();
-    glAttachShader(shaderProgramID, vertexShaderId);
-    glAttachShader(shaderProgramID, fragmentShaderId);
-    glLinkProgram(shaderProgramID);
-
-    int linkingWasSuccessful{};
-    glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &linkingWasSuccessful);
-
-    if (!linkingWasSuccessful) {
-        char infoLog[infoLogSize];
-        glGetProgramInfoLog(shaderProgramID, infoLogSize, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    [[maybe_unused]] void Shader::setUniform(const std::string& name, const bool value) const {
+        setUniform(name, static_cast<int>(value));
     }
 
-    glDeleteShader(vertexShaderId);
-    glDeleteShader(fragmentShaderId);
-}
-
-Shader::~Shader() {
-    glDeleteShader(shaderProgramID);
-}
-
-void Shader::bind() const {
-    glUseProgram(shaderProgramID);
-}
-
-int Shader::getUniformLocation(const std::string& name) const {
-    const int location{glGetUniformLocation(shaderProgramID, name.c_str())};
-    assert(location != -1 && "Uniform name does not exist in the shader source code.");
-
-    return location;
-}
-
-[[maybe_unused]] void Shader::setUniform(const std::string& name, const bool value) const {
-    setUniform(name, static_cast<int>(value));
-}
-
-void Shader::setUniform(const std::string& name, const int value) const {
-    glUniform1i(getUniformLocation(name), value);
-}
-
-void Shader::setUniform(const std::string& name, const float value) const {
-    glUniform1f(getUniformLocation(name), value);
-}
-
-void Shader::setUniform(const std::string& name, const glm::vec3& value) const {
-    glUniform3fv(getUniformLocation(name), 1, value_ptr(value));
-}
-
-void Shader::setUniform(const std::string& name, const glm::mat4x4& value) const {
-    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value_ptr(value));
-}
-
-void Shader::setUniform(const std::string& name, const Material& value) const {
-    setUniform(name + ".diffuse", value.diffuseTextureUnit);
-    setUniform(name + ".specular", value.specularTextureUnit);
-    setUniform(name + ".shininess", value.shininess);
-}
-
-void Shader::setUniform(const std::string& name, const Light& value) const {
-    setUniform(name + ".position", value.position);
-    setUniform(name + ".ambient", value.ambient);
-    setUniform(name + ".diffuse", value.diffuse);
-    setUniform(name + ".specular", value.specular);
-}
-
-void Shader::setUniform(const std::string& name, const DirectionalLight& value) const {
-    setUniform(name + ".direction", value.direction);
-    setUniform(name + ".color", value.color);
-    setUniform(name + ".intensity", value.intensity);
-}
-
-void Shader::setUniform(const std::string& name, const SpotLight& value) const {
-    setUniform(name + ".position", value.position);
-    setUniform(name + ".direction", value.direction);
-
-    setUniform(name + ".cutOff", value.cutOff);
-    setUniform(name + ".outerCutOff", value.outerCutOff);
-
-    setUniform(name + ".color", value.color);
-
-    setUniform(name + ".linear", value.linear);
-    setUniform(name + ".quadratic", value.quadratic);
-}
-
-
-void Shader::setUniform(const std::string& name, const PointLight& value) const {
-    setUniform(name + ".position", value.position);
-
-    setUniform(name + ".color", value.color);
-
-    setUniform(name + ".linear", value.linear);
-    setUniform(name + ".quadratic", value.quadratic);
-}
-
-void Shader::setUniform(const std::string& name, const std::vector<PointLight>& value) const {
-    for (int i = 0; i < value.size(); ++i) {
-        setUniform(std::format("{:s}[{:d}]", name, i), value[i]);
+    void Shader::setUniform(const std::string& name, const int value) const {
+        glUniform1i(getUniformLocation(name), value);
     }
-}
+
+    void Shader::setUniform(const std::string& name, const float value) const {
+        glUniform1f(getUniformLocation(name), value);
+    }
+
+    void Shader::setUniform(const std::string& name, const glm::vec3& value) const {
+        glUniform3fv(getUniformLocation(name), 1, value_ptr(value));
+    }
+
+    void Shader::setUniform(const std::string& name, const glm::mat4x4& value) const {
+        glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value_ptr(value));
+    }
+
+    void Shader::setUniform(const std::string& name, const Material& value) const {
+        setUniform(name + ".diffuse", value.diffuseTextureUnit);
+        setUniform(name + ".specular", value.specularTextureUnit);
+        setUniform(name + ".shininess", value.shininess);
+    }
+
+    void Shader::setUniform(const std::string& name, const Light& value) const {
+        setUniform(name + ".position", value.position);
+        setUniform(name + ".ambient", value.ambient);
+        setUniform(name + ".diffuse", value.diffuse);
+        setUniform(name + ".specular", value.specular);
+    }
+
+    void Shader::setUniform(const std::string& name, const DirectionalLight& value) const {
+        setUniform(name + ".direction", value.direction);
+        setUniform(name + ".color", value.color);
+        setUniform(name + ".intensity", value.intensity);
+    }
+
+    void Shader::setUniform(const std::string& name, const SpotLight& value) const {
+        setUniform(name + ".position", value.position);
+        setUniform(name + ".direction", value.direction);
+
+        setUniform(name + ".cutOff", value.cutOff);
+        setUniform(name + ".outerCutOff", value.outerCutOff);
+
+        setUniform(name + ".color", value.color);
+
+        setUniform(name + ".linear", value.linear);
+        setUniform(name + ".quadratic", value.quadratic);
+    }
+
+
+    void Shader::setUniform(const std::string& name, const PointLight& value) const {
+        setUniform(name + ".position", value.position);
+
+        setUniform(name + ".color", value.color);
+
+        setUniform(name + ".linear", value.linear);
+        setUniform(name + ".quadratic", value.quadratic);
+    }
+
+    void Shader::setUniform(const std::string& name, const std::vector<PointLight>& value) const {
+        for (int i = 0; i < value.size(); ++i) {
+            setUniform(std::format("{:s}[{:d}]", name, i), value[i]);
+        }
+    }
+} // namespace EconSimPlusPlus

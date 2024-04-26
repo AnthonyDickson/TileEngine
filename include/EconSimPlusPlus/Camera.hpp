@@ -28,71 +28,73 @@
 #include <EconSimPlusPlus/Direction.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
 
-/** An object used to manipulate the view of a scene in OpenGL. */
-class Camera {
-private:
-    /** The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport. */
-    glm::vec2 viewport;
-    /** The position of the camera in world space. */
-    glm::vec3 position{};
+namespace EconSimPlusPlus {
+    /** An object used to manipulate the view of a scene in OpenGL. */
+    class Camera {
+    private:
+        /** The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport. */
+        glm::vec2 viewport;
+        /** The position of the camera in world space. */
+        glm::vec3 position{};
 
-    /** The point of interest that the camera is "looking at". Used for calculating the view matrix. */
-    static constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
-    /** The up direction of the camera. Used for calculating the view matrix. */
-    static constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
+        /** The point of interest that the camera is "looking at". Used for calculating the view matrix. */
+        static constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
+        /** The up direction of the camera. Used for calculating the view matrix. */
+        static constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
 
-public:
-    Camera(glm::vec2 viewport_, glm::vec3 position_);
+    public:
+        Camera(glm::vec2 viewport_, glm::vec3 position_);
 
-    /**
-     * Get the perspective matrix of the camera.
-     * @return A 4x4 matrix.
-     */
-    [[nodiscard]] glm::mat4 getPerspectiveMatrix() const;
+        /**
+         * Get the perspective matrix of the camera.
+         * @return A 4x4 matrix.
+         */
+        [[nodiscard]] glm::mat4 getPerspectiveMatrix() const;
 
-    /**
-     * Get the view matrix of the camera.
-     * @return A 4x4 matrix.
-     */
-    [[nodiscard]] glm::mat4 getViewMatrix() const;
+        /**
+         * Get the view matrix of the camera.
+         * @return A 4x4 matrix.
+         */
+        [[nodiscard]] glm::mat4 getViewMatrix() const;
 
-    /**
-     * Get the camera position.
-     * @return A 3-vector position in world coordinates.
-     */
-    [[nodiscard]] glm::vec3 getPosition() const;
+        /**
+         * Get the camera position.
+         * @return A 3-vector position in world coordinates.
+         */
+        [[nodiscard]] glm::vec3 getPosition() const;
 
-    /**
-     * Get the viewport size.
-     * @return the width and height in pixels.
-     */
-    [[nodiscard]] glm::vec2 getViewportSize() const;
+        /**
+         * Get the viewport size.
+         * @return the width and height in pixels.
+         */
+        [[nodiscard]] glm::vec2 getViewportSize() const;
 
-    /**
-     * Update
-     * @param deltaTime The size of the step to take in terms of time (seconds).
-     * @param inputState The state of keyboard and mouse input.
-     */
-    void update(float deltaTime, const InputState& inputState);
+        /**
+         * Update
+         * @param deltaTime The size of the step to take in terms of time (seconds).
+         * @param inputState The state of keyboard and mouse input.
+         */
+        void update(float deltaTime, const InputState& inputState);
 
-    /**
-     * Move/translate the camera.
-     * @param direction The direction to move the camera in.
-     * @param speed How fast to move the camera.
-     */
-    void move(Direction direction, float speed);
+        /**
+         * Move/translate the camera.
+         * @param direction The direction to move the camera in.
+         * @param speed How fast to move the camera.
+         */
+        void move(Direction direction, float speed);
 
-    /**
-     * Moves the camera back to origin.
-     */
-    void resetPosition();
+        /**
+         * Moves the camera back to origin.
+         */
+        void resetPosition();
 
-    /**
-     * Update the camera to match the window size when the user resizes the window.
-     * @param viewport_ The new window size.
-     */
-    void onWindowResize(glm::vec2 viewport_);
-};
+        /**
+         * Update the camera to match the window size when the user resizes the window.
+         * @param viewport_ The new window size.
+         */
+        void onWindowResize(glm::vec2 viewport_);
+    };
+} // namespace EconSimPlusPlus
 
 
 #endif // ECONSIMPLUSPLUS_CAMERA_H

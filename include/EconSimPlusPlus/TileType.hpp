@@ -25,15 +25,16 @@
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
-/** Hold the properties of a tile type. */
-struct TileType {
-    std::unique_ptr<VertexArray> vao;
-    std::unique_ptr<VertexBuffer> vbo;
+namespace EconSimPlusPlus {
+    /** Hold the properties of a tile type. */
+    struct TileType {
+        std::unique_ptr<VertexArray> vao;
+        std::unique_ptr<VertexBuffer> vbo;
 
-    explicit TileType(std::unique_ptr<VertexArray> vao_, std::unique_ptr<VertexBuffer> vbo_) :
-        vao(std::move(vao_)), vbo(std::move(vbo_)) {
-    }
-};
-
+        explicit TileType(std::unique_ptr<VertexArray> vao_, std::unique_ptr<VertexBuffer> vbo_) :
+            vao(std::move(vao_)), vbo(std::move(vbo_)) {
+        }
+    };
+} // namespace EconSimPlusPlus
 
 #endif // TILETYPE_H

@@ -22,12 +22,8 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
+namespace EconSimPlusPlus {
+    enum class Direction { Up, Down, Left, Right };
+}
 
-
-enum class Direction {
-Up, Down, Left, Right
-};
-
-
-
-#endif //DIRECTION_H
+#endif // DIRECTION_H

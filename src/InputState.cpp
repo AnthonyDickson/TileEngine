@@ -21,74 +21,76 @@
 
 #include <EconSimPlusPlus/InputState.hpp>
 
-void InputState::update(GLFWwindow* window) {
-    double xPosition{};
-    double yPosition{};
-    glfwGetCursorPos(window, &xPosition, &yPosition);
+namespace EconSimPlusPlus {
+    void InputState::update(GLFWwindow* window) {
+        double xPosition{};
+        double yPosition{};
+        glfwGetCursorPos(window, &xPosition, &yPosition);
 
-    const glm::vec2 position{static_cast<float>(xPosition), static_cast<float>(yPosition)};
+        const glm::vec2 position{static_cast<float>(xPosition), static_cast<float>(yPosition)};
 
-    if (!hasInitializedMousePosition) {
-        // If the window is created in a position away from the mouse, the distance of the mouse from the window will
-        // cause the rotation to be moved by a large amount, likely moving the scene out of view.
-        // The below code is executed on the first update to prevent this from happening.
+        if (!hasInitializedMousePosition) {
+            // If the window is created in a position away from the mouse, the distance of the mouse from the window
+            // will cause the rotation to be moved by a large amount, likely moving the scene out of view. The below
+            // code is executed on the first update to prevent this from happening.
+            mousePosition = position;
+            hasInitializedMousePosition = true;
+        }
+
+        mouseMovement.x = position.x - mousePosition.x;
+        mouseMovement.y = mousePosition.y - position.y;
         mousePosition = position;
-        hasInitializedMousePosition = true;
+
+        std::swap(currentMouseButtonState, previousMouseButtonState);
+
+        for (const auto button : validMouseButtons) {
+            currentMouseButtonState[button] = glfwGetMouseButton(window, button) == GLFW_PRESS;
+        }
+
+        std::swap(currentKeyState, previousKeyState);
+
+        for (const auto key : validKeys) {
+            currentKeyState[key] = glfwGetKey(window, key) == GLFW_PRESS;
+        }
     }
 
-    mouseMovement.x = position.x - mousePosition.x;
-    mouseMovement.y = mousePosition.y - position.y;
-    mousePosition = position;
-
-    std::swap(currentMouseButtonState, previousMouseButtonState);
-
-    for (const auto button : validMouseButtons) {
-        currentMouseButtonState[button] = glfwGetMouseButton(window, button) == GLFW_PRESS;
+    void InputState::postUpdate() {
+        scrollDelta = 0.0f;
     }
 
-    std::swap(currentKeyState, previousKeyState);
-
-    for (const auto key : validKeys) {
-        currentKeyState[key] = glfwGetKey(window, key) == GLFW_PRESS;
+    void InputState::updateScroll(const double, const double scrollY) {
+        scrollDelta += static_cast<float>(scrollY);
     }
-}
 
-void InputState::postUpdate() {
-    scrollDelta = 0.0f;
-}
+    const glm::vec2& InputState::getMousePosition() const {
+        return mousePosition;
+    }
 
-void InputState::updateScroll(const double, const double scrollY) {
-    scrollDelta += static_cast<float>(scrollY);
-}
+    const glm::vec2& InputState::getMouseMovement() const {
+        return mouseMovement;
+    }
 
-const glm::vec2& InputState::getMousePosition() const {
-    return mousePosition;
-}
+    bool InputState::getKey(const int key) const {
+        return currentKeyState[key];
+    }
 
-const glm::vec2& InputState::getMouseMovement() const {
-    return mouseMovement;
-}
+    bool InputState::getKeyDown(const int key) const {
+        return currentKeyState[key] and !previousKeyState[key];
+    }
 
-bool InputState::getKey(const int key) const {
-    return currentKeyState[key];
-}
+    bool InputState::getKeyUp(const int key) const {
+        return !currentKeyState[key] and previousKeyState[key];
+    }
 
-bool InputState::getKeyDown(const int key) const {
-    return currentKeyState[key] and !previousKeyState[key];
-}
+    bool InputState::getMouseButton(const int button) const {
+        return currentMouseButtonState[button];
+    }
 
-bool InputState::getKeyUp(const int key) const {
-    return !currentKeyState[key] and previousKeyState[key];
-}
+    bool InputState::getMouseButtonDown(const int button) const {
+        return currentMouseButtonState[button] and !previousMouseButtonState[button];
+    }
 
-bool InputState::getMouseButton(const int button) const {
-    return currentMouseButtonState[button];
-}
-
-bool InputState::getMouseButtonDown(const int button) const {
-    return currentMouseButtonState[button] and !previousMouseButtonState[button];
-}
-
-bool InputState::getMouseButtonUp(const int button) const {
-    return !currentMouseButtonState[button] and previousMouseButtonState[button];
-}
+    bool InputState::getMouseButtonUp(const int button) const {
+        return !currentMouseButtonState[button] and previousMouseButtonState[button];
+    }
+} // namespace EconSimPlusPlus

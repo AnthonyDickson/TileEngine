@@ -22,14 +22,13 @@
 #ifndef ECONSIMPLUSPLUS_MATERIAL_H
 #define ECONSIMPLUSPLUS_MATERIAL_H
 
-#include "glm/vec3.hpp"
+namespace EconSimPlusPlus {
+    /** The lighting properties of a material. */
+    struct Material {
+        int diffuseTextureUnit;
+        int specularTextureUnit;
+        float shininess;
+    };
+} // namespace EconSimPlusPlus
 
-/** The lighting properties of a material. */
-struct Material {
-    int diffuseTextureUnit;
-    int specularTextureUnit;
-    float shininess;
-};
-
-
-#endif //ECONSIMPLUSPLUS_MATERIAL_H
+#endif // ECONSIMPLUSPLUS_MATERIAL_H

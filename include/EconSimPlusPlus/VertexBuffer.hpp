@@ -26,41 +26,43 @@
 #include <vector>
 #include "glad/glad.h"
 
-/** Wrapper for OpenGL vertex buffer objects. */
-class VertexBuffer {
-private:
-    /** The ID for the vertex buffer object. */
-    GLuint vboID{};
-    /** The number of triangles in the buffered vertex data. */
-    int triangleCount{};
-public:
-    /** Create a vertex buffer object. */
-    VertexBuffer();
+namespace EconSimPlusPlus {
+    /** Wrapper for OpenGL vertex buffer objects. */
+    class VertexBuffer {
+    private:
+        /** The ID for the vertex buffer object. */
+        GLuint vboID{};
+        /** The number of triangles in the buffered vertex data. */
+        int triangleCount{};
 
-    /** Delete copy constructor to avoid OpenGL issues. */
-    VertexBuffer(VertexBuffer &) = delete;
-    /** Delete move constructor to avoid OpenGL issues. */
-    VertexBuffer(VertexBuffer &&) = delete;
+    public:
+        /** Create a vertex buffer object. */
+        VertexBuffer();
 
-    /** Cleanup OpenGL stuff. */
-    ~VertexBuffer();
+        /** Delete copy constructor to avoid OpenGL issues. */
+        VertexBuffer(VertexBuffer&) = delete;
+        /** Delete move constructor to avoid OpenGL issues. */
+        VertexBuffer(VertexBuffer&&) = delete;
 
-    /**
-     * Load vertex data into the vertex buffer.
-     * @param vertexData The vertex data as a flat list.
-     * @param sizes The number of elements per vertex attribute.
-     */
-    void loadData(const std::vector<float>& vertexData, const std::vector<int>& sizes);
+        /** Cleanup OpenGL stuff. */
+        ~VertexBuffer();
 
-    /** Bind the vertex buffer object. */
-    void bind() const;
+        /**
+         * Load vertex data into the vertex buffer.
+         * @param vertexData The vertex data as a flat list.
+         * @param sizes The number of elements per vertex attribute.
+         */
+        void loadData(const std::vector<float>& vertexData, const std::vector<int>& sizes);
 
-    /**
-     * Call OpenGL::glDrawArrays with suitable parameters.
-     * @param mode How to draw the vertex data.
-     */
-    void drawArrays(GLenum mode = GL_TRIANGLES) const;
-};
+        /** Bind the vertex buffer object. */
+        void bind() const;
 
+        /**
+         * Call OpenGL::glDrawArrays with suitable parameters.
+         * @param mode How to draw the vertex data.
+         */
+        void drawArrays(GLenum mode = GL_TRIANGLES) const;
+    };
+} // namespace EconSimPlusPlus
 
-#endif //ECONSIMPLUSPLUS_VERTEXBUFFER_H
+#endif // ECONSIMPLUSPLUS_VERTEXBUFFER_H

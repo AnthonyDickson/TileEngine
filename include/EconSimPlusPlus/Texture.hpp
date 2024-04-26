@@ -26,46 +26,47 @@
 
 #include <EconSimPlusPlus/Size.hpp>
 
-/** Handles the creation and setup of an OpenGL texture from a image on disk.*/
-class Texture {
-private:
-    /** The OpenGL ID for the texture.*/
-    const unsigned int textureID;
-    /** The texture unit that the texture should be bound to. */
-    const int textureUnit;
+namespace EconSimPlusPlus {
+    /** Handles the creation and setup of an OpenGL texture from a image on disk.*/
+    class Texture {
+    private:
+        /** The OpenGL ID for the texture.*/
+        const unsigned int textureID;
+        /** The texture unit that the texture should be bound to. */
+        const int textureUnit;
 
-public:
-    /** The size (width, height) of the texture in pixels. */
-    const Size<int> resolution;
+    public:
+        /** The size (width, height) of the texture in pixels. */
+        const Size<int> resolution;
 
-    /**
-     *
-     * @param textureID_ The OpenGL ID for the texture.
-     * @param textureUnit_ The texture unit to bind the texture to.
-     * @param resolution_ The resolution of the texture.
-     */
-    Texture(unsigned int textureID_, int textureUnit_, Size<int> resolution_);
+        /**
+         *
+         * @param textureID_ The OpenGL ID for the texture.
+         * @param textureUnit_ The texture unit to bind the texture to.
+         * @param resolution_ The resolution of the texture.
+         */
+        Texture(unsigned int textureID_, int textureUnit_, Size<int> resolution_);
 
-    /**
-     * Create a texture from an image.
-     * @param imagePath The path to an image.
-     * @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
-     */
-    static std::shared_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
+        /**
+         * Create a texture from an image.
+         * @param imagePath The path to an image.
+         * @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
+         */
+        static std::shared_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
 
-    /** Delete copy constructor to avoid OpenGL issues. */
-    Texture(Texture&) = delete;
-    /** Delete move constructor to avoid OpenGL issues. */
-    Texture(Texture&&) = delete;
+        /** Delete copy constructor to avoid OpenGL issues. */
+        Texture(Texture&) = delete;
+        /** Delete move constructor to avoid OpenGL issues. */
+        Texture(Texture&&) = delete;
 
-    /** Clean up OpenGL related stuff.*/
-    ~Texture();
+        /** Clean up OpenGL related stuff.*/
+        ~Texture();
 
-    /** Activate the current texture for bind in rendering.*/
-    void bind() const;
+        /** Activate the current texture for bind in rendering.*/
+        void bind() const;
 
-    [[nodiscard]] int getUniformTextureUnit() const;
-};
-
+        [[nodiscard]] int getUniformTextureUnit() const;
+    };
+} // namespace EconSimPlusPlus
 
 #endif // ECONSIMPLUSPLUS_TEXTURE_H

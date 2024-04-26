@@ -24,39 +24,41 @@
 
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
-VertexBuffer::VertexBuffer() {
-    glGenBuffers(1, &vboID);
-}
-
-void VertexBuffer::loadData(const std::vector<float> &vertexData, const std::vector<int> &sizes) {
-    bind();
-
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertexData.size() * sizeof(float)), vertexData.data(),
-                 GL_STATIC_DRAW);
-
-    const auto stride{std::reduce(sizes.begin(), sizes.end(), 0)};
-    const int strideBytes = static_cast<int>(stride * sizeof(float));
-    int offset{0};
-
-    for (int i = 0; i < sizes.size(); i++) {
-        const int size = sizes[i];
-        const auto pointerOffset{reinterpret_cast<void *>(offset * sizeof(float))};
-        glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, strideBytes, pointerOffset);
-        glEnableVertexAttribArray(i);
-        offset += size;
+namespace EconSimPlusPlus {
+    VertexBuffer::VertexBuffer() {
+        glGenBuffers(1, &vboID);
     }
 
-    triangleCount = static_cast<int>(vertexData.size()) / stride;
-}
+    void VertexBuffer::loadData(const std::vector<float>& vertexData, const std::vector<int>& sizes) {
+        bind();
 
-void VertexBuffer::bind() const {
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-}
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertexData.size() * sizeof(float)), vertexData.data(),
+                     GL_STATIC_DRAW);
 
-void VertexBuffer::drawArrays(const GLenum mode) const {
-    glDrawArrays(mode, 0, triangleCount);
-}
+        const auto stride{std::reduce(sizes.begin(), sizes.end(), 0)};
+        const int strideBytes = static_cast<int>(stride * sizeof(float));
+        int offset{0};
 
-VertexBuffer::~VertexBuffer() {
-    glDeleteBuffers(1, &vboID);
-}
+        for (int i = 0; i < sizes.size(); i++) {
+            const int size = sizes[i];
+            const auto pointerOffset{reinterpret_cast<void*>(offset * sizeof(float))};
+            glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, strideBytes, pointerOffset);
+            glEnableVertexAttribArray(i);
+            offset += size;
+        }
+
+        triangleCount = static_cast<int>(vertexData.size()) / stride;
+    }
+
+    void VertexBuffer::bind() const {
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    }
+
+    void VertexBuffer::drawArrays(const GLenum mode) const {
+        glDrawArrays(mode, 0, triangleCount);
+    }
+
+    VertexBuffer::~VertexBuffer() {
+        glDeleteBuffers(1, &vboID);
+    }
+} // namespace EconSimPlusPlus

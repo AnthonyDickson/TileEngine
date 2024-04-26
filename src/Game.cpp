@@ -28,69 +28,70 @@
 #include <EconSimPlusPlus/Game.hpp>
 #include <EconSimPlusPlus/Size.hpp>
 
-bool Game::isInitialised = false;
+namespace EconSimPlusPlus {
+    bool Game::isInitialised = false;
 
-Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileMap> tileMap_) :
-    window(std::move(window_)),
-    tileMap(std::move(tileMap_)),
-    camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
-    assert(!isInitialised && "Cannot have more than one instance of `Game`.");
-    isInitialised = true;
-}
-
-Game Game::create(Size<int> windowSize) {
-    auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
-
-    const auto tileMap{TileMap::create("resource/terrain.yaml")};
-
-    return {std::move(window), tileMap};
-}
-
-void Game::update(const float deltaTime) {
-    if (window->hasWindowSizeChanged()) {
-        camera.onWindowResize({static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())});
+    Game::Game(std::unique_ptr<Window> window_, std::shared_ptr<TileMap> tileMap_) :
+        window(std::move(window_)), tileMap(std::move(tileMap_)),
+        camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
+        assert(!isInitialised && "Cannot have more than one instance of `Game`.");
+        isInitialised = true;
     }
 
-    camera.update(deltaTime, window->getInputState());
-}
+    Game Game::create(Size<int> windowSize) {
+        auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
 
-void Game::render() const {
-    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+        const auto tileMap{TileMap::create("resource/terrain.yaml")};
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glEnable(GL_CULL_FACE);
-
-    tileMap->render(camera);
-}
-
-void Game::run() {
-    constexpr auto targetFramesPerSecond{60};
-    constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
-    constexpr auto timeStep{1.0f / targetFramesPerSecond};
-
-    auto lastFrameTime{std::chrono::steady_clock::now()};
-
-    while (true) {
-        const auto currentTime{std::chrono::steady_clock::now()};
-        const auto deltaTime{currentTime - lastFrameTime};
-        lastFrameTime = currentTime;
-
-        if (deltaTime < targetFrameTime) {
-            std::this_thread::sleep_for(targetFrameTime - deltaTime);
-        }
-
-        if (window->getInputState().getKey(GLFW_KEY_ESCAPE)) {
-            window->close();
-            return;
-        }
-
-        window->preUpdate();
-        update(timeStep);
-        render();
-        window->postUpdate();
+        return {std::move(window), tileMap};
     }
-}
+
+    void Game::update(const float deltaTime) {
+        if (window->hasWindowSizeChanged()) {
+            camera.onWindowResize({static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())});
+        }
+
+        camera.update(deltaTime, window->getInputState());
+    }
+
+    void Game::render() const {
+        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_CULL_FACE);
+
+        tileMap->render(camera);
+    }
+
+    void Game::run() {
+        constexpr auto targetFramesPerSecond{60};
+        constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
+        constexpr auto timeStep{1.0f / targetFramesPerSecond};
+
+        auto lastFrameTime{std::chrono::steady_clock::now()};
+
+        while (true) {
+            const auto currentTime{std::chrono::steady_clock::now()};
+            const auto deltaTime{currentTime - lastFrameTime};
+            lastFrameTime = currentTime;
+
+            if (deltaTime < targetFrameTime) {
+                std::this_thread::sleep_for(targetFrameTime - deltaTime);
+            }
+
+            if (window->getInputState().getKey(GLFW_KEY_ESCAPE)) {
+                window->close();
+                return;
+            }
+
+            window->preUpdate();
+            update(timeStep);
+            render();
+            window->postUpdate();
+        }
+    }
+} // namespace EconSimPlusPlus

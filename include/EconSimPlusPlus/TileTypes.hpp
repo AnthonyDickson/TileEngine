@@ -25,17 +25,17 @@
 #include <EconSimPlusPlus/Size.hpp>
 #include <EconSimPlusPlus/TileType.hpp>
 
-/** A collection of tile types. */
-class TileTypes {
-private:
-    std::vector<TileType> tileTypes{};
+namespace EconSimPlusPlus {
+    /** A collection of tile types. */
+    class TileTypes {
+    private:
+        std::vector<TileType> tileTypes{};
 
-public:
-    static std::shared_ptr<TileTypes> create(Size<int> sheetSize);
+    public:
+        static std::shared_ptr<TileTypes> create(Size<int> sheetSize);
 
-    void render(int tileID) const;
-};
+        void render(int tileID) const;
+    };
+} // namespace EconSimPlusPlus
 
-
-
-#endif //TILETYPES_H
+#endif // TILETYPES_H

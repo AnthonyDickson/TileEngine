@@ -24,105 +24,107 @@
 
 #include <EconSimPlusPlus/Window.hpp>
 
-bool Window::isInitialised = false;
+namespace EconSimPlusPlus {
+    bool Window::isInitialised = false;
 
-Window::Window(const int windowWidth_, const int windowHeight_, const std::string& windowName) :
-    windowWidth(windowWidth_), windowHeight(windowHeight_) {
-    assert(!isInitialised && "Cannot have more than one instance of `Window`.");
+    Window::Window(const int windowWidth_, const int windowHeight_, const std::string& windowName) :
+        windowWidth(windowWidth_), windowHeight(windowHeight_) {
+        assert(!isInitialised && "Cannot have more than one instance of `Window`.");
 
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(windowWidth, windowHeight, windowName.c_str(), nullptr, nullptr);
+        window = glfwCreateWindow(windowWidth, windowHeight, windowName.c_str(), nullptr, nullptr);
 
-    if (window == nullptr) {
-        throw std::runtime_error("Failed to create the GLFW window.");
+        if (window == nullptr) {
+            throw std::runtime_error("Failed to create the GLFW window.");
+        }
+
+        glfwMakeContextCurrent(window);
+
+        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+            throw std::runtime_error("Failed to initialize GLAD.");
+        }
+
+        updateWindowSize(windowWidth_, windowHeight_);
+        glfwSetWindowSizeCallback(window, onWindowResize);
+        glfwSetScrollCallback(window, onMouseScroll);
+        glfwSetWindowUserPointer(window, this);
+        glfwSwapInterval(0); // Let the game handle vsync
+
+        isInitialised = true;
     }
 
-    glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        throw std::runtime_error("Failed to initialize GLAD.");
+    Window::~Window() {
+        glfwTerminate();
     }
 
-    updateWindowSize(windowWidth_, windowHeight_);
-    glfwSetWindowSizeCallback(window, onWindowResize);
-    glfwSetScrollCallback(window, onMouseScroll);
-    glfwSetWindowUserPointer(window, this);
-    glfwSwapInterval(0); // Let the game handle vsync
-
-    isInitialised = true;
-}
-
-Window::~Window() {
-    glfwTerminate();
-}
-
-void Window::preUpdate() {
-    inputState.update(window);
-}
-
-void Window::postUpdate() {
-    inputState.postUpdate();
-    hasWindowChangedSize = false;
-
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-}
-
-void Window::close() const {
-    glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
-const InputState& Window::getInputState() const {
-    return inputState;
-}
-
-int Window::getWidth() const {
-    return windowWidth;
-}
-
-int Window::getHeight() const {
-    return windowHeight;
-}
-
-Size<int> Window::getSize() const {
-    return {windowWidth, windowHeight};
-}
-
-float Window::getAspectRatio() const {
-    return static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
-}
-
-bool Window::hasWindowSizeChanged() const {
-    return hasWindowChangedSize;
-}
-
-void Window::onWindowResize(GLFWwindow* window, const int width, const int height) {
-    if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
-        windowHandle->updateWindowSize(width, height);
+    void Window::preUpdate() {
+        inputState.update(window);
     }
-}
 
-void Window::updateWindowSize(const int width, const int height) {
-    windowWidth = width;
-    windowHeight = height;
+    void Window::postUpdate() {
+        inputState.postUpdate();
+        hasWindowChangedSize = false;
 
-    // On some disploys (e.g., retina displays on macOS) the reported window resolution is a scaled resolution.
-    // For example, a 3840x2160 screen may be used to display an up-scaled 1920x1080 screen.
-    // GLFW will report 1920x1080 as the fullscreen resolution, but setting the OpenGL viewport to this resolution
-    // results in viewport that only covers a quarter of the screen since OpenGL uses real pixels.
-    // Using the framebuffer resolution ensures the viewport fills the window.
-    int framebuffer_width, framebuffer_height;
-    glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
-    glViewport(0, 0, framebuffer_width, framebuffer_height);
-    hasWindowChangedSize = true;
-}
-
-void Window::onMouseScroll(GLFWwindow* window, const double scrollX, const double scrollY) {
-    if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
-        windowHandle->inputState.updateScroll(scrollX, scrollY);
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
-}
+
+    void Window::close() const {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
+    const InputState& Window::getInputState() const {
+        return inputState;
+    }
+
+    int Window::getWidth() const {
+        return windowWidth;
+    }
+
+    int Window::getHeight() const {
+        return windowHeight;
+    }
+
+    Size<int> Window::getSize() const {
+        return {windowWidth, windowHeight};
+    }
+
+    float Window::getAspectRatio() const {
+        return static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+    }
+
+    bool Window::hasWindowSizeChanged() const {
+        return hasWindowChangedSize;
+    }
+
+    void Window::onWindowResize(GLFWwindow* window, const int width, const int height) {
+        if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
+            windowHandle->updateWindowSize(width, height);
+        }
+    }
+
+    void Window::updateWindowSize(const int width, const int height) {
+        windowWidth = width;
+        windowHeight = height;
+
+        // On some disploys (e.g., retina displays on macOS) the reported window resolution is a scaled resolution.
+        // For example, a 3840x2160 screen may be used to display an up-scaled 1920x1080 screen.
+        // GLFW will report 1920x1080 as the fullscreen resolution, but setting the OpenGL viewport to this resolution
+        // results in viewport that only covers a quarter of the screen since OpenGL uses real pixels.
+        // Using the framebuffer resolution ensures the viewport fills the window.
+        int framebuffer_width, framebuffer_height;
+        glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
+        glViewport(0, 0, framebuffer_width, framebuffer_height);
+        hasWindowChangedSize = true;
+    }
+
+    void Window::onMouseScroll(GLFWwindow* window, const double scrollX, const double scrollY) {
+        if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
+            windowHandle->inputState.updateScroll(scrollX, scrollY);
+        }
+    }
+} // namespace EconSimPlusPlus

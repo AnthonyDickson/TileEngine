@@ -26,69 +26,71 @@
 
 #include <EconSimPlusPlus/Texture.hpp>
 
-Texture::Texture(const unsigned int textureID_, const int textureUnit_, const Size<int> resolution_) :
-    textureID(textureID_), textureUnit(textureUnit_), resolution(resolution_) {
-}
-
-
-std::shared_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
-    int width{};
-    int height{};
-    int channelCount{};
-    stbi_set_flip_vertically_on_load(true);
-    const auto imageData{stbi_load(imagePath.c_str(), &width, &height, &channelCount, 0)};
-
-    GLenum imageFormat;
-
-    switch (channelCount) {
-    case 1:
-        imageFormat = GL_RED;
-    case 3:
-        imageFormat = GL_RGB;
-        break;
-    case 4:
-        imageFormat = GL_RGBA;
-        break;
-    default:
-        throw std::runtime_error(std::format("Texture does not support image with {0} channels.", channelCount));
+namespace EconSimPlusPlus {
+    Texture::Texture(const unsigned int textureID_, const int textureUnit_, const Size<int> resolution_) :
+        textureID(textureID_), textureUnit(textureUnit_), resolution(resolution_) {
     }
 
-    if (imageData == nullptr) {
-        throw std::runtime_error(
-            std::format("Texture failed to load image from {0}: {1}", imagePath, stbi_failure_reason()));
+
+    std::shared_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
+        int width{};
+        int height{};
+        int channelCount{};
+        stbi_set_flip_vertically_on_load(true);
+        const auto imageData{stbi_load(imagePath.c_str(), &width, &height, &channelCount, 0)};
+
+        GLenum imageFormat;
+
+        switch (channelCount) {
+        case 1:
+            imageFormat = GL_RED;
+        case 3:
+            imageFormat = GL_RGB;
+            break;
+        case 4:
+            imageFormat = GL_RGBA;
+            break;
+        default:
+            throw std::runtime_error(std::format("Texture does not support image with {0} channels.", channelCount));
+        }
+
+        if (imageData == nullptr) {
+            throw std::runtime_error(
+                std::format("Texture failed to load image from {0}: {1}", imagePath, stbi_failure_reason()));
+        }
+
+        GLuint textureID{};
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), width, height, 0, imageFormat, GL_UNSIGNED_BYTE,
+                     imageData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(imageData);
+
+        // ReSharper disable once CppTemplateArgumentsCanBeDeduced
+        const Size<int> resolution{width, height};
+
+        return std::make_shared<Texture>(textureID, textureUnit_, resolution);
     }
 
-    GLuint textureID{};
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    Texture::~Texture() {
+        glDeleteTextures(1, &textureID);
+    }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    void Texture::bind() const {
+        glActiveTexture(textureUnit);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+    }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), width, height, 0, imageFormat, GL_UNSIGNED_BYTE,
-                 imageData);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(imageData);
-
-    // ReSharper disable once CppTemplateArgumentsCanBeDeduced
-    const Size<int> resolution{width, height};
-
-    return std::make_shared<Texture>(textureID, textureUnit_, resolution);
-}
-
-Texture::~Texture() {
-    glDeleteTextures(1, &textureID);
-}
-
-void Texture::bind() const {
-    glActiveTexture(textureUnit);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-}
-
-int Texture::getUniformTextureUnit() const {
-    return textureUnit - GL_TEXTURE0;
-}
+    int Texture::getUniformTextureUnit() const {
+        return textureUnit - GL_TEXTURE0;
+    }
+} // namespace EconSimPlusPlus

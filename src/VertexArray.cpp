@@ -21,14 +21,16 @@
 
 #include <EconSimPlusPlus/VertexArray.hpp>
 
-VertexArray::VertexArray() {
-    glGenVertexArrays(1, &vaoID);
-}
+namespace EconSimPlusPlus {
+    VertexArray::VertexArray() {
+        glGenVertexArrays(1, &vaoID);
+    }
 
-VertexArray::~VertexArray() {
-    glDeleteVertexArrays(1, &vaoID);
-}
+    VertexArray::~VertexArray() {
+        glDeleteVertexArrays(1, &vaoID);
+    }
 
-void VertexArray::bind() const {
-    glBindVertexArray(vaoID);
-}
+    void VertexArray::bind() const {
+        glBindVertexArray(vaoID);
+    }
+} // namespace EconSimPlusPlus

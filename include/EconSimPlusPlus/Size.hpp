@@ -22,10 +22,12 @@
 #ifndef SIZE_H
 #define SIZE_H
 
-template <typename T>
-struct Size {
-    T width;
-    T height;
-};
+namespace EconSimPlusPlus {
+    template <typename T>
+    struct Size {
+        T width;
+        T height;
+    };
+} // namespace EconSimPlusPlus
 
-#endif //SIZE_H
+#endif // SIZE_H
