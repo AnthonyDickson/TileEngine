@@ -163,8 +163,7 @@ namespace EconSimPlusPlus {
 
         /// Implicit mapping between GLFW key codes and whether the mouse button is pressed down in this frame.
         std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> currentMouseButtonState{};
-        /** Implicit mapping between GLFW key codes and whether the mouse button is pressed down in the previous frame.
-         */
+        /// Implicit mapping between GLFW key codes and whether the mouse button is pressed down in the previous frame.
         std::array<bool, GLFW_MOUSE_BUTTON_LAST + 1> previousMouseButtonState{};
 
         /// The integer codes that map to a valid mouse button code in GLFW.
@@ -173,11 +172,8 @@ namespace EconSimPlusPlus {
             GLFW_MOUSE_BUTTON_5, GLFW_MOUSE_BUTTON_6, GLFW_MOUSE_BUTTON_7, GLFW_MOUSE_BUTTON_8,
         };
 
-        /**
-         * Whether the mouse position has been set before.
-         *
-         * This is used to prevent issues with mouse movement in the first update step.
-         */
+        /// Whether the mouse position has been set before.
+        /// This is used to prevent issues with mouse movement in the first update step.
         bool hasInitializedMousePosition{false};
         /// The position of the mouse cursor since the most recent call to `InputState::update(...)`.
         glm::vec2 mousePosition{};
@@ -187,76 +183,54 @@ namespace EconSimPlusPlus {
         float scrollDelta{};
 
     public:
-        /**
-         * Poll and update the keyboard and mouse input state.
-         * @param window The GLFW window get keyboard and mouse input from.
-         */
+        /// Poll and update the keyboard and mouse input state.
+        /// @param window The GLFW window get keyboard and mouse input from.
         void update(GLFWwindow* window);
 
-        /**
-         * Perform any actions necessary for the post-update step.
-         */
+        /// Perform any actions necessary for the post-update step.
         void postUpdate();
 
-        /**
-         * Check whether a key is pressed down.
-         * @param key A GLFW key code.
-         * @return `true` if the key is pressed down, otherwise `false`.
-         */
+        /// Check whether a key is pressed down.
+        /// @param key A GLFW key code.
+        /// @return `true` if the key is pressed down, otherwise `false`.
         [[nodiscard]] bool getKey(int key) const;
 
-        /**
-         * Check whether a key was pressed during this frame.
-         * @param key A GLFW key code.
-         * @return `true` if the key was pressed down during this frame, otherwise `false`.
-         */
+        /// Check whether a key was pressed during this frame.
+        /// @param key A GLFW key code.
+        /// @return `true` if the key was pressed down during this frame, otherwise `false`.
         [[nodiscard]] bool getKeyDown(int key) const;
 
-        /**
-         * Check whether a key was released during this frame.
-         * @param key A GLFW key code.
-         * @return `true` if the key was released during this frame, otherwise `false`.
-         */
+         /// Check whether a key was released during this frame.
+         /// @param key A GLFW key code.
+         /// @return `true` if the key was released during this frame, otherwise `false`.
         [[nodiscard]] bool getKeyUp(int key) const;
 
-        /**
-         * Get the position of the mouse cursor.
-         * @return the screen coordinates of the mouse cursor in pixels.
-         */
+         /// Get the position of the mouse cursor.
+         /// @return the screen coordinates of the mouse cursor in pixels.
         [[nodiscard]] const glm::vec2& getMousePosition() const;
 
-        /**
-         * Get the mouse cursor movement since the last frame.
-         * @return the movement of the mouse in pixels.
-         */
+         /// Get the mouse cursor movement since the last frame.
+         /// @return the movement of the mouse in pixels.
         [[nodiscard]] const glm::vec2& getMouseMovement() const;
 
-        /**
-         * Update the cumulative scroll wheel movement.
-         * @param scrollX The amount of horizontal scroll input.
-         * @param scrollY The amount of vertical scroll input.
-         */
+         /// Update the cumulative scroll wheel movement.
+         /// @param scrollX The amount of horizontal scroll input.
+         /// @param scrollY The amount of vertical scroll input.
         void updateScroll(double scrollX, double scrollY);
 
-        /**
-         * Check whether a mouse button is pressed down.
-         * @param button A GLFW mouse button code.
-         * @return `true` if the mouse button is pressed down, otherwise `false`.
-         */
+         /// Check whether a mouse button is pressed down.
+         /// @param button A GLFW mouse button code.
+         /// @return `true` if the mouse button is pressed down, otherwise `false`.
         [[nodiscard]] bool getMouseButton(int button) const;
 
-        /**
-         * Check whether a mouse button was pressed during this frame.
-         * @param button A GLFW mouse button code.
-         * @return `true` if the mouse button was pressed down during this frame, otherwise `false`.
-         */
+         /// Check whether a mouse button was pressed during this frame.
+         /// @param button A GLFW mouse button code.
+         /// @return `true` if the mouse button was pressed down during this frame, otherwise `false`.
         [[nodiscard]] bool getMouseButtonDown(int button) const;
 
-        /**
-         * Check whether a mouse button was released during this frame.
-         * @param button A GLFW mouse button code.
-         * @return `true` if the mouse button was released during this frame, otherwise `false`.
-         */
+         /// Check whether a mouse button was released during this frame.
+         /// @param button A GLFW mouse button code.
+         /// @return `true` if the mouse button was released during this frame, otherwise `false`.
         [[nodiscard]] bool getMouseButtonUp(int button) const;
     };
 } // namespace EconSimPlusPlus

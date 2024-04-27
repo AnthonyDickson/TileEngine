@@ -29,7 +29,7 @@
 #include <EconSimPlusPlus/TileTypes.hpp>
 
 namespace EconSimPlusPlus {
-    /** Handles loading and accessing a textured-based tile map. */
+    /// Handles loading and accessing a textured-based tile map.
     class TileMap {
     private:
         const std::unique_ptr<Texture> texture;
@@ -47,26 +47,20 @@ namespace EconSimPlusPlus {
         const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
     public:
-        /**
-         * @param texture_ The tile sheet texture.
-         * @param tileSize_ The size (width, height) of a single tile in pixels.
-         * @param mapSize_ The size (width, height) of the tile map in tiles.
-         * @param tiles_ The tiles in the tile map by integer ID. Zero indicates an empty tile.
-         */
+        /// @param texture_ The tile sheet texture.
+        /// @param tileSize_ The size (width, height) of a single tile in pixels.
+        /// @param mapSize_ The size (width, height) of the tile map in tiles.
+        /// @param tiles_ The tiles in the tile map by integer ID. Zero indicates an empty tile.
         TileMap(std::unique_ptr<Texture> texture_, glm::vec2 tileSize_, Size<int> mapSize_,
                 const std::vector<int>& tiles_);
 
-        /**
-         * Construct a `TileMap` object from a YAML file.
-         * @param yamlPath The path to a YAML formatted tile map document.
-         * @return A `TileMap` pointer.
-         */
+        /// Construct a `TileMap` object from a YAML file.
+        /// @param yamlPath The path to a YAML formatted tile map document.
+        /// @return A `TileMap` pointer.
         static std::unique_ptr<TileMap> create(const std::string& yamlPath);
 
-        /**
-         * Draw the tile map on screen.
-         * @param camera The camera to render the tile map with.
-         */
+        /// Draw the tile map on screen.
+        /// @param camera The camera to render the tile map with.
         void render(const Camera& camera) const;
     };
 } // namespace EconSimPlusPlus

@@ -28,9 +28,14 @@
 namespace EconSimPlusPlus {
     /// Hold the properties of a tile type.
     struct TileType {
+        /// The vertex array for rendering a tile.
         std::unique_ptr<VertexArray> vao;
+        /// The vertex array for rendering a tile.
         std::unique_ptr<VertexBuffer> vbo;
 
+        /// Create a new tile type.
+        /// @param vao_ The vertex array for rendering a tile.
+        /// @param vbo_ The vertex array for rendering a tile.
         explicit TileType(std::unique_ptr<VertexArray> vao_, std::unique_ptr<VertexBuffer> vbo_) :
             vao(std::move(vao_)), vbo(std::move(vbo_)) {
         }

@@ -23,6 +23,7 @@
 #define SIZE_H
 
 namespace EconSimPlusPlus {
+    /// A 2-tuple indicating the width and height of something.
     template <typename T>
     struct Size {
         T width;

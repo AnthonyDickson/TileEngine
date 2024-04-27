@@ -47,20 +47,16 @@ namespace EconSimPlusPlus {
         /// Cleanup OpenGL stuff.
         ~VertexBuffer();
 
-        /**
-         * Load vertex data into the vertex buffer.
-         * @param vertexData The vertex data as a flat list.
-         * @param sizes The number of elements per vertex attribute.
-         */
+        /// Load vertex data into the vertex buffer.
+        /// @param vertexData The vertex data as a flat list.
+        /// @param sizes The number of elements per vertex attribute.
         void loadData(const std::vector<float>& vertexData, const std::vector<int>& sizes);
 
         /// Bind the vertex buffer object.
         void bind() const;
 
-        /**
-         * Call OpenGL::glDrawArrays with suitable parameters.
-         * @param mode How to draw the vertex data.
-         */
+        /// Call OpenGL::glDrawArrays with suitable parameters.
+        /// @param mode How to draw the vertex data.
         void drawArrays(GLenum mode = GL_TRIANGLES) const;
     };
 } // namespace EconSimPlusPlus

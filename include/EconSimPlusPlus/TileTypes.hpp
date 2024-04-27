@@ -29,11 +29,17 @@ namespace EconSimPlusPlus {
     /// A collection of tile types.
     class TileTypes {
     private:
+        /// The list of tile types.
         std::vector<TileType> tileTypes{};
 
     public:
+        /// Generate the set of tile type info for a given tile sheet size.
+        /// @param sheetSize The width and height (in tiles) of the tile sheet.
+        /// @return A collection of tile types.
         static std::unique_ptr<TileTypes> create(Size<int> sheetSize);
 
+        /// Render the tile geometry.
+        /// *Note:* Requires the textures to be bound outside this function.
         void render(int tileID) const;
     };
 } // namespace EconSimPlusPlus

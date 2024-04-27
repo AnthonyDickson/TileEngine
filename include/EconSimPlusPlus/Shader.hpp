@@ -27,26 +27,22 @@
 #include "glm/mat4x4.hpp"
 
 #include <EconSimPlusPlus/Material.hpp>
-#include "light/DirectionalLight.hpp"
-#include "light/Light.hpp"
-#include "light/PointLight.hpp"
-#include "light/SpotLight.hpp"
+#include <EconSimPlusPlus/light/DirectionalLight.hpp>
+#include <EconSimPlusPlus/light/Light.hpp>
+#include <EconSimPlusPlus/light/PointLight.hpp>
+#include <EconSimPlusPlus/light/SpotLight.hpp>
 
 namespace EconSimPlusPlus {
-    /**
-     * Handles the loading, compilation, linking and usage of an OpenGL shader program.
-     */
+    /// Handles the loading, compilation, linking and usage of an OpenGL shader program.
     class Shader {
     private:
         /// The ID of the shader program in OpenGL.
         unsigned int shaderProgramID{};
 
     public:
-        /**
-         * Load and compile GLSL shaders from disk.
-         * @param vertexShaderSourcePath The path to the vertex shader source code.
-         * @param fragmentShaderSourcePath The path to the fragment shader source code.
-         */
+        /// Load and compile GLSL shaders from disk.
+        /// @param vertexShaderSourcePath The path to the vertex shader source code.
+        /// @param fragmentShaderSourcePath The path to the fragment shader source code.
         Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath);
 
         /// Delete copy constructor to avoid OpenGL issues.
@@ -57,93 +53,67 @@ namespace EconSimPlusPlus {
         /// Clean up OpenGL related stuff.
         ~Shader();
 
-        /**
-         * Activate the shader program.
-         */
+        /// Activate the shader program.
         void bind() const;
 
-        /**
-         * Get the location of a uniform variable in the shader program.
-         * @param name The name of the uniform in the shader source code.
-         * @return An integer indicating the location.
-         */
+        /// Get the location of a uniform variable in the shader program.
+        /// @param name The name of the uniform in the shader source code.
+        /// @return An integer indicating the location.
         [[nodiscard]] int getUniformLocation(const std::string& name) const;
 
-        /**
-         * Set a bool uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a bool uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         [[maybe_unused]] void setUniform(const std::string& name, bool value) const;
 
-        /**
-         * Set an integer uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set an integer uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, int value) const;
 
-        /**
-         * Set a float uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a float uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         [[maybe_unused]] void setUniform(const std::string& name, float value) const;
 
-        /**
-         * Set a float 3-vector uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a float 3-vector uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const glm::vec3& value) const;
 
-        /**
-         * Set a 4x4 float matrix uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a 4x4 float matrix uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const glm::mat4x4& value) const;
 
-        /**
-         * Set a material uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a material uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const Material& value) const;
 
-        /**
-         * Set a light uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a light uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         [[maybe_unused]] void setUniform(const std::string& name, const Light& value) const;
 
-        /**
-         * Set a directional light uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a directional light uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const DirectionalLight& value) const;
 
-        /**
-         * Set a spotlight uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a spotlight uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const SpotLight& value) const;
 
-        /**
-         * Set a point light uniform value.
-         * @param name The name of the uniform.
-         * @param value The value to set the uniform to.
-         */
+        /// Set a point light uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const PointLight& value) const;
 
-        /**
-         * Set point light uniform values.
-         * @param name The name of the uniform.
-         * @param value The values to set the uniform to.
-         */
+        /// Set point light uniform values.
+        /// @param name The name of the uniform.
+        /// @param value The values to set the uniform to.
         void setUniform(const std::string& name, const std::vector<PointLight>& value) const;
     };
 } // namespace EconSimPlusPlus

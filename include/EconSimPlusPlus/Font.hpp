@@ -56,7 +56,6 @@ namespace EconSimPlusPlus {
         /// Create a font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
         /// @return A font object.
-        ///
         static std::unique_ptr<Font> create(const std::string& fontPath);
 
         /// Draw text on screen.

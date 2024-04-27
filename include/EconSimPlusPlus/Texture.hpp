@@ -39,19 +39,14 @@ namespace EconSimPlusPlus {
         /// The size (width, height) of the texture in pixels.
         const Size<int> resolution;
 
-        /**
-         *
-         * @param textureID_ The OpenGL ID for the texture.
-         * @param textureUnit_ The texture unit to bind the texture to.
-         * @param resolution_ The resolution of the texture.
-         */
+        /// @param textureID_ The OpenGL ID for the texture.
+        /// @param textureUnit_ The texture unit to bind the texture to.
+        /// @param resolution_ The resolution of the texture.
         Texture(unsigned int textureID_, int textureUnit_, Size<int> resolution_);
 
-        /**
-         * Create a texture from an image.
-         * @param imagePath The path to an image.
-         * @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
-         */
+        /// Create a texture from an image.
+        /// @param imagePath The path to an image.
+        /// @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
         static std::unique_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
 
         /// Delete copy constructor to avoid OpenGL issues.
