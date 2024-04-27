@@ -31,21 +31,40 @@
 
 namespace EconSimPlusPlus {
 
-    // TODO: Add docstrings
+    // TODO: Try out Valve's approach to high-res scalable text from signed distance fields:
+    // https://steamcdn-a.akamaihd.net/apps/valve/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
     /// Handles the loading and rendering of TrueType fonts.
     class Font {
     private:
+        /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
         std::map<char, std::unique_ptr<Glyph>> glyphs;
+        /// The vertex array for storing the 3D geometry and atttributes.
         std::unique_ptr<VertexArray> vao;
+        /// The vertex buffer for the text geometry.
         std::unique_ptr<VertexBuffer> vbo;
+        /// The shader for rendering text via OpenGL.
         Shader shader{"resource/shader/text.vert", "resource/shader/text.frag"};
 
     public:
+        /// Create a font (collection of glyphs).
+        /// @param glyphs_ Mapping between ASCII chars and the corresponing font data.
+        /// @param vao_ The vertex array for rendering text.
+        /// @param vbo_ The vertex buffer for rendering text.
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
                       std::unique_ptr<VertexBuffer> vbo_);
 
+        /// Create a font object from a TrueType font.
+        /// @param fontPath The path to the TrueType font file on disk.
+        /// @return A font object.
+        ///
         static std::unique_ptr<Font> create(const std::string& fontPath);
 
+        /// Draw text on screen.
+        /// @param text The string to render.
+        /// @param position Where to render the text in screen coordinates (pixels). Note that this corresponds to the
+        /// bottom left corner of the text.
+        /// @param scale How much to scale up or down the text from its original size.
+        /// @param colour The colour to render the text.
         void render(std::string_view text, glm::vec2 position, float scale, glm::vec3 colour) const;
     };
 } // namespace EconSimPlusPlus

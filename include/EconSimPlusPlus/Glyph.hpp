@@ -25,24 +25,36 @@
 #include "glad/glad.h"
 #include "glm/vec2.hpp"
 
-// TODO: Add docstrings
 namespace EconSimPlusPlus {
-    /// Represents a single character in a font family.
+    /// Represents a single character in a TrueType font.
     class Glyph {
     private:
         // TODO: Use Texture object
+        /// The OpenGL ID of the character bitmap.
         const GLuint textureID;
 
     public:
+        /// The width and height of the character.
         const glm::ivec2 size;
+        /// The horizontal and vertical offset to sit letters on the baseline.
         const glm::ivec2 bearing;
+        /// The spacing between this character and other characters.
         const long advance;
 
+        /// Create a new Glyph.
+        /// @param textureID_ The OpenGL ID of the character bitmap.
+        /// @param size_ The width and height of the character.
+        /// @param bearing_ The horizontal and vertical offset to sit letters on the baseline.
+        /// @param advance_ The spacing between this character and other characters.
         Glyph(GLuint textureID_, glm::ivec2 size_, glm::ivec2 bearing_, long advance_);
+
         Glyph(Glyph&) = delete;
         Glyph(Glyph&&) = delete;
+
+        /// Clean up OpenGL stuff.
         ~Glyph();
 
+        /// Bind the glyph texture for rendering.
         void bind() const;
     };
 } // namespace EconSimPlusPlus
