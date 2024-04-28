@@ -25,11 +25,12 @@
 #include <EconSimPlusPlus/Camera.hpp>
 
 namespace EconSimPlusPlus {
-    Camera::Camera(const glm::vec2 viewport_, const glm::vec3 position_) : viewport(viewport_), position(position_) {
+    Camera::Camera(const glm::vec2 viewport_, const glm::vec3 position_) :
+        viewport(viewport_), position(position_), projection(createProjectionMatrix(viewport_)) {
     }
 
     glm::mat4 Camera::getPerspectiveMatrix() const {
-        return glm::ortho(-viewport.x / 2.0f, viewport.x / 2.0f, -viewport.y / 2.0f, viewport.y / 2.0f, 0.1f, 1000.0f);
+        return projection;
     }
 
     glm::mat4 Camera::getViewMatrix() const {
@@ -109,5 +110,10 @@ namespace EconSimPlusPlus {
 
     void Camera::onWindowResize(const glm::vec2 viewport_) {
         viewport = viewport_;
+        projection = createProjectionMatrix(viewport_);
     }
+    glm::mat4 Camera::createProjectionMatrix(const glm::vec2& viewport) {
+        return glm::ortho(-viewport.x / 2.0f, viewport.x / 2.0f, -viewport.y / 2.0f, viewport.y / 2.0f, 0.1f, 1000.0f);
+    }
+
 } // namespace EconSimPlusPlus

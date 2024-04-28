@@ -36,6 +36,8 @@ namespace EconSimPlusPlus {
         glm::vec2 viewport;
         /// The position of the camera in world space.
         glm::vec3 position{};
+        /// The projection matrix (e.g., perspective or orthographic).
+        glm::mat4 projection;
 
         /// The point of interest that the camera is "looking at". Used for calculating the view matrix.
         static constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
@@ -77,6 +79,11 @@ namespace EconSimPlusPlus {
         /// Update the camera to match the window size when the user resizes the window.
         /// @param viewport_ The new window size.
         void onWindowResize(glm::vec2 viewport_);
+
+    private:
+        /// Generate a projection matrix for the given viewport size.
+        /// @param viewport The width and height of the camera view in pixels.
+        static glm::mat4 createProjectionMatrix(const glm::vec2& viewport);
     };
 } // namespace EconSimPlusPlus
 
