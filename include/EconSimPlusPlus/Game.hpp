@@ -27,9 +27,9 @@
 #include <EconSimPlusPlus/Window.hpp>
 
 namespace EconSimPlusPlus {
+    /// This is the main class for the program.
     class Game {
-        /// This is the main class for the program. Wraps up and coordinates everything.
-    private:
+
         /// The window we use to display the game.
         std::unique_ptr<Window> window;
 
@@ -43,9 +43,9 @@ namespace EconSimPlusPlus {
         /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
         static bool isInitialised;
 
-         /// Create a new game instance.
-         /// @param window_ The window to display the game on.
-         /// @param tileMap_ The game map made up of square tiles.
+        /// Create a new game instance.
+        /// @param window_ The window to display the game on.
+        /// @param tileMap_ The game map made up of square tiles.
         Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_);
 
     public:
@@ -57,8 +57,8 @@ namespace EconSimPlusPlus {
         Game(Game&) = delete;
         Game(Game&&) = delete;
 
-         /// Update the game by one step.
-         /// @param deltaTime the size of the step to take in term of time (seconds).
+        /// Update the game by one step.
+        /// @param deltaTime the size of the step to take in term of time (seconds).
         void update(float deltaTime);
 
         /// Render the game to the screen.

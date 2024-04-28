@@ -31,7 +31,6 @@
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
     class TileMap {
-    private:
         const std::unique_ptr<Texture> texture;
         /// The size (width and height) of a single tile in pixels.
         const glm::vec2 tileSize;

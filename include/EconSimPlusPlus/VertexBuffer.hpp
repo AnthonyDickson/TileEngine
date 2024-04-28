@@ -29,7 +29,6 @@
 namespace EconSimPlusPlus {
     /// Wrapper for OpenGL vertex buffer objects.
     class VertexBuffer {
-    private:
         /// The ID for the vertex buffer object.
         GLuint vboID{};
         /// The number of triangles in the buffered vertex data.

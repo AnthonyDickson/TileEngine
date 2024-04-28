@@ -22,8 +22,9 @@
 #ifndef ECONSIMPLUSPLUS_CAMERA_H
 #define ECONSIMPLUSPLUS_CAMERA_H
 
-#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/vec3.hpp"
+
+#include "glm/ext/matrix_float4x4.hpp"
 
 #include <EconSimPlusPlus/Direction.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
@@ -31,7 +32,6 @@
 namespace EconSimPlusPlus {
     /// An object used to manipulate the view of a scene in OpenGL.
     class Camera {
-    private:
         /// The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport.
         glm::vec2 viewport;
         /// The position of the camera in world space.

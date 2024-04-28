@@ -63,12 +63,14 @@ namespace EconSimPlusPlus {
                 continue;
             }
 
+            glm::ivec2 size(static_cast<int>(face->glyph->bitmap.width), static_cast<int>(face->glyph->bitmap.rows));
+
             // generate texture
             unsigned int texture;
             glGenTextures(1, &texture);
             glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED,
-                         GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, size.x, size.y, 0, GL_RED, GL_UNSIGNED_BYTE,
+                         face->glyph->bitmap.buffer);
             // set texture options
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -76,8 +78,7 @@ namespace EconSimPlusPlus {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             // now store character for later use
             auto character{std::make_unique<Glyph>(
-                texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top), face->glyph->advance.x)};
+                texture, size, glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top), face->glyph->advance.x)};
             glyphs.emplace(c, std::move(character));
         }
 
@@ -117,8 +118,9 @@ namespace EconSimPlusPlus {
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
 
-            const glm::vec2 screenCoordinates{drawPosition.x + glyph->bearing.x * scale,
-                                              drawPosition.y - (glyph->size.y - glyph->bearing.y) * scale};
+            const glm::vec2 screenCoordinates{drawPosition.x + static_cast<float>(glyph->bearing.x) * scale,
+                                              drawPosition.y -
+                                                  static_cast<float>(glyph->size.y - glyph->bearing.y) * scale};
 
             const glm::vec2 size{static_cast<glm::vec2>(glyph->size) * scale};
 
@@ -135,7 +137,7 @@ namespace EconSimPlusPlus {
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
-            drawPosition.x += (glyph->advance >> 6) * scale;
+            drawPosition.x += static_cast<float>(glyph->advance >> 6) * scale;
         }
     }
 
@@ -146,7 +148,7 @@ namespace EconSimPlusPlus {
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
 
-            textSize.x += (glyph->advance >> 6) * scale;
+            textSize.x += static_cast<float>(glyph->advance >> 6) * scale;
             textSize.y = static_cast<float>(glyph->size.y) * scale;
         }
 

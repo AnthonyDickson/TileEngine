@@ -28,7 +28,6 @@
 namespace EconSimPlusPlus {
     /// Represents a single character in a TrueType font.
     class Glyph {
-    private:
         // TODO: Use Texture object
         /// The OpenGL ID of the character bitmap.
         const GLuint textureID;

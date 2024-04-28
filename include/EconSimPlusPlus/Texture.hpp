@@ -29,7 +29,6 @@
 namespace EconSimPlusPlus {
     /// Handles the creation and setup of an OpenGL texture from a image on disk.
     class Texture {
-    private:
         /// The OpenGL ID for the texture.
         const unsigned int textureID;
         /// The texture unit that the texture should be bound to.

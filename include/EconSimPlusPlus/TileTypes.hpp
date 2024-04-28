@@ -28,7 +28,6 @@
 namespace EconSimPlusPlus {
     /// A collection of tile types.
     class TileTypes {
-    private:
         /// The list of tile types.
         std::vector<TileType> tileTypes{};
 

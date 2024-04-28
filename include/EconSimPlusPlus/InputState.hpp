@@ -31,7 +31,6 @@
 namespace EconSimPlusPlus {
     /// Keeps track of keyboard and mouse input.
     class InputState {
-    private:
         /// Implicit mapping between GLFW key codes and whether the key is pressed down in this frame.
         std::array<bool, GLFW_KEY_LAST + 1> currentKeyState{};
         /// Implicit mapping between GLFW key codes and whether the key is pressed down in the previous frame.

@@ -27,7 +27,6 @@
 namespace EconSimPlusPlus {
     /// Wrapper for OpenGL vertex array objects.
     class VertexArray {
-    private:
         /// The ID for the bound vertex array object.
         GLuint vaoID{};
 

@@ -26,14 +26,12 @@
 
 #include "GLFW/glfw3.h"
 
-#include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
 #include <EconSimPlusPlus/Size.hpp>
 
 namespace EconSimPlusPlus {
     /// Handles the basic functions of an OpenGL window.
     class Window {
-    private:
         /// Handle to the GLFW window object.
         GLFWwindow* window{};
         /// The width of the window in pixels.

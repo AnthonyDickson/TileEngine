@@ -36,7 +36,6 @@ namespace EconSimPlusPlus {
     // https://steamcdn-a.akamaihd.net/apps/valve/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
     /// Handles the loading and rendering of TrueType fonts.
     class Font {
-    private:
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
         std::map<char, std::unique_ptr<Glyph>> glyphs;
         /// The vertex array for storing the 3D geometry and atttributes.
@@ -80,7 +79,7 @@ namespace EconSimPlusPlus {
         /// @param anchor The reference point from which the text will be rendered.
         /// @param scale The scale factor to be applied to the rendered text.
         /// @return A 2D offset in screen coordinates.
-        glm::vec2 calculateAnchorOffset(std::string_view text, Anchor anchor, float scale) const;
+        [[nodiscard]] glm::vec2 calculateAnchorOffset(std::string_view text, Anchor anchor, float scale) const;
     };
 } // namespace EconSimPlusPlus
 

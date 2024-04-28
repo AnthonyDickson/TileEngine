@@ -35,7 +35,6 @@
 namespace EconSimPlusPlus {
     /// Handles the loading, compilation, linking and usage of an OpenGL shader program.
     class Shader {
-    private:
         /// The ID of the shader program in OpenGL.
         unsigned int shaderProgramID{};
 
