@@ -64,9 +64,10 @@ namespace EconSimPlusPlus {
         glEnable(GL_CULL_FACE);
 
         // TODO: Profile render steps.
-        // TODO: Add mechanism to ensure different layers, such text and tile maps, are not rendered on top of each other (e.g., specify z coordinates).
+        // TODO: Add mechanism to ensure different layers, such text and tile maps, are not rendered on top of each
+        // other (e.g., specify z coordinates).
         tileMap->render(camera);
-        font->render("Hello, world!", {}, 1.0f, {1.0f, 0.0f, 1.0f});
+        font->render("Hello, world!", {}, 1.0f, {1.0f, 0.0f, 1.0f}, camera);
     }
 
     void Game::run() {

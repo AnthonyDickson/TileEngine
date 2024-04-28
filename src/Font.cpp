@@ -99,12 +99,11 @@ namespace EconSimPlusPlus {
         return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo));
     }
 
-    void Font::render(const std::string_view text, const glm::vec2 position, const float scale,
-                      const glm::vec3 colour) const {
+    void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
+                      const Camera& camera) const {
         // TODO: Add 'anchor' as parameter (e.g., top left, center). This should control the coordinates from which the
         // text is drawn.
-        // TODO: Take camera as parameter to get projection matrix.
-        const glm::mat4 projection = glm::ortho(-960.0f, 960.0f, -540.0f, 540.0f);
+        const glm::mat4 projection = camera.getPerspectiveMatrix();
         shader.bind();
         shader.setUniform("text", 0);
         shader.setUniform("textColor", colour);

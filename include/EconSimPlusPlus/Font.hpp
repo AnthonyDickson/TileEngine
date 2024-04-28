@@ -24,6 +24,7 @@
 
 #include <map>
 
+#include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/Glyph.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
@@ -64,7 +65,9 @@ namespace EconSimPlusPlus {
         /// bottom left corner of the text.
         /// @param scale How much to scale up or down the text from its original size.
         /// @param colour The colour to render the text.
-        void render(std::string_view text, glm::vec2 position, float scale, glm::vec3 colour) const;
+        /// @param camera The camera to render the text with.
+        void render(std::string_view text, glm::vec2 position, float scale, glm::vec3 colour,
+                    const Camera& camera) const;
     };
 } // namespace EconSimPlusPlus
 
