@@ -100,9 +100,7 @@ namespace EconSimPlusPlus {
     }
 
     void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
-                      const Camera& camera) const {
-        // TODO: Add 'anchor' as parameter (e.g., top left, center). This should control the coordinates from which the
-        // text is drawn.
+                      const Camera& camera, const Font::Anchor anchor) const {
         const glm::mat4 projection = camera.getPerspectiveMatrix();
         shader.bind();
         shader.setUniform("text", 0);
@@ -114,6 +112,8 @@ namespace EconSimPlusPlus {
 
         glm::vec2 drawPosition{position};
 
+        const auto anchorOffset{calculateAnchorOffset(text, anchor, scale)};
+
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
 
@@ -122,13 +122,12 @@ namespace EconSimPlusPlus {
 
             const glm::vec2 size{static_cast<glm::vec2>(glyph->size) * scale};
 
+            const float x = anchorOffset.x + screenCoordinates.x;
+            const float y = anchorOffset.y + screenCoordinates.y;
+
             const float vertices[6][4]{
-                {screenCoordinates.x, screenCoordinates.y + size.y, 0.0f, 0.0f},
-                {screenCoordinates.x, screenCoordinates.y, 0.0f, 1.0f},
-                {screenCoordinates.x + size.x, screenCoordinates.y, 1.0f, 1.0f},
-                {screenCoordinates.x, screenCoordinates.y + size.y, 0.0f, 0.0f},
-                {screenCoordinates.x + size.x, screenCoordinates.y, 1.0f, 1.0f},
-                {screenCoordinates.x + size.x, screenCoordinates.y + size.y, 1.0f, 0.0f},
+                {x, y + size.y, 0.0f, 0.0f}, {x, y, 0.0f, 1.0f},          {x + size.x, y, 1.0f, 1.0f},
+                {x, y + size.y, 0.0f, 0.0f}, {x + size.x, y, 1.0f, 1.0f}, {x + size.x, y + size.y, 1.0f, 0.0f},
             };
 
             glyph->bind();
@@ -140,5 +139,30 @@ namespace EconSimPlusPlus {
         }
     }
 
+    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor,
+                                          const float scale) const {
+        glm::vec2 textSize{};
 
+        for (const auto& character : text) {
+            const auto& glyph{glyphs.at(character)};
+
+            textSize.x += (glyph->advance >> 6) * scale;
+            textSize.y = static_cast<float>(glyph->size.y) * scale;
+        }
+
+        switch (anchor) {
+        case Anchor::bottomLeft:
+            return glm::vec2{0.0f};
+        case Anchor::bottomRight:
+            return glm::vec2{-textSize.x, 0.0f};
+        case Anchor::topLeft:
+            return glm::vec2{0.0f, -textSize.y};
+        case Anchor::topRight:
+            return -textSize;
+        case Anchor::center:
+            return -textSize / 2.0f;
+        default:
+            return glm::vec2{0.0f};
+        }
+    }
 } // namespace EconSimPlusPlus

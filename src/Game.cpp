@@ -67,7 +67,7 @@ namespace EconSimPlusPlus {
         // TODO: Add mechanism to ensure different layers, such text and tile maps, are not rendered on top of each
         // other (e.g., specify z coordinates).
         tileMap->render(camera);
-        font->render("Hello, world!", {}, 1.0f, {1.0f, 0.0f, 1.0f}, camera);
+        font->render("Hello, world!", {}, 1.0f, {1.0f, 0.0f, 1.0f}, camera, Font::Anchor::center);
     }
 
     void Game::run() {

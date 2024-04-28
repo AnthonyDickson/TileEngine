@@ -47,6 +47,9 @@ namespace EconSimPlusPlus {
         Shader shader{"resource/shader/text.vert", "resource/shader/text.frag"};
 
     public:
+        /// The point in the text that the render position refers to.
+        enum class Anchor { bottomLeft, bottomRight, topLeft, topRight, center };
+
         /// Create a font (collection of glyphs).
         /// @param glyphs_ Mapping between ASCII chars and the corresponing font data.
         /// @param vao_ The vertex array for rendering text.
@@ -66,8 +69,18 @@ namespace EconSimPlusPlus {
         /// @param scale How much to scale up or down the text from its original size.
         /// @param colour The colour to render the text.
         /// @param camera The camera to render the text with.
-        void render(std::string_view text, glm::vec2 position, float scale, glm::vec3 colour,
-                    const Camera& camera) const;
+        /// @param anchor The point on the text that the position refers to.
+        void render(std::string_view text, glm::vec2 position, float scale, glm::vec3 colour, const Camera& camera,
+                    Anchor anchor = Anchor::bottomLeft) const;
+
+    private:
+        /// Calculate the positional offset for the given text and anchor.
+        /// @note Assumes single-line text.
+        /// @param text The string to be rendered.
+        /// @param anchor The reference point from which the text will be rendered.
+        /// @param scale The scale factor to be applied to the rendered text.
+        /// @return A 2D offset in screen coordinates.
+        glm::vec2 calculateAnchorOffset(std::string_view text, Anchor anchor, float scale) const;
     };
 } // namespace EconSimPlusPlus
 
