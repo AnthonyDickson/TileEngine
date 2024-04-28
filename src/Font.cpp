@@ -23,6 +23,7 @@
 #include <stdexcept>
 
 // ReSharper disable once CppUnusedIncludeDirective
+#include <EconSimPlusPlus/Camera.hpp>
 #include <ft2build.h>
 
 #include <freetype/freetype.h>
@@ -54,6 +55,8 @@ namespace EconSimPlusPlus {
         FT_Set_Pixel_Sizes(face, 0, 48);
         std::map<char, std::unique_ptr<Glyph>> glyphs;
 
+        int unpackAlignment{};
+        glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
         for (unsigned char c = 0; c < 128; c++) {
@@ -84,6 +87,7 @@ namespace EconSimPlusPlus {
 
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, unpackAlignment); // Restore unpack alignment.
 
         auto vao{std::make_unique<VertexArray>()};
         auto vbo{std::make_unique<VertexBuffer>()};
@@ -117,6 +121,19 @@ namespace EconSimPlusPlus {
 
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
+            const float advance = static_cast<float>(glyph->advance >> 6) * scale;
+
+            switch (character) {
+            case ' ':
+                drawPosition.x += advance;
+                continue;
+            case '\n':
+                drawPosition.y -= static_cast<float>(glyph->size.y) * scale;
+                drawPosition.x = position.x;
+                continue;
+            default:
+                break;
+            }
 
             const glm::vec2 screenCoordinates{drawPosition.x + static_cast<float>(glyph->bearing.x) * scale,
                                               drawPosition.y -
@@ -137,7 +154,7 @@ namespace EconSimPlusPlus {
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
-            drawPosition.x += static_cast<float>(glyph->advance >> 6) * scale;
+            drawPosition.x += advance;
         }
     }
 
@@ -149,7 +166,12 @@ namespace EconSimPlusPlus {
             const auto& glyph{glyphs.at(character)};
 
             textSize.x += static_cast<float>(glyph->advance >> 6) * scale;
-            textSize.y = static_cast<float>(glyph->size.y) * scale;
+            const float height = static_cast<float>(glyph->size.y) * scale;
+            textSize.y = height;
+
+            if (character == '\n') {
+                textSize.y += height;
+            }
         }
 
         switch (anchor) {

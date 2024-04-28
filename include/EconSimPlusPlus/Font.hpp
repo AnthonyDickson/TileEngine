@@ -32,8 +32,6 @@
 
 namespace EconSimPlusPlus {
 
-    // TODO: Try out Valve's approach to high-res scalable text from signed distance fields:
-    // https://steamcdn-a.akamaihd.net/apps/valve/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
     /// Handles the loading and rendering of TrueType fonts.
     class Font {
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
@@ -74,7 +72,6 @@ namespace EconSimPlusPlus {
 
     private:
         /// Calculate the positional offset for the given text and anchor.
-        /// @note Assumes single-line text.
         /// @param text The string to be rendered.
         /// @param anchor The reference point from which the text will be rendered.
         /// @param scale The scale factor to be applied to the rendered text.
