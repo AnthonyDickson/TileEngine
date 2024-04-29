@@ -22,17 +22,17 @@
 #include <iostream>
 #include <stdexcept>
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <EconSimPlusPlus/Camera.hpp>
+
 #include <ft2build.h>
 
 #include <freetype/freetype.h>
 
-#include <EconSimPlusPlus/Font.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
-#include "EconSimPlusPlus/VertexArray.hpp"
-#include "EconSimPlusPlus/VertexBuffer.hpp"
+#include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/Font.hpp>
+#include <EconSimPlusPlus/VertexArray.hpp>
+#include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
@@ -92,25 +92,17 @@ namespace EconSimPlusPlus {
         auto vao{std::make_unique<VertexArray>()};
         auto vbo{std::make_unique<VertexBuffer>()};
         vao->bind();
-        vbo->bind();
-        // 6 * 4 for six vertices with 2D position and texture coordinates.
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
-
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
+        vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
 
         return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo));
     }
 
     void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
                       const Camera& camera, const Font::Anchor anchor) const {
-        const glm::mat4 projection = camera.getPerspectiveMatrix();
         shader.bind();
         shader.setUniform("text", 0);
         shader.setUniform("textColor", colour);
-        shader.setUniform("projection", projection);
+        shader.setUniform("projection", camera.getPerspectiveMatrix());
 
         glActiveTexture(GL_TEXTURE0);
         vao->bind();
@@ -135,24 +127,19 @@ namespace EconSimPlusPlus {
                 break;
             }
 
-            const glm::vec2 screenCoordinates{drawPosition.x + static_cast<float>(glyph->bearing.x) * scale,
-                                              drawPosition.y -
-                                                  static_cast<float>(glyph->size.y - glyph->bearing.y) * scale};
-
+            // TODO: Remove scale from previous calculations and only apply it once here.
+            // TODO: Fix anchors not working correctly for multiline text.
+            const glm::vec2 screenCoordinates{
+                anchorOffset.x + drawPosition.x + static_cast<float>(glyph->bearing.x) * scale,
+                anchorOffset.y + drawPosition.y - static_cast<float>(glyph->size.y - glyph->bearing.y) * scale};
             const glm::vec2 size{static_cast<glm::vec2>(glyph->size) * scale};
 
-            const float x = anchorOffset.x + screenCoordinates.x;
-            const float y = anchorOffset.y + screenCoordinates.y;
-
-            const float vertices[6][4]{
-                {x, y + size.y, 0.0f, 0.0f}, {x, y, 0.0f, 1.0f},          {x + size.x, y, 1.0f, 1.0f},
-                {x, y + size.y, 0.0f, 0.0f}, {x + size.x, y, 1.0f, 1.0f}, {x + size.x, y + size.y, 1.0f, 0.0f},
-            };
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -1.0f));
+            transform = glm::scale(transform, glm::vec3(size.x, size.y, 0.0f));
+            shader.setUniform("transform", transform);
 
             glyph->bind();
-            vbo->bind();
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             drawPosition.x += advance;
         }
@@ -165,8 +152,8 @@ namespace EconSimPlusPlus {
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
 
-            textSize.x += static_cast<float>(glyph->advance >> 6) * scale;
             const float height = static_cast<float>(glyph->size.y) * scale;
+            textSize.x += static_cast<float>(glyph->advance >> 6) * scale;
             textSize.y = height;
 
             if (character == '\n') {

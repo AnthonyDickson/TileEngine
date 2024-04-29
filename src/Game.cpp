@@ -19,6 +19,7 @@
 // Created by Anthony Dickson on 13/04/2024.
 //
 
+#include <format>
 #include <iostream>
 #include <thread>
 #include <utility>
@@ -63,7 +64,6 @@ namespace EconSimPlusPlus {
 
         glEnable(GL_CULL_FACE);
 
-        // TODO: Profile render steps.
         // TODO: Add mechanism to ensure different layers, such text and tile maps, are not rendered on top of each
         // other (e.g., specify z coordinates).
         tileMap->render(camera);

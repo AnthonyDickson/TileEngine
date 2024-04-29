@@ -7,5 +7,8 @@
       <file path="$PROJECT_DIR$/include" />
       <file path="$PROJECT_DIR$/src" />
     </sourceRoots>
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/cmake-build-release" />
+    </excludeRoots>
   </component>
 </project>
