@@ -22,15 +22,17 @@
 #ifndef GLYPH_HPP
 #define GLYPH_HPP
 
-#include "glad/glad.h"
+#include <memory>
+
 #include "glm/vec2.hpp"
+
+#include <EconSimPlusPlus/Texture.hpp>
 
 namespace EconSimPlusPlus {
     /// Represents a single character in a TrueType font.
     class Glyph {
-        // TODO: Use Texture object
-        /// The OpenGL ID of the character bitmap.
-        const GLuint textureID;
+        /// The character bitmap.
+        const std::unique_ptr<Texture> texture;
 
     public:
         /// The width and height of the character.
@@ -41,17 +43,14 @@ namespace EconSimPlusPlus {
         const float advance;
 
         /// Create a new Glyph.
-        /// @param textureID_ The OpenGL ID of the character bitmap.
+        /// @param texture_ The character bitmap.
         /// @param size_ The width and height of the character.
         /// @param bearing_ The horizontal and vertical offset to sit letters on the baseline.
         /// @param advance_ The spacing between this character and other characters.
-        Glyph(GLuint textureID_, glm::vec2 size_, glm::vec2 bearing_, float advance_);
+        Glyph(std::unique_ptr<Texture> texture_, glm::vec2 size_, glm::vec2 bearing_, float advance_);
 
         Glyph(Glyph&) = delete;
         Glyph(Glyph&&) = delete;
-
-        /// Clean up OpenGL stuff.
-        ~Glyph();
 
         /// Bind the glyph texture for rendering.
         void bind() const;

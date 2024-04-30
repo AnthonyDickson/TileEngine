@@ -32,8 +32,8 @@ namespace EconSimPlusPlus {
     TileMap::TileMap(std::unique_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
                      const std::vector<int>& tiles_) :
         texture(std::move(texture_)), tileSize(tileSize_),
-        sheetSize{texture->resolution.width / static_cast<int>(tileSize_.x),
-                  texture->resolution.height / static_cast<int>(tileSize_.y)},
+        sheetSize{texture->resolution.x / static_cast<int>(tileSize_.x),
+                  texture->resolution.y / static_cast<int>(tileSize_.y)},
         mapSize(mapSize_), tiles(tiles_), tileTypes(TileTypes::create(sheetSize)) {
     }
 

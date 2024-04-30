@@ -22,16 +22,12 @@
 #include <EconSimPlusPlus/Glyph.hpp>
 
 namespace EconSimPlusPlus {
-    Glyph::Glyph(const GLuint textureID_, const glm::vec2 size_, const glm::vec2 bearing_, const float advance_)
-        : textureID(textureID_), size(size_), bearing(bearing_), advance(advance_) {
-    }
-
-    Glyph::~Glyph() {
-        glDeleteTextures(1, &textureID);
+    Glyph::Glyph(std::unique_ptr<Texture> texture_, const glm::vec2 size_, const glm::vec2 bearing_, const float advance_)
+        : texture(std::move(texture_)), size(size_), bearing(bearing_), advance(advance_) {
     }
 
     void Glyph::bind() const {
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        texture->bind();
     }
 
 } // namespace EconSimPlusPlus

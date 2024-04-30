@@ -24,8 +24,6 @@
 
 #include "glad/glad.h"
 
-#include <EconSimPlusPlus/Size.hpp>
-
 namespace EconSimPlusPlus {
     /// Handles the creation and setup of an OpenGL texture from a image on disk.
     class Texture {
@@ -36,17 +34,25 @@ namespace EconSimPlusPlus {
 
     public:
         /// The size (width, height) of the texture in pixels.
-        const Size<int> resolution;
+        const glm::ivec2 resolution;
 
         /// @param textureID_ The OpenGL ID for the texture.
         /// @param textureUnit_ The texture unit to bind the texture to.
         /// @param resolution_ The resolution of the texture.
-        Texture(unsigned int textureID_, int textureUnit_, Size<int> resolution_);
+        Texture(unsigned int textureID_, int textureUnit_, glm::ivec2 resolution_);
 
-        /// Create a texture from an image.
+        /// Create a texture from an image file path.
         /// @param imagePath The path to an image.
         /// @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
         static std::unique_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
+
+        /// Create a texture from an image.
+        /// @param image The image data.
+        /// @param resolution The width and height of the image data in pixels.
+        /// @param channelCount The number of channels in the image data.
+        /// @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
+        static std::unique_ptr<Texture> create(const unsigned char* image, glm::ivec2 resolution, int channelCount,
+                                               int textureUnit_ = GL_TEXTURE0);
 
         /// Delete copy constructor to avoid OpenGL issues.
         Texture(Texture&) = delete;

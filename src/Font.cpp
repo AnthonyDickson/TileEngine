@@ -31,6 +31,7 @@
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/Font.hpp>
+#include <EconSimPlusPlus/Texture.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
@@ -66,26 +67,14 @@ namespace EconSimPlusPlus {
                 continue;
             }
 
-            glm::vec2 size(static_cast<float>(face->glyph->bitmap.width), static_cast<float>(face->glyph->bitmap.rows));
-
-            // generate texture
-            unsigned int texture;
-            glGenTextures(1, &texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y), 0,
-                         GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-            // set texture options
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+            const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width), static_cast<float>(face->glyph->bitmap.rows));
             const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
                                     static_cast<float>(face->glyph->bitmap_top));
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
             const auto advance{static_cast<float>(face->glyph->advance.x >> 6)};
+            auto texture{Texture::create(face->glyph->bitmap.buffer, resolution, 1)};
 
-            auto character{std::make_unique<Glyph>(texture, size, bearing, advance)};
+            auto character{std::make_unique<Glyph>(std::move(texture), resolution, bearing, advance)};
             glyphs.emplace(c, std::move(character));
         }
 
