@@ -196,7 +196,7 @@ namespace EconSimPlusPlus {
     }
 
     void Shader::setUniform(const std::string& name, const std::vector<PointLight>& value) const {
-        for (int i = 0; i < value.size(); ++i) {
+        for (std::size_t i = 0; i < value.size(); ++i) {
             setUniform(std::format("{:s}[{:d}]", name, i), value[i]);
         }
     }

@@ -36,10 +36,10 @@ namespace EconSimPlusPlus {
                      GL_STATIC_DRAW);
 
         const auto stride{std::reduce(sizes.begin(), sizes.end(), 0)};
-        const int strideBytes = static_cast<int>(stride * sizeof(float));
+        const int strideBytes{stride * static_cast<int>(sizeof(float))};
         int offset{0};
 
-        for (int i = 0; i < sizes.size(); i++) {
+        for (std::size_t i = 0; i < sizes.size(); i++) {
             const int size = sizes[i];
             const auto pointerOffset{reinterpret_cast<void*>(offset * sizeof(float))};
             glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, strideBytes, pointerOffset);

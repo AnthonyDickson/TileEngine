@@ -14,7 +14,7 @@ add_library(LibEconSimPlusPlus
         stb_image.cpp
 )
 target_include_directories(LibEconSimPlusPlus PUBLIC ${PROJECT_SOURCE_DIR}/include/)
-set_property(TARGET LibEconSimPlusPlus PROPERTY CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Wpedantic -Wshadow -Wsign-conversion")
+target_compile_options(LibEconSimPlusPlus PRIVATE -Werror -Wall -Wextra -Wpedantic -Wshadow)
 
 
 # Libraries
