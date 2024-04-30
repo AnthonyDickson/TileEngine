@@ -77,6 +77,12 @@ namespace EconSimPlusPlus {
         /// @param scale The scale factor to be applied to the rendered text.
         /// @return A 2D offset in screen coordinates.
         [[nodiscard]] glm::vec2 calculateAnchorOffset(std::string_view text, Anchor anchor, float scale) const;
+
+        /// Calculate the width and height of the text if it were rendered on screen.
+        /// @param text The string to be rendered.
+        /// @param scale The scale factor to be applied to the rendered text.
+        /// @return The width and height of the text in pixels.
+        [[nodiscard]] glm::vec2 calculateTextSize(std::string_view text, float scale) const;
     };
 } // namespace EconSimPlusPlus
 

@@ -128,13 +128,13 @@ namespace EconSimPlusPlus {
             }
 
             // TODO: Remove scale from previous calculations and only apply it once here.
-            // TODO: Fix anchors not working correctly for multiline text.
             const glm::vec2 screenCoordinates{
                 anchorOffset.x + drawPosition.x + static_cast<float>(glyph->bearing.x) * scale,
                 anchorOffset.y + drawPosition.y - static_cast<float>(glyph->size.y - glyph->bearing.y) * scale};
             const glm::vec2 size{static_cast<glm::vec2>(glyph->size) * scale};
 
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -1.0f));
+            glm::mat4 transform =
+                glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -1.0f));
             transform = glm::scale(transform, glm::vec3(size.x, size.y, 0.0f));
             shader.setUniform("transform", transform);
 
@@ -147,33 +147,46 @@ namespace EconSimPlusPlus {
 
     glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor,
                                           const float scale) const {
-        glm::vec2 textSize{};
-
-        for (const auto& character : text) {
-            const auto& glyph{glyphs.at(character)};
-
-            const float height = static_cast<float>(glyph->size.y) * scale;
-            textSize.x += static_cast<float>(glyph->advance >> 6) * scale;
-            textSize.y = height;
-
-            if (character == '\n') {
-                textSize.y += height;
-            }
-        }
+        const auto textSize{calculateTextSize(text, scale)};
 
         switch (anchor) {
         case Anchor::bottomLeft:
-            return glm::vec2{0.0f};
-        case Anchor::bottomRight:
-            return glm::vec2{-textSize.x, 0.0f};
-        case Anchor::topLeft:
             return glm::vec2{0.0f, -textSize.y};
-        case Anchor::topRight:
+        case Anchor::bottomRight:
             return -textSize;
+        case Anchor::topLeft:
+            return glm::vec2{0.0f};
+        case Anchor::topRight:
+            return glm::vec2{-textSize.x, 0.0f};
         case Anchor::center:
             return -textSize / 2.0f;
         default:
             return glm::vec2{0.0f};
         }
+    }
+
+    glm::vec2 Font::calculateTextSize(const std::string_view text, const float scale) const {
+        glm::vec2 textSize{};
+        float lineWidth{};
+
+        for (const auto& character : text) {
+            const auto& glyph{glyphs.at(character)};
+            const float height = static_cast<float>(glyph->size.y) * scale;
+
+            if (character == '\n') {
+                textSize.x = std::max(lineWidth, textSize.x);
+                textSize.y += height;
+                lineWidth = 0.0f;
+            }
+            else {
+                lineWidth += static_cast<float>(glyph->advance >> 6) * scale;
+                textSize.y = std::max(height, textSize.y);
+            }
+        }
+
+        textSize.x = std::max(lineWidth, textSize.x);
+        textSize.y *= -1.0f;
+
+        return textSize;
     }
 } // namespace EconSimPlusPlus
