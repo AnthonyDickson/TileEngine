@@ -22,7 +22,7 @@
 #include <EconSimPlusPlus/Glyph.hpp>
 
 namespace EconSimPlusPlus {
-    Glyph::Glyph(const GLuint textureID_, const glm::ivec2 size_, const glm::ivec2 bearing_, const long advance_)
+    Glyph::Glyph(const GLuint textureID_, const glm::vec2 size_, const glm::vec2 bearing_, const float advance_)
         : textureID(textureID_), size(size_), bearing(bearing_), advance(advance_) {
     }
 

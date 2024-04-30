@@ -66,22 +66,26 @@ namespace EconSimPlusPlus {
                 continue;
             }
 
-            glm::ivec2 size(static_cast<int>(face->glyph->bitmap.width), static_cast<int>(face->glyph->bitmap.rows));
+            glm::vec2 size(static_cast<float>(face->glyph->bitmap.width), static_cast<float>(face->glyph->bitmap.rows));
 
             // generate texture
             unsigned int texture;
             glGenTextures(1, &texture);
             glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, size.x, size.y, 0, GL_RED, GL_UNSIGNED_BYTE,
-                         face->glyph->bitmap.buffer);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y), 0,
+                         GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
             // set texture options
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            // now store character for later use
-            auto character{std::make_unique<Glyph>(
-                texture, size, glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top), face->glyph->advance.x)};
+
+            const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
+                                    static_cast<float>(face->glyph->bitmap_top));
+            // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
+            const auto advance{static_cast<float>(face->glyph->advance.x >> 6)};
+
+            auto character{std::make_unique<Glyph>(texture, size, bearing, advance)};
             glyphs.emplace(c, std::move(character));
         }
 
@@ -113,24 +117,23 @@ namespace EconSimPlusPlus {
 
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
-            const auto advance{static_cast<float>(glyph->advance >> 6)};
 
             switch (character) {
             case ' ':
-                drawPosition.x += advance;
+                drawPosition.x += glyph->advance;
                 continue;
             case '\n':
-                drawPosition.y += static_cast<float>(glyph->size.y);
+                drawPosition.y += glyph->size.y;
                 drawPosition.x = position.x;
                 continue;
             default:
                 break;
             }
 
-            const glm::vec2 screenCoordinates{
-                (anchorOffset.x + drawPosition.x + static_cast<float>(glyph->bearing.x)) * scale,
-                (anchorOffset.y + drawPosition.y - static_cast<float>(glyph->size.y - glyph->bearing.y)) * scale};
-            const glm::vec2 size{static_cast<glm::vec2>(glyph->size) * scale};
+            const glm::vec2 screenCoordinates{(anchorOffset.x + drawPosition.x + glyph->bearing.x) * scale,
+                                              (anchorOffset.y + drawPosition.y + glyph->bearing.y - glyph->size.y) *
+                                                  scale};
+            const glm::vec2 size{glyph->size * scale};
 
             glm::mat4 transform =
                 glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -1.0f));
@@ -140,7 +143,7 @@ namespace EconSimPlusPlus {
             glyph->bind();
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            drawPosition.x += advance;
+            drawPosition.x += glyph->advance;
         }
     }
 
@@ -169,16 +172,15 @@ namespace EconSimPlusPlus {
 
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
-            const auto height{static_cast<float>(glyph->size.y)};
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);
-                textSize.y += height;
+                textSize.y += glyph->size.y;
                 lineWidth = 0.0f;
             }
             else {
-                lineWidth += static_cast<float>(glyph->advance >> 6);
-                textSize.y = std::max(height, textSize.y);
+                lineWidth += glyph->advance;
+                textSize.y = std::max(glyph->size.y, textSize.y);
             }
         }
 

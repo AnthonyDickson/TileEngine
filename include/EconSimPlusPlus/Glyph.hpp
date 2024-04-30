@@ -34,18 +34,18 @@ namespace EconSimPlusPlus {
 
     public:
         /// The width and height of the character.
-        const glm::ivec2 size;
+        const glm::vec2 size;
         /// The horizontal and vertical offset to sit letters on the baseline.
-        const glm::ivec2 bearing;
+        const glm::vec2 bearing;
         /// The spacing between this character and other characters.
-        const long advance;
+        const float advance;
 
         /// Create a new Glyph.
         /// @param textureID_ The OpenGL ID of the character bitmap.
         /// @param size_ The width and height of the character.
         /// @param bearing_ The horizontal and vertical offset to sit letters on the baseline.
         /// @param advance_ The spacing between this character and other characters.
-        Glyph(GLuint textureID_, glm::ivec2 size_, glm::ivec2 bearing_, long advance_);
+        Glyph(GLuint textureID_, glm::vec2 size_, glm::vec2 bearing_, float advance_);
 
         Glyph(Glyph&) = delete;
         Glyph(Glyph&&) = delete;
