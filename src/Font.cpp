@@ -109,28 +109,27 @@ namespace EconSimPlusPlus {
 
         glm::vec2 drawPosition{position};
 
-        const auto anchorOffset{calculateAnchorOffset(text, anchor, scale)};
+        const auto anchorOffset{calculateAnchorOffset(text, anchor)};
 
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
-            const float advance = static_cast<float>(glyph->advance >> 6) * scale;
+            const auto advance{static_cast<float>(glyph->advance >> 6)};
 
             switch (character) {
             case ' ':
                 drawPosition.x += advance;
                 continue;
             case '\n':
-                drawPosition.y -= static_cast<float>(glyph->size.y) * scale;
+                drawPosition.y += static_cast<float>(glyph->size.y);
                 drawPosition.x = position.x;
                 continue;
             default:
                 break;
             }
 
-            // TODO: Remove scale from previous calculations and only apply it once here.
             const glm::vec2 screenCoordinates{
-                anchorOffset.x + drawPosition.x + static_cast<float>(glyph->bearing.x) * scale,
-                anchorOffset.y + drawPosition.y - static_cast<float>(glyph->size.y - glyph->bearing.y) * scale};
+                (anchorOffset.x + drawPosition.x + static_cast<float>(glyph->bearing.x)) * scale,
+                (anchorOffset.y + drawPosition.y - static_cast<float>(glyph->size.y - glyph->bearing.y)) * scale};
             const glm::vec2 size{static_cast<glm::vec2>(glyph->size) * scale};
 
             glm::mat4 transform =
@@ -145,9 +144,8 @@ namespace EconSimPlusPlus {
         }
     }
 
-    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor,
-                                          const float scale) const {
-        const auto textSize{calculateTextSize(text, scale)};
+    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor) const {
+        const auto textSize{calculateTextSize(text)};
 
         switch (anchor) {
         case Anchor::bottomLeft:
@@ -165,13 +163,13 @@ namespace EconSimPlusPlus {
         }
     }
 
-    glm::vec2 Font::calculateTextSize(const std::string_view text, const float scale) const {
+    glm::vec2 Font::calculateTextSize(const std::string_view text) const {
         glm::vec2 textSize{};
         float lineWidth{};
 
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
-            const float height = static_cast<float>(glyph->size.y) * scale;
+            const auto height{static_cast<float>(glyph->size.y)};
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);
@@ -179,13 +177,12 @@ namespace EconSimPlusPlus {
                 lineWidth = 0.0f;
             }
             else {
-                lineWidth += static_cast<float>(glyph->advance >> 6) * scale;
+                lineWidth += static_cast<float>(glyph->advance >> 6);
                 textSize.y = std::max(height, textSize.y);
             }
         }
 
         textSize.x = std::max(lineWidth, textSize.x);
-        textSize.y *= -1.0f;
 
         return textSize;
     }
