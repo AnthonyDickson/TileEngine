@@ -30,7 +30,7 @@ namespace EconSimPlusPlus {
 
         const auto width{1.0f / static_cast<float>(sheetSize.width)};
         const auto height{1.0f / static_cast<float>(sheetSize.height)};
-        std::vector<float> vertexData(dataPointsPerVertex * 6);
+        std::vector<float> vertexData(dataPointsPerVertex * 4);
 
         auto tileTypes{std::make_unique<TileTypes>()};
         tileTypes->tileTypes.reserve(sheetSize.width * sheetSize.height);
@@ -41,10 +41,11 @@ namespace EconSimPlusPlus {
                 const auto v{static_cast<float>(row) * height};
 
                 vertexData = {
-                    // X, Y, U, V (2D coordinates, Texture coordinates).
-                    0.0f, 0.0f, u,         v + height, 1.0f, 1.0f, u + width, v, 0.0f, 1.0f, u, v,
+                    0.0f, 1.0f, u, v + height,
+                    0.0f, 0.0f, u, v,
+                    1.0f, 1.0f, u + width, v + height,
+                    1.0f, 0.0f, u + width, v,
 
-                    1.0f, 0.0f, u + width, v + height, 1.0f, 1.0f, u + width, v, 0.0f, 0.0f, u, v + height,
                 };
 
                 auto vao{std::make_unique<VertexArray>()};
@@ -61,6 +62,6 @@ namespace EconSimPlusPlus {
     void TileTypes::render(const int tileID) const {
         const auto& [vao, vbo]{tileTypes.at(tileID)};
         vao->bind();
-        vbo->drawArrays();
+        vbo->drawArrays(GL_TRIANGLE_STRIP);
     }
 } // namespace EconSimPlusPlus
