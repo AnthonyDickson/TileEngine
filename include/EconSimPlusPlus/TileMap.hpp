@@ -26,7 +26,8 @@
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/Size.hpp>
 #include <EconSimPlusPlus/Texture.hpp>
-#include <EconSimPlusPlus/TileTypes.hpp>
+#include <EconSimPlusPlus/VertexArray.hpp>
+#include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
@@ -40,10 +41,14 @@ namespace EconSimPlusPlus {
         const Size<int> mapSize;
         /// The tiles of the tile map.
         const std::vector<int> tiles;
-        /// The info on the tile types.
-        const std::unique_ptr<TileTypes> tileTypes;
         /// Shader to render textured tiles.
         const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
+
+        const VertexArray vao{};
+        VertexBuffer vbo{};
+        const std::vector<glm::vec2> textureCoordinates;
+
+        static constexpr int shaderMaxElements{128};
 
     public:
         /// @param texture_ The tile sheet texture.
@@ -61,6 +66,47 @@ namespace EconSimPlusPlus {
         /// Draw the tile map on screen.
         /// @param camera The camera to render the tile map with.
         void render(const Camera& camera) const;
+
+    private:
+        /// Generate the texture coordinates for a tile sheet.
+        /// @note The UV coordinates are returned as a flat array, however each tile's coordinates take up 4 consecutive
+        /// elements.
+        /// @param sheetSize The width and height of the tile sheet in tiles.
+        /// @return The UV coordinates for each tile (four elements each).
+        static std::vector<glm::vec2> generateTextureCoordinates(Size<int> sheetSize);
+
+        /// Bounds of a tile grid.
+        struct GridBounds {
+            int rowStart;
+            int rowEnd;
+            int colStart;
+            int colEnd;
+        };
+
+        /// Find the area of the tile map visible to a camera.
+        /// @param camera The camera to use for calculating visible tile maps.
+        /// @return The visible area of the tile map.
+        [[nodiscard]] GridBounds calculateVisibleGridBounds(const Camera& camera) const {
+            const auto cameraPosition{camera.getPosition()};
+            const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
+            const glm::vec2 viewport{camera.getViewportSize()};
+            const glm::vec2 mapSizeVec{mapSize.width, mapSize.height};
+
+            const auto viewBottomLeft{cameraPosition2D - viewport / 2.0f};
+            const auto viewTopRight{cameraPosition2D + viewport / 2.0f};
+            const auto gridOffsetMin{viewBottomLeft / tileSize};
+            const auto gridOffsetMax{viewTopRight / tileSize};
+            const glm::vec2 gridCoordinatesMin{gridOffsetMin + mapSizeVec / 2.0f};
+            const glm::vec2 gridCoordinatesMax{gridOffsetMax + mapSizeVec / 2.0f};
+
+            const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
+            const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + 1, mapSize.height);
+
+            const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
+            const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.width);
+
+            return {rowStart, rowEnd, colStart, colEnd};
+        }
     };
 } // namespace EconSimPlusPlus
 

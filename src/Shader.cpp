@@ -149,6 +149,10 @@ namespace EconSimPlusPlus {
         glUniform3fv(getUniformLocation(name), 1, value_ptr(value));
     }
 
+    void Shader::setUniform(const std::string& name, const glm::vec2& value) const {
+        glUniform2fv(getUniformLocation(name), 1, value_ptr(value));
+    }
+
     void Shader::setUniform(const std::string& name, const glm::mat4x4& value) const {
         glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value_ptr(value));
     }

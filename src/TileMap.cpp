@@ -29,12 +29,35 @@
 #include <EconSimPlusPlus/Shader.hpp>
 
 namespace EconSimPlusPlus {
+
     TileMap::TileMap(std::unique_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
                      const std::vector<int>& tiles_) :
         texture(std::move(texture_)), tileSize(tileSize_),
         sheetSize{texture->resolution.x / static_cast<int>(tileSize_.x),
                   texture->resolution.y / static_cast<int>(tileSize_.y)},
-        mapSize(mapSize_), tiles(tiles_), tileTypes(TileTypes::create(sheetSize)) {
+        mapSize(mapSize_), tiles(tiles_), textureCoordinates(generateTextureCoordinates(sheetSize)) {
+        const std::vector vertexData{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+        vao.bind();
+        vbo.loadData(vertexData, {2});
+    }
+
+    std::vector<glm::vec2> TileMap::generateTextureCoordinates(const Size<int> sheetSize) {
+        const auto width{1.0f / static_cast<float>(sheetSize.width)};
+        const auto height{1.0f / static_cast<float>(sheetSize.height)};
+
+        std::vector<glm::vec2> textureCoordinates{};
+        textureCoordinates.reserve(sheetSize.width * sheetSize.height);
+
+        for (int row = 0; row < sheetSize.height; ++row) {
+            for (int col = 0; col < sheetSize.width; ++col) {
+                const auto u{static_cast<float>(col) * width};
+                const auto v{static_cast<float>(row) * height};
+
+                textureCoordinates.emplace_back(u, v);
+            }
+        }
+
+        return textureCoordinates;
     }
 
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
@@ -57,41 +80,52 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::render(const Camera& camera) const {
+        const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
+        const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.width),
+                                           1.0f / static_cast<float>(sheetSize.height)};
+
         shader.bind();
         shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * camera.getViewMatrix());
+        shader.setUniform("tileSize", textureCoordStride);
         texture->bind();
-
-        const auto cameraPosition{camera.getPosition()};
-        const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
-        const glm::vec2 viewport{camera.getViewportSize()};
-        const glm::vec2 mapSizeVec{mapSize.width, mapSize.height};
-
-        const auto viewBottomLeft{cameraPosition2D - viewport / 2.0f};
-        const auto viewTopRight{cameraPosition2D + viewport / 2.0f};
-        const auto gridOffsetMin{viewBottomLeft / tileSize};
-        const auto gridOffsetMax{viewTopRight / tileSize};
-        const glm::vec2 gridCoordinatesMin{gridOffsetMin + mapSizeVec / 2.0f};
-        const glm::vec2 gridCoordinatesMax{gridOffsetMax + mapSizeVec / 2.0f};
-
-        const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
-        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + 1, mapSize.height);
-
-        const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
-        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.width);
+        vao.bind();
+        vbo.bind();
 
         constexpr glm::mat4 identity{1.0f};
         const auto scale{glm::scale(identity, glm::vec3{tileSize.x, tileSize.y, 0.0})};
+        std::vector transforms(shaderMaxElements, identity);
+        std::vector textureCoordinatesInstanced(shaderMaxElements, glm::vec2(0.f));
+        int tileIndex{0};
+
+        auto renderFn = [&] {
+            if (tileIndex == 0) {
+                return;
+            }
+
+            glUniformMatrix4fv(shader.getUniformLocation("transforms"), tileIndex, GL_FALSE, &transforms[0][0][0]);
+            glUniform2fv(shader.getUniformLocation("textureCoordinates"), tileIndex,
+                         &textureCoordinatesInstanced[0][0]);
+            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, tileIndex);
+        };
 
         for (int row = rowStart; row < rowEnd; ++row) {
             for (int col = colStart; col < colEnd; ++col) {
-                glm::mat4 model = glm::translate(scale,
-                                                 glm::vec3{(static_cast<float>(col) - mapSizeVec.x / 2.0f),
-                                                           (static_cast<float>(row) - mapSizeVec.y / 2.0f), 0.0});
+                transforms[tileIndex] =
+                    glm::translate(scale,
+                                   glm::vec3{(static_cast<float>(col) - mapSize.width / 2.0f),
+                                             (static_cast<float>(row) - mapSize.height / 2.0f), 0.0});
+                const auto tileID{tiles.at(row * mapSize.width + col)};
+                textureCoordinatesInstanced[tileIndex] = textureCoordinates[tileID];
 
-                shader.setUniform("model", model);
-                const int tileID{tiles.at(row * mapSize.width + col)};
-                tileTypes->render(tileID);
+                ++tileIndex;
+
+                if (tileIndex == shaderMaxElements) {
+                    renderFn();
+                    tileIndex = 0;
+                }
             }
         }
+
+        renderFn();
     }
 } // namespace EconSimPlusPlus
