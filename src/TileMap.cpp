@@ -110,10 +110,10 @@ namespace EconSimPlusPlus {
 
         for (int row = rowStart; row < rowEnd; ++row) {
             for (int col = colStart; col < colEnd; ++col) {
-                transforms[tileIndex] =
-                    glm::translate(scale,
-                                   glm::vec3{(static_cast<float>(col) - mapSize.width / 2.0f),
-                                             (static_cast<float>(row) - mapSize.height / 2.0f), 0.0});
+                transforms[tileIndex] = glm::translate(
+                    scale,
+                    glm::vec3{(static_cast<float>(col) - static_cast<float>(mapSize.width) / 2.0f),
+                              (static_cast<float>(row) - static_cast<float>(mapSize.height) / 2.0f), 0.0});
                 const auto tileID{tiles.at(row * mapSize.width + col)};
                 textureCoordinatesInstanced[tileIndex] = textureCoordinates[tileID];
 
