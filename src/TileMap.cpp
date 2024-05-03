@@ -80,7 +80,6 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::render(const Camera& camera) const {
-        // TODO: Make sure anchors are accurate.
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
         const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.width),
                                            1.0f / static_cast<float>(sheetSize.height)};

@@ -22,15 +22,7 @@
 #ifndef ECONSIMPLUSPLUS_SHADER_H
 #define ECONSIMPLUSPLUS_SHADER_H
 
-#include <vector>
-
 #include "glm/mat4x4.hpp"
-
-#include <EconSimPlusPlus/Material.hpp>
-#include <EconSimPlusPlus/light/DirectionalLight.hpp>
-#include <EconSimPlusPlus/light/Light.hpp>
-#include <EconSimPlusPlus/light/PointLight.hpp>
-#include <EconSimPlusPlus/light/SpotLight.hpp>
 
 namespace EconSimPlusPlus {
     /// Handles the loading, compilation, linking and usage of an OpenGL shader program.
@@ -94,36 +86,6 @@ namespace EconSimPlusPlus {
         /// @param name The name of the uniform.
         /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const glm::mat4x4& value) const;
-
-        /// Set a material uniform value.
-        /// @param name The name of the uniform.
-        /// @param value The value to set the uniform to.
-        void setUniform(const std::string& name, const Material& value) const;
-
-        /// Set a light uniform value.
-        /// @param name The name of the uniform.
-        /// @param value The value to set the uniform to.
-        [[maybe_unused]] void setUniform(const std::string& name, const Light& value) const;
-
-        /// Set a directional light uniform value.
-        /// @param name The name of the uniform.
-        /// @param value The value to set the uniform to.
-        void setUniform(const std::string& name, const DirectionalLight& value) const;
-
-        /// Set a spotlight uniform value.
-        /// @param name The name of the uniform.
-        /// @param value The value to set the uniform to.
-        void setUniform(const std::string& name, const SpotLight& value) const;
-
-        /// Set a point light uniform value.
-        /// @param name The name of the uniform.
-        /// @param value The value to set the uniform to.
-        void setUniform(const std::string& name, const PointLight& value) const;
-
-        /// Set point light uniform values.
-        /// @param name The name of the uniform.
-        /// @param value The values to set the uniform to.
-        void setUniform(const std::string& name, const std::vector<PointLight>& value) const;
     };
 } // namespace EconSimPlusPlus
 
