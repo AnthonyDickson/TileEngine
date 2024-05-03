@@ -2,6 +2,7 @@ add_library(LibEconSimPlusPlus
         Camera.cpp
         Game.cpp
         Font.cpp
+        FrameTimer.cpp
         Glyph.cpp
         InputState.cpp
         Shader.cpp

@@ -26,6 +26,7 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
+#include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/Game.hpp>
 #include <EconSimPlusPlus/Size.hpp>
 
@@ -34,7 +35,8 @@ namespace EconSimPlusPlus {
 
     Game::Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_) :
         window(std::move(window_)), tileMap(std::move(tileMap_)),
-        camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())}, {0.0f, 0.0f, 3.0f}} {
+        camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())},
+               {0.0f, 0.0f, 100.0f}} {
         assert(!isInitialised && "Cannot have more than one instance of `Game`.");
         isInitialised = true;
     }
@@ -68,7 +70,6 @@ namespace EconSimPlusPlus {
         // TODO: Add mechanism to ensure different layers, such text and tile maps, are not rendered on top of each
         // other (e.g., specify z coordinates).
         tileMap->render(camera);
-        font->render("Hello, world!", {}, 1.0f, {1.0f, 0.0f, 1.0f}, camera, Font::Anchor::center);
     }
 
     void Game::run() {
@@ -77,6 +78,8 @@ namespace EconSimPlusPlus {
         constexpr auto timeStep{1.0f / targetFramesPerSecond};
 
         auto lastFrameTime{std::chrono::steady_clock::now()};
+        FrameTimer updateTimer{};
+        FrameTimer renderTimer{};
 
         while (true) {
             const auto currentTime{std::chrono::steady_clock::now()};
@@ -93,8 +96,20 @@ namespace EconSimPlusPlus {
             }
 
             window->preUpdate();
+            updateTimer.startStep();
             update(timeStep);
+            updateTimer.endStep();
+
+            renderTimer.startStep();
             render();
+            renderTimer.endStep();
+
+            const auto frameTimeSummary{std::format("Update Time: {:.2f} ms - Render Time {:.2f} ms",
+                                                    updateTimer.average(), renderTimer.average())};
+            const glm::vec2 position{-static_cast<float>(window->getWidth()) / 2.0f,
+                                     static_cast<float>(window->getHeight()) / 2.0f};
+            font->render(frameTimeSummary, position, 0.1f, {1.0f, 1.0f, 1.0f}, camera, Font::Anchor::topLeft);
+
             window->postUpdate();
         }
     }
