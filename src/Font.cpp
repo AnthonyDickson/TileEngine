@@ -36,7 +36,7 @@
 
 namespace EconSimPlusPlus {
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-               std::unique_ptr<VertexBuffer> vbo_, unsigned int textureArrayID_) :
+               std::unique_ptr<VertexBuffer> vbo_, const unsigned int textureArrayID_) :
         glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArrayID(textureArrayID_) {
     }
 
@@ -45,7 +45,8 @@ namespace EconSimPlusPlus {
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath) {
-        // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
+        // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
+        // https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
         FT_Library ft;
         if (FT_Init_FreeType(&ft)) {
             throw std::runtime_error("ERROR::FREETYPE: Could not init FreeType Library");
@@ -129,8 +130,7 @@ namespace EconSimPlusPlus {
         std::vector letterMap(shader.maxInstances, 0);
 
         const auto renderFn = [&] {
-            glUniformMatrix4fv(shader.getUniformLocation("transforms"), workingIndex, GL_FALSE,
-                               &transforms[0][0][0]);
+            glUniformMatrix4fv(shader.getUniformLocation("transforms"), workingIndex, GL_FALSE, &transforms[0][0][0]);
             glUniform1iv(shader.getUniformLocation("letterMap"), workingIndex, &letterMap[0]);
             glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, workingIndex);
         };
@@ -140,19 +140,19 @@ namespace EconSimPlusPlus {
 
             switch (character) {
             case ' ':
-                drawPosition.x += glyph->advance;
+                drawPosition.x += glyph->advance * scale;
                 continue;
             case '\n':
-                drawPosition.y += fontSize.y;
+                drawPosition.y += fontSize.y * scale;
                 drawPosition.x = position.x;
                 continue;
             default:
                 break;
             }
 
-            const glm::vec2 screenCoordinates{(anchorOffset.x + drawPosition.x + glyph->bearing.x) * scale,
-                                              (anchorOffset.y + drawPosition.y + glyph->bearing.y - fontSize.y) *
-                                                  scale};
+            const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x + glyph->bearing.x) * scale,
+                                              drawPosition.y +
+                                                  (anchorOffset.y + glyph->bearing.y - fontSize.y) * scale};
             const glm::vec2 size{fontSize * scale};
 
             glm::mat4 transform =
@@ -160,7 +160,7 @@ namespace EconSimPlusPlus {
             transforms[workingIndex] = glm::scale(transform, glm::vec3(size.x, size.y, 0.0f));
             letterMap[workingIndex] = static_cast<int>(glyph->character);
 
-            drawPosition.x += glyph->advance;
+            drawPosition.x += glyph->advance * scale;
             ++workingIndex;
 
             if (workingIndex == shader.maxInstances) {
