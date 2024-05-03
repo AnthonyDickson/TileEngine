@@ -45,7 +45,7 @@ namespace EconSimPlusPlus {
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath) {
-        // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering
+        // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
         FT_Library ft;
         if (FT_Init_FreeType(&ft)) {
             throw std::runtime_error("ERROR::FREETYPE: Could not init FreeType Library");
@@ -179,13 +179,13 @@ namespace EconSimPlusPlus {
 
         switch (anchor) {
         case Anchor::bottomLeft:
-            return glm::vec2{0.0f, -textSize.y};
-        case Anchor::bottomRight:
-            return -textSize;
-        case Anchor::topLeft:
             return glm::vec2{0.0f};
-        case Anchor::topRight:
+        case Anchor::bottomRight:
             return glm::vec2{-textSize.x, 0.0f};
+        case Anchor::topLeft:
+            return glm::vec2{0.0f, -textSize.y};
+        case Anchor::topRight:
+            return -textSize;
         case Anchor::center:
             return -textSize / 2.0f;
         default:
