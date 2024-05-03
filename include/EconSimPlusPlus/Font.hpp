@@ -43,6 +43,15 @@ namespace EconSimPlusPlus {
         /// The shader for rendering text via OpenGL.
         Shader shader{"resource/shader/text.vert", "resource/shader/text.frag"};
 
+        /// The OpenGL ID to the glyph texture array.
+        unsigned int textureArrayID{};
+        /// The max amount of instances supported by the shader.
+        static constexpr int maxInstances{128};
+        /// The range of ASCII characters to generate glyphs for.
+        static constexpr int charsToGenerate{128};
+        /// The target size (width, height) of the glyphs in pixels.
+        static constexpr glm::vec2 fontSize{256.0f, 256.0f};
+
     public:
         /// The point in the text that the render position refers to.
         enum class Anchor { bottomLeft, bottomRight, topLeft, topRight, center };
@@ -51,8 +60,9 @@ namespace EconSimPlusPlus {
         /// @param glyphs_ Mapping between ASCII chars and the corresponing font data.
         /// @param vao_ The vertex array for rendering text.
         /// @param vbo_ The vertex buffer for rendering text.
+        /// @param textureArrayID_ The OpenGL ID to the glyph texture array.
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-                      std::unique_ptr<VertexBuffer> vbo_);
+                      std::unique_ptr<VertexBuffer> vbo_, unsigned int textureArrayID_);
 
         /// Create a font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.

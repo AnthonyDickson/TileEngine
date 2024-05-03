@@ -22,12 +22,8 @@
 #include <EconSimPlusPlus/Glyph.hpp>
 
 namespace EconSimPlusPlus {
-    Glyph::Glyph(std::unique_ptr<Texture> texture_, const glm::vec2 size_, const glm::vec2 bearing_, const float advance_)
-        : texture(std::move(texture_)), size(size_), bearing(bearing_), advance(advance_) {
-    }
-
-    void Glyph::bind() const {
-        texture->bind();
+    Glyph::Glyph(const unsigned char character_, const glm::vec2 size_, const glm::vec2 bearing_,
+                 const float advance_) : character(character_), size(size_), bearing(bearing_), advance(advance_) {
     }
 
 } // namespace EconSimPlusPlus

@@ -31,14 +31,13 @@
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/Font.hpp>
-#include <EconSimPlusPlus/Texture.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-               std::unique_ptr<VertexBuffer> vbo_) :
-        glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)) {
+               std::unique_ptr<VertexBuffer> vbo_, unsigned int textureArrayID_) :
+        glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArrayID(textureArrayID_) {
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath) {
@@ -53,28 +52,44 @@ namespace EconSimPlusPlus {
             throw std::runtime_error("ERROR::FREETYPE: Failed to load font");
         }
 
-        FT_Set_Pixel_Sizes(face, 0, 48);
+        FT_Set_Pixel_Sizes(face, static_cast<FT_UInt>(fontSize.x), static_cast<FT_UInt>(fontSize.y));
         std::map<char, std::unique_ptr<Glyph>> glyphs;
 
         int unpackAlignment{};
         glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
-        for (unsigned char c = 0; c < 128; c++) {
+        unsigned int textureArrayID;
+        glGenTextures(1, &textureArrayID);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayID);
+        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, static_cast<int>(fontSize.x), static_cast<int>(fontSize.y),
+                     charsToGenerate, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+
+        for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
                 std::cerr << "ERROR::FREETYTPE: Failed to load Glyph: " << std::to_string(c) << std::endl;
                 continue;
             }
 
-            const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width), static_cast<float>(face->glyph->bitmap.rows));
+            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, static_cast<int>(c),
+                            static_cast<GLsizei>(face->glyph->bitmap.width),
+                            static_cast<GLsizei>(face->glyph->bitmap.rows), 1, GL_RED, GL_UNSIGNED_BYTE,
+                            face->glyph->bitmap.buffer);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width),
+                                       static_cast<float>(face->glyph->bitmap.rows));
             const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
                                     static_cast<float>(face->glyph->bitmap_top));
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
             const auto advance{static_cast<float>(face->glyph->advance.x >> 6)};
-            auto texture{Texture::create(face->glyph->bitmap.buffer, resolution, 1)};
 
-            auto character{std::make_unique<Glyph>(std::move(texture), resolution, bearing, advance)};
+            auto character{std::make_unique<Glyph>(c, resolution, bearing, advance)};
             glyphs.emplace(c, std::move(character));
         }
 
@@ -87,7 +102,7 @@ namespace EconSimPlusPlus {
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo));
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), textureArrayID);
     }
 
     void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
@@ -98,11 +113,23 @@ namespace EconSimPlusPlus {
         shader.setUniform("projection", camera.getPerspectiveMatrix());
 
         glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayID);
         vao->bind();
+        vbo->bind();
 
         glm::vec2 drawPosition{position};
 
         const auto anchorOffset{calculateAnchorOffset(text, anchor)};
+        int workingIndex{0};
+        std::vector transforms(maxInstances, glm::mat4());
+        std::vector letterMap(maxInstances, 0);
+
+        const auto renderFn = [&] {
+            glUniformMatrix4fv(shader.getUniformLocation("transforms"), workingIndex, GL_FALSE,
+                               &transforms[0][0][0]);
+            glUniform1iv(shader.getUniformLocation("letterMap"), workingIndex, &letterMap[0]);
+            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, workingIndex);
+        };
 
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
@@ -112,7 +139,7 @@ namespace EconSimPlusPlus {
                 drawPosition.x += glyph->advance;
                 continue;
             case '\n':
-                drawPosition.y += glyph->size.y;
+                drawPosition.y += fontSize.y;
                 drawPosition.x = position.x;
                 continue;
             default:
@@ -120,19 +147,26 @@ namespace EconSimPlusPlus {
             }
 
             const glm::vec2 screenCoordinates{(anchorOffset.x + drawPosition.x + glyph->bearing.x) * scale,
-                                              (anchorOffset.y + drawPosition.y + glyph->bearing.y - glyph->size.y) *
+                                              (anchorOffset.y + drawPosition.y + glyph->bearing.y - fontSize.y) *
                                                   scale};
-            const glm::vec2 size{glyph->size * scale};
+            const glm::vec2 size{fontSize * scale};
 
             glm::mat4 transform =
                 glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -1.0f));
-            transform = glm::scale(transform, glm::vec3(size.x, size.y, 0.0f));
-            shader.setUniform("transform", transform);
-
-            glyph->bind();
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            transforms[workingIndex] = glm::scale(transform, glm::vec3(size.x, size.y, 0.0f));
+            letterMap[workingIndex] = static_cast<int>(glyph->character);
 
             drawPosition.x += glyph->advance;
+            ++workingIndex;
+
+            if (workingIndex == maxInstances) {
+                renderFn();
+                workingIndex = 0;
+            }
+        }
+
+        if (workingIndex > 0) {
+            renderFn();
         }
     }
 
@@ -164,12 +198,12 @@ namespace EconSimPlusPlus {
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);
-                textSize.y += glyph->size.y;
+                textSize.y += fontSize.y;
                 lineWidth = 0.0f;
             }
             else {
                 lineWidth += glyph->advance;
-                textSize.y = std::max(glyph->size.y, textSize.y);
+                textSize.y = std::max(fontSize.y, textSize.y);
             }
         }
 
