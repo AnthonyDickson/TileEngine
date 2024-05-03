@@ -44,11 +44,12 @@ namespace EconSimPlusPlus {
         /// Shader to render textured tiles.
         const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
 
+        /// The vertex array for the tile quad.
         const VertexArray vao{};
+        /// The vertex buffer for the tile quad.
         VertexBuffer vbo{};
+        /// The UV corners for each tile.
         const std::vector<glm::vec2> textureCoordinates;
-
-        static constexpr int shaderMaxElements{128};
 
     public:
         /// @param texture_ The tile sheet texture.

@@ -80,6 +80,7 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::render(const Camera& camera) const {
+        // TODO: Make sure anchors are accurate.
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
         const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.width),
                                            1.0f / static_cast<float>(sheetSize.height)};
@@ -93,8 +94,8 @@ namespace EconSimPlusPlus {
 
         constexpr glm::mat4 identity{1.0f};
         const auto scale{glm::scale(identity, glm::vec3{tileSize.x, tileSize.y, 0.0})};
-        std::vector transforms(shaderMaxElements, identity);
-        std::vector textureCoordinatesInstanced(shaderMaxElements, glm::vec2(0.f));
+        std::vector transforms(shader.maxInstances, identity);
+        std::vector textureCoordinatesInstanced(shader.maxInstances, glm::vec2(0.f));
         int tileIndex{0};
 
         auto renderFn = [&] {
@@ -119,7 +120,7 @@ namespace EconSimPlusPlus {
 
                 ++tileIndex;
 
-                if (tileIndex == shaderMaxElements) {
+                if (tileIndex == shader.maxInstances) {
                     renderFn();
                     tileIndex = 0;
                 }

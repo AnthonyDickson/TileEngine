@@ -31,7 +31,7 @@
 #include <EconSimPlusPlus/Shader.hpp>
 
 namespace EconSimPlusPlus {
-    Shader::Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath) {
+    Shader::Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath, const int maxInstances_): maxInstances(maxInstances_) {
         // Load the shader source code.
         std::ifstream vertexShaderFile{};
         std::ifstream fragmentShaderFile{};

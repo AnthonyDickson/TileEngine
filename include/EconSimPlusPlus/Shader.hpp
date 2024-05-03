@@ -39,10 +39,15 @@ namespace EconSimPlusPlus {
         unsigned int shaderProgramID{};
 
     public:
+        /// The max number of instances supported by the shader.
+        const int maxInstances;
+
         /// Load and compile GLSL shaders from disk.
         /// @param vertexShaderSourcePath The path to the vertex shader source code.
         /// @param fragmentShaderSourcePath The path to the fragment shader source code.
-        Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath);
+        /// @param maxInstances_ The max number of instances that can be used at once.
+        Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath,
+               int maxInstances_ = 128);
 
         /// Delete copy constructor to avoid OpenGL issues.
         Shader(Shader&) = delete;

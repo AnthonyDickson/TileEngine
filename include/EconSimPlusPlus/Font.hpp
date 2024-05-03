@@ -45,8 +45,6 @@ namespace EconSimPlusPlus {
 
         /// The OpenGL ID to the glyph texture array.
         unsigned int textureArrayID{};
-        /// The max amount of instances supported by the shader.
-        static constexpr int maxInstances{128};
         /// The range of ASCII characters to generate glyphs for.
         static constexpr int charsToGenerate{128};
         /// The target size (width, height) of the glyphs in pixels.
@@ -63,6 +61,9 @@ namespace EconSimPlusPlus {
         /// @param textureArrayID_ The OpenGL ID to the glyph texture array.
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
                       std::unique_ptr<VertexBuffer> vbo_, unsigned int textureArrayID_);
+
+        /// Clean up OpenGL stuff.
+        ~Font();
 
         /// Create a font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.

@@ -40,6 +40,10 @@ namespace EconSimPlusPlus {
         glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArrayID(textureArrayID_) {
     }
 
+    Font::~Font() {
+        glDeleteTextures(1, &textureArrayID);
+    }
+
     std::unique_ptr<Font> Font::create(const std::string& fontPath) {
         // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering
         FT_Library ft;
@@ -121,8 +125,8 @@ namespace EconSimPlusPlus {
 
         const auto anchorOffset{calculateAnchorOffset(text, anchor)};
         int workingIndex{0};
-        std::vector transforms(maxInstances, glm::mat4());
-        std::vector letterMap(maxInstances, 0);
+        std::vector transforms(shader.maxInstances, glm::mat4());
+        std::vector letterMap(shader.maxInstances, 0);
 
         const auto renderFn = [&] {
             glUniformMatrix4fv(shader.getUniformLocation("transforms"), workingIndex, GL_FALSE,
@@ -159,7 +163,7 @@ namespace EconSimPlusPlus {
             drawPosition.x += glyph->advance;
             ++workingIndex;
 
-            if (workingIndex == maxInstances) {
+            if (workingIndex == shader.maxInstances) {
                 renderFn();
                 workingIndex = 0;
             }
