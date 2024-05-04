@@ -104,7 +104,7 @@ namespace EconSimPlusPlus {
             render();
             renderTimer.endStep();
 
-            const auto frameTimeSummary{std::format("Update Time: {:.2f} ms - Render Time {:.2f} ms",
+            const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms - Render Time: {:>5.2f} ms",
                                                     updateTimer.average(), renderTimer.average())};
             const glm::vec2 position{-static_cast<float>(window->getWidth()) / 2.0f,
                                      static_cast<float>(window->getHeight()) / 2.0f};
