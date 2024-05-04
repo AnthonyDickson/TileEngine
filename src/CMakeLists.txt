@@ -7,6 +7,7 @@ add_library(LibEconSimPlusPlus
         InputState.cpp
         Shader.cpp
         Texture.cpp
+        TextureArray.cpp
         TileMap.cpp
         Window.cpp
         VertexArray.cpp

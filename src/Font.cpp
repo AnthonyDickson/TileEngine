@@ -22,11 +22,9 @@
 #include <iostream>
 #include <stdexcept>
 
-
 #include <ft2build.h>
 
 #include <freetype/freetype.h>
-
 #include <glm/ext/matrix_transform.hpp>
 
 #include <EconSimPlusPlus/Camera.hpp>
@@ -35,13 +33,10 @@
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
-    Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-               std::unique_ptr<VertexBuffer> vbo_, const unsigned int textureArrayID_) :
-        glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArrayID(textureArrayID_) {
-    }
 
-    Font::~Font() {
-        glDeleteTextures(1, &textureArrayID);
+    Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
+               std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_) :
+        glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArray(std::move(textureArray_)) {
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath) {
@@ -64,12 +59,7 @@ namespace EconSimPlusPlus {
         glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
-        unsigned int textureArrayID;
-        glGenTextures(1, &textureArrayID);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayID);
-        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, static_cast<int>(fontSize.x), static_cast<int>(fontSize.y),
-                     charsToGenerate, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+        auto textureArray{TextureArray::create(charsToGenerate, fontSize)};
 
         for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
@@ -78,14 +68,8 @@ namespace EconSimPlusPlus {
                 continue;
             }
 
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, static_cast<int>(c),
-                            static_cast<GLsizei>(face->glyph->bitmap.width),
-                            static_cast<GLsizei>(face->glyph->bitmap.rows), 1, GL_RED, GL_UNSIGNED_BYTE,
-                            face->glyph->bitmap.buffer);
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            textureArray->bufferSubImage(c, {face->glyph->bitmap.width, face->glyph->bitmap.rows},
+                                         face->glyph->bitmap.buffer);
 
             const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width),
                                        static_cast<float>(face->glyph->bitmap.rows));
@@ -107,7 +91,7 @@ namespace EconSimPlusPlus {
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), textureArrayID);
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray));
     }
 
     void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
@@ -117,8 +101,7 @@ namespace EconSimPlusPlus {
         shader.setUniform("textColor", colour);
         shader.setUniform("projection", camera.getPerspectiveMatrix());
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayID);
+        textureArray->bind();
         vao->bind();
         vbo->bind();
 

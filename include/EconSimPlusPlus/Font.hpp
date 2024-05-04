@@ -27,6 +27,7 @@
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/Glyph.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
+#include <EconSimPlusPlus/TextureArray.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
@@ -43,8 +44,8 @@ namespace EconSimPlusPlus {
         /// The shader for rendering text via OpenGL.
         Shader shader{"resource/shader/text.vert", "resource/shader/text.frag"};
 
-        /// The OpenGL ID to the glyph texture array.
-        unsigned int textureArrayID{};
+        /// The texture array that holds the textures for each glyph.
+        std::unique_ptr<TextureArray> textureArray;
         /// The range of ASCII characters to generate glyphs for.
         static constexpr int charsToGenerate{128};
         /// The target size (width, height) of the glyphs in pixels.
@@ -58,12 +59,9 @@ namespace EconSimPlusPlus {
         /// @param glyphs_ Mapping between ASCII chars and the corresponing font data.
         /// @param vao_ The vertex array for rendering text.
         /// @param vbo_ The vertex buffer for rendering text.
-        /// @param textureArrayID_ The OpenGL ID to the glyph texture array.
+        /// @param textureArray_ The texture array that holds the textures for each glyph.
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-                      std::unique_ptr<VertexBuffer> vbo_, unsigned int textureArrayID_);
-
-        /// Clean up OpenGL stuff.
-        ~Font();
+                      std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_);
 
         /// Create a font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
