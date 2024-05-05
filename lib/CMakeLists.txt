@@ -21,8 +21,8 @@ add_library(glad glad/src/glad.c)
 target_include_directories(glad PUBLIC glad/include)
 
 ## stb_image
-add_library(stb_image INTERFACE)
-target_include_directories(stb_image INTERFACE stb_image/include)
+add_library(stb_image stb_image/stb_image.cpp)
+target_include_directories(stb_image PUBLIC stb_image/include)
 
 # YAML-CPP
 FetchContent_Declare(
