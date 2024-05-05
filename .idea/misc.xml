@@ -9,6 +9,7 @@
     </sourceRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/cmake-build-release" />
+      <file path="$PROJECT_DIR$/resource/tmp" />
     </excludeRoots>
   </component>
 </project>

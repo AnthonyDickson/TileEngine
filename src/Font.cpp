@@ -19,15 +19,20 @@
 // Created by Anthony Dickson on 26/04/2024.
 //
 
+#include <format>
 #include <iostream>
 #include <stdexcept>
 
 #include <ft2build.h>
+#include <stb_image.h>
 
 #include <freetype/freetype.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <stb_image_resize2.h>
+#include <stb_image_write.h>
 
 #include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
@@ -73,6 +78,91 @@ namespace EconSimPlusPlus {
 
             const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width),
                                        static_cast<float>(face->glyph->bitmap.rows));
+            const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
+                                    static_cast<float>(face->glyph->bitmap_top));
+            // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
+            const auto advance{static_cast<float>(face->glyph->advance.x >> 6)};
+
+            auto character{std::make_unique<Glyph>(c, resolution, bearing, advance)};
+            glyphs.emplace(c, std::move(character));
+        }
+
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, unpackAlignment); // Restore unpack alignment.
+
+        auto vao{std::make_unique<VertexArray>()};
+        auto vbo{std::make_unique<VertexBuffer>()};
+        vao->bind();
+        vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
+
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray));
+    }
+
+    std::unique_ptr<Font> Font::createSDF(const std::string& fontPath, const glm::ivec2 sdfFontSize,
+                                          const glm::ivec2 textureSize, const float spread) {
+        // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
+        // https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
+        FT_Library ft;
+        if (FT_Init_FreeType(&ft)) {
+            throw std::runtime_error("ERROR::FREETYPE: Could not init FreeType Library");
+        }
+
+        FT_Face face;
+        if (FT_New_Face(ft, fontPath.c_str(), 0, &face)) {
+            throw std::runtime_error("ERROR::FREETYPE: Failed to load font");
+        }
+
+        FT_Set_Pixel_Sizes(face, sdfFontSize.x, sdfFontSize.y);
+        std::map<char, std::unique_ptr<Glyph>> glyphs;
+
+        int unpackAlignment{};
+        glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+
+        auto textureArray{TextureArray::create(charsToGenerate, textureSize)};
+        const DeadReckoningAlgorithm dra{};
+
+        for (unsigned char c = 0; c < charsToGenerate; c++) {
+            // load character glyph
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+                std::cerr << "ERROR::FREETYTPE: Failed to load Glyph: " << std::to_string(c) << std::endl;
+                continue;
+            }
+
+            const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width),
+                                       static_cast<float>(face->glyph->bitmap.rows));
+
+            if (resolution.x != 0.0f and resolution.y != 0.0f) {
+                const auto sdfStartTime{std::chrono::steady_clock::now()};
+                auto sdf{dra.createSDF(face->glyph->bitmap.buffer, resolution)};
+
+                const auto sdfImageStartTime{std::chrono::steady_clock::now()};
+                auto sdfImage{dra.createImage(sdf, spread)};
+
+                const auto resizeSDFImageTime{std::chrono::steady_clock::now()};
+                std::uint8_t* resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), resolution.x, resolution.y, 0,
+                                                                        nullptr, textureSize.x, textureSize.y, 0,
+                                                                        STBIR_1CHANNEL)};
+                const auto endTime{std::chrono::steady_clock::now()};
+
+                std::cout << std::format("Create SDF: {:.2f} ms - Create Image: {:.2f} ms - Resize Image: {:.2f} ms - "
+                                         "Total: {:.2f} ms",
+                                         (sdfImageStartTime - sdfStartTime).count() / 1e6f,
+                                         (resizeSDFImageTime - sdfImageStartTime).count() / 1e6f,
+                                         (endTime - resizeSDFImageTime).count() / 1e6f,
+                                         (endTime - sdfStartTime).count() / 1e6f)
+                          << '\n';
+                textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
+                auto bitmap_path{std::format("resource/tmp/{:c}_bitmap.jpeg", c)};
+                stbi_write_jpg(bitmap_path.c_str(), face->glyph->bitmap.width, face->glyph->bitmap.rows, 1,
+                               face->glyph->bitmap.buffer, 90);
+                auto sdf_path{std::format("resource/tmp/{:c}_sdf.png", c)};
+                stbi_write_png(sdf_path.c_str(), textureSize.x, textureSize.y, 1, resizedSDFImage, sizeof(std::uint8_t) * textureSize.x);
+
+                stbi_image_free(resizedSDFImage);
+            }
+
             const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
                                     static_cast<float>(face->glyph->bitmap_top));
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.

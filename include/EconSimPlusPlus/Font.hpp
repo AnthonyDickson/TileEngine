@@ -68,6 +68,15 @@ namespace EconSimPlusPlus {
         /// @return A font object.
         static std::unique_ptr<Font> create(const std::string& fontPath);
 
+        /// Create a Signed Distance Field (SDF) font object from a TrueType font.
+        /// @param fontPath The path to the TrueType font file on disk.
+        /// @param sdfFontSize The width and height in pixels of the fonts to use for generating the SDFs.
+        /// @param textureSize The width and height in pixels of the final glyph textures.
+        /// @param spread A scaling factor that the SDF values are divided by.
+        /// @return A font object.
+        static std::unique_ptr<Font> createSDF(const std::string& fontPath, glm::ivec2 sdfFontSize = {512, 512},
+                                               glm::ivec2 textureSize = {64, 64}, float spread = 8.0f);
+
         /// Draw text on screen.
         /// @param text The string to render.
         /// @param position Where to render the text in screen coordinates (pixels). Note that this corresponds to the

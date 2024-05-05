@@ -36,3 +36,5 @@ cmake-build-release/
 
 .idea/editor.xml
 .idea/codeStyles/
+
+resource/tmp

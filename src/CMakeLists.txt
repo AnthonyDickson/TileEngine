@@ -1,5 +1,6 @@
 add_library(LibEconSimPlusPlus
         Camera.cpp
+        DeadReckoningAlgorithm.cpp
         Game.cpp
         Font.cpp
         FrameTimer.cpp
@@ -12,7 +13,6 @@ add_library(LibEconSimPlusPlus
         Window.cpp
         VertexArray.cpp
         VertexBuffer.cpp
-        stb_image.cpp
 )
 target_include_directories(LibEconSimPlusPlus PUBLIC ${PROJECT_SOURCE_DIR}/include/)
 target_compile_options(LibEconSimPlusPlus PRIVATE -Werror -Wall -Wextra -Wpedantic -Wshadow)

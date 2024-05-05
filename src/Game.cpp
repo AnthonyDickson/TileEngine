@@ -104,11 +104,14 @@ namespace EconSimPlusPlus {
             render();
             renderTimer.endStep();
 
+            const auto textRenderStart{std::chrono::steady_clock::now()};
             const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms - Render Time: {:>5.2f} ms",
                                                     updateTimer.average(), renderTimer.average())};
             const glm::vec2 position{-static_cast<float>(window->getWidth()) / 2.0f,
                                      static_cast<float>(window->getHeight()) / 2.0f};
             font->render(frameTimeSummary, position, 0.1f, {1.0f, 1.0f, 1.0f}, camera, Font::Anchor::topLeft);
+            const auto textRenderElapsed = std::chrono::steady_clock::now() - textRenderStart;
+            std::cout << std::format("Text Render Time: {:>5.2f} ms", textRenderElapsed.count() / 1e6f) << '\n';
 
             window->postUpdate();
         }
