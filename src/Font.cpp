@@ -135,7 +135,7 @@ namespace EconSimPlusPlus {
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
                 const auto sdfStartTime{std::chrono::steady_clock::now()};
-                auto sdf{dra.createSDF(face->glyph->bitmap.buffer, resolution)};
+                auto sdf{dra.createSDF(face->glyph->bitmap.buffer, resolution, resolution)};
 
                 const auto sdfImageStartTime{std::chrono::steady_clock::now()};
                 auto sdfImage{dra.createImage(sdf, spread)};

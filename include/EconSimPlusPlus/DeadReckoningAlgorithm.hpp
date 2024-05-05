@@ -46,9 +46,10 @@ namespace EconSimPlusPlus {
 
         /// Generate a signed distance field from a binary image.
         /// @param buffer The single-channel image buffer containing a binary (black and white) image.
-        /// @param resolution The width and height in pixels of the incoming image buffer.
+        /// @param bufferSize The width and height in pixels of the input image buffer.
+        /// @param outputSize The width and height in pixels of the output image buffer.
         /// @return A single-channel image of the same resolution as the input.
-        std::vector<float> createSDF(const std::uint8_t* buffer, glm::ivec2 resolution) const;
+        std::vector<float> createSDF(const std::uint8_t* buffer, glm::ivec2 bufferSize, glm::ivec2 outputSize) const;
 
         /// Normalize an SDF and convert it to an 8-bit image.
         /// @param sdf A signed distance field.
