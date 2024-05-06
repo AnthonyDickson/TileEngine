@@ -65,7 +65,7 @@ namespace EconSimPlusPlus {
                 return std::numeric_limits<float>::infinity();
             }
 
-            return distanceImage.at(y * outputSize.x + x);
+            return distanceImage[y * outputSize.x + x];
         };
         const auto setd = [&](const int x, const int y, const float value) {
             return distanceImage.at(y * outputSize.x + x) = value;
@@ -76,7 +76,7 @@ namespace EconSimPlusPlus {
                 return outOfBounds;
             }
 
-            return borderPoints.at(y * outputSize.x + x);
+            return borderPoints[y * outputSize.x + x];
         };
         const auto setp = [&](const int x, const int y, const glm::ivec2 value) {
             borderPoints.at(y * outputSize.x + x) = value;
