@@ -20,7 +20,6 @@
 //
 
 #include <algorithm>
-#include <unordered_map>
 
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
 
@@ -33,7 +32,8 @@ namespace EconSimPlusPlus {
                                                          const glm::ivec2 outputSize) const {
         assert(outputSize.x >= bufferSize.x and outputSize.y >= bufferSize.y &&
                "Output size must be greater than or equal to the buffer size in both dimensions.");
-        std::vector distanceImage(outputSize.x * outputSize.y, std::numeric_limits<float>::infinity());
+        // TODO: Optimize this function.
+        std::vector distanceImage(outputSize.x * outputSize.y, 0.0f);
         constexpr glm::ivec2 outOfBounds{-1, -1};
         std::vector borderPoints(outputSize.x * outputSize.y, outOfBounds);
         const glm::ivec2 padding{(outputSize - bufferSize) / 2};
@@ -92,6 +92,10 @@ namespace EconSimPlusPlus {
                     I(x, y + 1) != I(x, y)) {
                     setd(x, y, 0.0f);
                     setp(x, y, {x, y});
+                }
+                else {
+                    setd(x, y, std::numeric_limits<float>::infinity());
+                    setp(x, y, outOfBounds);
                 }
             }
         }

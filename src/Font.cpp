@@ -134,14 +134,15 @@ namespace EconSimPlusPlus {
                                        static_cast<float>(face->glyph->bitmap.rows));
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
+                const glm::ivec2 outputSize{sdfFontSize + 16};
                 const auto sdfStartTime{std::chrono::steady_clock::now()};
-                auto sdf{dra.createSDF(face->glyph->bitmap.buffer, resolution, resolution)};
-
+                auto sdf{dra.createSDF(face->glyph->bitmap.buffer, resolution, outputSize)};
+                // TODO: Scale first then convert from float to uint8.
                 const auto sdfImageStartTime{std::chrono::steady_clock::now()};
-                auto sdfImage{dra.createImage(sdf, spread)};
+                auto sdfImage{DeadReckoningAlgorithm::createImage(sdf, spread)};
 
                 const auto resizeSDFImageTime{std::chrono::steady_clock::now()};
-                std::uint8_t* resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), resolution.x, resolution.y, 0,
+                const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), outputSize.x, outputSize.y, 0,
                                                                         nullptr, textureSize.x, textureSize.y, 0,
                                                                         STBIR_1CHANNEL)};
                 const auto endTime{std::chrono::steady_clock::now()};
@@ -154,15 +155,13 @@ namespace EconSimPlusPlus {
                                          (endTime - sdfStartTime).count() / 1e6f)
                           << '\n';
                 textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
-                auto bitmap_path{std::format("resource/tmp/{:c}_bitmap.jpeg", c)};
-                stbi_write_jpg(bitmap_path.c_str(), face->glyph->bitmap.width, face->glyph->bitmap.rows, 1,
-                               face->glyph->bitmap.buffer, 90);
                 auto sdf_path{std::format("resource/tmp/{:c}_sdf.png", c)};
-                stbi_write_png(sdf_path.c_str(), textureSize.x, textureSize.y, 1, resizedSDFImage, sizeof(std::uint8_t) * textureSize.x);
+                stbi_write_png(sdf_path.c_str(), textureSize.x, textureSize.y, STBI_grey, resizedSDFImage, sizeof(std::uint8_t) * textureSize.x);
 
                 stbi_image_free(resizedSDFImage);
             }
 
+            // TODO: Fix letter alignment for SDF rendering. Scale with ratio of requested size and output size.
             const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
                                     static_cast<float>(face->glyph->bitmap_top));
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
