@@ -20,9 +20,9 @@
 //
 
 #include <algorithm>
+#include <unordered_map>
 
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
-#include <glm/detail/func_vector_relational.inl>
 
 namespace EconSimPlusPlus {
     DeadReckoningAlgorithm::DeadReckoningAlgorithm(const float distanceAdjacent_, const float distanceDiagonal_) :
@@ -32,91 +32,118 @@ namespace EconSimPlusPlus {
     std::vector<float> DeadReckoningAlgorithm::createSDF(const std::uint8_t* buffer, const glm::ivec2 bufferSize,
                                                          const glm::ivec2 outputSize) const {
         assert(outputSize.x >= bufferSize.x and outputSize.y >= bufferSize.y &&
-               "Output size must be greater than or equal to the buffer size.");
+               "Output size must be greater than or equal to the buffer size in both dimensions.");
         std::vector distanceImage(outputSize.x * outputSize.y, std::numeric_limits<float>::infinity());
-        std::vector<glm::ivec2> borderPoints(outputSize.x * outputSize.y, {-1, -1});
-        // const glm::ivec2 padding{(outputSize - bufferSize) / 2};
-        //
-        // const auto I = [&](const int x, const int y) {
-        //     const auto bufferX{x - padding.x};
-        //     const auto bufferY{y - padding.y};
-        //
-        //     if (bufferX < 0 or bufferX >= bufferSize.x or bufferY < 0 or bufferY >= bufferSize.y) {
-        //         return false;
-        //     }
-        //
-        //     return buffer[bufferY * bufferSize.x + bufferX] > 0;
-        // };
-        const auto I = [&](const int x, const int y) {return buffer[y * bufferSize.x + x] > 0;};
-        const auto d = [&](const int x, const int y) { return distanceImage[y * outputSize.x + x]; };
-        const auto setd = [&](const int x, const int y, const float value) {
-            return distanceImage[y * outputSize.x + x] = value;
+        constexpr glm::ivec2 outOfBounds{-1, -1};
+        std::vector borderPoints(outputSize.x * outputSize.y, outOfBounds);
+        const glm::ivec2 padding{(outputSize - bufferSize) / 2};
+
+        constexpr bool inside{true};
+        constexpr bool outside{false};
+
+        const auto contains = [&](const int x, const int y) {
+            return x >= 0 and x < outputSize.x and y >= 0 and y < outputSize.y;
         };
-        const auto p = [&](const int x, const int y) { return borderPoints[y * outputSize.x + x]; };
-        const auto setp = [&](const int x, const int y, const glm::ivec2 value) { borderPoints[y * outputSize.x + x] = value; };
+
+        const auto I = [&](const int x, const int y) {
+            if (not contains(x, y)) {
+                return outside;
+            }
+
+            const auto bufferX{x - padding.x};
+            const auto bufferY{y - padding.y};
+
+            if (bufferX < 0 or bufferX >= bufferSize.x or bufferY < 0 or bufferY >= bufferSize.y) {
+                return outside;
+            }
+
+            return buffer[bufferY * bufferSize.x + bufferX] > 128 ? inside : outside;
+        };
+
+        const auto d = [&](const int x, const int y) {
+            if (not contains(x, y)) {
+                return std::numeric_limits<float>::infinity();
+            }
+
+            return distanceImage.at(y * outputSize.x + x);
+        };
+        const auto setd = [&](const int x, const int y, const float value) {
+            return distanceImage.at(y * outputSize.x + x) = value;
+        };
+
+        const auto p = [&](const int x, const int y) {
+            if (not contains(x, y)) {
+                return outOfBounds;
+            }
+
+            return borderPoints.at(y * outputSize.x + x);
+        };
+        const auto setp = [&](const int x, const int y, const glm::ivec2 value) {
+            borderPoints.at(y * outputSize.x + x) = value;
+        };
 
         const auto d1{distanceAdjacent};
         const auto d2{distanceDiagonal};
 
         // Inintialise immediate interior and exterior elements.
-        for (int y = 1; y < outputSize.y; ++y) {
-            for (int x = 1; x < outputSize.x; ++x) {
+        for (int y = 0; y < outputSize.y; ++y) {
+            for (int x = 0; x < outputSize.x; ++x) {
                 if (I(x - 1, y) != I(x, y) or I(x + 1, y) != I(x, y) or I(x, y - 1) != I(x, y) or
-                    I(x, y + 1) == I(x, y)) {
+                    I(x, y + 1) != I(x, y)) {
                     setd(x, y, 0.0f);
                     setp(x, y, {x, y});
                 }
             }
         }
 
-        // First Pass
-        for (int y = 1; y < outputSize.y; ++y) {
-            for (int x = 1; x < outputSize.x; ++x) {
+        // First Pass, top to bottom, left to right
+        for (int y = 0; y < outputSize.y; ++y) {
+            for (int x = 0; x < outputSize.x; ++x) {
                 if (d(x - 1, y - 1) + d2 < d(x, y)) {
                     setp(x, y, {x - 1, y - 1});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
-                else if (d(x, y - 1) + d1 < d(x, y)) {
+                if (d(x, y - 1) + d1 < d(x, y)) {
                     setp(x, y, {x, y - 1});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
-                else if (d(x + 1, y - 1) + d2 < d(x, y)) {
+                if (d(x + 1, y - 1) + d2 < d(x, y)) {
                     setp(x, y, {x + 1, y - 1});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
-                else if (d(x - 1, y) + d1 < d(x, y)) {
+                if (d(x - 1, y) + d1 < d(x, y)) {
                     setp(x, y, {x - 1, y});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
             }
         }
 
-        // Final Pass
+        // Final Pass, bottom to top, right to left.
         for (int y = outputSize.y - 1; y > -1; --y) {
             for (int x = outputSize.x - 1; x > -1; --x) {
                 if (d(x + 1, y) + d1 < d(x, y)) {
                     setp(x, y, {x + 1, y});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
-                else if (d(x - 1, y + 1) + d2 < d(x, y)) {
+                if (d(x - 1, y + 1) + d2 < d(x, y)) {
                     setp(x, y, {x - 1, y + 1});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
-                else if (d(x, y + 1) + d1 < d(x, y)) {
+                if (d(x, y + 1) + d1 < d(x, y)) {
                     setp(x, y, {x, y + 1});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
-                else if (d(x + 1, y + 1) + d2 < d(x, y)) {
+                if (d(x + 1, y + 1) + d2 < d(x, y)) {
                     setp(x, y, {x + 1, y + 1});
                     setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
                 }
             }
         }
 
-        // Indicate inside and outside
+        // Indicate inside and outside with negative values indicating outside.
         for (int y = 0; y < outputSize.y; ++y) {
             for (int x = 0; x < outputSize.x; ++x) {
-                if (I(x, y) == 0) {
+                if (I(x, y) == outside) {
                     setd(x, y, -d(x, y));
                 }
             }
@@ -129,7 +156,7 @@ namespace EconSimPlusPlus {
         std::vector<std::uint8_t> image(sdf.size());
         std::ranges::transform(sdf, image.begin(), [&](const float sdfValue) {
             const float normalizedValue{(sdfValue / spread + 1.0f) * 128.0f};
-            return static_cast<int>(std::clamp(normalizedValue, 0.0f, 255.0f));
+            return static_cast<std::uint8_t>(std::clamp(normalizedValue, 0.0f, 255.0f));
         });
 
         return image;
