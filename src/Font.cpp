@@ -24,12 +24,11 @@
 #include <stdexcept>
 
 #include <ft2build.h>
-#include <stb_image.h>
 
 #include <freetype/freetype.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <stb_image.h>
 #include <stb_image_resize2.h>
-#include <stb_image_write.h>
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
@@ -40,11 +39,13 @@
 namespace EconSimPlusPlus {
 
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-               std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_) :
-        glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArray(std::move(textureArray_)) {
+               std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
+               const glm::vec2 fontSize_) :
+        glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArray(std::move(textureArray_)),
+        fontSize(fontSize_) {
     }
 
-    std::unique_ptr<Font> Font::create(const std::string& fontPath) {
+    std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::vec2 fontSize) {
         // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
         // https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
         FT_Library ft;
@@ -96,13 +97,15 @@ namespace EconSimPlusPlus {
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray));
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), fontSize);
     }
 
     std::unique_ptr<Font> Font::createSDF(const std::string& fontPath, const glm::ivec2 sdfFontSize,
                                           const glm::ivec2 textureSize, const float spread) {
         // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
         // https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
+        // TODO: Calculate and store line height for use in rendering and calculating anchors (maximum height of all
+        //  glyphs + maximum extent below baseline).
         FT_Library ft;
         if (FT_Init_FreeType(&ft)) {
             throw std::runtime_error("ERROR::FREETYPE: Could not init FreeType Library");
@@ -130,44 +133,31 @@ namespace EconSimPlusPlus {
                 continue;
             }
 
-            const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width),
-                                       static_cast<float>(face->glyph->bitmap.rows));
+            const glm::ivec2 outputSize{sdfFontSize + 16};
 
-            if (resolution.x != 0.0f and resolution.y != 0.0f) {
-                const glm::ivec2 outputSize{sdfFontSize + 16};
-                const auto sdfStartTime{std::chrono::steady_clock::now()};
+            if (const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width),
+                                           static_cast<float>(face->glyph->bitmap.rows));
+                resolution.x != 0.0f and resolution.y != 0.0f) {
                 auto sdf{dra.createSDF(face->glyph->bitmap.buffer, resolution, outputSize)};
-                // TODO: Scale first then convert from float to uint8.
-                const auto sdfImageStartTime{std::chrono::steady_clock::now()};
                 auto sdfImage{DeadReckoningAlgorithm::createImage(sdf, spread)};
-
-                const auto resizeSDFImageTime{std::chrono::steady_clock::now()};
                 const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), outputSize.x, outputSize.y, 0,
-                                                                        nullptr, textureSize.x, textureSize.y, 0,
-                                                                        STBIR_1CHANNEL)};
-                const auto endTime{std::chrono::steady_clock::now()};
-
-                std::cout << std::format("Create SDF: {:.2f} ms - Create Image: {:.2f} ms - Resize Image: {:.2f} ms - "
-                                         "Total: {:.2f} ms",
-                                         (sdfImageStartTime - sdfStartTime).count() / 1e6f,
-                                         (resizeSDFImageTime - sdfImageStartTime).count() / 1e6f,
-                                         (endTime - resizeSDFImageTime).count() / 1e6f,
-                                         (endTime - sdfStartTime).count() / 1e6f)
-                          << '\n';
+                                                                     nullptr, textureSize.x, textureSize.y, 0,
+                                                                     STBIR_1CHANNEL)};
                 textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
-                auto sdf_path{std::format("resource/tmp/{:c}_sdf.png", c)};
-                stbi_write_png(sdf_path.c_str(), textureSize.x, textureSize.y, STBI_grey, resizedSDFImage, sizeof(std::uint8_t) * textureSize.x);
 
                 stbi_image_free(resizedSDFImage);
             }
 
-            // TODO: Fix letter alignment for SDF rendering. Scale with ratio of requested size and output size.
-            const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
-                                    static_cast<float>(face->glyph->bitmap_top));
+            // TODO: Fix horizontal letter alignment.
+            const glm::vec2 bearing(
+                static_cast<float>((outputSize.x - face->glyph->bitmap.width) / 2 - face->glyph->bitmap_left),
+                static_cast<float>((outputSize.y - face->glyph->bitmap.rows) / 2 + face->glyph->bitmap_top));
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
             const auto advance{static_cast<float>(face->glyph->advance.x >> 6)};
 
-            auto character{std::make_unique<Glyph>(c, resolution, bearing, advance)};
+            // const glm::vec2 scale{1.0f, 1.0f};
+            const glm::vec2 scale = static_cast<glm::vec2>(textureSize) / static_cast<glm::vec2>(outputSize);
+            auto character{std::make_unique<Glyph>(c, textureSize, bearing * scale, advance * scale.x)};
             glyphs.emplace(c, std::move(character));
         }
 
@@ -180,7 +170,7 @@ namespace EconSimPlusPlus {
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray));
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize);
     }
 
     void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
@@ -223,8 +213,7 @@ namespace EconSimPlusPlus {
             }
 
             const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x + glyph->bearing.x) * scale,
-                                              drawPosition.y +
-                                                  (anchorOffset.y + glyph->bearing.y - fontSize.y) * scale};
+                                              drawPosition.y + (anchorOffset.y + glyph->bearing.y) * scale};
             const glm::vec2 size{fontSize * scale};
 
             glm::mat4 transform =

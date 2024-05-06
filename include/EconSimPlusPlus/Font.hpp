@@ -46,10 +46,10 @@ namespace EconSimPlusPlus {
 
         /// The texture array that holds the textures for each glyph.
         std::unique_ptr<TextureArray> textureArray;
+        /// The target size (width, height) of the glyphs in pixels.
+        glm::vec2 fontSize{256.0f, 256.0f};
         /// The range of ASCII characters to generate glyphs for.
         static constexpr int charsToGenerate{128};
-        /// The target size (width, height) of the glyphs in pixels.
-        static constexpr glm::vec2 fontSize{256.0f, 256.0f};
 
     public:
         /// The point in the text that the render position refers to.
@@ -60,13 +60,16 @@ namespace EconSimPlusPlus {
         /// @param vao_ The vertex array for rendering text.
         /// @param vbo_ The vertex buffer for rendering text.
         /// @param textureArray_ The texture array that holds the textures for each glyph.
+        /// @param fontSize_ The target size (width, height) of the glyphs in pixels.
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-                      std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_);
+                      std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
+                      glm::vec2 fontSize_);
 
         /// Create a font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
+        /// @param fontSize The target size (width, height) of the glyphs in pixels.
         /// @return A font object.
-        static std::unique_ptr<Font> create(const std::string& fontPath);
+        static std::unique_ptr<Font> create(const std::string& fontPath, glm::vec2 fontSize);
 
         /// Create a Signed Distance Field (SDF) font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
