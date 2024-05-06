@@ -66,9 +66,8 @@ namespace EconSimPlusPlus {
         /// This function should be called after the game's update function.
         void postUpdate();
 
-        /// Signal that the application should close. This will happen at the start of the next iteration of the main
-        /// loop.
-        void close() const;
+        /// Whether the application should close.
+        bool shouldClose() const;
 
         /// Get the state of a keyboard key.
         /// @return The state of the given key as an integer (GLFW defined state enum).

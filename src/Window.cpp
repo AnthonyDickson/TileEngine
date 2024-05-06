@@ -73,8 +73,8 @@ namespace EconSimPlusPlus {
         glfwPollEvents();
     }
 
-    void Window::close() const {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    bool Window::shouldClose() const {
+        return glfwWindowShouldClose(window);
     }
 
     const InputState& Window::getInputState() const {
