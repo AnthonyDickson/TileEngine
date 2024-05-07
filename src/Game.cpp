@@ -108,7 +108,7 @@ namespace EconSimPlusPlus {
             // TODO: Fix text not being positioned correctly when using top left anchor in top left corner of screen (one line too high?).
             const glm::vec2 position{-static_cast<float>(window->getWidth()) / 2.0f,
                                      static_cast<float>(window->getHeight()) / 2.0f};
-            font->render(frameTimeSummary, {}, 0.5f, {1.0f, 1.0f, 1.0f}, camera, Font::Anchor::center);
+            font->render(frameTimeSummary, {}, 1.0f, {1.0f, 1.0f, 1.0f}, camera, Font::Anchor::bottomLeft);
 
             window->postUpdate();
         }
