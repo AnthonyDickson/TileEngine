@@ -216,7 +216,8 @@ namespace EconSimPlusPlus {
             }
 
             const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x + glyph->bearing.x) * scale,
-                                              drawPosition.y + (anchorOffset.y + glyph->bearing.y) * scale};
+                                              drawPosition.y +
+                                                  (anchorOffset.y + glyph->bearing.y - glyph->size.y) * scale};
             const glm::vec2 size{fontSize * scale};
 
             glm::mat4 transform =
