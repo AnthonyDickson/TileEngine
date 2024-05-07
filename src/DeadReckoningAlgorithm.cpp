@@ -82,6 +82,10 @@ namespace EconSimPlusPlus {
             borderPoints.at(y * outputSize.x + x) = value;
         };
 
+        const auto distance = [&](const int x, const int y) {
+            return hypotf(static_cast<float>(x - p(x, y).x), static_cast<float>(y - p(x, y).y));
+        };
+
         const auto d1{distanceAdjacent};
         const auto d2{distanceDiagonal};
 
@@ -105,19 +109,19 @@ namespace EconSimPlusPlus {
             for (int x = 0; x < outputSize.x; ++x) {
                 if (d(x - 1, y - 1) + d2 < d(x, y)) {
                     setp(x, y, {x - 1, y - 1});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
                 if (d(x, y - 1) + d1 < d(x, y)) {
                     setp(x, y, {x, y - 1});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
                 if (d(x + 1, y - 1) + d2 < d(x, y)) {
                     setp(x, y, {x + 1, y - 1});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
                 if (d(x - 1, y) + d1 < d(x, y)) {
                     setp(x, y, {x - 1, y});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
             }
         }
@@ -127,19 +131,19 @@ namespace EconSimPlusPlus {
             for (int x = outputSize.x - 1; x > -1; --x) {
                 if (d(x + 1, y) + d1 < d(x, y)) {
                     setp(x, y, {x + 1, y});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
                 if (d(x - 1, y + 1) + d2 < d(x, y)) {
                     setp(x, y, {x - 1, y + 1});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
                 if (d(x, y + 1) + d1 < d(x, y)) {
                     setp(x, y, {x, y + 1});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
                 if (d(x + 1, y + 1) + d2 < d(x, y)) {
                     setp(x, y, {x + 1, y + 1});
-                    setd(x, y, hypotf(x - p(x, y).x, y - p(x, y).y));
+                    setd(x, y, distance(x, y));
                 }
             }
         }

@@ -27,6 +27,7 @@
 
 #include <freetype/freetype.h>
 #include <glm/ext/matrix_transform.hpp>
+// ReSharper disable once CppWrongIncludesOrder
 #include <stb_image.h>
 #include <stb_image_resize2.h>
 
@@ -140,9 +141,7 @@ namespace EconSimPlusPlus {
             const glm::vec2 resolution(static_cast<float>(glyph->bitmap.width), static_cast<float>(glyph->bitmap.rows));
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
-                const auto startTime{std::chrono::steady_clock::now()};
                 auto sdf{dra.createSDF(glyph->bitmap.buffer, resolution, outputSize)};
-                const auto elapsed{std::chrono::steady_clock::now() - startTime};
                 auto sdfImage{DeadReckoningAlgorithm::createImage(sdf, spread)};
                 const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), outputSize.x, outputSize.y, 0,
                                                                      nullptr, textureSize.x, textureSize.y, 0,
@@ -150,15 +149,12 @@ namespace EconSimPlusPlus {
                 textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
 
                 stbi_image_free(resizedSDFImage);
-
-                std::cout << std::format("Glyph {:c} - Size: {:3d}x{:3d} - Bearing: {:3d}, {:3d} - Advance: {:3d} - "
-                                         "SDF Creation: {:2.2f} ms\n",
-                                         c, glyph->bitmap.width, glyph->bitmap.rows, glyph->bitmap_left,
-                                         glyph->bitmap_top, glyph->advance.x >> 6, elapsed.count() / 1e6f);
             }
 
-            const glm::vec2 paddedBearing{(outputSize.x - resolution.x) / 2, (outputSize.y - resolution.y) / 2};
-            const glm::vec2 bearing(glyph->bitmap_left - paddedBearing.x, paddedBearing.y + glyph->bitmap_top);
+            const glm::vec2 paddedBearing{(static_cast<float>(outputSize.x) - resolution.x) / 2,
+                                          (static_cast<float>(outputSize.y) - resolution.y) / 2};
+            const glm::vec2 bearing(-paddedBearing.x + static_cast<float>(glyph->bitmap_left),
+                                    paddedBearing.y + static_cast<float>(glyph->bitmap_top));
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
             const auto advance{static_cast<float>(glyph->advance.x >> 6)};
 

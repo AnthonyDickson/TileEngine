@@ -67,7 +67,7 @@ namespace EconSimPlusPlus {
         void postUpdate();
 
         /// Whether the application should close.
-        bool shouldClose() const;
+        [[nodiscard]] bool shouldClose() const;
 
         /// Get the state of a keyboard key.
         /// @return The state of the given key as an integer (GLFW defined state enum).
