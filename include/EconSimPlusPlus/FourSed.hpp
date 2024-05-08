@@ -59,8 +59,8 @@ namespace EconSimPlusPlus {
         /// @param spread A factor to divide the distance by. Larger values allows a larger range of values to be
         /// captured without being clipped.
         /// @return An 8-bit distance field.
-        static std::vector<std::uint8_t> createImage(const std::vector<float>& insideDistanceField,
-                                                     const std::vector<float>& outsideDistanceField,
+        static std::vector<std::uint8_t> combineEDT(const std::vector<float>& insideDistanceField,
+                                                    const std::vector<float>& outsideDistanceField,
                                                      float spread = 16.0f);
 
         /// Create a signed distance field (SDF) from a binary image.

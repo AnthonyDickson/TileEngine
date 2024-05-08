@@ -120,7 +120,7 @@ namespace EconSimPlusPlus {
         return floatDF;
     }
 
-    std::vector<std::uint8_t> FourSED::createImage(const std::vector<float>& insideDistanceField,
+    std::vector<std::uint8_t> FourSED::combineEDT(const std::vector<float>& insideDistanceField,
                                                    const std::vector<float>& outsideDistanceField, const float spread) {
         assert(insideDistanceField.size() == outsideDistanceField.size() &&
                "Distance fields must be of the same size.");
@@ -140,7 +140,7 @@ namespace EconSimPlusPlus {
                                                  const glm::ivec2 paddedSize, const glm::ivec2 outputSize,
                                                  const float spread) {
         const auto paddedBitmap{FourSED::padImage(bitmap, bitmapSize, paddedSize)};
-        const auto dfOutside{FourSED::edt(paddedBitmap.data(), paddedSize)};
+        const auto outsideDF{FourSED::edt(paddedBitmap.data(), paddedSize)};
 
         // We run the EDT on the bitmap for calculating the internal distances without padding.
         // This saves time since we skip calculating the distance for pixels outside the objects, which will be zero
@@ -148,9 +148,9 @@ namespace EconSimPlusPlus {
         const auto minimalPadSize = bitmapSize + 2;
         const auto minimallyPaddedBitmap{FourSED::padImage(bitmap, bitmapSize, minimalPadSize)};
         const auto minimallyPaddedInsideDF{FourSED::edt(minimallyPaddedBitmap.data(), minimalPadSize, true)};
-        const auto dfInside{FourSED::padImage(minimallyPaddedInsideDF.data(), minimalPadSize, paddedSize)};
+        const auto insideDF{FourSED::padImage(minimallyPaddedInsideDF.data(), minimalPadSize, paddedSize)};
 
-        const auto sdfImage{FourSED::createImage(dfInside, dfOutside, spread)};
+        const auto sdfImage{FourSED::combineEDT(insideDF, outsideDF, spread)};
         const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), paddedSize.x, paddedSize.y, 0, nullptr,
                                                              outputSize.x, outputSize.y, 0, STBIR_1CHANNEL)};
 
