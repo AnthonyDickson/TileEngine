@@ -75,7 +75,8 @@ namespace EconSimPlusPlus {
         /// @param fontPath The path to the TrueType font file on disk.
         /// @param sdfFontSize The width and height in pixels of the fonts to use for generating the SDFs.
         /// @param textureSize The width and height in pixels of the final glyph textures.
-        /// @param spread A scaling factor that the SDF values are divided by.
+        /// @param spread A scaling factor that the SDF values are divided by. Larger values scale up the size of text
+        /// effects such as outlines and drop shadows.
         /// @return A font object.
         static std::unique_ptr<Font> createSDF(const std::string& fontPath, glm::ivec2 sdfFontSize = {512, 512},
                                                glm::ivec2 textureSize = {64, 64}, float spread = 8.0f);

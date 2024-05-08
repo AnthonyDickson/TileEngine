@@ -178,6 +178,11 @@ namespace EconSimPlusPlus {
         shader.setUniform("text", 0);
         shader.setUniform("textColor", colour);
         shader.setUniform("projection", camera.getPerspectiveMatrix());
+        // TODO: Make the following text effect uniforms configurable at font constructor or function call via struct.
+        shader.setUniform("sdfThreshold", 0.5f);
+        shader.setUniform("edgeSmoothness", 0.01f);
+        shader.setUniform("outlineSize", 0.4f);
+        shader.setUniform("outlineColor", glm::vec3{0.0f});
 
         textureArray->bind();
         vao->bind();

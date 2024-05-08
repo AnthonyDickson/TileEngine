@@ -8,10 +8,23 @@ uniform sampler2DArray text;
 uniform int letterMap[128];
 uniform vec3 textColor;
 
+uniform float sdfThreshold;
+uniform float edgeSmoothness;
+uniform float outlineSize;
+uniform vec3 outlineColor;
+
 void main()
 {
-    vec4 textureColor = texture(text, vec3(TexCoords.xy, letterMap[index]));
-    float alpha = textureColor.r > 0.5 ? 1.0 : 0.0;
-    vec4 sampled = vec4(1.0, 1.0, 1.0, alpha);
-    color = vec4(textColor, 1.0) * sampled;
+    float distance = texture(text, vec3(TexCoords.xy, letterMap[index])).r - sdfThreshold;
+
+// Outline
+    if (outlineSize > 0.0 && -outlineSize < distance && distance < 0.0) {
+        // Not real antialiasing, but simulated via distance based alpha blending.
+        float antialiasingFactor = smoothstep(-outlineSize - edgeSmoothness, -outlineSize + edgeSmoothness, distance);
+        color = vec4(outlineColor, antialiasingFactor);
+        // TODO: Add antialiasing to inside of outline.
+    } else {
+        float alpha = smoothstep(-edgeSmoothness, 0.0, distance);
+        color = vec4(textColor, alpha);
+    }
 }

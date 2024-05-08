@@ -61,7 +61,7 @@ namespace EconSimPlusPlus {
         /// @return An 8-bit distance field.
         static std::vector<std::uint8_t> createImage(const std::vector<float>& insideDistanceField,
                                                      const std::vector<float>& outsideDistanceField,
-                                                     float spread = 8.0f);
+                                                     float spread = 16.0f);
 
         /// Create a signed distance field (SDF) from a binary image.
         /// @param bitmap A black and white image where white pixels denote regions inside an object and black
@@ -73,7 +73,7 @@ namespace EconSimPlusPlus {
         /// captured without being clipped.
         /// @return An 8-bit signed distance field (128.0f = 0).
         static std::vector<std::uint8_t> createSDF(const std::uint8_t* bitmap, glm::ivec2 bitmapSize,
-                                                   glm::ivec2 paddedSize, glm::ivec2 outputSize, float spread);
+                                                   glm::ivec2 paddedSize, glm::ivec2 outputSize, float spread = 16.0f);
     };
 
 } // namespace EconSimPlusPlus
