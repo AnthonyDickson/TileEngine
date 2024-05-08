@@ -30,7 +30,6 @@
 // ReSharper disable once CppWrongIncludesOrder
 #include <stb_image.h>
 #include <stb_image_resize2.h>
-#include <stb_image_write.h>
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
@@ -127,7 +126,6 @@ namespace EconSimPlusPlus {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
         auto textureArray{TextureArray::create(charsToGenerate, textureSize)};
-        const DeadReckoningAlgorithm dra{};
 
         for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
@@ -138,36 +136,43 @@ namespace EconSimPlusPlus {
 
             const auto glyph{face->glyph};
 
-            // TODO: General solution for glyphs that exceed the requested dimensions.
-            const glm::ivec2 outputSize{sdfFontSize + 16};
             const glm::vec2 resolution(static_cast<float>(glyph->bitmap.width), static_cast<float>(glyph->bitmap.rows));
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
-                auto sdf{dra.createSDF(glyph->bitmap.buffer, resolution, outputSize)};
-                auto sdfImage{DeadReckoningAlgorithm::createImage(sdf, spread)};
-                const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), outputSize.x, outputSize.y, 0,
+                const auto startTime{std::chrono::steady_clock::now()};
+                const auto paddedBitmap{FourSED::padImage(glyph->bitmap.buffer, resolution, sdfFontSize)};
+                const auto edtTime{std::chrono::steady_clock::now()};
+                const auto sdfOutside{FourSED::edt(paddedBitmap.data(), sdfFontSize)};
+                const auto sdfInside{FourSED::edt(paddedBitmap.data(), sdfFontSize, true)};
+                const auto byteImageTime{std::chrono::steady_clock::now()};
+                const auto sdfImage{FourSED::createImage(sdfInside, sdfOutside, spread)};
+                const auto resizeTime{std::chrono::steady_clock::now()};
+                const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), sdfFontSize.x, sdfFontSize.y, 0,
                                                                      nullptr, textureSize.x, textureSize.y, 0,
                                                                      STBIR_1CHANNEL)};
                 textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
 
                 stbi_image_free(resizedSDFImage);
+                const auto endTime{std::chrono::steady_clock::now()};
 
-                const auto paddedBitmap{FourSED::padImage(glyph->bitmap.buffer, resolution, sdfFontSize)};
-                const auto sdf2{FourSED::edt(paddedBitmap.data(), sdfFontSize)};
-                const auto sdfImage2{FourSED::createImage(sdf2)};
-                stbi_write_png(std::format("resource/tmp/{:d}_{:c}_sdf.png", c, c).c_str(), sdfFontSize.x,
-                               sdfFontSize.y, STBI_grey, sdfImage2.data(), 0);
+                std::cout << std::format("{:c} Timing - Pad: {:.2f} ms - EDT: {:.2f} ms - Convert to Byte: {:.2f} ms - "
+                                         "Resize: {:.2f} ms - Total: {:.2f} ms\n",
+                                         c,
+                                         (edtTime - startTime).count() * 1e-6f,
+                                         (byteImageTime - edtTime).count() * 1e-6f,
+                                         (resizeTime - byteImageTime).count() * 1e-6f,
+                                         (endTime - resizeTime).count() * 1e-6f, (endTime - startTime).count() * 1e-6f);
             }
 
-            const glm::vec2 paddedBearing{(static_cast<float>(outputSize.x) - resolution.x) / 2,
-                                          (static_cast<float>(outputSize.y) - resolution.y) / 2};
+            const glm::vec2 paddedBearing{(static_cast<float>(sdfFontSize.x) - resolution.x) / 2,
+                                          (static_cast<float>(sdfFontSize.y) - resolution.y) / 2};
             const glm::vec2 bearing(-paddedBearing.x + static_cast<float>(glyph->bitmap_left),
                                     paddedBearing.y + static_cast<float>(glyph->bitmap_top));
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
             const auto advance{static_cast<float>(glyph->advance.x >> 6)};
 
             // const glm::vec2 scale{1.0f, 1.0f};
-            const glm::vec2 scale = static_cast<glm::vec2>(textureSize) / static_cast<glm::vec2>(outputSize);
+            const glm::vec2 scale = static_cast<glm::vec2>(textureSize) / static_cast<glm::vec2>(sdfFontSize);
             auto character{std::make_unique<Glyph>(c, textureSize, bearing * scale, advance * scale.x)};
             glyphs.emplace(c, std::move(character));
         }

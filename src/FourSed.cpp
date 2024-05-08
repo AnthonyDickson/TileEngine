@@ -53,11 +53,11 @@ namespace EconSimPlusPlus {
 
         return paddedBitmap;
     }
-    std::vector<float> FourSED::edt(const std::uint8_t* binaryImage, const glm::ivec2 inputSize) {
+    std::vector<float> FourSED::edt(const std::uint8_t* binaryImage, const glm::ivec2 inputSize, const bool flipBits) {
         std::vector<glm::ivec2> df(inputSize.x * inputSize.y);
 
-        constexpr glm::ivec2 inside{0};
-        constexpr glm::ivec2 outside{std::numeric_limits<int>::max() - 1};
+        const glm::ivec2 inside = flipBits ? glm::ivec2{std::numeric_limits<int>::max() - 1} : glm::ivec2{0};
+        const glm::ivec2 outside = flipBits ? glm::ivec2{0} : glm::ivec2{std::numeric_limits<int>::max() - 1};
 
         for (int i = 0; i < inputSize.x * inputSize.y; ++i) {
             df.at(i) = binaryImage[i] > 128 ? inside : outside;
@@ -82,10 +82,7 @@ namespace EconSimPlusPlus {
 
         for (int row = 1; row < inputSize.y; ++row) {
             for (int col = 0; col < inputSize.x; ++col) {
-                auto a = df.at(index(col, row));
-                auto b = df.at(index(col, row - 1)) + south;
-                auto minVec = min(a, b);
-                df.at(index(col, row)) = minVec;
+                df.at(index(col, row)) = min(df.at(index(col, row)), df.at(index(col, row - 1)) + south);
             }
 
             for (int col = 1; col < inputSize.x; ++col) {
@@ -111,22 +108,37 @@ namespace EconSimPlusPlus {
             }
         }
 
-        std::vector<float> floatSDF(inputSize.x * inputSize.y);
+        std::vector<float> floatDF(inputSize.x * inputSize.y);
 
-        std::ranges::transform(df.begin(), df.end(), floatSDF.begin(), [](const auto& distanceVector) {
+        std::ranges::transform(df, floatDF.begin(), [](const auto& distanceVector) {
             return hypotf(static_cast<float>(distanceVector.x), static_cast<float>(distanceVector.y));
         });
 
-        return floatSDF;
+        return floatDF;
     }
 
     std::vector<std::uint8_t> FourSED::createImage(const std::vector<float>& distanceField) {
         std::vector<std::uint8_t> image(distanceField.size());
         const auto max{std::ranges::max(distanceField)};
 
-        std::ranges::transform(distanceField.begin(), distanceField.end(), image.begin(), [&](const float sdfValue) {
+        std::ranges::transform(distanceField, image.begin(), [&](const float sdfValue) {
             return static_cast<std::uint8_t>(sdfValue / max * 255.0f);
         });
+
+        return image;
+    }
+
+    std::vector<std::uint8_t> FourSED::createImage(const std::vector<float>& insideDistanceField,
+                                                   const std::vector<float>& outsideDistanceField, const float spread) {
+        assert(insideDistanceField.size() == outsideDistanceField.size() && "Distance fields must be of the same size.");
+        std::vector<std::uint8_t> image(insideDistanceField.size());
+
+        for (std::size_t i = 0; i < insideDistanceField.size(); ++i) {
+            const auto inside{insideDistanceField.at(i)};
+            const auto outside{-outsideDistanceField.at(i)};
+            const auto normalizedValue{std::clamp(((inside + outside) / spread + 1.0f) * 128.0f, 0.0f, 255.0f)};
+            image.at(i) = static_cast<std::uint8_t>(normalizedValue);
+        }
 
         return image;
     }

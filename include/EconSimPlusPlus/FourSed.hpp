@@ -46,13 +46,26 @@ namespace EconSimPlusPlus {
         /// @param binaryImage A black and white image where white pixels denote regions inside an object and black
         /// pixels regions outside an object.
         /// @param inputSize The width and height of the input image in pixels.
+        /// @param flipBits If `true`, treat 'inside' pixels as 'outside', i.e. white pixels as black and vice versa.
         /// @return A floating point distance field the same size as the input image.
-        static std::vector<float> edt(const std::uint8_t* binaryImage, glm::ivec2 inputSize);
+        static std::vector<float> edt(const std::uint8_t* binaryImage, glm::ivec2 inputSize, bool flipBits = false);
 
         /// Convert a floating point distance field to an 8-bit image.
         /// @param distanceField A floating point image where each pixel denotes the distance to the nearest object.
         /// @return An 8-bit distance field.
         static std::vector<std::uint8_t> createImage(const std::vector<float>& distanceField);
+
+        /// Combine two distance fields into a signed distance field.
+        /// @param insideDistanceField The distance field indicating the distance from within an object to the nearest
+        /// object border pixel.
+        /// @param outsideDistanceField The distance field indicating the distance from outside an object to the nearest
+        /// object border pixel.
+        /// @param spread A factor to divide the distance by. Larger values allows a larger range of values to be
+        /// captured without being clipped.
+        /// @return An 8-bit distance field.
+        static std::vector<std::uint8_t> createImage(const std::vector<float>& insideDistanceField,
+                                                     const std::vector<float>& outsideDistanceField,
+                                                     float spread = 8.0f);
     };
 
 } // namespace EconSimPlusPlus
