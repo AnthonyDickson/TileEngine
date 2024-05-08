@@ -124,7 +124,7 @@ namespace EconSimPlusPlus {
         std::vector<std::uint8_t> image(distanceField.size());
         const auto max{std::ranges::max(distanceField)};
 
-        std::ranges::transform(distanceField, std::back_inserter(image), [&](const float sdfValue) {
+        std::ranges::transform(distanceField.begin(), distanceField.end(), image.begin(), [&](const float sdfValue) {
             return static_cast<std::uint8_t>(sdfValue / max * 255.0f);
         });
 
