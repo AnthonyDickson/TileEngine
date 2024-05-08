@@ -20,7 +20,6 @@
 //
 
 #include <format>
-#include <iostream>
 #include <thread>
 #include <utility>
 

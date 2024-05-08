@@ -21,16 +21,56 @@
 
 #include <algorithm>
 
+#include <stb_image_resize2.h>
+
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
 
 namespace EconSimPlusPlus {
-    DeadReckoningAlgorithm::DeadReckoningAlgorithm(const float distanceAdjacent_, const float distanceDiagonal_) :
-        distanceAdjacent(distanceAdjacent_), distanceDiagonal(distanceDiagonal_) {
+    std::vector<std::uint8_t> DeadReckoningAlgorithm::createSDF(const std::uint8_t* bitmap, const glm::ivec2 bitmapSize,
+                                                                const glm::ivec2 paddedSize,
+                                                                const glm::ivec2 outputSize, const float spread) {
+        const auto paddedBitmap{DeadReckoningAlgorithm::padImage(bitmap, bitmapSize, paddedSize)};
+        const auto sdf{DeadReckoningAlgorithm::sdf(paddedBitmap.data(), paddedSize)};
+        const auto sdfImage{DeadReckoningAlgorithm::createImage(sdf, spread)};
+        std::vector<std::uint8_t> resizedSDFImage(outputSize.x * outputSize.y);
+        stbir_resize_uint8_linear(sdfImage.data(), paddedSize.x, paddedSize.y, 0, resizedSDFImage.data(), outputSize.x,
+                                  outputSize.y, 0, STBIR_1CHANNEL);
+
+        return resizedSDFImage;
     }
 
-    std::vector<float> DeadReckoningAlgorithm::sdf(const std::uint8_t* buffer, const glm::ivec2 bufferSize) const {
-        assert(bufferSize.x >= bufferSize.x and bufferSize.y >= bufferSize.y &&
-               "Output size must be greater than or equal to the buffer size in both dimensions.");
+    template <typename PixelType>
+    std::vector<PixelType> DeadReckoningAlgorithm::padImage(const PixelType* binaryImage, const glm::ivec2 inputSize,
+                                                            const glm::ivec2 outputSize) {
+        auto padding{(outputSize - inputSize) / 2};
+        // TODO: Scale down glyphs that are too large to fit in padded area or glyphs that are too close to the border.
+        // Make sure padding is at least zero to avoid negative indices. This may happen when the glyph is larger than
+        // the requested size.
+        padding.x = std::max(padding.x, 0);
+        padding.y = std::max(padding.y, 0);
+
+        std::vector<PixelType> paddedBitmap(outputSize.x * outputSize.y, 0);
+
+        for (int row = 0; row < inputSize.y; ++row) {
+            if (row + padding.y >= outputSize.y) {
+                break;
+            }
+
+            for (int col = 0; col < inputSize.x; ++col) {
+                if (col + padding.x >= outputSize.x) {
+                    break;
+                }
+
+                paddedBitmap.at((row + padding.y) * outputSize.x + (col + padding.x)) =
+                    binaryImage[row * inputSize.x + col];
+            }
+        }
+
+        return paddedBitmap;
+    }
+
+    std::vector<float> DeadReckoningAlgorithm::sdf(const std::uint8_t* buffer, const glm::ivec2 bufferSize,
+                                                   const float distanceAdjacent, const float distanceDiagonal) {
         std::vector<float> sdf(bufferSize.x * bufferSize.y);
         std::vector<glm::ivec2> borderPoints(bufferSize.x * bufferSize.y);
 
@@ -100,7 +140,7 @@ namespace EconSimPlusPlus {
 
         const auto distance = [&](const int x, const int y) {
             const auto borderPoint{p(x, y)};
-            return hypotf(x - borderPoint.x, y - borderPoint.y);
+            return hypotf(static_cast<float>(x - borderPoint.x), static_cast<float>(y - borderPoint.y));
         };
 
         const auto d1{distanceAdjacent};
