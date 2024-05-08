@@ -28,15 +28,16 @@
 #include <EconSimPlusPlus/FourSed.hpp>
 
 namespace EconSimPlusPlus {
-    std::vector<std::uint8_t> FourSED::padImage(const std::uint8_t* binaryImage, const glm::ivec2 inputSize,
-                                                const glm::ivec2 outputSize) {
+    template <typename PixelType>
+    std::vector<PixelType> FourSED::padImage(const PixelType* binaryImage, const glm::ivec2 inputSize,
+                                             const glm::ivec2 outputSize) {
         auto padding{(outputSize - inputSize) / 2};
         // Make sure padding is at least zero to avoid negative indices. This may happen when the glyph is larger than
         // the requested size.
         padding.x = std::max(padding.x, 0);
         padding.y = std::max(padding.y, 0);
 
-        std::vector<std::uint8_t> paddedBitmap(outputSize.x * outputSize.y, 0);
+        std::vector<PixelType> paddedBitmap(outputSize.x * outputSize.y, 0);
 
         for (int row = 0; row < inputSize.y; ++row) {
             if (row + padding.y >= outputSize.y) {
@@ -121,7 +122,8 @@ namespace EconSimPlusPlus {
 
     std::vector<std::uint8_t> FourSED::createImage(const std::vector<float>& insideDistanceField,
                                                    const std::vector<float>& outsideDistanceField, const float spread) {
-        assert(insideDistanceField.size() == outsideDistanceField.size() && "Distance fields must be of the same size.");
+        assert(insideDistanceField.size() == outsideDistanceField.size() &&
+               "Distance fields must be of the same size.");
         std::vector<std::uint8_t> image(insideDistanceField.size());
 
         for (std::size_t i = 0; i < insideDistanceField.size(); ++i) {
@@ -139,8 +141,14 @@ namespace EconSimPlusPlus {
                                                  const float spread) {
         const auto paddedBitmap{FourSED::padImage(bitmap, bitmapSize, paddedSize)};
         const auto sdfOutside{FourSED::edt(paddedBitmap.data(), paddedSize)};
-        const auto sdfInside{FourSED::edt(paddedBitmap.data(), paddedSize, true)};
-        const auto sdfImage{FourSED::createImage(sdfInside, sdfOutside, spread)};
+
+        // We run the EDT on the bitmap for calculating the internal distances without padding.
+        // This saves time since we skip calculating the distance for pixels outside the objects, which will be zero
+        // anyway.
+        const auto sdfInside{FourSED::edt(bitmap, bitmapSize, true)};
+        const auto sdfInsidePadded{FourSED::padImage(sdfInside.data(), bitmapSize, paddedSize)};
+
+        const auto sdfImage{FourSED::createImage(sdfInsidePadded, sdfOutside, spread)};
         const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), paddedSize.x, paddedSize.y, 0, nullptr,
                                                              outputSize.x, outputSize.y, 0, STBIR_1CHANNEL)};
 
