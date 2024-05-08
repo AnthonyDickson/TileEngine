@@ -47,63 +47,8 @@ namespace EconSimPlusPlus {
         fontSize(fontSize_) {
     }
 
-    std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::vec2 fontSize) {
-        // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
-        // https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
-        FT_Library ft;
-        if (FT_Init_FreeType(&ft)) {
-            throw std::runtime_error("ERROR::FREETYPE: Could not init FreeType Library");
-        }
-
-        FT_Face face;
-        if (FT_New_Face(ft, fontPath.c_str(), 0, &face)) {
-            throw std::runtime_error("ERROR::FREETYPE: Failed to load font");
-        }
-
-        FT_Set_Pixel_Sizes(face, static_cast<FT_UInt>(fontSize.x), static_cast<FT_UInt>(fontSize.y));
-        std::map<char, std::unique_ptr<Glyph>> glyphs;
-
-        int unpackAlignment{};
-        glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
-
-        auto textureArray{TextureArray::create(charsToGenerate, fontSize)};
-
-        for (unsigned char c = 0; c < charsToGenerate; c++) {
-            // load character glyph
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-                std::cerr << "ERROR::FREETYTPE: Failed to load Glyph: " << std::to_string(c) << std::endl;
-                continue;
-            }
-
-            textureArray->bufferSubImage(c, {face->glyph->bitmap.width, face->glyph->bitmap.rows},
-                                         face->glyph->bitmap.buffer);
-
-            const glm::vec2 resolution(static_cast<float>(face->glyph->bitmap.width),
-                                       static_cast<float>(face->glyph->bitmap.rows));
-            const glm::vec2 bearing(static_cast<float>(face->glyph->bitmap_left),
-                                    static_cast<float>(face->glyph->bitmap_top));
-            // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
-            const auto advance{static_cast<float>(face->glyph->advance.x >> 6)};
-
-            auto character{std::make_unique<Glyph>(c, resolution, bearing, advance)};
-            glyphs.emplace(c, std::move(character));
-        }
-
-        FT_Done_Face(face);
-        FT_Done_FreeType(ft);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, unpackAlignment); // Restore unpack alignment.
-
-        auto vao{std::make_unique<VertexArray>()};
-        auto vbo{std::make_unique<VertexBuffer>()};
-        vao->bind();
-        vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
-
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), fontSize);
-    }
-
-    std::unique_ptr<Font> Font::createSDF(const std::string& fontPath, const glm::ivec2 sdfFontSize,
-                                          const glm::ivec2 textureSize, const float spread) {
+    std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
+                                       const glm::ivec2 textureSize, const float spread) {
         // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
         // https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
         // TODO: Calculate and store line height for use in rendering and calculating anchors (maximum height of all

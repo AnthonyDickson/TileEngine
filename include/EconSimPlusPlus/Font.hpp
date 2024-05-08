@@ -42,7 +42,7 @@ namespace EconSimPlusPlus {
         /// The vertex buffer for the text geometry.
         std::unique_ptr<VertexBuffer> vbo;
         /// The shader for rendering text via OpenGL.
-        Shader shader{"resource/shader/textSDF.vert", "resource/shader/textSDF.frag"};
+        Shader shader{"resource/shader/text.vert", "resource/shader/text.frag"};
 
         /// The texture array that holds the textures for each glyph.
         std::unique_ptr<TextureArray> textureArray;
@@ -65,12 +65,6 @@ namespace EconSimPlusPlus {
                       std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
                       glm::vec2 fontSize_);
 
-        /// Create a font object from a TrueType font.
-        /// @param fontPath The path to the TrueType font file on disk.
-        /// @param fontSize The target size (width, height) of the glyphs in pixels.
-        /// @return A font object.
-        static std::unique_ptr<Font> create(const std::string& fontPath, glm::vec2 fontSize);
-
         /// Create a Signed Distance Field (SDF) font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
         /// @param sdfFontSize The width and height in pixels of the fonts to use for generating the SDFs.
@@ -78,8 +72,8 @@ namespace EconSimPlusPlus {
         /// @param spread A scaling factor that the SDF values are divided by. Larger values scale up the size of text
         /// effects such as outlines and drop shadows.
         /// @return A font object.
-        static std::unique_ptr<Font> createSDF(const std::string& fontPath, glm::ivec2 sdfFontSize = {512, 512},
-                                               glm::ivec2 textureSize = {64, 64}, float spread = 8.0f);
+        static std::unique_ptr<Font> create(const std::string& fontPath, glm::ivec2 sdfFontSize = {512, 512},
+                                            glm::ivec2 textureSize = {64, 64}, float spread = 8.0f);
 
         /// Draw text on screen.
         /// @param text The string to render.
