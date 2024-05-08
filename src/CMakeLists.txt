@@ -3,6 +3,7 @@ add_library(LibEconSimPlusPlus
         DeadReckoningAlgorithm.cpp
         Game.cpp
         Font.cpp
+        FourSed.cpp
         FrameTimer.cpp
         Glyph.cpp
         InputState.cpp

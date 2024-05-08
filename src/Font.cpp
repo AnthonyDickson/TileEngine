@@ -30,10 +30,12 @@
 // ReSharper disable once CppWrongIncludesOrder
 #include <stb_image.h>
 #include <stb_image_resize2.h>
+#include <stb_image_write.h>
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
 #include <EconSimPlusPlus/Font.hpp>
+#include <EconSimPlusPlus/FourSed.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
@@ -149,6 +151,11 @@ namespace EconSimPlusPlus {
                 textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
 
                 stbi_image_free(resizedSDFImage);
+
+                const auto sdf2{FourSED::edt(glyph->bitmap.buffer, resolution)};
+                const auto sdfImage2{FourSED::createImage(sdf2)};
+                stbi_write_png(std::format("resource/tmp/{:d}_{:c}_sdf.png", c, c).c_str(), resolution.x,
+                               resolution.y, STBI_grey, sdfImage2.data(), 0);
             }
 
             const glm::vec2 paddedBearing{(static_cast<float>(outputSize.x) - resolution.x) / 2,
