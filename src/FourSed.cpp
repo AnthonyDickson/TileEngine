@@ -19,12 +19,40 @@
 // Created by Anthony Dickson on 07/05/2024.
 //
 
+#include <EconSimPlusPlus/Camera.hpp>
 #include <algorithm>
 #include <unordered_map>
 
 #include <EconSimPlusPlus/FourSed.hpp>
 
 namespace EconSimPlusPlus {
+    std::vector<std::uint8_t> FourSED::padImage(const std::uint8_t* binaryImage, const glm::ivec2 inputSize,
+                                                const glm::ivec2 outputSize) {
+        auto padding{(outputSize - inputSize) / 2};
+        // Make sure padding is at least zero to avoid negative indices. This may happen when the glyph is larger than
+        // the requested size.
+        padding.x = std::max(padding.x, 0);
+        padding.y = std::max(padding.y, 0);
+
+        std::vector<std::uint8_t> paddedBitmap(outputSize.x * outputSize.y, 0);
+
+        for (int row = 0; row < inputSize.y; ++row) {
+            if (row + padding.y >= outputSize.y) {
+                break;
+            }
+
+            for (int col = 0; col < inputSize.x; ++col) {
+                if (col + padding.x >= outputSize.x) {
+                    break;
+                }
+
+                paddedBitmap.at((row + padding.y) * outputSize.x + (col + padding.x)) =
+                    binaryImage[row * inputSize.x + col];
+            }
+        }
+
+        return paddedBitmap;
+    }
     std::vector<float> FourSED::edt(const std::uint8_t* binaryImage, const glm::ivec2 inputSize) {
         std::vector<glm::ivec2> df(inputSize.x * inputSize.y);
 
@@ -97,7 +125,7 @@ namespace EconSimPlusPlus {
         const auto max{std::ranges::max(distanceField)};
 
         std::ranges::transform(distanceField, std::back_inserter(image), [&](const float sdfValue) {
-            return static_cast<int>(sdfValue / max * 255.0f);
+            return static_cast<std::uint8_t>(sdfValue / max * 255.0f);
         });
 
         return image;

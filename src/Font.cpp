@@ -152,10 +152,11 @@ namespace EconSimPlusPlus {
 
                 stbi_image_free(resizedSDFImage);
 
-                const auto sdf2{FourSED::edt(glyph->bitmap.buffer, resolution)};
+                const auto paddedBitmap{FourSED::padImage(glyph->bitmap.buffer, resolution, sdfFontSize)};
+                const auto sdf2{FourSED::edt(paddedBitmap.data(), sdfFontSize)};
                 const auto sdfImage2{FourSED::createImage(sdf2)};
-                stbi_write_png(std::format("resource/tmp/{:d}_{:c}_sdf.png", c, c).c_str(), resolution.x,
-                               resolution.y, STBI_grey, sdfImage2.data(), 0);
+                stbi_write_png(std::format("resource/tmp/{:d}_{:c}_sdf.png", c, c).c_str(), sdfFontSize.x,
+                               sdfFontSize.y, STBI_grey, sdfImage2.data(), 0);
             }
 
             const glm::vec2 paddedBearing{(static_cast<float>(outputSize.x) - resolution.x) / 2,
