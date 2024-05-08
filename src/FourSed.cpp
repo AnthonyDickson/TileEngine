@@ -21,6 +21,8 @@
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <algorithm>
+#include <stb_image.h>
+#include <stb_image_resize2.h>
 #include <unordered_map>
 
 #include <EconSimPlusPlus/FourSed.hpp>
@@ -117,17 +119,6 @@ namespace EconSimPlusPlus {
         return floatDF;
     }
 
-    std::vector<std::uint8_t> FourSED::createImage(const std::vector<float>& distanceField) {
-        std::vector<std::uint8_t> image(distanceField.size());
-        const auto max{std::ranges::max(distanceField)};
-
-        std::ranges::transform(distanceField, image.begin(), [&](const float sdfValue) {
-            return static_cast<std::uint8_t>(sdfValue / max * 255.0f);
-        });
-
-        return image;
-    }
-
     std::vector<std::uint8_t> FourSED::createImage(const std::vector<float>& insideDistanceField,
                                                    const std::vector<float>& outsideDistanceField, const float spread) {
         assert(insideDistanceField.size() == outsideDistanceField.size() && "Distance fields must be of the same size.");
@@ -141,5 +132,21 @@ namespace EconSimPlusPlus {
         }
 
         return image;
+    }
+
+    std::vector<std::uint8_t> FourSED::createSDF(const std::uint8_t* bitmap, const glm::ivec2 bitmapSize,
+                                                 const glm::ivec2 paddedSize, const glm::ivec2 outputSize,
+                                                 const float spread) {
+        const auto paddedBitmap{FourSED::padImage(bitmap, bitmapSize, paddedSize)};
+        const auto sdfOutside{FourSED::edt(paddedBitmap.data(), paddedSize)};
+        const auto sdfInside{FourSED::edt(paddedBitmap.data(), paddedSize, true)};
+        const auto sdfImage{FourSED::createImage(sdfInside, sdfOutside, spread)};
+        const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), paddedSize.x, paddedSize.y, 0, nullptr,
+                                                             outputSize.x, outputSize.y, 0, STBIR_1CHANNEL)};
+
+        std::vector<std::uint8_t> sdf{resizedSDFImage, resizedSDFImage + outputSize.x * outputSize.y};
+        stbi_image_free(resizedSDFImage);
+
+        return sdf;
     }
 } // namespace EconSimPlusPlus

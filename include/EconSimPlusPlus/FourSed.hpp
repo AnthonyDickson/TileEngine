@@ -50,11 +50,6 @@ namespace EconSimPlusPlus {
         /// @return A floating point distance field the same size as the input image.
         static std::vector<float> edt(const std::uint8_t* binaryImage, glm::ivec2 inputSize, bool flipBits = false);
 
-        /// Convert a floating point distance field to an 8-bit image.
-        /// @param distanceField A floating point image where each pixel denotes the distance to the nearest object.
-        /// @return An 8-bit distance field.
-        static std::vector<std::uint8_t> createImage(const std::vector<float>& distanceField);
-
         /// Combine two distance fields into a signed distance field.
         /// @param insideDistanceField The distance field indicating the distance from within an object to the nearest
         /// object border pixel.
@@ -66,6 +61,18 @@ namespace EconSimPlusPlus {
         static std::vector<std::uint8_t> createImage(const std::vector<float>& insideDistanceField,
                                                      const std::vector<float>& outsideDistanceField,
                                                      float spread = 8.0f);
+
+        /// Create a signed distance field (SDF) from a binary image.
+        /// @param bitmap A black and white image where white pixels denote regions inside an object and black
+        /// pixels regions outside an object.
+        /// @param bitmapSize The width and height of the bitmap in pixels.
+        /// @param paddedSize The desired width and height of the padded bitmap used for creating the SDF.
+        /// @param outputSize The width and height in pixels of the output SDF image.
+        /// @param spread A factor to divide the distance by. Larger values allows a larger range of values to be
+        /// captured without being clipped.
+        /// @return An 8-bit signed distance field (128.0f = 0).
+        static std::vector<std::uint8_t> createSDF(const std::uint8_t* bitmap, glm::ivec2 bitmapSize,
+                                                   glm::ivec2 paddedSize, glm::ivec2 outputSize, float spread);
     };
 
 } // namespace EconSimPlusPlus

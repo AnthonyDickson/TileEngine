@@ -140,28 +140,11 @@ namespace EconSimPlusPlus {
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
                 const auto startTime{std::chrono::steady_clock::now()};
-                const auto paddedBitmap{FourSED::padImage(glyph->bitmap.buffer, resolution, sdfFontSize)};
-                const auto edtTime{std::chrono::steady_clock::now()};
-                const auto sdfOutside{FourSED::edt(paddedBitmap.data(), sdfFontSize)};
-                const auto sdfInside{FourSED::edt(paddedBitmap.data(), sdfFontSize, true)};
-                const auto byteImageTime{std::chrono::steady_clock::now()};
-                const auto sdfImage{FourSED::createImage(sdfInside, sdfOutside, spread)};
-                const auto resizeTime{std::chrono::steady_clock::now()};
-                const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), sdfFontSize.x, sdfFontSize.y, 0,
-                                                                     nullptr, textureSize.x, textureSize.y, 0,
-                                                                     STBIR_1CHANNEL)};
-                textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
-
-                stbi_image_free(resizedSDFImage);
+                const auto sdf{FourSED::createSDF(glyph->bitmap.buffer, resolution, sdfFontSize, textureSize, spread)};
+                textureArray->bufferSubImage(c, textureSize, sdf.data());
                 const auto endTime{std::chrono::steady_clock::now()};
 
-                std::cout << std::format("{:c} Timing - Pad: {:.2f} ms - EDT: {:.2f} ms - Convert to Byte: {:.2f} ms - "
-                                         "Resize: {:.2f} ms - Total: {:.2f} ms\n",
-                                         c,
-                                         (edtTime - startTime).count() * 1e-6f,
-                                         (byteImageTime - edtTime).count() * 1e-6f,
-                                         (resizeTime - byteImageTime).count() * 1e-6f,
-                                         (endTime - resizeTime).count() * 1e-6f, (endTime - startTime).count() * 1e-6f);
+                std::cout << std::format("{:c} SDF Timing: {:2.2f} ms\n", c, (endTime - startTime).count() * 1e-6f);
             }
 
             const glm::vec2 paddedBearing{(static_cast<float>(sdfFontSize.x) - resolution.x) / 2,
