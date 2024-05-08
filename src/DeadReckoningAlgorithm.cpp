@@ -28,21 +28,17 @@ namespace EconSimPlusPlus {
         distanceAdjacent(distanceAdjacent_), distanceDiagonal(distanceDiagonal_) {
     }
 
-    std::vector<float> DeadReckoningAlgorithm::createSDF(const std::uint8_t* buffer, const glm::ivec2 bufferSize,
-                                                         const glm::ivec2 outputSize) const {
-        assert(outputSize.x >= bufferSize.x and outputSize.y >= bufferSize.y &&
+    std::vector<float> DeadReckoningAlgorithm::sdf(const std::uint8_t* buffer, const glm::ivec2 bufferSize) const {
+        assert(bufferSize.x >= bufferSize.x and bufferSize.y >= bufferSize.y &&
                "Output size must be greater than or equal to the buffer size in both dimensions.");
-        // TODO: Optimize this function.
-        std::vector distanceImage(outputSize.x * outputSize.y, 0.0f);
-        constexpr glm::ivec2 outOfBounds{-1, -1};
-        std::vector borderPoints(outputSize.x * outputSize.y, outOfBounds);
-        const glm::ivec2 padding{(outputSize - bufferSize) / 2};
+        std::vector<float> sdf(bufferSize.x * bufferSize.y);
+        std::vector<glm::ivec2> borderPoints(bufferSize.x * bufferSize.y);
 
         constexpr bool inside{true};
         constexpr bool outside{false};
 
         const auto contains = [&](const int x, const int y) {
-            return x >= 0 and x < outputSize.x and y >= 0 and y < outputSize.y;
+            return 0 <= x and x < bufferSize.x and 0 <= y and y < bufferSize.y;
         };
 
         const auto I = [&](const int x, const int y) {
@@ -50,25 +46,26 @@ namespace EconSimPlusPlus {
                 return outside;
             }
 
-            const auto bufferX{x - padding.x};
-            const auto bufferY{y - padding.y};
-
-            if (bufferX < 0 or bufferX >= bufferSize.x or bufferY < 0 or bufferY >= bufferSize.y) {
-                return outside;
-            }
-
-            return buffer[bufferY * bufferSize.x + bufferX] > 128 ? inside : outside;
+            return buffer[y * bufferSize.x + x] > 128 ? inside : outside;
         };
+
+        constexpr float infinity = std::numeric_limits<float>::infinity();
+        constexpr glm::ivec2 outOfBounds{-1, 1};
 
         const auto d = [&](const int x, const int y) {
             if (not contains(x, y)) {
-                return std::numeric_limits<float>::infinity();
+                return infinity;
             }
 
-            return distanceImage[y * outputSize.x + x];
+            return sdf.at(y * bufferSize.x + x);
         };
+
         const auto setd = [&](const int x, const int y, const float value) {
-            return distanceImage.at(y * outputSize.x + x) = value;
+            if (not contains(x, y)) {
+                return;
+            }
+
+            sdf.at(y * bufferSize.x + x) = value;
         };
 
         const auto p = [&](const int x, const int y) {
@@ -76,88 +73,97 @@ namespace EconSimPlusPlus {
                 return outOfBounds;
             }
 
-            return borderPoints[y * outputSize.x + x];
+            return borderPoints.at(y * bufferSize.x + x);
         };
+
         const auto setp = [&](const int x, const int y, const glm::ivec2 value) {
-            borderPoints.at(y * outputSize.x + x) = value;
+            if (not contains(x, y)) {
+                return;
+            }
+
+            borderPoints.at(y * bufferSize.x + x) = value;
         };
 
-        const auto distance = [&](const int x, const int y) {
-            return hypotf(static_cast<float>(x - p(x, y).x), static_cast<float>(y - p(x, y).y));
-        };
-
-        const auto d1{distanceAdjacent};
-        const auto d2{distanceDiagonal};
-
-        // Inintialise immediate interior and exterior elements.
-        for (int y = 0; y < outputSize.y; ++y) {
-            for (int x = 0; x < outputSize.x; ++x) {
-                if (I(x - 1, y) != I(x, y) or I(x + 1, y) != I(x, y) or I(x, y - 1) != I(x, y) or
-                    I(x, y + 1) != I(x, y)) {
+        for (int y = 0; y < bufferSize.y; ++y) {
+            for (int x = 0; x < bufferSize.x; ++x) {
+                if (const auto center{I(x, y)};
+                    I(x - 1, y) != center or I(x + 1, y) != center or I(x, y - 1) != center or I(x, y + 1) != center) {
                     setd(x, y, 0.0f);
                     setp(x, y, {x, y});
                 }
                 else {
-                    setd(x, y, std::numeric_limits<float>::infinity());
+                    setd(x, y, infinity);
                     setp(x, y, outOfBounds);
                 }
             }
         }
 
-        // First Pass, top to bottom, left to right
-        for (int y = 0; y < outputSize.y; ++y) {
-            for (int x = 0; x < outputSize.x; ++x) {
+        const auto distance = [&](const int x, const int y) {
+            const auto borderPoint{p(x, y)};
+            return hypotf(x - borderPoint.x, y - borderPoint.y);
+        };
+
+        const auto d1{distanceAdjacent};
+        const auto d2{distanceDiagonal};
+
+        for (int y = 0; y < bufferSize.y; ++y) {
+            for (int x = 0; x < bufferSize.x; ++x) {
                 if (d(x - 1, y - 1) + d2 < d(x, y)) {
-                    setp(x, y, {x - 1, y - 1});
+                    setp(x, y, p(x - 1, y - 1));
                     setd(x, y, distance(x, y));
                 }
+
                 if (d(x, y - 1) + d1 < d(x, y)) {
-                    setp(x, y, {x, y - 1});
+                    setp(x, y, p(x, y - 1));
                     setd(x, y, distance(x, y));
                 }
+
                 if (d(x + 1, y - 1) + d2 < d(x, y)) {
-                    setp(x, y, {x + 1, y - 1});
+                    setp(x, y, p(x + 1, y - 1));
                     setd(x, y, distance(x, y));
                 }
+
                 if (d(x - 1, y) + d1 < d(x, y)) {
-                    setp(x, y, {x - 1, y});
+                    setp(x, y, p(x - 1, y));
                     setd(x, y, distance(x, y));
                 }
             }
         }
 
-        // Final Pass, bottom to top, right to left.
-        for (int y = outputSize.y - 1; y > -1; --y) {
-            for (int x = outputSize.x - 1; x > -1; --x) {
+        for (int y = bufferSize.y - 1; y >= 0; --y) {
+            for (int x = bufferSize.x - 1; x >= 0; --x) {
                 if (d(x + 1, y) + d1 < d(x, y)) {
-                    setp(x, y, {x + 1, y});
+                    setp(x, y, p(x + 1, y));
                     setd(x, y, distance(x, y));
                 }
+
                 if (d(x - 1, y + 1) + d2 < d(x, y)) {
-                    setp(x, y, {x - 1, y + 1});
+                    setp(x, y, p(x - 1, y + 1));
                     setd(x, y, distance(x, y));
                 }
+
                 if (d(x, y + 1) + d1 < d(x, y)) {
-                    setp(x, y, {x, y + 1});
+                    setp(x, y, p(x, y + 1));
                     setd(x, y, distance(x, y));
                 }
+
                 if (d(x + 1, y + 1) + d2 < d(x, y)) {
-                    setp(x, y, {x + 1, y + 1});
+                    setp(x, y, p(x + 1, y + 1));
                     setd(x, y, distance(x, y));
                 }
             }
         }
 
-        // Indicate inside and outside with negative values indicating outside.
-        for (int y = 0; y < outputSize.y; ++y) {
-            for (int x = 0; x < outputSize.x; ++x) {
+
+        for (int y = 0; y < bufferSize.y; ++y) {
+            for (int x = 0; x < bufferSize.x; ++x) {
                 if (I(x, y) == outside) {
                     setd(x, y, -d(x, y));
                 }
             }
         }
 
-        return distanceImage;
+        return sdf;
     }
 
     std::vector<std::uint8_t> DeadReckoningAlgorithm::createImage(const std::vector<float>& sdf, const float spread) {

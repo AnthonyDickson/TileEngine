@@ -61,7 +61,7 @@ namespace EconSimPlusPlus {
         /// @return An 8-bit distance field.
         static std::vector<std::uint8_t> combineEDT(const std::vector<float>& insideDistanceField,
                                                     const std::vector<float>& outsideDistanceField,
-                                                     float spread = 16.0f);
+                                                    float spread = 16.0f);
 
         /// Create a signed distance field (SDF) from a binary image.
         /// @param bitmap A black and white image where white pixels denote regions inside an object and black

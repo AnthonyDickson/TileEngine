@@ -38,7 +38,7 @@ namespace EconSimPlusPlus {
         /// The render camera.
         Camera camera;
         /// The font for rendering text on screen.
-        std::unique_ptr<Font> font{Font::create("resource/font/Roboto-Regular.ttf", {512, 512}, {128, 128}, 32.0f)};
+        std::unique_ptr<Font> font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
 
         /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
         static bool isInitialised;

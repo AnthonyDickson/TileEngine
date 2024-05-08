@@ -32,6 +32,7 @@ namespace EconSimPlusPlus {
     std::vector<PixelType> FourSED::padImage(const PixelType* binaryImage, const glm::ivec2 inputSize,
                                              const glm::ivec2 outputSize) {
         auto padding{(outputSize - inputSize) / 2};
+        // TODO: Scale down glyphs that are too large to fit in padded area or glyphs that are too close to the border.
         // Make sure padding is at least zero to avoid negative indices. This may happen when the glyph is larger than
         // the requested size.
         padding.x = std::max(padding.x, 0);

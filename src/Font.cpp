@@ -30,6 +30,7 @@
 // ReSharper disable once CppWrongIncludesOrder
 #include <stb_image.h>
 #include <stb_image_resize2.h>
+#include <stb_image_write.h>
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
@@ -71,6 +72,7 @@ namespace EconSimPlusPlus {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
         auto textureArray{TextureArray::create(charsToGenerate, textureSize)};
+        const DeadReckoningAlgorithm dra{};
 
         for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
@@ -85,11 +87,20 @@ namespace EconSimPlusPlus {
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
                 const auto startTime{std::chrono::steady_clock::now()};
-                const auto sdf{FourSED::createSDF(glyph->bitmap.buffer, resolution, sdfFontSize, textureSize, spread)};
-                textureArray->bufferSubImage(c, textureSize, sdf.data());
-                const auto endTime{std::chrono::steady_clock::now()};
+                const auto paddedBitmap{FourSED::padImage(glyph->bitmap.buffer, resolution, sdfFontSize)};
+                const auto sdfDRA{dra.sdf(paddedBitmap.data(), sdfFontSize)};
+                const auto sdfImage{DeadReckoningAlgorithm::createImage(sdfDRA, spread)};
 
+                const auto resizedSDFImage{stbir_resize_uint8_linear(sdfImage.data(), sdfFontSize.x, sdfFontSize.y, 0,
+                                                                     nullptr, textureSize.x, textureSize.y, 0,
+                                                                     STBIR_1CHANNEL)};
+                const auto endTime{std::chrono::steady_clock::now()};
                 std::cout << std::format("{:c} SDF Timing: {:2.2f} ms\n", c, (endTime - startTime).count() * 1e-6f);
+
+                stbi_write_png(std::format("resource/tmp/{:03d}_{:c}_sdf.png", c, c).c_str(), textureSize.x,
+                               textureSize.y, STBI_grey, resizedSDFImage, 0);
+                textureArray->bufferSubImage(c, textureSize, resizedSDFImage);
+                stbi_image_free(resizedSDFImage);
             }
 
             const glm::vec2 paddedBearing{(static_cast<float>(sdfFontSize.x) - resolution.x) / 2,
