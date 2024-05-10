@@ -26,13 +26,13 @@
 #include <EconSimPlusPlus/GridLines.hpp>
 
 namespace EconSimPlusPlus {
-    GridLines::GridLines(const glm::ivec2 size_, const float cellSize_) : size(size_) {
+    GridLines::GridLines(const glm::ivec2 size, const float cellSize) {
         std::vector<float> vertices{};
-        const auto halfSize{static_cast<glm::vec2>(size) * cellSize_ * 0.5f};
+        const auto halfSize{static_cast<glm::vec2>(size) * cellSize * 0.5f};
 
         // Horizontal Lines
         for (int row = 0; row <= size.y; ++row) {
-            const float y{static_cast<float>(row) * cellSize_ - halfSize.y};
+            const float y{static_cast<float>(row) * cellSize - halfSize.y};
             // Start Point
             vertices.push_back(-halfSize.x);
             vertices.push_back(y);
@@ -43,7 +43,7 @@ namespace EconSimPlusPlus {
 
         // Vertical Lines
         for (int col = 0; col <= size.x; ++col) {
-            const float x{static_cast<float>(col) * cellSize_ - halfSize.x};
+            const float x{static_cast<float>(col) * cellSize - halfSize.x};
             // Start Point
             vertices.push_back(x);
             vertices.push_back(-halfSize.y);
@@ -55,7 +55,6 @@ namespace EconSimPlusPlus {
         vao.bind();
         vbo.bind();
         vbo.loadData(vertices, {2});
-        lineCount = vertices.size() / 2;
     }
 
     void GridLines::render(const Camera& camera, const float z) const {
@@ -64,6 +63,6 @@ namespace EconSimPlusPlus {
         shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * camera.getViewMatrix());
         shader.setUniform("transform", glm::translate(glm::mat4{1.0f}, glm::vec3{0.0f, 0.0f, -z}));
         vao.bind();
-        glDrawArrays(GL_LINES, 0, lineCount);
+        vbo.drawArrays(GL_LINES);
     }
 } // namespace EconSimPlusPlus

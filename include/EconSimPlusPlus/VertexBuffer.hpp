@@ -31,8 +31,8 @@ namespace EconSimPlusPlus {
     class VertexBuffer {
         /// The ID for the vertex buffer object.
         GLuint vboID{};
-        /// The number of triangles in the buffered vertex data.
-        int triangleCount{};
+        /// The number of vertices in the buffered vertex data.
+        int vertexCount{};
 
     public:
         /// Create a vertex buffer object.

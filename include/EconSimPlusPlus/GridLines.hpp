@@ -40,16 +40,11 @@ namespace EconSimPlusPlus {
         /// The shader for drawing grid lines.
         const Shader shader{"resource/shader/grid.vert", "resource/shader/grid.frag"};
 
-        /// The width and height of the grid in cells.
-        glm::ivec2 size;
-        /// The number of lines stored in the VBO.
-        int lineCount{};
-
     public:
         /// Create a grid lines object.
-        /// @param size_ The width and height of the grid in tiles.
-        /// @param cellSize_ The size (both width and height) of the cells in pixels.
-        GridLines(glm::ivec2 size_, float cellSize_);
+        /// @param size The width and height of the grid in tiles.
+        /// @param cellSize The size (both width and height) of the cells in pixels.
+        GridLines(glm::ivec2 size, float cellSize);
 
         /// Draw the grid lines on screen.
         /// @param camera The camera to render the grid lines with.

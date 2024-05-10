@@ -47,7 +47,7 @@ namespace EconSimPlusPlus {
             offset += size;
         }
 
-        triangleCount = static_cast<int>(vertexData.size()) / stride;
+        vertexCount = static_cast<int>(vertexData.size()) / stride;
     }
 
     void VertexBuffer::bind() const {
@@ -55,7 +55,7 @@ namespace EconSimPlusPlus {
     }
 
     void VertexBuffer::drawArrays(const GLenum mode) const {
-        glDrawArrays(mode, 0, triangleCount);
+        glDrawArrays(mode, 0, vertexCount);
     }
 
     VertexBuffer::~VertexBuffer() {
