@@ -60,6 +60,28 @@ namespace EconSimPlusPlus {
         return textureCoordinates;
     }
 
+    TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
+        const auto cameraPosition{camera.getPosition()};
+        const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
+        const glm::vec2 viewport{camera.getViewportSize()};
+        const glm::vec2 mapSizeVec{mapSize.width, mapSize.height};
+
+        const auto viewBottomLeft{cameraPosition2D - viewport / 2.0f};
+        const auto viewTopRight{cameraPosition2D + viewport / 2.0f};
+        const auto gridOffsetMin{viewBottomLeft / tileSize};
+        const auto gridOffsetMax{viewTopRight / tileSize};
+        const glm::vec2 gridCoordinatesMin{gridOffsetMin + mapSizeVec / 2.0f};
+        const glm::vec2 gridCoordinatesMax{gridOffsetMax + mapSizeVec / 2.0f};
+
+        const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
+        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + 1, mapSize.height);
+
+        const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
+        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.width);
+
+        return {rowStart, rowEnd, colStart, colEnd};
+    }
+
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
         const auto tileMapConfig{YAML::LoadFile(yamlPath)};
         const auto tileSheetNode{tileMapConfig["tile-sheet"]};
