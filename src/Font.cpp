@@ -27,9 +27,6 @@
 
 #include <freetype/freetype.h>
 #include <glm/ext/matrix_transform.hpp>
-// ReSharper disable once CppWrongIncludesOrder
-#include <stb_image.h>
-#include <stb_image_resize2.h>
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
@@ -41,9 +38,9 @@ namespace EconSimPlusPlus {
 
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
                std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
-               const glm::vec2 fontSize_) :
+               const glm::vec2 fontSize_, const float lineHeight_) :
         glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArray(std::move(textureArray_)),
-        fontSize(fontSize_) {
+        fontSize(fontSize_), lineHeight(lineHeight_) {
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
@@ -71,6 +68,8 @@ namespace EconSimPlusPlus {
 
         auto textureArray{TextureArray::create(charsToGenerate, textureSize)};
 
+        std::pair<int, int> verticalExtents{}; // The maximum height above and below the baseline.
+
         for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
@@ -87,6 +86,10 @@ namespace EconSimPlusPlus {
                                                                  textureSize, spread)};
                 textureArray->bufferSubImage(c, textureSize, sdf.data());
             }
+
+            verticalExtents.first = std::max(glyph->bitmap_top, verticalExtents.first);
+            verticalExtents.second =
+                std::min(std::min(0, glyph->bitmap_top - static_cast<int>(glyph->bitmap.rows)), verticalExtents.second);
 
             const glm::vec2 paddedBearing{(static_cast<float>(sdfFontSize.x) - resolution.x) / 2,
                                           (static_cast<float>(sdfFontSize.y) - resolution.y) / 2};
@@ -109,8 +112,11 @@ namespace EconSimPlusPlus {
         auto vbo{std::make_unique<VertexBuffer>()};
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
+        const auto lineHeight{static_cast<float>(verticalExtents.first - verticalExtents.second) *
+                              static_cast<float>(textureSize.y) / static_cast<float>(sdfFontSize.y)};
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize);
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize,
+                                      lineHeight);
     }
 
     void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
@@ -142,24 +148,27 @@ namespace EconSimPlusPlus {
             glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, workingIndex);
         };
 
+
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
 
             switch (character) {
             case ' ':
-                drawPosition.x += glyph->advance * scale;
+                drawPosition.x += fontSize.x * scale;
                 continue;
             case '\n':
-                drawPosition.y += fontSize.y * scale;
+                drawPosition.y -= fontSize.y * scale;
                 drawPosition.x = position.x;
                 continue;
             default:
                 break;
             }
 
-            const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x + glyph->bearing.x) * scale,
-                                              drawPosition.y +
-                                                  (anchorOffset.y + glyph->bearing.y - glyph->size.y) * scale};
+            const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x) * scale,
+                                              drawPosition.y + (anchorOffset.y) * scale};
+            // const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x + glyph->bearing.x) * scale,
+            //                                   drawPosition.y +
+            //                                       (anchorOffset.y + glyph->bearing.y - glyph->size.y) * scale};
             const glm::vec2 size{fontSize * scale};
 
             glm::mat4 transform =
@@ -167,7 +176,7 @@ namespace EconSimPlusPlus {
             transforms[workingIndex] = glm::scale(transform, glm::vec3(size.x, size.y, 0.0f));
             letterMap[workingIndex] = static_cast<int>(glyph->character);
 
-            drawPosition.x += glyph->advance * scale;
+            drawPosition.x += fontSize.x * scale;
             ++workingIndex;
 
             if (workingIndex == shader.maxInstances) {
@@ -184,28 +193,29 @@ namespace EconSimPlusPlus {
     glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor) const {
         const auto textSize{calculateTextSize(text)};
 
+        // -fontSize.y puts the text origin at the top left corner of the first character.
         switch (anchor) {
         case Anchor::bottomLeft:
-            return glm::vec2{0.0f};
+            return glm::vec2{0.0f, textSize.y - fontSize.y};
         case Anchor::bottomRight:
-            return glm::vec2{-textSize.x, 0.0f};
+            return glm::vec2{-textSize.x, textSize.y - fontSize.y};
         case Anchor::topLeft:
-            return glm::vec2{0.0f, -textSize.y};
+            return glm::vec2{0.0f, -fontSize.y};
         case Anchor::topRight:
-            return -textSize;
+            return glm::vec2{-textSize.x, -fontSize.y};
         case Anchor::center:
-            return -textSize / 2.0f;
+            return {-textSize.x / 2.0f, textSize.y / 2.0f - fontSize.y};
         default:
             return glm::vec2{0.0f};
         }
     }
 
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
-        glm::vec2 textSize{};
+        glm::vec2 textSize{0.0f, fontSize.y};
         float lineWidth{};
 
         for (const auto& character : text) {
-            const auto& glyph{glyphs.at(character)};
+            [[maybe_unused]] const auto& glyph{glyphs.at(character)};
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);
@@ -213,12 +223,12 @@ namespace EconSimPlusPlus {
                 lineWidth = 0.0f;
             }
             else {
-                lineWidth += glyph->advance;
-                textSize.y = std::max(fontSize.y, textSize.y);
+                lineWidth += fontSize.x;
             }
         }
 
         textSize.x = std::max(lineWidth, textSize.x);
+        textSize.y = std::max(fontSize.y, textSize.y);
 
         return textSize;
     }
