@@ -108,17 +108,17 @@ namespace EconSimPlusPlus {
         return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize);
     }
 
-    void Font::render(const std::string_view text, const glm::vec2 position, const float size, const glm::vec3 colour,
-                      const Camera& camera, const Font::Anchor anchor) const {
+    void Font::render(const std::string_view text, const glm::vec2 position, const Camera& camera,
+                      const RenderSettings& settings) const {
         shader.bind();
         shader.setUniform("text", 0);
-        shader.setUniform("textColor", colour);
+        shader.setUniform("textColor", settings.color);
         shader.setUniform("projection", camera.getPerspectiveMatrix());
         // TODO: Make the following text effect uniforms configurable at font constructor or function call via struct.
-        shader.setUniform("sdfThreshold", 0.5f);
-        shader.setUniform("edgeSmoothness", 0.01f);
-        shader.setUniform("outlineSize", 0.3f);
-        shader.setUniform("outlineColor", glm::vec3{0.0f});
+        shader.setUniform("sdfThreshold", settings.sdfThreshold);
+        shader.setUniform("edgeSmoothness", settings.edgeSmoothness);
+        shader.setUniform("outlineSize", settings.outlineSize);
+        shader.setUniform("outlineColor", settings.outlineColor);
 
         textureArray->bind();
         vao->bind();
@@ -126,8 +126,8 @@ namespace EconSimPlusPlus {
 
         glm::vec2 drawPosition{position};
 
-        const float scale{size / fontSize.y};
-        const auto anchorOffset{calculateAnchorOffset(text, anchor) * scale};
+        const float scale{settings.size / fontSize.y};
+        const auto anchorOffset{calculateAnchorOffset(text, settings.anchor) * scale};
         int workingIndex{0};
         std::vector transforms(shader.maxInstances, glm::mat4());
         std::vector letterMap(shader.maxInstances, 0);

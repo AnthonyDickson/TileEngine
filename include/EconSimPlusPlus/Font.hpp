@@ -55,6 +55,27 @@ namespace EconSimPlusPlus {
         /// The point in the text that the render position refers to.
         enum class Anchor { bottomLeft, bottomRight, topLeft, topRight, center };
 
+        /// The collection of settings for drawing text on screen.
+        struct RenderSettings {
+            /// The colour to render the text.
+            glm::vec3 color{1.0f};
+            /// The height, in pixels, at which to draw the text. Note that the width will be scaled proportionately to
+            /// maintain the aspect ratio.
+            float size{32.0f};
+            /// The point on the text that the position refers to.
+            Font::Anchor anchor{Font::Anchor::topLeft};
+            /// The value between zero and one in the font SDF that indicates an edge.
+            /// Increasing this value will shrink the font and increasing it will expand the font.
+            float sdfThreshold{0.5f};
+            /// The amount to smooth the edges as a ratio of the SDF range.
+            float edgeSmoothness{0.01f};
+            /// The size of the outline to draw around the edge of the text as a ratio of the SDF range. Set to zero to
+            /// disable outlines.
+            float outlineSize{0.0f};
+            /// The colour of the text outline.
+            glm::vec3 outlineColor{0.0f};
+        };
+
         /// Create a font (collection of glyphs).
         /// @param glyphs_ Mapping between ASCII chars and the corresponing font data.
         /// @param vao_ The vertex array for rendering text.
@@ -80,13 +101,10 @@ namespace EconSimPlusPlus {
         /// @param text The string to render.
         /// @param position Where to render the text in screen coordinates (pixels). Note that this corresponds to the
         /// bottom left corner of the text.
-        /// @param size The height, in pixels, at which to draw the text. Note that the width will be scaled
-        /// proportionately to maintain the aspect ratio.
-        /// @param colour The colour to render the text.
         /// @param camera The camera to render the text with.
-        /// @param anchor The point on the text that the position refers to.
-        void render(std::string_view text, glm::vec2 position, float size, glm::vec3 colour, const Camera& camera,
-                    Anchor anchor = Anchor::bottomLeft) const;
+        /// @param settings
+        void render(std::string_view text, glm::vec2 position, const Camera& camera,
+                    const RenderSettings& settings) const;
 
     private:
         /// Calculate the positional offset for the given text and anchor.

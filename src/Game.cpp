@@ -77,8 +77,14 @@ namespace EconSimPlusPlus {
         constexpr auto timeStep{1.0f / targetFramesPerSecond};
 
         auto lastFrameTime{std::chrono::steady_clock::now()};
+
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
+        constexpr Font::RenderSettings fontSettings{.color = {1.0f, 1.0f, 0.0f},
+                                                    .size = 32.0f,
+                                                    .anchor = Font::Anchor::topLeft,
+                                                    .outlineSize = 0.3f,
+                                                    .outlineColor = {0.0f, 0.0f, 0.0f}};
 
         while (true) {
             const auto currentTime{std::chrono::steady_clock::now()};
@@ -106,7 +112,7 @@ namespace EconSimPlusPlus {
                                                     updateTimer.average(), renderTimer.average())};
             const glm::vec2 position{-static_cast<float>(window->getWidth()) / 2.0f,
                                      static_cast<float>(window->getHeight()) / 2.0f};
-            font->render(frameTimeSummary, position, 32.0f, {1.0f, 1.0f, 0.0f}, camera, Font::Anchor::topLeft);
+            font->render(frameTimeSummary, position, camera, fontSettings);
 
             window->postUpdate();
         }
