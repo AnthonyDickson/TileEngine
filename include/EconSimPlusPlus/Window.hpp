@@ -60,10 +60,10 @@ namespace EconSimPlusPlus {
         /// Releases GLFW window stuff.
         ~Window();
 
-        /// This function should be called before the game's update function.
+        /// This function should be called before the game's update and draw functions.
         void preUpdate();
 
-        /// This function should be called after the game's update function.
+        /// This function should be called after the game's update and draw functions.
         void postUpdate();
 
         /// Whether the application should close.
