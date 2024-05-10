@@ -108,7 +108,7 @@ namespace EconSimPlusPlus {
         return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize);
     }
 
-    void Font::render(const std::string_view text, const glm::vec2 position, const Camera& camera,
+    void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
                       const RenderSettings& settings) const {
         shader.bind();
         shader.setUniform("text", 0);
@@ -123,7 +123,7 @@ namespace EconSimPlusPlus {
         vao->bind();
         vbo->bind();
 
-        glm::vec2 drawPosition{position};
+        glm::vec3 drawPosition{position};
 
         const float scale{settings.size / fontSize.y};
         const auto anchorOffset{calculateAnchorOffset(text, settings.anchor) * scale};
@@ -157,7 +157,7 @@ namespace EconSimPlusPlus {
                                                   (glyph->bearing.y - glyph->size.y) * scale};
 
             glm::mat4 transform =
-                glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -1.0f));
+                glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -drawPosition.z));
             transforms[workingIndex] = glm::scale(transform, glm::vec3(fontSize * scale, 0.0f));
             letterMap[workingIndex] = static_cast<int>(glyph->character);
 
