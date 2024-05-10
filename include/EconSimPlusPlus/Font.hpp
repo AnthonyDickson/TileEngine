@@ -48,8 +48,6 @@ namespace EconSimPlusPlus {
         const std::unique_ptr<TextureArray> textureArray;
         /// The target size (width, height) of the glyphs in pixels.
         const glm::vec2 fontSize;
-        /// The vertical distance, in pixels, between the highest point and lowest point across all glyphs.
-        [[maybe_unused]] const float lineHeight;
         /// The range of ASCII characters to generate glyphs for.
         static constexpr int charsToGenerate{128};
 
@@ -63,11 +61,10 @@ namespace EconSimPlusPlus {
         /// @param vbo_ The vertex buffer for rendering text.
         /// @param textureArray_ The texture array that holds the textures for each glyph.
         /// @param fontSize_ The target size (width, height) of the glyphs in pixels.
-        /// @param lineHeight_ The vertical distance, in pixels, between the highest point and lowest point across all
         /// glyphs.
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
                       std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
-                      glm::vec2 fontSize_, float lineHeight_);
+                      glm::vec2 fontSize_);
 
         /// Create a Signed Distance Field (SDF) font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
@@ -83,11 +80,12 @@ namespace EconSimPlusPlus {
         /// @param text The string to render.
         /// @param position Where to render the text in screen coordinates (pixels). Note that this corresponds to the
         /// bottom left corner of the text.
-        /// @param scale How much to scale up or down the text from its original size.
+        /// @param size The height, in pixels, at which to draw the text. Note that the width will be scaled
+        /// proportionately to maintain the aspect ratio.
         /// @param colour The colour to render the text.
         /// @param camera The camera to render the text with.
         /// @param anchor The point on the text that the position refers to.
-        void render(std::string_view text, glm::vec2 position, float scale, glm::vec3 colour, const Camera& camera,
+        void render(std::string_view text, glm::vec2 position, float size, glm::vec3 colour, const Camera& camera,
                     Anchor anchor = Anchor::bottomLeft) const;
 
     private:

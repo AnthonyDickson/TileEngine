@@ -102,12 +102,11 @@ namespace EconSimPlusPlus {
             render();
             renderTimer.endStep();
 
-            const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms - Render Time: {:>5.2f} ms",
+            const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                     updateTimer.average(), renderTimer.average())};
-            // TODO: Fix text not being positioned correctly when using top left anchor in top left corner of screen (one line too high?).
             const glm::vec2 position{-static_cast<float>(window->getWidth()) / 2.0f,
                                      static_cast<float>(window->getHeight()) / 2.0f};
-            font->render(frameTimeSummary, {}, 1.0f, {1.0f, 1.0f, 1.0f}, camera, Font::Anchor::bottomLeft);
+            font->render(frameTimeSummary, position, 32.0f, {1.0f, 1.0f, 0.0f}, camera, Font::Anchor::topLeft);
 
             window->postUpdate();
         }

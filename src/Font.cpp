@@ -38,17 +38,15 @@ namespace EconSimPlusPlus {
 
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
                std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
-               const glm::vec2 fontSize_, const float lineHeight_) :
+               const glm::vec2 fontSize_) :
         glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArray(std::move(textureArray_)),
-        fontSize(fontSize_), lineHeight(lineHeight_) {
+        fontSize(fontSize_) {
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
                                        const glm::ivec2 textureSize, const float spread) {
         // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
         // https://github.com/johnWRS/LearnOpenGLTextRenderingImprovement.git
-        // TODO: Calculate and store line height for use in rendering and calculating anchors (maximum height of all
-        //  glyphs + maximum extent below baseline).
         FT_Library ft;
         if (FT_Init_FreeType(&ft)) {
             throw std::runtime_error("ERROR::FREETYPE: Could not init FreeType Library");
@@ -68,8 +66,6 @@ namespace EconSimPlusPlus {
 
         auto textureArray{TextureArray::create(charsToGenerate, textureSize)};
 
-        std::pair<int, int> verticalExtents{}; // The maximum height above and below the baseline.
-
         for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
@@ -86,10 +82,6 @@ namespace EconSimPlusPlus {
                                                                  textureSize, spread)};
                 textureArray->bufferSubImage(c, textureSize, sdf.data());
             }
-
-            verticalExtents.first = std::max(glyph->bitmap_top, verticalExtents.first);
-            verticalExtents.second =
-                std::min(std::min(0, glyph->bitmap_top - static_cast<int>(glyph->bitmap.rows)), verticalExtents.second);
 
             const glm::vec2 paddedBearing{(static_cast<float>(sdfFontSize.x) - resolution.x) / 2,
                                           (static_cast<float>(sdfFontSize.y) - resolution.y) / 2};
@@ -112,14 +104,11 @@ namespace EconSimPlusPlus {
         auto vbo{std::make_unique<VertexBuffer>()};
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
-        const auto lineHeight{static_cast<float>(verticalExtents.first - verticalExtents.second) *
-                              static_cast<float>(textureSize.y) / static_cast<float>(sdfFontSize.y)};
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize,
-                                      lineHeight);
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize);
     }
 
-    void Font::render(const std::string_view text, const glm::vec2 position, const float scale, const glm::vec3 colour,
+    void Font::render(const std::string_view text, const glm::vec2 position, const float size, const glm::vec3 colour,
                       const Camera& camera, const Font::Anchor anchor) const {
         shader.bind();
         shader.setUniform("text", 0);
@@ -128,7 +117,7 @@ namespace EconSimPlusPlus {
         // TODO: Make the following text effect uniforms configurable at font constructor or function call via struct.
         shader.setUniform("sdfThreshold", 0.5f);
         shader.setUniform("edgeSmoothness", 0.01f);
-        shader.setUniform("outlineSize", 0.4f);
+        shader.setUniform("outlineSize", 0.3f);
         shader.setUniform("outlineColor", glm::vec3{0.0f});
 
         textureArray->bind();
@@ -137,7 +126,8 @@ namespace EconSimPlusPlus {
 
         glm::vec2 drawPosition{position};
 
-        const auto anchorOffset{calculateAnchorOffset(text, anchor)};
+        const float scale{size / fontSize.y};
+        const auto anchorOffset{calculateAnchorOffset(text, anchor) * scale};
         int workingIndex{0};
         std::vector transforms(shader.maxInstances, glm::mat4());
         std::vector letterMap(shader.maxInstances, 0);
@@ -148,13 +138,12 @@ namespace EconSimPlusPlus {
             glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, workingIndex);
         };
 
-
         for (const auto& character : text) {
             const auto& glyph{glyphs.at(character)};
 
             switch (character) {
             case ' ':
-                drawPosition.x += fontSize.x * scale;
+                drawPosition.x += glyph->advance * scale;
                 continue;
             case '\n':
                 drawPosition.y -= fontSize.y * scale;
@@ -164,19 +153,16 @@ namespace EconSimPlusPlus {
                 break;
             }
 
-            const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x) * scale,
-                                              drawPosition.y + (anchorOffset.y) * scale};
-            // const glm::vec2 screenCoordinates{drawPosition.x + (anchorOffset.x + glyph->bearing.x) * scale,
-            //                                   drawPosition.y +
-            //                                       (anchorOffset.y + glyph->bearing.y - glyph->size.y) * scale};
-            const glm::vec2 size{fontSize * scale};
+            const glm::vec2 screenCoordinates{drawPosition.x + anchorOffset.x + glyph->bearing.x * scale,
+                                              drawPosition.y + anchorOffset.y +
+                                                  (glyph->bearing.y - glyph->size.y) * scale};
 
             glm::mat4 transform =
                 glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -1.0f));
-            transforms[workingIndex] = glm::scale(transform, glm::vec3(size.x, size.y, 0.0f));
+            transforms[workingIndex] = glm::scale(transform, glm::vec3(fontSize * scale, 0.0f));
             letterMap[workingIndex] = static_cast<int>(glyph->character);
 
-            drawPosition.x += fontSize.x * scale;
+            drawPosition.x += glyph->advance * scale;
             ++workingIndex;
 
             if (workingIndex == shader.maxInstances) {
@@ -215,7 +201,7 @@ namespace EconSimPlusPlus {
         float lineWidth{};
 
         for (const auto& character : text) {
-            [[maybe_unused]] const auto& glyph{glyphs.at(character)};
+            const auto& glyph{glyphs.at(character)};
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);
@@ -223,7 +209,7 @@ namespace EconSimPlusPlus {
                 lineWidth = 0.0f;
             }
             else {
-                lineWidth += fontSize.x;
+                lineWidth += glyph->advance;
             }
         }
 
