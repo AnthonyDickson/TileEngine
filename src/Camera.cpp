@@ -112,6 +112,7 @@ namespace EconSimPlusPlus {
         viewport = viewport_;
         projection = createProjectionMatrix(viewport_);
     }
+
     glm::mat4 Camera::createProjectionMatrix(const glm::vec2& viewport) {
         return glm::ortho(-viewport.x / 2.0f, viewport.x / 2.0f, -viewport.y / 2.0f, viewport.y / 2.0f, 0.1f, 1000.0f);
     }

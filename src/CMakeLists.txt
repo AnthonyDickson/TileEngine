@@ -1,10 +1,11 @@
 add_library(LibEconSimPlusPlus
         Camera.cpp
         DeadReckoningAlgorithm.cpp
-        Game.cpp
         Font.cpp
         FrameTimer.cpp
+        Game.cpp
         Glyph.cpp
+        GridLines.cpp
         InputState.cpp
         Shader.cpp
         Texture.cpp

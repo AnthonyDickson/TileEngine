@@ -101,7 +101,7 @@ namespace EconSimPlusPlus {
         return std::make_unique<TileMap>(std::move(texture), tileSize, tileMapSize, tiles);
     }
 
-    void TileMap::render(const Camera& camera) const {
+    void TileMap::render(const Camera& camera, const float z) const {
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
         const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.width),
                                            1.0f / static_cast<float>(sheetSize.height)};
@@ -135,7 +135,7 @@ namespace EconSimPlusPlus {
                 transforms[tileIndex] = glm::translate(
                     scale,
                     glm::vec3{(static_cast<float>(col) - static_cast<float>(mapSize.width) / 2.0f),
-                              (static_cast<float>(row) - static_cast<float>(mapSize.height) / 2.0f), 0.0});
+                              (static_cast<float>(row) - static_cast<float>(mapSize.height) / 2.0f), -z});
                 const auto tileID{tiles.at(row * mapSize.width + col)};
                 textureCoordinatesInstanced[tileIndex] = textureCoordinates[tileID];
 

@@ -66,7 +66,8 @@ namespace EconSimPlusPlus {
 
         /// Draw the tile map on screen.
         /// @param camera The camera to render the tile map with.
-        void render(const Camera& camera) const;
+        /// @param z The 'layer' to render the tile map on.
+        void render(const Camera& camera, float z = 0.0f) const;
 
     private:
         /// Generate the texture coordinates for a tile sheet.
