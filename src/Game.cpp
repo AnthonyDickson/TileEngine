@@ -59,14 +59,15 @@ namespace EconSimPlusPlus {
     void Game::render() const {
         glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // glEnable(GL_DEPTH_TEST);
-        // glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glEnable(GL_CULL_FACE);
-        tileMap->render(camera, 1.0f);
+
+        tileMap->render(camera, 0.0f);
     }
 
     void Game::run() {
@@ -107,15 +108,14 @@ namespace EconSimPlusPlus {
 
             renderTimer.startStep();
             render();
-            // TODO: Fix grid only showing with -z and show above text. Everything displays as expected if depth testing
-            // is turned off.
-            grid.render(camera, 99.0f);
+            grid.render(camera, 50.0f);
+
             renderTimer.endStep();
 
             const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                     updateTimer.average(), renderTimer.average())};
             const glm::vec3 position{-static_cast<float>(window->getWidth()) / 2.0f,
-                                     static_cast<float>(window->getHeight()) / 2.0f, 100.0f};
+                                     static_cast<float>(window->getHeight()) / 2.0f, 99.0f};
             font->render(frameTimeSummary, position, camera, fontSettings);
 
             window->postUpdate();

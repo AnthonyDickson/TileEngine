@@ -110,10 +110,13 @@ namespace EconSimPlusPlus {
 
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
                       const RenderSettings& settings) const {
+        // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
+        const auto cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.getPosition().z});
+
         shader.bind();
         shader.setUniform("text", 0);
         shader.setUniform("textColor", settings.color);
-        shader.setUniform("projection", camera.getPerspectiveMatrix());
+        shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * cameraViewZ);
         shader.setUniform("sdfThreshold", settings.sdfThreshold);
         shader.setUniform("edgeSmoothness", settings.edgeSmoothness);
         shader.setUniform("outlineSize", settings.outlineSize);
@@ -157,8 +160,8 @@ namespace EconSimPlusPlus {
                                                   (glyph->bearing.y - glyph->size.y) * scale};
 
             glm::mat4 transform =
-                glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, -drawPosition.z));
-            transforms[workingIndex] = glm::scale(transform, glm::vec3(fontSize * scale, 0.0f));
+                glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, drawPosition.z));
+            transforms[workingIndex] = glm::scale(transform, glm::vec3(fontSize * scale, 1.0f));
             letterMap[workingIndex] = static_cast<int>(glyph->character);
 
             drawPosition.x += glyph->advance * scale;

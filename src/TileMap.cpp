@@ -114,7 +114,7 @@ namespace EconSimPlusPlus {
         vbo.bind();
 
         constexpr glm::mat4 identity{1.0f};
-        const auto scale{glm::scale(identity, glm::vec3{tileSize.x, tileSize.y, 0.0})};
+        const auto scale{glm::scale(identity, glm::vec3{tileSize.x, tileSize.y, 1.0})};
         std::vector transforms(shader.maxInstances, identity);
         std::vector textureCoordinatesInstanced(shader.maxInstances, glm::vec2(0.f));
         int tileIndex{0};
@@ -135,7 +135,7 @@ namespace EconSimPlusPlus {
                 transforms[tileIndex] = glm::translate(
                     scale,
                     glm::vec3{(static_cast<float>(col) - static_cast<float>(mapSize.width) / 2.0f),
-                              (static_cast<float>(row) - static_cast<float>(mapSize.height) / 2.0f), -z});
+                                             (static_cast<float>(row) - static_cast<float>(mapSize.height) / 2.0f), z});
                 const auto tileID{tiles.at(row * mapSize.width + col)};
                 textureCoordinatesInstanced[tileIndex] = textureCoordinates[tileID];
 

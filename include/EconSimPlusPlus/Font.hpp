@@ -102,7 +102,7 @@ namespace EconSimPlusPlus {
         /// @param position Where to render the text in screen coordinates (pixels). Note that this corresponds to the
         /// bottom left corner of the text. The z-coordinate indicates the 'layer' to draw the text on.
         /// @param camera The camera to render the text with.
-        /// @param settings
+        /// @param settings The various settings that control the appearance of the rendered text.
         void render(std::string_view text, glm::vec3 position, const Camera& camera,
                     const RenderSettings& settings) const;
 
