@@ -32,18 +32,19 @@
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
     class TileMap {
+        /// The tile sheet texture.
         const std::unique_ptr<Texture> texture;
         /// The size (width and height) of a single tile in pixels.
         const glm::vec2 tileSize;
-        /// The size (width, height) of the tile sheet in tiles.
+        /// The size (width, height) of the tile sheet texture in tiles.
         const Size<int> sheetSize;
         /// The size (width, height) of the tile map in tiles.
         const Size<int> mapSize;
         /// The tiles of the tile map.
         const std::vector<int> tiles;
+
         /// Shader to render textured tiles.
         const Shader shader{"resource/shader/tile.vert", "resource/shader/tile.frag"};
-
         /// The vertex array for the tile quad.
         const VertexArray vao{};
         /// The vertex buffer for the tile quad.
@@ -63,6 +64,12 @@ namespace EconSimPlusPlus {
         /// @param yamlPath The path to a YAML formatted tile map document.
         /// @return A `TileMap` pointer.
         static std::unique_ptr<TileMap> create(const std::string& yamlPath);
+
+        /// The size (width, height) of the tile map in tiles.
+        [[nodiscard]] glm::ivec2 getMapSize() const;
+
+        /// The size (width and height) of a single tile in pixels.
+        [[nodiscard]] glm::vec2 getTileSize() const;
 
         /// Draw the tile map on screen.
         /// @param camera The camera to render the tile map with.

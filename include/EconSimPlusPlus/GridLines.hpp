@@ -43,8 +43,10 @@ namespace EconSimPlusPlus {
     public:
         /// Create a grid lines object.
         /// @param size The width and height of the grid in tiles.
-        /// @param cellSize The size (both width and height) of the cells in pixels.
-        GridLines(glm::ivec2 size, float cellSize);
+        /// @param cellSize The width and height of the cells in pixels.
+        GridLines(glm::ivec2 size, glm::vec2 cellSize);
+
+        GridLines(GridLines&&) = delete; // Prevent copy to avoid issues w/ OpenGL
 
         /// Draw the grid lines on screen.
         /// @param camera The camera to render the grid lines with.

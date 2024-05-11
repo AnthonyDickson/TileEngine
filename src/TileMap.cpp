@@ -101,6 +101,14 @@ namespace EconSimPlusPlus {
         return std::make_unique<TileMap>(std::move(texture), tileSize, tileMapSize, tiles);
     }
 
+    glm::ivec2 TileMap::getMapSize() const {
+        return {mapSize.width, mapSize.height};
+    }
+
+    glm::vec2 TileMap::getTileSize() const {
+        return tileSize;
+    }
+
     void TileMap::render(const Camera& camera, const float z) const {
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
         const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.width),

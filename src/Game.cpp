@@ -27,14 +27,14 @@
 
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/Game.hpp>
-#include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/Size.hpp>
 
 namespace EconSimPlusPlus {
     bool Game::isInitialised = false;
 
-    Game::Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_) :
-        window(std::move(window_)), tileMap(std::move(tileMap_)),
+    Game::Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_,
+               std::unique_ptr<GridLines> gridLines_) :
+        window(std::move(window_)), tileMap(std::move(tileMap_)), gridLines(std::move(gridLines_)),
         camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())},
                {0.0f, 0.0f, 100.0f}} {
         assert(!isInitialised && "Cannot have more than one instance of `Game`.");
@@ -44,8 +44,9 @@ namespace EconSimPlusPlus {
     Game Game::create(Size<int> windowSize) {
         auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
         auto tileMap{TileMap::create("resource/terrain.yaml")};
+        auto gridLines{std::make_unique<GridLines>(tileMap->getMapSize(), tileMap->getTileSize())};
 
-        return {std::move(window), std::move(tileMap)};
+        return {std::move(window), std::move(tileMap), std::move(gridLines)};
     }
 
     void Game::update(const float deltaTime) {
@@ -68,6 +69,7 @@ namespace EconSimPlusPlus {
         glEnable(GL_CULL_FACE);
 
         tileMap->render(camera, 0.0f);
+        gridLines->render(camera, 50.0f);
     }
 
     void Game::run() {
@@ -84,9 +86,6 @@ namespace EconSimPlusPlus {
                                                     .anchor = Font::Anchor::topLeft,
                                                     .outlineSize = 0.3f,
                                                     .outlineColor = {0.0f, 0.0f, 0.0f}};
-
-        // TODO: Make grid instance member.
-        GridLines grid{{64, 64}, 32.0f};
 
         while (true) {
             const auto currentTime{std::chrono::steady_clock::now()};
@@ -108,8 +107,6 @@ namespace EconSimPlusPlus {
 
             renderTimer.startStep();
             render();
-            grid.render(camera, 50.0f);
-
             renderTimer.endStep();
 
             const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",

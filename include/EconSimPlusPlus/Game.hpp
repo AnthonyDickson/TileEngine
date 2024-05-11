@@ -23,6 +23,7 @@
 #define GAME_H
 
 #include <EconSimPlusPlus/Font.hpp>
+#include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
@@ -35,6 +36,8 @@ namespace EconSimPlusPlus {
 
         /// The game 'map'.
         std::unique_ptr<TileMap> tileMap;
+        /// 2D grid lines.
+        std::unique_ptr<GridLines> gridLines;
         /// The render camera.
         Camera camera;
         /// The font for rendering text on screen.
@@ -46,7 +49,8 @@ namespace EconSimPlusPlus {
         /// Create a new game instance.
         /// @param window_ The window to display the game on.
         /// @param tileMap_ The game map made up of square tiles.
-        Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_);
+        /// @param gridLines_ 2D grid lines to draw over the tile map.
+        Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_, std::unique_ptr<GridLines> gridLines_);
 
     public:
         /// Create a new game instance.

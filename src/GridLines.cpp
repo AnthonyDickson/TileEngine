@@ -26,13 +26,13 @@
 #include <EconSimPlusPlus/GridLines.hpp>
 
 namespace EconSimPlusPlus {
-    GridLines::GridLines(const glm::ivec2 size, const float cellSize) {
+    GridLines::GridLines(const glm::ivec2 size, const glm::vec2 cellSize) {
         std::vector<float> vertices{};
         const auto halfSize{static_cast<glm::vec2>(size) * cellSize * 0.5f};
 
         // Horizontal Lines
         for (int row = 0; row <= size.y; ++row) {
-            const float y{static_cast<float>(row) * cellSize - halfSize.y};
+            const float y{static_cast<float>(row) * cellSize.y - halfSize.y};
             // Start Point
             vertices.push_back(-halfSize.x);
             vertices.push_back(y);
@@ -43,7 +43,7 @@ namespace EconSimPlusPlus {
 
         // Vertical Lines
         for (int col = 0; col <= size.x; ++col) {
-            const float x{static_cast<float>(col) * cellSize - halfSize.x};
+            const float x{static_cast<float>(col) * cellSize.x - halfSize.x};
             // Start Point
             vertices.push_back(x);
             vertices.push_back(-halfSize.y);
