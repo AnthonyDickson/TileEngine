@@ -32,7 +32,7 @@
 
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
-    class TileMap final : GameObject {
+    class TileMap final : public GameObject {
         /// The tile sheet texture.
         const std::unique_ptr<Texture> texture;
         /// The size (width and height) of a single tile in pixels.

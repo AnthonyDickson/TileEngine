@@ -32,7 +32,7 @@
 
 namespace EconSimPlusPlus {
     /// Draws 2D grid lines.
-    class GridLines final : GameObject {
+    class GridLines final : public GameObject {
         /// The vertex array object.
         const VertexArray vao{};
         /// The vertex buffer object.
