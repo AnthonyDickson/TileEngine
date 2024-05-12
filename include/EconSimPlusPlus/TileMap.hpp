@@ -23,6 +23,7 @@
 #define TILEMAP_H
 
 #include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/GameObject.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/Size.hpp>
 #include <EconSimPlusPlus/Texture.hpp>
@@ -31,7 +32,7 @@
 
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
-    class TileMap {
+    class TileMap final : GameObject {
         /// The tile sheet texture.
         const std::unique_ptr<Texture> texture;
         /// The size (width and height) of a single tile in pixels.

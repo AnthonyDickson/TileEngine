@@ -55,13 +55,15 @@ namespace EconSimPlusPlus {
         vao.bind();
         vbo.bind();
         vbo.loadData(vertices, {2});
+
+        setSize({static_cast<glm::vec2>(size), 1.0f});
     }
 
     void GridLines::render(const Camera& camera, const float z) const {
         shader.bind();
         shader.setUniform("color", glm::vec3{1.0f});
         shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * camera.getViewMatrix());
-        shader.setUniform("transform", glm::translate(glm::mat4{1.0f}, glm::vec3{0.0f, 0.0f, z}));
+        shader.setUniform("transform", glm::translate(m_transform, glm::vec3{0.0f, 0.0f, z}));
         vao.bind();
         vbo.drawArrays(GL_LINES);
     }

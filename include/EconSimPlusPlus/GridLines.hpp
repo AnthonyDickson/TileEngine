@@ -25,14 +25,14 @@
 #include "glm/vec2.hpp"
 
 #include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/GameObject.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
-
-#include "VertexBuffer.hpp"
+#include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     /// Draws 2D grid lines.
-    class GridLines {
+    class GridLines final : GameObject {
         /// The vertex array object.
         const VertexArray vao{};
         /// The vertex buffer object.

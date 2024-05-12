@@ -29,6 +29,9 @@
 #include <EconSimPlusPlus/Game.hpp>
 #include <EconSimPlusPlus/Size.hpp>
 
+// TODO: Change classes to use m_ prefix for data members.
+// TODO: Change classes use data member names minus the m_ prefix for getter functions.
+// TODO: Ensure classes use "set" plus data member names minus the m_ prefix for setter functions.
 namespace EconSimPlusPlus {
     bool Game::isInitialised = false;
 
@@ -55,6 +58,10 @@ namespace EconSimPlusPlus {
         }
 
         camera.update(deltaTime, window->getInputState());
+
+        // TODO: Get tile map and grid lines to react to mouse over and mouse click
+        // TODO: Set up observer/observable pattern to propogate input events to game objects.
+        // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor position in both screen and world coordinates?
     }
 
     void Game::render() const {

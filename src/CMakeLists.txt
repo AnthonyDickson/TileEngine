@@ -4,6 +4,7 @@ add_library(LibEconSimPlusPlus
         Font.cpp
         FrameTimer.cpp
         Game.cpp
+        GameObject.cpp
         Glyph.cpp
         GridLines.cpp
         InputState.cpp

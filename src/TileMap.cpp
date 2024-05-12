@@ -39,6 +39,9 @@ namespace EconSimPlusPlus {
         const std::vector vertexData{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
         vao.bind();
         vbo.loadData(vertexData, {2});
+
+        setTransform(glm::scale(glm::mat4(1.0f), {tileSize, 1.0f}));
+        setSize({texture->resolution, 1.0f});
     }
 
     std::vector<glm::vec2> TileMap::generateTextureCoordinates(const Size<int> sheetSize) {
@@ -121,10 +124,8 @@ namespace EconSimPlusPlus {
         vao.bind();
         vbo.bind();
 
-        constexpr glm::mat4 identity{1.0f};
-        const auto scale{glm::scale(identity, glm::vec3{tileSize.x, tileSize.y, 1.0})};
-        std::vector transforms(shader.maxInstances, identity);
-        std::vector textureCoordinatesInstanced(shader.maxInstances, glm::vec2(0.f));
+        std::vector<glm::mat4> transforms(shader.maxInstances);
+        std::vector<glm::vec2> textureCoordinatesInstanced(shader.maxInstances);
         int tileIndex{0};
 
         auto renderFn = [&] {
@@ -140,9 +141,9 @@ namespace EconSimPlusPlus {
 
         for (int row = rowStart; row < rowEnd; ++row) {
             for (int col = colStart; col < colEnd; ++col) {
-                transforms[tileIndex] = glm::translate(
-                    scale,
-                    glm::vec3{(static_cast<float>(col) - static_cast<float>(mapSize.width) / 2.0f),
+                transforms[tileIndex] =
+                    glm::translate(m_transform,
+                                   glm::vec3{(static_cast<float>(col) - static_cast<float>(mapSize.width) / 2.0f),
                                              (static_cast<float>(row) - static_cast<float>(mapSize.height) / 2.0f), z});
                 const auto tileID{tiles.at(row * mapSize.width + col)};
                 textureCoordinatesInstanced[tileIndex] = textureCoordinates[tileID];
