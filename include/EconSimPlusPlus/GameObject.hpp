@@ -22,7 +22,7 @@
 #ifndef GAMEOBJECT_HPP
 #define GAMEOBJECT_HPP
 
-#include "../../cmake-build-release/_deps/glm-src/glm/matrix.hpp"
+#include "glm/matrix.hpp"
 
 namespace EconSimPlusPlus {
 
@@ -54,9 +54,9 @@ namespace EconSimPlusPlus {
         void setSize(glm::vec3 size);
 
         /// Check whether a point is contained in the object's axis-aligned bounding box.
-        /// @param point The 3D point to test.
+        /// @param point The 2D point to test.
         /// @return Whether the point interects the object.
-        [[nodiscard]] bool contains(glm::vec3 point) const;
+        [[nodiscard]] bool contains(glm::vec2 point) const;
     };
 
 } // namespace EconSimPlusPlus
