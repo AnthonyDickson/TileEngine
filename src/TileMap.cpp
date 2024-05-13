@@ -43,7 +43,7 @@ namespace EconSimPlusPlus {
         glm::mat4 transform{glm::scale(glm::mat4(1.0f), {tileSize, 1.0f})};
         transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
         setTransform(transform);
-        setSize({texture->resolution, 1.0f});
+        setSize({tileSize * static_cast<glm::vec2>(mapSize), 1.0f});
     }
 
     std::vector<glm::vec2> TileMap::generateTextureCoordinates(const Size<int> sheetSize) {

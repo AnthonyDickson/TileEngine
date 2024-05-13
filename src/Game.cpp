@@ -19,7 +19,6 @@
 // Created by Anthony Dickson on 13/04/2024.
 //
 
-#include <format>
 #include <iostream>
 #include <thread>
 #include <utility>
@@ -65,7 +64,6 @@ namespace EconSimPlusPlus {
         if (const InputState input{window->getInputState()}; input.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             const glm::vec2 cursorPos{camera.toWorld(input.getMousePosition())};
 
-            /// TODO: Get this working
             if (tileMap->contains(cursorPos)) {
                 std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x,
                                          cursorPos.y);
