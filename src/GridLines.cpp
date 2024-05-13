@@ -56,6 +56,7 @@ namespace EconSimPlusPlus {
         vbo.bind();
         vbo.loadData(vertices, {2});
 
+        setTransform(glm::translate(m_transform, {-0.5f * scaledSize, 0.0}));
         setSize({scaledSize, 1.0f});
     }
 
