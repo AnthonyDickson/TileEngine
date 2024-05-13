@@ -40,7 +40,7 @@ namespace EconSimPlusPlus {
         /// The size (width, height) of the tile sheet texture in tiles.
         const Size<int> sheetSize;
         /// The size (width, height) of the tile map in tiles.
-        const Size<int> mapSize;
+        const glm::ivec2 mapSize;
         /// The tiles of the tile map.
         const std::vector<int> tiles;
 
@@ -58,7 +58,7 @@ namespace EconSimPlusPlus {
         /// @param tileSize_ The size (width, height) of a single tile in pixels.
         /// @param mapSize_ The size (width, height) of the tile map in tiles.
         /// @param tiles_ The tiles in the tile map by integer ID. Zero indicates an empty tile.
-        TileMap(std::unique_ptr<Texture> texture_, glm::vec2 tileSize_, Size<int> mapSize_,
+        TileMap(std::unique_ptr<Texture> texture_, glm::vec2 tileSize_, glm::ivec2 mapSize_,
                 const std::vector<int>& tiles_);
 
         /// Construct a `TileMap` object from a YAML file.

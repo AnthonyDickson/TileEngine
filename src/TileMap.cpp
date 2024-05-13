@@ -30,7 +30,7 @@
 
 namespace EconSimPlusPlus {
 
-    TileMap::TileMap(std::unique_ptr<Texture> texture_, const glm::vec2 tileSize_, const Size<int> mapSize_,
+    TileMap::TileMap(std::unique_ptr<Texture> texture_, const glm::vec2 tileSize_, const glm::ivec2 mapSize_,
                      const std::vector<int>& tiles_) :
         texture(std::move(texture_)), tileSize(tileSize_),
         sheetSize{texture->resolution.x / static_cast<int>(tileSize_.x),
@@ -40,7 +40,9 @@ namespace EconSimPlusPlus {
         vao.bind();
         vbo.loadData(vertexData, {2});
 
-        setTransform(glm::scale(glm::mat4(1.0f), {tileSize, 1.0f}));
+        glm::mat4 transform{glm::scale(glm::mat4(1.0f), {tileSize, 1.0f})};
+        // transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
+        setTransform(transform);
         setSize({texture->resolution, 1.0f});
     }
 
@@ -64,23 +66,19 @@ namespace EconSimPlusPlus {
     }
 
     TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
-        const auto cameraPosition{camera.getPosition()};
-        const glm::vec2 cameraPosition2D{cameraPosition.x, cameraPosition.y};
-        const glm::vec2 viewport{camera.getViewportSize()};
-        const glm::vec2 mapSizeVec{mapSize.width, mapSize.height};
+        // TODO: Get this working for tile map with non-zero translation.
+        const auto [bottomLeft, topRight]{camera.viewport()};
 
-        const auto viewBottomLeft{cameraPosition2D - viewport / 2.0f};
-        const auto viewTopRight{cameraPosition2D + viewport / 2.0f};
-        const auto gridOffsetMin{viewBottomLeft / tileSize};
-        const auto gridOffsetMax{viewTopRight / tileSize};
-        const glm::vec2 gridCoordinatesMin{gridOffsetMin + mapSizeVec / 2.0f};
-        const glm::vec2 gridCoordinatesMax{gridOffsetMax + mapSizeVec / 2.0f};
+        const auto gridOffsetMin{bottomLeft / tileSize};
+        const auto gridOffsetMax{topRight / tileSize};
+        const glm::vec2 gridCoordinatesMin{gridOffsetMin};
+        const glm::vec2 gridCoordinatesMax{gridOffsetMax};
 
         const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
-        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + 1, mapSize.height);
+        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + 1, mapSize.y);
 
         const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
-        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.width);
+        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.x);
 
         return {rowStart, rowEnd, colStart, colEnd};
     }
@@ -98,14 +96,14 @@ namespace EconSimPlusPlus {
 
         const auto tileMapNode{tileMapConfig["tile-map"]};
         // ReSharper disable once CppTemplateArgumentsCanBeDeduced
-        const Size<int> tileMapSize{tileMapNode["width"].as<int>(), tileMapNode["height"].as<int>()};
+        const glm::ivec2 tileMapSize{tileMapNode["width"].as<int>(), tileMapNode["height"].as<int>()};
         const auto tiles{tileMapNode["tiles"].as<std::vector<int>>()};
 
         return std::make_unique<TileMap>(std::move(texture), tileSize, tileMapSize, tiles);
     }
 
     glm::ivec2 TileMap::getMapSize() const {
-        return {mapSize.width, mapSize.height};
+        return mapSize;
     }
 
     glm::vec2 TileMap::getTileSize() const {
@@ -142,10 +140,8 @@ namespace EconSimPlusPlus {
         for (int row = rowStart; row < rowEnd; ++row) {
             for (int col = colStart; col < colEnd; ++col) {
                 transforms[tileIndex] =
-                    glm::translate(m_transform,
-                                   glm::vec3{(static_cast<float>(col) - static_cast<float>(mapSize.width) / 2.0f),
-                                             (static_cast<float>(row) - static_cast<float>(mapSize.height) / 2.0f), z});
-                const auto tileID{tiles.at(row * mapSize.width + col)};
+                    glm::translate(m_transform, glm::vec3{static_cast<float>(col), static_cast<float>(row), z});
+                const auto tileID{tiles.at(row * mapSize.x + col)};
                 textureCoordinatesInstanced[tileIndex] = textureCoordinates[tileID];
 
                 ++tileIndex;
