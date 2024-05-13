@@ -51,6 +51,11 @@ namespace EconSimPlusPlus {
         return {position2D - 0.5f * m_viewport, position2D + 0.5f * m_viewport};
     }
 
+    glm::vec2 Camera::toWorld(const glm::vec2 screenCoordinates) const {
+        return {screenCoordinates.x - 0.5f * m_viewport.x + position.x,
+                -screenCoordinates.y + 0.5f * m_viewport.y + position.y};
+    }
+
     void Camera::update(const float deltaTime, const InputState& inputState) {
         constexpr float speed = 512.0f;
 

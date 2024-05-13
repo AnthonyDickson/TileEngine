@@ -22,8 +22,8 @@
 #ifndef ECONSIMPLUSPLUS_CAMERA_H
 #define ECONSIMPLUSPLUS_CAMERA_H
 
-#include "glm/vec3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
+#include "glm/vec3.hpp"
 
 #include <EconSimPlusPlus/Direction.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
@@ -66,6 +66,13 @@ namespace EconSimPlusPlus {
         /// Get the visible area from the camera after all transforms.
         /// @return The viewport extents.
         [[nodiscard]] Viewport viewport() const;
+
+        /// Convert screen space coordinates to world space coordinates.
+        /// @param screenCoordinates Coordinates in screen space starting the from the top left with +y pointing down.
+        /// @return 2D world coordinates.
+        /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
+        /// right-handed coordinate system is used.
+        [[nodiscard]] glm::vec2 toWorld(glm::vec2 screenCoordinates) const;
 
         /// Update the camera.
         /// @param deltaTime The size of the step to take in terms of time (seconds).

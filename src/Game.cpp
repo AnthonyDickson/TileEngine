@@ -20,6 +20,7 @@
 //
 
 #include <format>
+#include <iostream>
 #include <thread>
 #include <utility>
 
@@ -32,6 +33,8 @@
 // TODO: Change classes to use m_ prefix for data members.
 // TODO: Change classes use data member names minus the m_ prefix for getter functions.
 // TODO: Ensure classes use "set" plus data member names minus the m_ prefix for setter functions.
+// TODO: Ensure auto is only used when type is written out in same line (i.e., don't use for returned types).
+// TODO: Replace Size<T> with glm::vec2 or glm::ivec2.
 namespace EconSimPlusPlus {
     bool Game::isInitialised = false;
 
@@ -59,6 +62,20 @@ namespace EconSimPlusPlus {
 
         camera.update(deltaTime, window->getInputState());
 
+        if (const InputState input{window->getInputState()}; input.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            const glm::vec2 cursorPos{camera.toWorld(input.getMousePosition())};
+
+            /// TODO: Get this working
+            if (tileMap->contains(cursorPos)) {
+                std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x,
+                                         cursorPos.y);
+            }
+
+            if (gridLines->contains(cursorPos)) {
+                std::cout << std::format("Mouse clicked over grid lines at ({:.2f}, {:.2f}).\n", cursorPos.x,
+                                         cursorPos.y);
+            }
+        }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
         // TODO: Set up observer/observable pattern to propogate input events to game objects.
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor position in both screen and world coordinates?
