@@ -27,7 +27,6 @@
 #include "GLFW/glfw3.h"
 
 #include <EconSimPlusPlus/InputState.hpp>
-#include <EconSimPlusPlus/Size.hpp>
 
 namespace EconSimPlusPlus {
     /// Handles the basic functions of an OpenGL window.
@@ -87,7 +86,7 @@ namespace EconSimPlusPlus {
 
         /// Get the size of the window.
         /// @return The size (width, height) of the window in pixels.
-        [[nodiscard]] Size<int> getSize() const;
+        [[nodiscard]] glm::ivec2 getSize() const;
 
         /// Check whether the user has resized the window since the last update step.
         /// @return A bool indicating whether the user has resized the window.

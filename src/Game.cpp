@@ -27,13 +27,11 @@
 
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/Game.hpp>
-#include <EconSimPlusPlus/Size.hpp>
 
 // TODO: Change classes to use m_ prefix for data members.
 // TODO: Change classes use data member names minus the m_ prefix for getter functions.
 // TODO: Ensure classes use "set" plus data member names minus the m_ prefix for setter functions.
 // TODO: Ensure auto is only used when type is written out in same line (i.e., don't use for returned types).
-// TODO: Replace Size<T> with glm::vec2 or glm::ivec2.
 namespace EconSimPlusPlus {
     bool Game::isInitialised = false;
 
@@ -46,8 +44,8 @@ namespace EconSimPlusPlus {
         isInitialised = true;
     }
 
-    Game Game::create(Size<int> windowSize) {
-        auto window{std::make_unique<Window>(windowSize.width, windowSize.height, "EconSimPlusPlus")};
+    Game Game::create(glm::ivec2 windowSize) {
+        auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
         auto tileMap{TileMap::create("resource/terrain.yaml")};
         auto gridLines{std::make_unique<GridLines>(tileMap->getMapSize(), tileMap->getTileSize())};
 

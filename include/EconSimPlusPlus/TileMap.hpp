@@ -25,7 +25,6 @@
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/GameObject.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
-#include <EconSimPlusPlus/Size.hpp>
 #include <EconSimPlusPlus/Texture.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
@@ -38,7 +37,7 @@ namespace EconSimPlusPlus {
         /// The size (width and height) of a single tile in pixels.
         const glm::vec2 tileSize;
         /// The size (width, height) of the tile sheet texture in tiles.
-        const Size<int> sheetSize;
+        const glm::ivec2 sheetSize;
         /// The size (width, height) of the tile map in tiles.
         const glm::ivec2 mapSize;
         /// The tiles of the tile map.
@@ -83,7 +82,7 @@ namespace EconSimPlusPlus {
         /// elements.
         /// @param sheetSize The width and height of the tile sheet in tiles.
         /// @return The UV coordinates for each tile (four elements each).
-        static std::vector<glm::vec2> generateTextureCoordinates(Size<int> sheetSize);
+        static std::vector<glm::vec2> generateTextureCoordinates(glm::ivec2 sheetSize);
 
         /// Bounds of a tile grid.
         struct GridBounds {

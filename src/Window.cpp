@@ -89,7 +89,7 @@ namespace EconSimPlusPlus {
         return windowHeight;
     }
 
-    Size<int> Window::getSize() const {
+    glm::ivec2 Window::getSize() const {
         return {windowWidth, windowHeight};
     }
 

@@ -46,15 +46,15 @@ namespace EconSimPlusPlus {
         setSize({tileSize * static_cast<glm::vec2>(mapSize), 1.0f});
     }
 
-    std::vector<glm::vec2> TileMap::generateTextureCoordinates(const Size<int> sheetSize) {
-        const auto width{1.0f / static_cast<float>(sheetSize.width)};
-        const auto height{1.0f / static_cast<float>(sheetSize.height)};
+    std::vector<glm::vec2> TileMap::generateTextureCoordinates(const glm::ivec2 sheetSize) {
+        const auto width{1.0f / static_cast<float>(sheetSize.x)};
+        const auto height{1.0f / static_cast<float>(sheetSize.y)};
 
         std::vector<glm::vec2> textureCoordinates{};
-        textureCoordinates.reserve(sheetSize.width * sheetSize.height);
+        textureCoordinates.reserve(sheetSize.x * sheetSize.y);
 
-        for (int row = 0; row < sheetSize.height; ++row) {
-            for (int col = 0; col < sheetSize.width; ++col) {
+        for (int row = 0; row < sheetSize.y; ++row) {
+            for (int col = 0; col < sheetSize.x; ++col) {
                 const auto u{static_cast<float>(col) * width};
                 const auto v{static_cast<float>(row) * height};
 
@@ -114,8 +114,8 @@ namespace EconSimPlusPlus {
 
     void TileMap::render(const Camera& camera, const float z) const {
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
-        const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.width),
-                                           1.0f / static_cast<float>(sheetSize.height)};
+        const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.x),
+                                           1.0f / static_cast<float>(sheetSize.y)};
 
         shader.bind();
         shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * camera.getViewMatrix());

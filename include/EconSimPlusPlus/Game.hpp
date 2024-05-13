@@ -56,7 +56,7 @@ namespace EconSimPlusPlus {
         /// Create a new game instance.
         /// @param windowSize The width and height of the window to display the game in pixels.
         /// @return A game instance.
-        static Game create(Size<int> windowSize);
+        static Game create(glm::ivec2 windowSize);
 
         Game(Game&) = delete;
         Game(Game&&) = delete;
