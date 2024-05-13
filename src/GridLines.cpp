@@ -28,35 +28,35 @@
 namespace EconSimPlusPlus {
     GridLines::GridLines(const glm::ivec2 size, const glm::vec2 cellSize) {
         std::vector<float> vertices{};
-        const auto halfSize{static_cast<glm::vec2>(size) * cellSize * 0.5f};
+        const auto scaledSize{static_cast<glm::vec2>(size) * cellSize};
 
         // Horizontal Lines
         for (int row = 0; row <= size.y; ++row) {
-            const float y{static_cast<float>(row) * cellSize.y - halfSize.y};
+            const float y{static_cast<float>(row) * cellSize.y};
             // Start Point
-            vertices.push_back(-halfSize.x);
+            vertices.push_back(0);
             vertices.push_back(y);
             // End Point
-            vertices.push_back(halfSize.x);
+            vertices.push_back(scaledSize.x);
             vertices.push_back(y);
         }
 
         // Vertical Lines
         for (int col = 0; col <= size.x; ++col) {
-            const float x{static_cast<float>(col) * cellSize.x - halfSize.x};
+            const float x{static_cast<float>(col) * cellSize.x};
             // Start Point
             vertices.push_back(x);
-            vertices.push_back(-halfSize.y);
+            vertices.push_back(0);
             // End Point
             vertices.push_back(x);
-            vertices.push_back(halfSize.y);
+            vertices.push_back(scaledSize.y);
         }
 
         vao.bind();
         vbo.bind();
         vbo.loadData(vertices, {2});
 
-        setSize({static_cast<glm::vec2>(size), 1.0f});
+        setSize({scaledSize, 1.0f});
     }
 
     void GridLines::render(const Camera& camera, const float z) const {
