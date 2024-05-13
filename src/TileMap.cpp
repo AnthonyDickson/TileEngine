@@ -41,7 +41,7 @@ namespace EconSimPlusPlus {
         vbo.loadData(vertexData, {2});
 
         glm::mat4 transform{glm::scale(glm::mat4(1.0f), {tileSize, 1.0f})};
-        // transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
+        transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
         setTransform(transform);
         setSize({texture->resolution, 1.0f});
     }
@@ -66,11 +66,11 @@ namespace EconSimPlusPlus {
     }
 
     TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
-        // TODO: Get this working for tile map with non-zero translation.
         const auto [bottomLeft, topRight]{camera.viewport()};
+        const glm::vec2 position{m_transform[3][0], m_transform[3][1]};
 
-        const auto gridOffsetMin{bottomLeft / tileSize};
-        const auto gridOffsetMax{topRight / tileSize};
+        const auto gridOffsetMin{(bottomLeft - position) / tileSize};
+        const auto gridOffsetMax{(topRight - position) / tileSize};
         const glm::vec2 gridCoordinatesMin{gridOffsetMin};
         const glm::vec2 gridCoordinatesMax{gridOffsetMax};
 
