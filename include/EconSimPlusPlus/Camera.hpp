@@ -23,17 +23,17 @@
 #define ECONSIMPLUSPLUS_CAMERA_H
 
 #include "glm/vec3.hpp"
-
 #include "glm/ext/matrix_float4x4.hpp"
 
 #include <EconSimPlusPlus/Direction.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
+#include <EconSimPlusPlus/Viewport.hpp>
 
 namespace EconSimPlusPlus {
     /// An object used to manipulate the view of a scene in OpenGL.
     class Camera {
         /// The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport.
-        glm::vec2 viewport;
+        glm::vec2 m_viewport;
         /// The position of the camera in world space.
         glm::vec3 position{};
         /// The projection matrix (e.g., perspective or orthographic).
@@ -62,6 +62,10 @@ namespace EconSimPlusPlus {
         /// Get the viewport size.
         /// @return the width and height in pixels.
         [[nodiscard]] glm::vec2 getViewportSize() const;
+
+        /// Get the visible area from the camera after all transforms.
+        /// @return The viewport extents.
+        [[nodiscard]] Viewport viewport() const;
 
         /// Update the camera.
         /// @param deltaTime The size of the step to take in terms of time (seconds).

@@ -26,7 +26,7 @@
 
 namespace EconSimPlusPlus {
     Camera::Camera(const glm::vec2 viewport_, const glm::vec3 position_) :
-        viewport(viewport_), position(position_), projection(createProjectionMatrix(viewport_)) {
+        m_viewport(viewport_), position(position_), projection(createProjectionMatrix(viewport_)) {
     }
 
     glm::mat4 Camera::getPerspectiveMatrix() const {
@@ -42,8 +42,15 @@ namespace EconSimPlusPlus {
     }
 
     glm::vec2 Camera::getViewportSize() const {
-        return viewport;
+        return m_viewport;
     }
+
+    Viewport Camera::viewport() const {
+        const glm::vec2 position2D{position.x, position.y};
+
+        return {position2D - 0.5f * m_viewport, position2D + 0.5f * m_viewport};
+    }
+
     void Camera::update(const float deltaTime, const InputState& inputState) {
         constexpr float speed = 512.0f;
 
@@ -109,7 +116,7 @@ namespace EconSimPlusPlus {
     }
 
     void Camera::onWindowResize(const glm::vec2 viewport_) {
-        viewport = viewport_;
+        m_viewport = viewport_;
         projection = createProjectionMatrix(viewport_);
     }
 
