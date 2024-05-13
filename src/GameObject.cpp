@@ -37,17 +37,18 @@ namespace EconSimPlusPlus {
     }
 
     void GameObject::setSize(const glm::vec3 size) {
-        assert(glm::greaterThanEqual(size, 1.0f) && "All components of size must be greater than or equal to 1.0.");
+        assert(glm::all(glm::greaterThanEqual(size, glm::vec3{1.0f})) &&
+               "All components of size must be greater than or equal to 1.0.");
         m_size = size;
     }
 
-    bool GameObject::contains(glm::vec3 point) const {
-        for (int axis = 0; axis < 3; ++axis) {
+    bool GameObject::contains(glm::vec2 point) const {
+        for (int axis = 0; axis < 2; ++axis) {
             constexpr int translationCol = 3;
             const bool exceedsMinExtent = point[axis] < m_transform[translationCol][axis];
             // ReSharper disable once CppTooWideScopeInitStatement
             const bool exceedsMaxExtent =
-                point[axis] > m_transform[translationCol][axis] + m_transform[axis][axis] * m_size[axis];
+                point[axis] > m_transform[translationCol][axis] + m_size[axis];
 
             if (exceedsMinExtent or exceedsMaxExtent) {
                 return false;
