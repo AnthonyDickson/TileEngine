@@ -26,8 +26,7 @@
 
 namespace EconSimPlusPlus {
     /// Represents a single character in a TrueType font.
-    class Glyph {
-    public:
+    struct Glyph {
         /// The character this glyph represents.
         const unsigned char character;
         /// The width and height of the character.
