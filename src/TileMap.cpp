@@ -69,16 +69,18 @@ namespace EconSimPlusPlus {
         const auto [bottomLeft, topRight]{camera.viewport()};
         const glm::vec2 position{m_transform[3][0], m_transform[3][1]};
 
-        const auto gridOffsetMin{(bottomLeft - position) / tileSize};
-        const auto gridOffsetMax{(topRight - position) / tileSize};
-        const glm::vec2 gridCoordinatesMin{gridOffsetMin};
-        const glm::vec2 gridCoordinatesMax{gridOffsetMax};
+        const auto gridCoordinatesMin{(bottomLeft - position) / tileSize};
+        const auto gridCoordinatesMax{(topRight - position) / tileSize};
+
+        // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
+        // appearing' only once they are fully in view.
+        constexpr int padding{1};
 
         const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
-        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + 1, mapSize.y);
+        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + padding, mapSize.y);
 
         const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
-        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + 1, mapSize.x);
+        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + padding, mapSize.x);
 
         return {rowStart, rowEnd, colStart, colEnd};
     }
