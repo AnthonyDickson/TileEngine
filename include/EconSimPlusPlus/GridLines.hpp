@@ -38,7 +38,7 @@ namespace EconSimPlusPlus {
         /// The vertex buffer object.
         VertexBuffer vbo{};
         /// The shader for drawing grid lines.
-        const Shader shader{"resource/shader/grid.vert", "resource/shader/grid.frag"};
+        const Shader shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
 
     public:
         /// Create a grid lines object.

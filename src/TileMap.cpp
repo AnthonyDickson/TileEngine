@@ -124,8 +124,8 @@ namespace EconSimPlusPlus {
         vao.bind();
         vbo.bind();
 
-        std::vector<glm::mat4> transforms(shader.maxInstances);
-        std::vector<glm::vec2> textureCoordinatesInstanced(shader.maxInstances);
+        std::vector<glm::mat4> transforms(shader.maxInstances());
+        std::vector<glm::vec2> textureCoordinatesInstanced(shader.maxInstances());
         int tileIndex{0};
 
         auto renderFn = [&] {
@@ -148,7 +148,7 @@ namespace EconSimPlusPlus {
 
                 ++tileIndex;
 
-                if (tileIndex == shader.maxInstances) {
+                if (tileIndex == shader.maxInstances()) {
                     renderFn();
                     tileIndex = 0;
                 }

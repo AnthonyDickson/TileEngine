@@ -42,7 +42,7 @@ namespace EconSimPlusPlus {
         /// The vertex buffer for the text geometry.
         std::unique_ptr<VertexBuffer> vbo;
         /// The shader for rendering text via OpenGL.
-        const Shader shader{"resource/shader/text.vert", "resource/shader/text.frag"};
+        const Shader shader{Shader::create("resource/shader/text.vert", "resource/shader/text.frag")};
 
         /// The texture array that holds the textures for each glyph.
         const std::unique_ptr<TextureArray> textureArray;

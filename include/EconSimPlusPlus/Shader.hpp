@@ -27,19 +27,19 @@
 namespace EconSimPlusPlus {
     /// Handles the loading, compilation, linking and usage of an OpenGL shader program.
     class Shader {
-        /// The ID of the shader program in OpenGL.
-        unsigned int shaderProgramID{};
-
     public:
-        /// The max number of instances supported by the shader.
-        const int maxInstances;
-
-        /// Load and compile GLSL shaders from disk.
+        /// Load, compile and link GLSL shaders from disk.
         /// @param vertexShaderSourcePath The path to the vertex shader source code.
         /// @param fragmentShaderSourcePath The path to the fragment shader source code.
-        /// @param maxInstances_ The max number of instances that can be used at once.
-        Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath,
-               int maxInstances_ = 128);
+        /// @param maxInstances The max number of instances that can be used at once.
+        /// @return A Shader object for using the compiled shader program.
+        static Shader create(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath,
+                             int maxInstances = 128);
+
+        /// Create a Shader object.
+        /// @param shaderProgramID The ID of the shader program in OpenGL.
+        /// @param maxInstances The max number of instances supported by the shader.
+        Shader(unsigned int shaderProgramID, int maxInstances);
 
         /// Delete copy constructor to avoid OpenGL issues.
         Shader(Shader&) = delete;
@@ -48,6 +48,9 @@ namespace EconSimPlusPlus {
 
         /// Clean up OpenGL related stuff.
         ~Shader();
+
+        /// Get the max number of instances supported by the shader.
+        int maxInstances() const;
 
         /// Activate the shader program.
         void bind() const;
@@ -86,6 +89,12 @@ namespace EconSimPlusPlus {
         /// @param name The name of the uniform.
         /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, const glm::mat4x4& value) const;
+
+    private:
+        /// The ID of the shader program in OpenGL.
+        const unsigned int m_shaderProgramID{};
+        /// The max number of instances supported by the shader.
+        const int m_maxInstances;
     };
 } // namespace EconSimPlusPlus
 

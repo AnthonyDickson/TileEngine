@@ -30,7 +30,8 @@
 #include <EconSimPlusPlus/Shader.hpp>
 
 namespace EconSimPlusPlus {
-    Shader::Shader(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath, const int maxInstances_): maxInstances(maxInstances_) {
+    Shader Shader::create(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath,
+                          const int maxInstances) {
         // Load the shader source code.
         std::ifstream vertexShaderFile{};
         std::ifstream fragmentShaderFile{};
@@ -59,8 +60,8 @@ namespace EconSimPlusPlus {
             fragmentShaderFile.close();
         }
         catch (std::ifstream::failure&) {
-            std::cout << "ERROR::SHADER::CANNOT_READ_FILE: " << vertexShaderSourcePath << ", ";
-            std::cout << fragmentShaderSourcePath << std::endl;
+            throw std::ifstream::failure(std::format("ERROR::SHADER::CANNOT_READ_FILE: {:s}, {:s}",
+                                                     vertexShaderSourcePath, fragmentShaderSourcePath));
         }
 
         const char* vertexShaderSource{vertexShaderString.c_str()};
@@ -79,8 +80,8 @@ namespace EconSimPlusPlus {
         if (!vertexShaderCompiled) {
             char infoLog[infoLogSize];
             glGetShaderInfoLog(vertexShaderId, infoLogSize, nullptr, infoLog);
-            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED " << vertexShaderSourcePath << "\n"
-                      << infoLog << std::endl;
+            throw std::runtime_error(
+                std::format("ERROR::SHADER::VERTEX::COMPILATION_FAILED {:s}\n{:s}\n", vertexShaderSourcePath, infoLog));
         }
 
         // Compile the fragment shader.
@@ -94,12 +95,13 @@ namespace EconSimPlusPlus {
         if (!fragmentShaderCompiled) {
             char infoLog[infoLogSize];
             glGetShaderInfoLog(fragmentShaderId, infoLogSize, nullptr, infoLog);
-            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED " << fragmentShaderSourcePath << "\\n"
-                      << infoLog << std::endl;
+
+            throw std::runtime_error(
+                std::format("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {:s}\n{:s}\n", fragmentShaderSourcePath, infoLog));
         }
 
         // Compile the shader program.
-        shaderProgramID = glCreateProgram();
+        unsigned int shaderProgramID = glCreateProgram();
         glAttachShader(shaderProgramID, vertexShaderId);
         glAttachShader(shaderProgramID, fragmentShaderId);
         glLinkProgram(shaderProgramID);
@@ -110,23 +112,33 @@ namespace EconSimPlusPlus {
         if (!linkingWasSuccessful) {
             char infoLog[infoLogSize];
             glGetProgramInfoLog(shaderProgramID, infoLogSize, nullptr, infoLog);
-            std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+            throw std::runtime_error(std::format("ERROR::SHADER::PROGRAM::LINKING_FAILED\n{:s}\n", infoLog));
         }
 
         glDeleteShader(vertexShaderId);
         glDeleteShader(fragmentShaderId);
+
+        return {shaderProgramID, maxInstances};
+    }
+
+    Shader::Shader(const unsigned int shaderProgramID, const int maxInstances) :
+        m_shaderProgramID(shaderProgramID), m_maxInstances(maxInstances) {
     }
 
     Shader::~Shader() {
-        glDeleteShader(shaderProgramID);
+        glDeleteShader(m_shaderProgramID);
+    }
+
+    int Shader::maxInstances() const {
+        return m_maxInstances;
     }
 
     void Shader::bind() const {
-        glUseProgram(shaderProgramID);
+        glUseProgram(m_shaderProgramID);
     }
 
     int Shader::getUniformLocation(const std::string& name) const {
-        const int location{glGetUniformLocation(shaderProgramID, name.c_str())};
+        const int location{glGetUniformLocation(m_shaderProgramID, name.c_str())};
         assert(location != -1 && "Uniform name does not exist in the shader source code.");
 
         return location;

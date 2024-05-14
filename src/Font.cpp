@@ -131,8 +131,8 @@ namespace EconSimPlusPlus {
         const float scale{settings.size / fontSize.y};
         const auto anchorOffset{calculateAnchorOffset(text, settings.anchor) * scale};
         int workingIndex{0};
-        std::vector transforms(shader.maxInstances, glm::mat4());
-        std::vector letterMap(shader.maxInstances, 0);
+        std::vector transforms(shader.maxInstances(), glm::mat4());
+        std::vector letterMap(shader.maxInstances(), 0);
 
         const auto renderFn = [&] {
             glUniformMatrix4fv(shader.getUniformLocation("transforms"), workingIndex, GL_FALSE, &transforms[0][0][0]);
@@ -167,7 +167,7 @@ namespace EconSimPlusPlus {
             drawPosition.x += glyph->advance * scale;
             ++workingIndex;
 
-            if (workingIndex == shader.maxInstances) {
+            if (workingIndex == shader.maxInstances()) {
                 renderFn();
                 workingIndex = 0;
             }
