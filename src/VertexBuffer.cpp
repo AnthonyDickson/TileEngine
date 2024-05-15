@@ -35,7 +35,7 @@ namespace EconSimPlusPlus {
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertexData.size() * sizeof(float)), vertexData.data(),
                      GL_STATIC_DRAW);
 
-        const auto stride{std::reduce(sizes.begin(), sizes.end(), 0)};
+        const int stride{std::reduce(sizes.begin(), sizes.end(), 0)};
         const int strideBytes{stride * static_cast<int>(sizeof(float))};
         int offset{0};
 

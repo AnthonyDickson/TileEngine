@@ -73,8 +73,8 @@ namespace EconSimPlusPlus {
         const auto [bottomLeft, topRight]{camera.viewport()};
         const glm::vec2 position{m_transform[3][0], m_transform[3][1]};
 
-        const auto gridCoordinatesMin{(bottomLeft - position) / m_tileSize};
-        const auto gridCoordinatesMax{(topRight - position) / m_tileSize};
+        const glm::vec2 gridCoordinatesMin{(bottomLeft - position) / m_tileSize};
+        const glm::vec2 gridCoordinatesMax{(topRight - position) / m_tileSize};
 
         // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
         // appearing' only once they are fully in view.
@@ -90,17 +90,17 @@ namespace EconSimPlusPlus {
     }
 
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
-        const auto tileMapConfig{YAML::LoadFile(yamlPath)};
-        const auto tileSheetNode{tileMapConfig["tile-sheet"]};
+        const YAML::Node tileMapConfig{YAML::LoadFile(yamlPath)};
+        const YAML::Node tileSheetNode{tileMapConfig["tile-sheet"]};
 
         const auto texturePath{tileSheetNode["path"].as<std::string>()};
-        auto texture{Texture::create(texturePath)};
+        std::unique_ptr texture{Texture::create(texturePath)};
 
-        const auto tileSizeNode{tileSheetNode["tile-size"]};
+        const YAML::Node tileSizeNode{tileSheetNode["tile-size"]};
         // ReSharper disable once CppTemplateArgumentsCanBeDeduced
         const glm::vec2 tileSize{tileSizeNode["width"].as<int>(), tileSizeNode["height"].as<int>()};
 
-        const auto tileMapNode{tileMapConfig["tile-map"]};
+        const YAML::Node tileMapNode{tileMapConfig["tile-map"]};
         // ReSharper disable once CppTemplateArgumentsCanBeDeduced
         const glm::ivec2 tileMapSize{tileMapNode["width"].as<int>(), tileMapNode["height"].as<int>()};
         const auto tiles{tileMapNode["tiles"].as<std::vector<int>>()};
@@ -147,7 +147,7 @@ namespace EconSimPlusPlus {
             for (int col = colStart; col < colEnd; ++col) {
                 transforms[tileIndex] =
                     glm::translate(m_transform, glm::vec3{static_cast<float>(col), static_cast<float>(row), z});
-                const auto tileID{m_tiles.at(row * m_mapSize.x + col)};
+                const int tileID{m_tiles.at(row * m_mapSize.x + col)};
                 textureCoordinatesInstanced[tileIndex] = m_textureCoordinates[tileID];
 
                 ++tileIndex;

@@ -28,7 +28,6 @@
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/Game.hpp>
 
-// TODO: Ensure auto is only used when type is written out in same line (i.e., don't use for returned types).
 namespace EconSimPlusPlus {
     namespace {
         /// Convert screen space coordinates to world space coordinates.
@@ -55,7 +54,7 @@ namespace EconSimPlusPlus {
 
     Game Game::create(glm::ivec2 windowSize) {
         auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
-        auto tileMap{TileMap::create("resource/terrain.yaml")};
+        std::unique_ptr tileMap{TileMap::create("resource/terrain.yaml")};
         auto gridLines{std::make_unique<GridLines>(tileMap->mapSize(), tileMap->tileSize())};
 
         return {std::move(window), std::move(tileMap), std::move(gridLines)};
@@ -102,11 +101,11 @@ namespace EconSimPlusPlus {
     }
 
     void Game::run() {
-        constexpr auto targetFramesPerSecond{60};
+        constexpr int targetFramesPerSecond{60};
         constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
-        constexpr auto timeStep{1.0f / targetFramesPerSecond};
+        constexpr float timeStep{1.0f / targetFramesPerSecond};
 
-        auto lastFrameTime{std::chrono::steady_clock::now()};
+        std::chrono::time_point lastFrameTime{std::chrono::steady_clock::now()};
 
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
@@ -117,8 +116,8 @@ namespace EconSimPlusPlus {
                                                     .outlineColor = {0.0f, 0.0f, 0.0f}};
 
         while (true) {
-            const auto currentTime{std::chrono::steady_clock::now()};
-            const auto deltaTime{currentTime - lastFrameTime};
+            const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
+            const std::chrono::duration deltaTime{currentTime - lastFrameTime};
             lastFrameTime = currentTime;
 
             if (deltaTime < targetFrameTime) {
@@ -138,8 +137,8 @@ namespace EconSimPlusPlus {
             render();
             renderTimer.endStep();
 
-            const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
-                                                    updateTimer.average(), renderTimer.average())};
+            const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
+                                                           updateTimer.average(), renderTimer.average())};
             const glm::vec3 position{-static_cast<float>(m_window->width()) / 2.0f,
                                      static_cast<float>(m_window->height()) / 2.0f, 99.0f};
             m_font->render(frameTimeSummary, position, m_camera, fontSettings);

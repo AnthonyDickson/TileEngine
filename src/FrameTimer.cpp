@@ -30,7 +30,7 @@ namespace EconSimPlusPlus {
     }
 
     void FrameTimer::endStep() {
-        const auto stepElapsed{std::chrono::steady_clock::now() - m_stepStartTime};
+        const std::chrono::duration stepElapsed{std::chrono::steady_clock::now() - m_stepStartTime};
         m_averageStepDuration = m_alpha * stepElapsed + (1.0f - m_alpha) * m_averageStepDuration;
     }
 

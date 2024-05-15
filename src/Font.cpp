@@ -69,7 +69,7 @@ namespace EconSimPlusPlus {
         glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
-        auto textureArray{TextureArray::create(charsToGenerate, textureSize)};
+        std::unique_ptr textureArray{TextureArray::create(charsToGenerate, textureSize)};
 
         for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
@@ -78,13 +78,13 @@ namespace EconSimPlusPlus {
                 continue;
             }
 
-            const auto glyph{face->glyph};
+            const FT_GlyphSlotRec_* glyph{face->glyph};
 
             const glm::vec2 resolution(static_cast<float>(glyph->bitmap.width), static_cast<float>(glyph->bitmap.rows));
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
-                const auto sdf{SignedDistanceField::createSDF(glyph->bitmap.buffer, resolution, sdfFontSize,
-                                                                 textureSize, spread)};
+                const std::vector sdf{
+                    SignedDistanceField::createSDF(glyph->bitmap.buffer, resolution, sdfFontSize, textureSize, spread)};
                 textureArray->bufferSubImage(c, textureSize, sdf.data());
             }
 
@@ -116,7 +116,7 @@ namespace EconSimPlusPlus {
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
                       const RenderSettings& settings) const {
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
-        const auto cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
+        const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
 
         m_shader.bind();
         m_shader.setUniform("text", 0);
@@ -134,7 +134,7 @@ namespace EconSimPlusPlus {
         glm::vec3 drawPosition{position};
 
         const float scale{settings.size / m_fontSize.y};
-        const auto anchorOffset{calculateAnchorOffset(text, settings.anchor) * scale};
+        const glm::vec2 anchorOffset{calculateAnchorOffset(text, settings.anchor) * scale};
         int workingIndex{0};
         std::vector transforms(m_shader.maxInstances(), glm::mat4());
         std::vector letterMap(m_shader.maxInstances(), 0);
@@ -146,7 +146,7 @@ namespace EconSimPlusPlus {
         };
 
         for (const auto& character : text) {
-            const auto& glyph{m_glyphs.at(character)};
+            const std::unique_ptr<Glyph>& glyph{m_glyphs.at(character)};
 
             switch (character) {
             case ' ':
@@ -184,7 +184,7 @@ namespace EconSimPlusPlus {
     }
 
     glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor) const {
-        const auto textSize{calculateTextSize(text)};
+        const glm::vec2 textSize{calculateTextSize(text)};
 
         // -fontSize.y puts the text origin at the top left corner of the first character.
         switch (anchor) {
@@ -208,7 +208,7 @@ namespace EconSimPlusPlus {
         float lineWidth{};
 
         for (const auto& character : text) {
-            const auto& glyph{m_glyphs.at(character)};
+            const std::unique_ptr<Glyph>& glyph{m_glyphs.at(character)};
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);

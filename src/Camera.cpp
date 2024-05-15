@@ -84,7 +84,7 @@ namespace EconSimPlusPlus {
             move(Direction::Right, deltaTime * speed);
         }
 
-        const auto& mouseMovement{inputState.getMouseMovement()};
+        const glm::vec2& mouseMovement{inputState.getMouseMovement()};
 
         if (inputState.getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) or inputState.getKey(GLFW_KEY_LEFT_ALT)) {
             if (mouseMovement.x > 0.0f) {

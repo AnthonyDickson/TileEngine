@@ -35,7 +35,7 @@ namespace EconSimPlusPlus {
         template <typename PixelType>
         std::vector<PixelType> padImage(const PixelType* binaryImage, const glm::ivec2 inputSize,
                                         const glm::ivec2 outputSize) {
-            auto padding{(outputSize - inputSize) / 2};
+            glm::ivec2 padding{(outputSize - inputSize) / 2};
             // TODO: Scale down glyphs that are too large to fit in padded area or glyphs that are too close to the
             // border. Make sure padding is at least zero to avoid negative indices. This may happen when the glyph is
             // larger than the requested size.
@@ -138,7 +138,7 @@ namespace EconSimPlusPlus {
             }
 
             const auto distance = [&](const int x, const int y) {
-                const auto borderPoint{p(x, y)};
+                const glm::ivec2 borderPoint{p(x, y)};
                 return hypotf(static_cast<float>(x - borderPoint.x), static_cast<float>(y - borderPoint.y));
             };
 
@@ -223,9 +223,9 @@ namespace EconSimPlusPlus {
 
     std::vector<std::uint8_t> SignedDistanceField::createSDF(const std::uint8_t* bitmap, const glm::ivec2 bitmapSize,
                                         const glm::ivec2 paddedSize, const glm::ivec2 outputSize, const float spread) {
-        const auto paddedBitmap{padImage(bitmap, bitmapSize, paddedSize)};
-        const auto sdf{createFloatSDF(paddedBitmap.data(), paddedSize)};
-        const auto sdfImage{createImage(sdf, spread)};
+        const std::vector paddedBitmap{padImage(bitmap, bitmapSize, paddedSize)};
+        const std::vector sdf{createFloatSDF(paddedBitmap.data(), paddedSize)};
+        const std::vector sdfImage{createImage(sdf, spread)};
         std::vector<std::uint8_t> resizedSDFImage(outputSize.x * outputSize.y);
         stbir_resize_uint8_linear(sdfImage.data(), paddedSize.x, paddedSize.y, 0, resizedSDFImage.data(), outputSize.x,
                                   outputSize.y, 0, STBIR_1CHANNEL);

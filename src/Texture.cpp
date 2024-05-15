@@ -41,7 +41,7 @@ namespace EconSimPlusPlus {
                 std::format("Texture failed to load image from {0}: {1}", imagePath, stbi_failure_reason()));
         }
 
-        auto texture{create(imageData, {width, height}, channelCount, textureUnit_)};
+        std::unique_ptr texture{create(imageData, {width, height}, channelCount, textureUnit_)};
 
         stbi_image_free(imageData);
 
