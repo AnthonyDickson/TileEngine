@@ -38,7 +38,7 @@ namespace EconSimPlusPlus {
 
     namespace {
         /// The range of ASCII characters to generate glyphs for.
-        static constexpr int charsToGenerate{128};
+        constexpr int charsToGenerate{128};
     } // namespace
 
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,

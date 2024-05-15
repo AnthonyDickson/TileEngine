@@ -55,7 +55,7 @@ namespace EconSimPlusPlus {
         ~Texture();
 
         /// Get the size (width, height) of the texture in pixels.
-        glm::ivec2 resolution() const;
+        [[nodiscard]] glm::ivec2 resolution() const;
 
         /// Activate the current texture for bind in rendering.
         void bind() const;

@@ -23,6 +23,7 @@
 #define ECONSIMPLUSPLUS_CAMERA_H
 
 #include "glm/ext/matrix_float4x4.hpp"
+// ReSharper disable once CppWrongIncludesOrder
 #include "glm/vec3.hpp"
 
 #include <EconSimPlusPlus/Direction.hpp>

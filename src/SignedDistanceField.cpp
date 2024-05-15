@@ -68,11 +68,8 @@ namespace EconSimPlusPlus {
         /// Computer Vision and Image Understanding 95, no. 3 (2004): 317-333.
         /// @param buffer The single-channel image buffer containing a binary (black and white) image.
         /// @param bufferSize The width and height in pixels of the input image buffer.
-        /// @param distanceAdjacent The distance between two adjacent pixels in either the x or y direction.
-        /// @param distanceDiagonal The diagonal distance bewteen two diagonally adjacent pixels.
         /// @return A single-channel image of the same resolution as the input.
-        std::vector<float> createFloatSDF(const std::uint8_t* buffer, const glm::ivec2 bufferSize,
-                               const float distanceAdjacent = 1.0f, const float distanceDiagonal = sqrt(2.0f)) {
+        std::vector<float> createFloatSDF(const std::uint8_t* buffer, const glm::ivec2 bufferSize) {
             std::vector<float> sdf(bufferSize.x * bufferSize.y);
             std::vector<glm::ivec2> borderPoints(bufferSize.x * bufferSize.y);
 
@@ -145,27 +142,27 @@ namespace EconSimPlusPlus {
                 return hypotf(static_cast<float>(x - borderPoint.x), static_cast<float>(y - borderPoint.y));
             };
 
-            const auto d1{distanceAdjacent};
-            const auto d2{distanceDiagonal};
+            constexpr float distanceAdjacent{1.0f};
+            constexpr float distanceDiagonal{1.41421356237f}; // sqrt(2.0)
 
             for (int y = 0; y < bufferSize.y; ++y) {
                 for (int x = 0; x < bufferSize.x; ++x) {
-                    if (d(x - 1, y - 1) + d2 < d(x, y)) {
+                    if (d(x - 1, y - 1) + distanceDiagonal < d(x, y)) {
                         setp(x, y, p(x - 1, y - 1));
                         setd(x, y, distance(x, y));
                     }
 
-                    if (d(x, y - 1) + d1 < d(x, y)) {
+                    if (d(x, y - 1) + distanceAdjacent < d(x, y)) {
                         setp(x, y, p(x, y - 1));
                         setd(x, y, distance(x, y));
                     }
 
-                    if (d(x + 1, y - 1) + d2 < d(x, y)) {
+                    if (d(x + 1, y - 1) + distanceDiagonal < d(x, y)) {
                         setp(x, y, p(x + 1, y - 1));
                         setd(x, y, distance(x, y));
                     }
 
-                    if (d(x - 1, y) + d1 < d(x, y)) {
+                    if (d(x - 1, y) + distanceAdjacent < d(x, y)) {
                         setp(x, y, p(x - 1, y));
                         setd(x, y, distance(x, y));
                     }
@@ -174,22 +171,22 @@ namespace EconSimPlusPlus {
 
             for (int y = bufferSize.y - 1; y >= 0; --y) {
                 for (int x = bufferSize.x - 1; x >= 0; --x) {
-                    if (d(x + 1, y) + d1 < d(x, y)) {
+                    if (d(x + 1, y) + distanceAdjacent < d(x, y)) {
                         setp(x, y, p(x + 1, y));
                         setd(x, y, distance(x, y));
                     }
 
-                    if (d(x - 1, y + 1) + d2 < d(x, y)) {
+                    if (d(x - 1, y + 1) + distanceDiagonal < d(x, y)) {
                         setp(x, y, p(x - 1, y + 1));
                         setd(x, y, distance(x, y));
                     }
 
-                    if (d(x, y + 1) + d1 < d(x, y)) {
+                    if (d(x, y + 1) + distanceAdjacent < d(x, y)) {
                         setp(x, y, p(x, y + 1));
                         setd(x, y, distance(x, y));
                     }
 
-                    if (d(x + 1, y + 1) + d2 < d(x, y)) {
+                    if (d(x + 1, y + 1) + distanceDiagonal < d(x, y)) {
                         setp(x, y, p(x + 1, y + 1));
                         setd(x, y, distance(x, y));
                     }

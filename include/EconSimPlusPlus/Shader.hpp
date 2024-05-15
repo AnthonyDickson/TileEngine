@@ -50,7 +50,7 @@ namespace EconSimPlusPlus {
         ~Shader();
 
         /// Get the max number of instances supported by the shader.
-        int maxInstances() const;
+        [[nodiscard]] int maxInstances() const;
 
         /// Activate the shader program.
         void bind() const;
