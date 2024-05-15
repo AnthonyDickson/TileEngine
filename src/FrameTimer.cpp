@@ -22,19 +22,19 @@
 #include <EconSimPlusPlus/FrameTimer.hpp>
 
 namespace EconSimPlusPlus {
-    FrameTimer::FrameTimer(const float alpha_) : alpha(alpha_) {
+    FrameTimer::FrameTimer(const float alpha) : m_alpha(alpha) {
     }
 
     void FrameTimer::startStep() {
-        stepStartTime = std::chrono::steady_clock::now();
+        m_stepStartTime = std::chrono::steady_clock::now();
     }
 
     void FrameTimer::endStep() {
-        const auto stepElapsed{std::chrono::steady_clock::now() - stepStartTime};
-        averageStepDuration = alpha * stepElapsed + (1.0f - alpha) * averageStepDuration;
+        const auto stepElapsed{std::chrono::steady_clock::now() - m_stepStartTime};
+        m_averageStepDuration = m_alpha * stepElapsed + (1.0f - m_alpha) * m_averageStepDuration;
     }
 
     float FrameTimer::average() const {
-        return averageStepDuration.count() / 1e6f;
+        return m_averageStepDuration.count() / 1e6f;
     }
 } // namespace EconSimPlusPlus

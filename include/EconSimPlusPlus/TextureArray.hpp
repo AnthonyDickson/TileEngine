@@ -31,23 +31,20 @@ namespace EconSimPlusPlus {
     /// A collection of textures stored in an OpenGL texture array.
     /// @note Assumes single channel textures.
     class TextureArray {
-        /// The OpenGL ID for the texture array.
-        const unsigned int id{};
-
     public:
-        /// Create a texture array from an OpenGL ID.
-        /// @param id_ The OpenGL ID for the texture array.
-        explicit TextureArray(unsigned int id_);
-
-        TextureArray(TextureArray&) = delete;
-
-        ~TextureArray();
-
         /// Create an empty texture array with the given depth and resolution.
         /// @param depth_ The depth of the texture array, i.e., how many sub textures the array holds.
         /// @param resolution_ The width and height of each sub texture in pixels.
         /// @return An empty texture array.
         static std::unique_ptr<TextureArray> create(int depth_, glm::ivec2 resolution_);
+
+        /// Create a texture array from an OpenGL ID.
+        /// @param id_ The OpenGL ID for the texture array.
+        explicit TextureArray(unsigned int id_);
+
+        TextureArray(TextureArray&) = delete; // Prevent copy to avoid issues with textures being freed via destructor.
+
+        ~TextureArray();
 
         /// Load a texture into the texture array.
         /// @param zOffset The "depth" or "index" of the sub texture.
@@ -57,6 +54,10 @@ namespace EconSimPlusPlus {
 
         /// Bind the texture array for rendering.
         void bind() const;
+
+    private:
+        /// The OpenGL ID for the texture array.
+        const unsigned int m_id{};
     };
 
 } // namespace EconSimPlusPlus

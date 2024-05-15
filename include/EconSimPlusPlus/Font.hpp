@@ -32,24 +32,8 @@
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
-
     /// Handles the loading and rendering of TrueType fonts.
     class Font {
-        /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
-        std::map<char, std::unique_ptr<Glyph>> glyphs;
-        /// The vertex array for storing the 3D geometry and atttributes.
-        std::unique_ptr<VertexArray> vao;
-        /// The vertex buffer for the text geometry.
-        std::unique_ptr<VertexBuffer> vbo;
-        /// The shader for rendering text via OpenGL.
-        const Shader shader{Shader::create("resource/shader/text.vert", "resource/shader/text.frag")};
-
-        /// The texture array that holds the textures for each glyph.
-        const std::unique_ptr<TextureArray> textureArray;
-        /// The target size (width, height) of the glyphs in pixels.
-        const glm::vec2 fontSize;
-        /// The range of ASCII characters to generate glyphs for.
-        static constexpr int charsToGenerate{128};
 
     public:
         /// The point in the text that the render position refers to.
@@ -76,17 +60,6 @@ namespace EconSimPlusPlus {
             glm::vec3 outlineColor{0.0f};
         };
 
-        /// Create a font (collection of glyphs).
-        /// @param glyphs_ Mapping between ASCII chars and the corresponing font data.
-        /// @param vao_ The vertex array for rendering text.
-        /// @param vbo_ The vertex buffer for rendering text.
-        /// @param textureArray_ The texture array that holds the textures for each glyph.
-        /// @param fontSize_ The target size (width, height) of the glyphs in pixels.
-        /// glyphs.
-        explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-                      std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
-                      glm::vec2 fontSize_);
-
         /// Create a Signed Distance Field (SDF) font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
         /// @param sdfFontSize The width and height in pixels of the fonts to use for generating the SDFs.
@@ -96,6 +69,17 @@ namespace EconSimPlusPlus {
         /// @return A font object.
         static std::unique_ptr<Font> create(const std::string& fontPath, glm::ivec2 sdfFontSize = {512, 512},
                                             glm::ivec2 textureSize = {64, 64}, float spread = 8.0f);
+
+        /// Create a font (collection of glyphs).
+        /// @param glyphs Mapping between ASCII chars and the corresponing font data.
+        /// @param vao The vertex array for rendering text.
+        /// @param vbo The vertex buffer for rendering text.
+        /// @param textureArray The texture array that holds the textures for each glyph.
+        /// @param fontSize The target size (width, height) of the glyphs in pixels.
+        /// glyphs.
+        explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
+                      std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
+                      glm::vec2 fontSize);
 
         /// Draw text on screen.
         /// @param text The string to render.
@@ -119,6 +103,20 @@ namespace EconSimPlusPlus {
         /// @param text The string to be rendered.
         /// @return The width and height of the text in pixels.
         [[nodiscard]] glm::vec2 calculateTextSize(std::string_view text) const;
+
+        /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
+        std::map<char, std::unique_ptr<Glyph>> m_glyphs;
+        /// The vertex array for storing the 3D geometry and atttributes.
+        std::unique_ptr<VertexArray> m_vao;
+        /// The vertex buffer for the text geometry.
+        std::unique_ptr<VertexBuffer> m_vbo;
+        /// The shader for rendering text via OpenGL.
+        const Shader m_shader{Shader::create("resource/shader/text.vert", "resource/shader/text.frag")};
+
+        /// The texture array that holds the textures for each glyph.
+        const std::unique_ptr<TextureArray> m_textureArray;
+        /// The target size (width, height) of the glyphs in pixels.
+        const glm::vec2 m_fontSize;
     };
 } // namespace EconSimPlusPlus
 

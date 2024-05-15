@@ -23,14 +23,14 @@
 
 namespace EconSimPlusPlus {
     VertexArray::VertexArray() {
-        glGenVertexArrays(1, &vaoID);
+        glGenVertexArrays(1, &m_id);
     }
 
     VertexArray::~VertexArray() {
-        glDeleteVertexArrays(1, &vaoID);
+        glDeleteVertexArrays(1, &m_id);
     }
 
     void VertexArray::bind() const {
-        glBindVertexArray(vaoID);
+        glBindVertexArray(m_id);
     }
 } // namespace EconSimPlusPlus

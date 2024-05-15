@@ -25,35 +25,44 @@
 #include <EconSimPlusPlus/Camera.hpp>
 
 namespace EconSimPlusPlus {
-    Camera::Camera(const glm::vec2 viewport_, const glm::vec3 position_) :
-        m_viewport(viewport_), position(position_), projection(createProjectionMatrix(viewport_)) {
+    namespace {
+        /// The point of interest that the camera is "looking at". Used for calculating the view matrix.
+        constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
+        /// The up direction of the camera. Used for calculating the view matrix.
+        constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
+
+        /// Generate a projection matrix for the given viewport size.
+        /// @param viewport The width and height of the camera view in pixels.
+        glm::mat4 createProjectionMatrix(const glm::vec2& viewport) {
+            return glm::ortho(-viewport.x / 2.0f, viewport.x / 2.0f, -viewport.y / 2.0f, viewport.y / 2.0f, 0.1f,
+                              1000.0f);
+        }
+    } // namespace
+
+    Camera::Camera(const glm::vec2 viewport, const glm::vec3 position) :
+        m_viewport(viewport), m_position(position), m_projection(createProjectionMatrix(viewport)) {
     }
 
-    glm::mat4 Camera::getPerspectiveMatrix() const {
-        return projection;
+    glm::mat4 Camera::perspectiveMatrix() const {
+        return m_projection;
     }
 
-    glm::mat4 Camera::getViewMatrix() const {
-        return lookAt(position, forward + position, up);
+    glm::mat4 Camera::viewMatrix() const {
+        return lookAt(m_position, forward + m_position, up);
     }
 
-    glm::vec3 Camera::getPosition() const {
-        return position;
+    glm::vec3 Camera::position() const {
+        return m_position;
     }
 
-    glm::vec2 Camera::getViewportSize() const {
+    glm::vec2 Camera::viewportSize() const {
         return m_viewport;
     }
 
     Viewport Camera::viewport() const {
-        const glm::vec2 position2D{position.x, position.y};
+        const glm::vec2 position2D{m_position.x, m_position.y};
 
         return {position2D - 0.5f * m_viewport, position2D + 0.5f * m_viewport};
-    }
-
-    glm::vec2 Camera::toWorld(const glm::vec2 screenCoordinates) const {
-        return {screenCoordinates.x - 0.5f * m_viewport.x + position.x,
-                -screenCoordinates.y + 0.5f * m_viewport.y + position.y};
     }
 
     void Camera::update(const float deltaTime, const InputState& inputState) {
@@ -101,32 +110,28 @@ namespace EconSimPlusPlus {
     void Camera::move(const Direction direction, const float speed) {
         switch (direction) {
         case Direction::Up:
-            position.y += speed;
+            m_position.y += speed;
             break;
         case Direction::Down:
-            position.y -= speed;
+            m_position.y -= speed;
             break;
         case Direction::Left:
-            position.x -= speed;
+            m_position.x -= speed;
             break;
         case Direction::Right:
-            position.x += speed;
+            m_position.x += speed;
             break;
         }
     }
 
     void Camera::resetPosition() {
-        position.x = 0.0f;
-        position.y = 0.0f;
+        m_position.x = 0.0f;
+        m_position.y = 0.0f;
     }
 
     void Camera::onWindowResize(const glm::vec2 viewport_) {
         m_viewport = viewport_;
-        projection = createProjectionMatrix(viewport_);
-    }
-
-    glm::mat4 Camera::createProjectionMatrix(const glm::vec2& viewport) {
-        return glm::ortho(-viewport.x / 2.0f, viewport.x / 2.0f, -viewport.y / 2.0f, viewport.y / 2.0f, 0.1f, 1000.0f);
+        m_projection = createProjectionMatrix(viewport_);
     }
 
 } // namespace EconSimPlusPlus

@@ -24,21 +24,44 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "yaml-cpp/yaml.h"
 
+#include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 
-#include <EconSimPlusPlus/Shader.hpp>
-
 namespace EconSimPlusPlus {
+    namespace {
+        /// Generate the texture coordinates for a tile sheet.
+        /// @note The UV coordinates are returned as a flat array, however each tile's coordinates take up 4 consecutive
+        /// elements.
+        /// @param sheetSize The width and height of the tile sheet in tiles.
+        /// @return The UV coordinates for each tile (four elements each).
+        std::vector<glm::vec2> generateTextureCoordinates(const glm::ivec2 sheetSize) {
+            const auto width{1.0f / static_cast<float>(sheetSize.x)};
+            const auto height{1.0f / static_cast<float>(sheetSize.y)};
 
-    TileMap::TileMap(std::unique_ptr<Texture> texture_, const glm::vec2 tileSize_, const glm::ivec2 mapSize_,
-                     const std::vector<int>& tiles_) :
-        texture(std::move(texture_)), tileSize(tileSize_),
-        sheetSize{texture->resolution.x / static_cast<int>(tileSize_.x),
-                  texture->resolution.y / static_cast<int>(tileSize_.y)},
-        mapSize(mapSize_), tiles(tiles_), textureCoordinates(generateTextureCoordinates(sheetSize)) {
+            std::vector<glm::vec2> textureCoordinates{};
+            textureCoordinates.reserve(sheetSize.x * sheetSize.y);
+
+            for (int row = 0; row < sheetSize.y; ++row) {
+                for (int col = 0; col < sheetSize.x; ++col) {
+                    const auto u{static_cast<float>(col) * width};
+                    const auto v{static_cast<float>(row) * height};
+
+                    textureCoordinates.emplace_back(u, v);
+                }
+            }
+
+            return textureCoordinates;
+        }
+    }
+
+    TileMap::TileMap(std::unique_ptr<Texture> texture, const glm::vec2 tileSize, const glm::ivec2 mapSize,
+                     const std::vector<int>& tiles) :
+        m_texture(std::move(texture)), m_tileSize(tileSize),
+        m_sheetSize{m_texture->resolution() / static_cast<glm::ivec2>(tileSize)},
+        m_mapSize(mapSize), m_tiles(tiles), m_textureCoordinates(generateTextureCoordinates(m_sheetSize)) {
         const std::vector vertexData{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
-        vao.bind();
-        vbo.loadData(vertexData, {2});
+        m_vao.bind();
+        m_vbo.loadData(vertexData, {2});
 
         glm::mat4 transform{glm::scale(glm::mat4(1.0f), {tileSize, 1.0f})};
         transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
@@ -46,41 +69,22 @@ namespace EconSimPlusPlus {
         setSize({tileSize * static_cast<glm::vec2>(mapSize), 1.0f});
     }
 
-    std::vector<glm::vec2> TileMap::generateTextureCoordinates(const glm::ivec2 sheetSize) {
-        const auto width{1.0f / static_cast<float>(sheetSize.x)};
-        const auto height{1.0f / static_cast<float>(sheetSize.y)};
-
-        std::vector<glm::vec2> textureCoordinates{};
-        textureCoordinates.reserve(sheetSize.x * sheetSize.y);
-
-        for (int row = 0; row < sheetSize.y; ++row) {
-            for (int col = 0; col < sheetSize.x; ++col) {
-                const auto u{static_cast<float>(col) * width};
-                const auto v{static_cast<float>(row) * height};
-
-                textureCoordinates.emplace_back(u, v);
-            }
-        }
-
-        return textureCoordinates;
-    }
-
     TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
         const auto [bottomLeft, topRight]{camera.viewport()};
         const glm::vec2 position{m_transform[3][0], m_transform[3][1]};
 
-        const auto gridCoordinatesMin{(bottomLeft - position) / tileSize};
-        const auto gridCoordinatesMax{(topRight - position) / tileSize};
+        const auto gridCoordinatesMin{(bottomLeft - position) / m_tileSize};
+        const auto gridCoordinatesMax{(topRight - position) / m_tileSize};
 
         // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
         // appearing' only once they are fully in view.
         constexpr int padding{1};
 
         const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
-        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + padding, mapSize.y);
+        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + padding, m_mapSize.y);
 
         const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
-        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + padding, mapSize.x);
+        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + padding, m_mapSize.x);
 
         return {rowStart, rowEnd, colStart, colEnd};
     }
@@ -104,28 +108,28 @@ namespace EconSimPlusPlus {
         return std::make_unique<TileMap>(std::move(texture), tileSize, tileMapSize, tiles);
     }
 
-    glm::ivec2 TileMap::getMapSize() const {
-        return mapSize;
+    glm::ivec2 TileMap::mapSize() const {
+        return m_mapSize;
     }
 
-    glm::vec2 TileMap::getTileSize() const {
-        return tileSize;
+    glm::vec2 TileMap::tileSize() const {
+        return m_tileSize;
     }
 
     void TileMap::render(const Camera& camera, const float z) const {
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
-        const glm::vec2 textureCoordStride{1.0f / static_cast<float>(sheetSize.x),
-                                           1.0f / static_cast<float>(sheetSize.y)};
+        const glm::vec2 textureCoordStride{1.0f / static_cast<float>(m_sheetSize.x),
+                                           1.0f / static_cast<float>(m_sheetSize.y)};
 
-        shader.bind();
-        shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * camera.getViewMatrix());
-        shader.setUniform("tileSize", textureCoordStride);
-        texture->bind();
-        vao.bind();
-        vbo.bind();
+        m_shader.bind();
+        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
+        m_shader.setUniform("tileSize", textureCoordStride);
+        m_texture->bind();
+        m_vao.bind();
+        m_vbo.bind();
 
-        std::vector<glm::mat4> transforms(shader.maxInstances());
-        std::vector<glm::vec2> textureCoordinatesInstanced(shader.maxInstances());
+        std::vector<glm::mat4> transforms(m_shader.maxInstances());
+        std::vector<glm::vec2> textureCoordinatesInstanced(m_shader.maxInstances());
         int tileIndex{0};
 
         auto renderFn = [&] {
@@ -133,8 +137,8 @@ namespace EconSimPlusPlus {
                 return;
             }
 
-            glUniformMatrix4fv(shader.getUniformLocation("transforms"), tileIndex, GL_FALSE, &transforms[0][0][0]);
-            glUniform2fv(shader.getUniformLocation("textureCoordinates"), tileIndex,
+            glUniformMatrix4fv(m_shader.uniformLocation("transforms"), tileIndex, GL_FALSE, &transforms[0][0][0]);
+            glUniform2fv(m_shader.uniformLocation("textureCoordinates"), tileIndex,
                          &textureCoordinatesInstanced[0][0]);
             glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, tileIndex);
         };
@@ -143,12 +147,12 @@ namespace EconSimPlusPlus {
             for (int col = colStart; col < colEnd; ++col) {
                 transforms[tileIndex] =
                     glm::translate(m_transform, glm::vec3{static_cast<float>(col), static_cast<float>(row), z});
-                const auto tileID{tiles.at(row * mapSize.x + col)};
-                textureCoordinatesInstanced[tileIndex] = textureCoordinates[tileID];
+                const auto tileID{m_tiles.at(row * m_mapSize.x + col)};
+                textureCoordinatesInstanced[tileIndex] = m_textureCoordinates[tileID];
 
                 ++tileIndex;
 
-                if (tileIndex == shader.maxInstances()) {
+                if (tileIndex == m_shader.maxInstances()) {
                     renderFn();
                     tileIndex = 0;
                 }

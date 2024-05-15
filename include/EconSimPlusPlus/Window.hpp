@@ -31,21 +31,6 @@
 namespace EconSimPlusPlus {
     /// Handles the basic functions of an OpenGL window.
     class Window {
-        /// Handle to the GLFW window object.
-        GLFWwindow* window{};
-        /// The width of the window in pixels.
-        int windowWidth{};
-        /// The height of the window in pixels.
-        int windowHeight{};
-        /// Whether the user changed the window size since the most recent update step.
-        bool hasWindowChangedSize{false};
-
-        /// Keeps track of keyboard and mouse input.
-        InputState inputState{};
-
-        /// We only want one instance of `Window`, we use this bool to track whether an instance was already created.
-        static bool isInitialised;
-
     public:
         /// Create and initialize a GLFW window.
         /// @param windowWidth_ The width of the window to create in pixels.
@@ -70,23 +55,23 @@ namespace EconSimPlusPlus {
 
         /// Get the state of a keyboard key.
         /// @return The state of the given key as an integer (GLFW defined state enum).
-        [[nodiscard]] const InputState& getInputState() const;
+        [[nodiscard]] const InputState& inputState() const;
 
         /// Get the aspect ratio of the window.
         /// @return The aspect ratio in pixels.
-        [[nodiscard, maybe_unused]] float getAspectRatio() const;
+        [[nodiscard, maybe_unused]] float apectRatio() const;
 
         /// Get the width of the window.
         /// @return The width of the window in pixels.
-        [[nodiscard]] int getWidth() const;
+        [[nodiscard]] int width() const;
 
         /// Get the height of the window.
         /// @return The height of the window in pixels.
-        [[nodiscard]] int getHeight() const;
+        [[nodiscard]] int height() const;
 
         /// Get the size of the window.
         /// @return The size (width, height) of the window in pixels.
-        [[nodiscard]] glm::ivec2 getSize() const;
+        [[nodiscard]] glm::ivec2 size() const;
 
         /// Check whether the user has resized the window since the last update step.
         /// @return A bool indicating whether the user has resized the window.
@@ -109,6 +94,20 @@ namespace EconSimPlusPlus {
         /// @param width The width of the window in pixels.
         /// @param height The height of the window in pixels.
         void updateWindowSize(int width, int height);
+
+        /// We only want one instance of `Window`, we use this bool to track whether an instance was already created.
+        static bool m_isInitialised;
+
+        /// Handle to the GLFW window object.
+        GLFWwindow* m_window{};
+        /// The width of the window in pixels.
+        int m_windowWidth{};
+        /// The height of the window in pixels.
+        int m_windowHeight{};
+        /// Whether the user changed the window size since the most recent update step.
+        bool m_hasWindowChangedSize{false};
+        /// Keeps track of keyboard and mouse input.
+        InputState m_inputState{};
     };
 } // namespace EconSimPlusPlus
 

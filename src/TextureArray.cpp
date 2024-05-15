@@ -24,10 +24,10 @@
 #include <EconSimPlusPlus/TextureArray.hpp>
 
 namespace EconSimPlusPlus {
-    TextureArray::TextureArray(const unsigned int id_) : id(id_) {
+    TextureArray::TextureArray(const unsigned int id_) : m_id(id_) {
     }
     TextureArray::~TextureArray() {
-        glDeleteTextures(1, &id);
+        glDeleteTextures(1, &m_id);
     }
     std::unique_ptr<TextureArray> TextureArray::create(const int depth_, const glm::ivec2 resolution_) {
         unsigned int textureArrayID;
@@ -51,6 +51,6 @@ namespace EconSimPlusPlus {
     }
     void TextureArray::bind() const {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, id);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
     }
 } // namespace EconSimPlusPlus

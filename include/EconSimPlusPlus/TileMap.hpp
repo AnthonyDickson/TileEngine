@@ -32,33 +32,14 @@
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
     class TileMap final : public GameObject {
-        /// The tile sheet texture.
-        const std::unique_ptr<Texture> texture;
-        /// The size (width and height) of a single tile in pixels.
-        const glm::vec2 tileSize;
-        /// The size (width, height) of the tile sheet texture in tiles.
-        const glm::ivec2 sheetSize;
-        /// The size (width, height) of the tile map in tiles.
-        const glm::ivec2 mapSize;
-        /// The tiles of the tile map.
-        const std::vector<int> tiles;
-
-        /// Shader to render textured tiles.
-        const Shader shader{Shader::create("resource/shader/tile.vert", "resource/shader/tile.frag")};
-        /// The vertex array for the tile quad.
-        const VertexArray vao{};
-        /// The vertex buffer for the tile quad.
-        VertexBuffer vbo{};
-        /// The UV corners for each tile.
-        const std::vector<glm::vec2> textureCoordinates;
 
     public:
-        /// @param texture_ The tile sheet texture.
-        /// @param tileSize_ The size (width, height) of a single tile in pixels.
-        /// @param mapSize_ The size (width, height) of the tile map in tiles.
-        /// @param tiles_ The tiles in the tile map by integer ID. Zero indicates an empty tile.
-        TileMap(std::unique_ptr<Texture> texture_, glm::vec2 tileSize_, glm::ivec2 mapSize_,
-                const std::vector<int>& tiles_);
+        /// @param texture The tile sheet texture.
+        /// @param tileSize The size (width, height) of a single tile in pixels.
+        /// @param mapSize The size (width, height) of the tile map in tiles.
+        /// @param tiles The tiles in the tile map by integer ID. Zero indicates an empty tile.
+        TileMap(std::unique_ptr<Texture> texture, glm::vec2 tileSize, glm::ivec2 mapSize,
+                const std::vector<int>& tiles);
 
         /// Construct a `TileMap` object from a YAML file.
         /// @param yamlPath The path to a YAML formatted tile map document.
@@ -66,10 +47,10 @@ namespace EconSimPlusPlus {
         static std::unique_ptr<TileMap> create(const std::string& yamlPath);
 
         /// The size (width, height) of the tile map in tiles.
-        [[nodiscard]] glm::ivec2 getMapSize() const;
+        [[nodiscard]] glm::ivec2 mapSize() const;
 
         /// The size (width and height) of a single tile in pixels.
-        [[nodiscard]] glm::vec2 getTileSize() const;
+        [[nodiscard]] glm::vec2 tileSize() const;
 
         /// Draw the tile map on screen.
         /// @param camera The camera to render the tile map with.
@@ -77,13 +58,6 @@ namespace EconSimPlusPlus {
         void render(const Camera& camera, float z = 0.0f) const;
 
     private:
-        /// Generate the texture coordinates for a tile sheet.
-        /// @note The UV coordinates are returned as a flat array, however each tile's coordinates take up 4 consecutive
-        /// elements.
-        /// @param sheetSize The width and height of the tile sheet in tiles.
-        /// @return The UV coordinates for each tile (four elements each).
-        static std::vector<glm::vec2> generateTextureCoordinates(glm::ivec2 sheetSize);
-
         /// Bounds of a tile grid.
         struct GridBounds {
             int rowStart;
@@ -96,6 +70,26 @@ namespace EconSimPlusPlus {
         /// @param camera The camera to use for calculating visible tile maps.
         /// @return The visible area of the tile map.
         [[nodiscard]] GridBounds calculateVisibleGridBounds(const Camera& camera) const;
+
+        /// The tile sheet texture.
+        const std::unique_ptr<Texture> m_texture;
+        /// The size (width and height) of a single tile in pixels.
+        const glm::vec2 m_tileSize;
+        /// The size (width, height) of the tile sheet texture in tiles.
+        const glm::ivec2 m_sheetSize;
+        /// The size (width, height) of the tile map in tiles.
+        const glm::ivec2 m_mapSize;
+        /// The tiles of the tile map.
+        const std::vector<int> m_tiles;
+
+        /// Shader to render textured tiles.
+        const Shader m_shader{Shader::create("resource/shader/tile.vert", "resource/shader/tile.frag")};
+        /// The vertex array for the tile quad.
+        const VertexArray m_vao{};
+        /// The vertex buffer for the tile quad.
+        VertexBuffer m_vbo{};
+        /// The UV corners for each tile.
+        const std::vector<glm::vec2> m_textureCoordinates;
     };
 } // namespace EconSimPlusPlus
 

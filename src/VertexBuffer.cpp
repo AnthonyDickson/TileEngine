@@ -26,7 +26,7 @@
 
 namespace EconSimPlusPlus {
     VertexBuffer::VertexBuffer() {
-        glGenBuffers(1, &vboID);
+        glGenBuffers(1, &m_id);
     }
 
     void VertexBuffer::loadData(const std::vector<float>& vertexData, const std::vector<int>& sizes) {
@@ -47,18 +47,18 @@ namespace EconSimPlusPlus {
             offset += size;
         }
 
-        vertexCount = static_cast<int>(vertexData.size()) / stride;
+        m_vertexCount = static_cast<int>(vertexData.size()) / stride;
     }
 
     void VertexBuffer::bind() const {
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_id);
     }
 
     void VertexBuffer::drawArrays(const GLenum mode) const {
-        glDrawArrays(mode, 0, vertexCount);
+        glDrawArrays(mode, 0, m_vertexCount);
     }
 
     VertexBuffer::~VertexBuffer() {
-        glDeleteBuffers(1, &vboID);
+        glDeleteBuffers(1, &m_id);
     }
 } // namespace EconSimPlusPlus

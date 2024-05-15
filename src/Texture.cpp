@@ -28,9 +28,6 @@
 #include <EconSimPlusPlus/Texture.hpp>
 
 namespace EconSimPlusPlus {
-    Texture::Texture(const unsigned int textureID_, const int textureUnit_, const glm::ivec2 resolution_) :
-        textureID(textureID_), textureUnit(textureUnit_), resolution(resolution_) {
-    }
 
     std::unique_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
         int width{};
@@ -51,7 +48,8 @@ namespace EconSimPlusPlus {
         return texture;
     }
 
-    std::unique_ptr<Texture> Texture::create(const unsigned char* image, const glm::ivec2 resolution, const int channelCount, const int textureUnit_) {
+    std::unique_ptr<Texture> Texture::create(const unsigned char* image, const glm::ivec2 resolution,
+                                             const int channelCount, const int textureUnit_) {
         GLenum imageFormat;
 
         switch (channelCount) {
@@ -71,8 +69,8 @@ namespace EconSimPlusPlus {
         GLuint textureID{};
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), resolution.x, resolution.y, 0, imageFormat, GL_UNSIGNED_BYTE,
-                     image);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), resolution.x, resolution.y, 0, imageFormat,
+                     GL_UNSIGNED_BYTE, image);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -83,16 +81,24 @@ namespace EconSimPlusPlus {
         return std::make_unique<Texture>(textureID, textureUnit_, resolution);
     }
 
+    Texture::Texture(const unsigned int textureID_, const int textureUnit_, const glm::ivec2 resolution_) :
+        m_textureID(textureID_), m_textureUnit(textureUnit_), m_resolution(resolution_) {
+    }
+
     Texture::~Texture() {
-        glDeleteTextures(1, &textureID);
+        glDeleteTextures(1, &m_textureID);
+    }
+
+    glm::ivec2 Texture::resolution() const {
+        return m_resolution;
     }
 
     void Texture::bind() const {
-        glActiveTexture(textureUnit);
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        glActiveTexture(m_textureUnit);
+        glBindTexture(GL_TEXTURE_2D, m_textureID);
     }
 
     int Texture::getUniformTextureUnit() const {
-        return textureUnit - GL_TEXTURE0;
+        return m_textureUnit - GL_TEXTURE0;
     }
 } // namespace EconSimPlusPlus

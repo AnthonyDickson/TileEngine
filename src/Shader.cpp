@@ -137,7 +137,7 @@ namespace EconSimPlusPlus {
         glUseProgram(m_shaderProgramID);
     }
 
-    int Shader::getUniformLocation(const std::string& name) const {
+    int Shader::uniformLocation(const std::string& name) const {
         const int location{glGetUniformLocation(m_shaderProgramID, name.c_str())};
         assert(location != -1 && "Uniform name does not exist in the shader source code.");
 
@@ -149,22 +149,22 @@ namespace EconSimPlusPlus {
     }
 
     void Shader::setUniform(const std::string& name, const int value) const {
-        glUniform1i(getUniformLocation(name), value);
+        glUniform1i(uniformLocation(name), value);
     }
 
     void Shader::setUniform(const std::string& name, const float value) const {
-        glUniform1f(getUniformLocation(name), value);
+        glUniform1f(uniformLocation(name), value);
     }
 
     void Shader::setUniform(const std::string& name, const glm::vec3& value) const {
-        glUniform3fv(getUniformLocation(name), 1, value_ptr(value));
+        glUniform3fv(uniformLocation(name), 1, value_ptr(value));
     }
 
     void Shader::setUniform(const std::string& name, const glm::vec2& value) const {
-        glUniform2fv(getUniformLocation(name), 1, value_ptr(value));
+        glUniform2fv(uniformLocation(name), 1, value_ptr(value));
     }
 
     void Shader::setUniform(const std::string& name, const glm::mat4x4& value) const {
-        glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value_ptr(value));
+        glUniformMatrix4fv(uniformLocation(name), 1, GL_FALSE, value_ptr(value));
     }
 } // namespace EconSimPlusPlus

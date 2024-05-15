@@ -36,11 +36,16 @@
 
 namespace EconSimPlusPlus {
 
-    Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs_, std::unique_ptr<VertexArray> vao_,
-               std::unique_ptr<VertexBuffer> vbo_, std::unique_ptr<TextureArray> textureArray_,
-               const glm::vec2 fontSize_) :
-        glyphs(std::move(glyphs_)), vao(std::move(vao_)), vbo(std::move(vbo_)), textureArray(std::move(textureArray_)),
-        fontSize(fontSize_) {
+    namespace {
+        /// The range of ASCII characters to generate glyphs for.
+        static constexpr int charsToGenerate{128};
+    } // namespace
+
+    Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
+               std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
+               const glm::vec2 fontSize) :
+        m_glyphs(std::move(glyphs)), m_vao(std::move(vao)), m_vbo(std::move(vbo)), m_textureArray(std::move(textureArray)),
+        m_fontSize(fontSize) {
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
@@ -111,44 +116,44 @@ namespace EconSimPlusPlus {
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
                       const RenderSettings& settings) const {
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
-        const auto cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.getPosition().z});
+        const auto cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
 
-        shader.bind();
-        shader.setUniform("text", 0);
-        shader.setUniform("textColor", settings.color);
-        shader.setUniform("projectionViewMatrix", camera.getPerspectiveMatrix() * cameraViewZ);
-        shader.setUniform("sdfThreshold", settings.sdfThreshold);
-        shader.setUniform("edgeSmoothness", settings.edgeSmoothness);
-        shader.setUniform("outlineSize", settings.outlineSize);
-        shader.setUniform("outlineColor", settings.outlineColor);
+        m_shader.bind();
+        m_shader.setUniform("text", 0);
+        m_shader.setUniform("textColor", settings.color);
+        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
+        m_shader.setUniform("sdfThreshold", settings.sdfThreshold);
+        m_shader.setUniform("edgeSmoothness", settings.edgeSmoothness);
+        m_shader.setUniform("outlineSize", settings.outlineSize);
+        m_shader.setUniform("outlineColor", settings.outlineColor);
 
-        textureArray->bind();
-        vao->bind();
-        vbo->bind();
+        m_textureArray->bind();
+        m_vao->bind();
+        m_vbo->bind();
 
         glm::vec3 drawPosition{position};
 
-        const float scale{settings.size / fontSize.y};
+        const float scale{settings.size / m_fontSize.y};
         const auto anchorOffset{calculateAnchorOffset(text, settings.anchor) * scale};
         int workingIndex{0};
-        std::vector transforms(shader.maxInstances(), glm::mat4());
-        std::vector letterMap(shader.maxInstances(), 0);
+        std::vector transforms(m_shader.maxInstances(), glm::mat4());
+        std::vector letterMap(m_shader.maxInstances(), 0);
 
         const auto renderFn = [&] {
-            glUniformMatrix4fv(shader.getUniformLocation("transforms"), workingIndex, GL_FALSE, &transforms[0][0][0]);
-            glUniform1iv(shader.getUniformLocation("letterMap"), workingIndex, &letterMap[0]);
+            glUniformMatrix4fv(m_shader.uniformLocation("transforms"), workingIndex, GL_FALSE, &transforms[0][0][0]);
+            glUniform1iv(m_shader.uniformLocation("letterMap"), workingIndex, &letterMap[0]);
             glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, workingIndex);
         };
 
         for (const auto& character : text) {
-            const auto& glyph{glyphs.at(character)};
+            const auto& glyph{m_glyphs.at(character)};
 
             switch (character) {
             case ' ':
                 drawPosition.x += glyph->advance * scale;
                 continue;
             case '\n':
-                drawPosition.y -= fontSize.y * scale;
+                drawPosition.y -= m_fontSize.y * scale;
                 drawPosition.x = position.x;
                 continue;
             default:
@@ -161,13 +166,13 @@ namespace EconSimPlusPlus {
 
             glm::mat4 transform =
                 glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, drawPosition.z));
-            transforms[workingIndex] = glm::scale(transform, glm::vec3(fontSize * scale, 1.0f));
+            transforms[workingIndex] = glm::scale(transform, glm::vec3(m_fontSize * scale, 1.0f));
             letterMap[workingIndex] = static_cast<int>(glyph->character);
 
             drawPosition.x += glyph->advance * scale;
             ++workingIndex;
 
-            if (workingIndex == shader.maxInstances()) {
+            if (workingIndex == m_shader.maxInstances()) {
                 renderFn();
                 workingIndex = 0;
             }
@@ -184,30 +189,30 @@ namespace EconSimPlusPlus {
         // -fontSize.y puts the text origin at the top left corner of the first character.
         switch (anchor) {
         case Anchor::bottomLeft:
-            return glm::vec2{0.0f, textSize.y - fontSize.y};
+            return glm::vec2{0.0f, textSize.y - m_fontSize.y};
         case Anchor::bottomRight:
-            return glm::vec2{-textSize.x, textSize.y - fontSize.y};
+            return glm::vec2{-textSize.x, textSize.y - m_fontSize.y};
         case Anchor::topLeft:
-            return glm::vec2{0.0f, -fontSize.y};
+            return glm::vec2{0.0f, -m_fontSize.y};
         case Anchor::topRight:
-            return glm::vec2{-textSize.x, -fontSize.y};
+            return glm::vec2{-textSize.x, -m_fontSize.y};
         case Anchor::center:
-            return {-textSize.x / 2.0f, textSize.y / 2.0f - fontSize.y};
+            return {-textSize.x / 2.0f, textSize.y / 2.0f - m_fontSize.y};
         default:
             return glm::vec2{0.0f};
         }
     }
 
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
-        glm::vec2 textSize{0.0f, fontSize.y};
+        glm::vec2 textSize{0.0f, m_fontSize.y};
         float lineWidth{};
 
         for (const auto& character : text) {
-            const auto& glyph{glyphs.at(character)};
+            const auto& glyph{m_glyphs.at(character)};
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);
-                textSize.y += fontSize.y;
+                textSize.y += m_fontSize.y;
                 lineWidth = 0.0f;
             }
             else {
@@ -216,7 +221,7 @@ namespace EconSimPlusPlus {
         }
 
         textSize.x = std::max(lineWidth, textSize.x);
-        textSize.y = std::max(fontSize.y, textSize.y);
+        textSize.y = std::max(m_fontSize.y, textSize.y);
 
         return textSize;
     }

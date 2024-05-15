@@ -25,36 +25,36 @@
 #include <EconSimPlusPlus/Window.hpp>
 
 namespace EconSimPlusPlus {
-    bool Window::isInitialised = false;
+    bool Window::m_isInitialised = false;
 
     Window::Window(const int windowWidth_, const int windowHeight_, const std::string& windowName) :
-        windowWidth(windowWidth_), windowHeight(windowHeight_) {
-        assert(!isInitialised && "Cannot have more than one instance of `Window`.");
+        m_windowWidth(windowWidth_), m_windowHeight(windowHeight_) {
+        assert(!m_isInitialised && "Cannot have more than one instance of `Window`.");
 
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(windowWidth, windowHeight, windowName.c_str(), nullptr, nullptr);
+        m_window = glfwCreateWindow(m_windowWidth, m_windowHeight, windowName.c_str(), nullptr, nullptr);
 
-        if (window == nullptr) {
+        if (m_window == nullptr) {
             throw std::runtime_error("Failed to create the GLFW window.");
         }
 
-        glfwMakeContextCurrent(window);
+        glfwMakeContextCurrent(m_window);
 
         if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
             throw std::runtime_error("Failed to initialize GLAD.");
         }
 
         updateWindowSize(windowWidth_, windowHeight_);
-        glfwSetWindowSizeCallback(window, onWindowResize);
-        glfwSetScrollCallback(window, onMouseScroll);
-        glfwSetWindowUserPointer(window, this);
+        glfwSetWindowSizeCallback(m_window, onWindowResize);
+        glfwSetScrollCallback(m_window, onMouseScroll);
+        glfwSetWindowUserPointer(m_window, this);
         glfwSwapInterval(0); // Let the game handle vsync
 
-        isInitialised = true;
+        m_isInitialised = true;
     }
 
     Window::~Window() {
@@ -62,43 +62,43 @@ namespace EconSimPlusPlus {
     }
 
     void Window::preUpdate() {
-        inputState.update(window);
+        m_inputState.update(m_window);
     }
 
     void Window::postUpdate() {
-        inputState.postUpdate();
-        hasWindowChangedSize = false;
+        m_inputState.postUpdate();
+        m_hasWindowChangedSize = false;
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
 
     bool Window::shouldClose() const {
-        return glfwWindowShouldClose(window);
+        return glfwWindowShouldClose(m_window);
     }
 
-    const InputState& Window::getInputState() const {
-        return inputState;
+    const InputState& Window::inputState() const {
+        return m_inputState;
     }
 
-    int Window::getWidth() const {
-        return windowWidth;
+    int Window::width() const {
+        return m_windowWidth;
     }
 
-    int Window::getHeight() const {
-        return windowHeight;
+    int Window::height() const {
+        return m_windowHeight;
     }
 
-    glm::ivec2 Window::getSize() const {
-        return {windowWidth, windowHeight};
+    glm::ivec2 Window::size() const {
+        return {m_windowWidth, m_windowHeight};
     }
 
-    float Window::getAspectRatio() const {
-        return static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+    float Window::apectRatio() const {
+        return static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight);
     }
 
     bool Window::hasWindowSizeChanged() const {
-        return hasWindowChangedSize;
+        return m_hasWindowChangedSize;
     }
 
     void Window::onWindowResize(GLFWwindow* window, const int width, const int height) {
@@ -108,8 +108,8 @@ namespace EconSimPlusPlus {
     }
 
     void Window::updateWindowSize(const int width, const int height) {
-        windowWidth = width;
-        windowHeight = height;
+        m_windowWidth = width;
+        m_windowHeight = height;
 
         // On some disploys (e.g., retina displays on macOS) the reported window resolution is a scaled resolution.
         // For example, a 3840x2160 screen may be used to display an up-scaled 1920x1080 screen.
@@ -117,14 +117,14 @@ namespace EconSimPlusPlus {
         // results in viewport that only covers a quarter of the screen since OpenGL uses real pixels.
         // Using the framebuffer resolution ensures the viewport fills the window.
         int framebuffer_width, framebuffer_height;
-        glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
+        glfwGetFramebufferSize(m_window, &framebuffer_width, &framebuffer_height);
         glViewport(0, 0, framebuffer_width, framebuffer_height);
-        hasWindowChangedSize = true;
+        m_hasWindowChangedSize = true;
     }
 
     void Window::onMouseScroll(GLFWwindow* window, const double scrollX, const double scrollY) {
         if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
-            windowHandle->inputState.updateScroll(scrollX, scrollY);
+            windowHandle->m_inputState.updateScroll(scrollX, scrollY);
         }
     }
 } // namespace EconSimPlusPlus

@@ -30,28 +30,6 @@
 namespace EconSimPlusPlus {
     /// This is the main class for the program.
     class Game {
-
-        /// The window we use to display the game.
-        std::unique_ptr<Window> window;
-
-        /// The game 'map'.
-        std::unique_ptr<TileMap> tileMap;
-        /// 2D grid lines.
-        std::unique_ptr<GridLines> gridLines;
-        /// The render camera.
-        Camera camera;
-        /// The font for rendering text on screen.
-        std::unique_ptr<Font> font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
-
-        /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
-        static bool isInitialised;
-
-        /// Create a new game instance.
-        /// @param window_ The window to display the game on.
-        /// @param tileMap_ The game map made up of square tiles.
-        /// @param gridLines_ 2D grid lines to draw over the tile map.
-        Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_, std::unique_ptr<GridLines> gridLines_);
-
     public:
         /// Create a new game instance.
         /// @param windowSize The width and height of the window to display the game in pixels.
@@ -70,6 +48,27 @@ namespace EconSimPlusPlus {
 
         /// Run the main game loop (this call blocks).
         void run();
+
+    private:
+        /// Create a new game instance.
+        /// @param window The window to display the game on.
+        /// @param tileMap The game map made up of square tiles.
+        /// @param gridLines 2D grid lines to draw over the tile map.
+        Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap, std::unique_ptr<GridLines> gridLines);
+
+        /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
+        static bool m_isInitialised;
+
+        /// The window we use to display the game.
+        std::unique_ptr<Window> m_window;
+        /// The game 'map'.
+        std::unique_ptr<TileMap> m_tileMap;
+        /// 2D grid lines.
+        std::unique_ptr<GridLines> m_gridLines;
+        /// The render camera.
+        Camera m_camera;
+        /// The font for rendering text on screen.
+        std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
     };
 } // namespace EconSimPlusPlus
 

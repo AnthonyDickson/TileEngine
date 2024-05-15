@@ -28,12 +28,6 @@ namespace EconSimPlusPlus {
 
     /// The general base object that represents physical objects that can be placed in a game world.
     class GameObject {
-    protected:
-        /// The 4x4 homogeneous transform matrix representing the object's position, orientation and scale.
-        /// Corresponds to the model matrix in the model-view-projection matrix triplet.
-        glm::mat4 m_transform{1.0f};
-        glm::vec3 m_size{1.0f};
-
     public:
         virtual ~GameObject();
 
@@ -57,6 +51,13 @@ namespace EconSimPlusPlus {
         /// @param point The 2D point to test.
         /// @return Whether the point interects the object.
         [[nodiscard]] bool contains(glm::vec2 point) const;
+
+    protected:
+        /// The 4x4 homogeneous transform matrix representing the object's position, orientation and scale.
+        /// Corresponds to the model matrix in the model-view-projection matrix triplet.
+        glm::mat4 m_transform{1.0f};
+        /// The width, height and depth of the object in world space coordinates.
+        glm::vec3 m_size{1.0f};
     };
 
 } // namespace EconSimPlusPlus

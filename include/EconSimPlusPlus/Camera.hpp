@@ -30,49 +30,32 @@
 #include <EconSimPlusPlus/Viewport.hpp>
 
 namespace EconSimPlusPlus {
+
     /// An object used to manipulate the view of a scene in OpenGL.
     class Camera {
-        /// The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport.
-        glm::vec2 m_viewport;
-        /// The position of the camera in world space.
-        glm::vec3 position{};
-        /// The projection matrix (e.g., perspective or orthographic).
-        glm::mat4 projection;
-
-        /// The point of interest that the camera is "looking at". Used for calculating the view matrix.
-        static constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
-        /// The up direction of the camera. Used for calculating the view matrix.
-        static constexpr glm::vec3 up{0.0f, 1.0f, 0.0f};
 
     public:
-        Camera(glm::vec2 viewport_, glm::vec3 position_);
+        Camera(glm::vec2 viewport, glm::vec3 position);
 
         /// Get the perspective matrix of the camera.
         /// @return A 4x4 matrix.
-        [[nodiscard]] glm::mat4 getPerspectiveMatrix() const;
+        [[nodiscard]] glm::mat4 perspectiveMatrix() const;
 
         /// Get the view matrix of the camera.
         /// @return A 4x4 matrix.
-        [[nodiscard]] glm::mat4 getViewMatrix() const;
+        [[nodiscard]] glm::mat4 viewMatrix() const;
 
         /// Get the camera position.
         /// @return A 3-vector position in world coordinates.
-        [[nodiscard]] glm::vec3 getPosition() const;
+        [[nodiscard]] glm::vec3 position() const;
 
         /// Get the viewport size.
         /// @return the width and height in pixels.
-        [[nodiscard]] glm::vec2 getViewportSize() const;
+        [[nodiscard]] glm::vec2 viewportSize() const;
 
         /// Get the visible area from the camera after all transforms.
         /// @return The viewport extents.
         [[nodiscard]] Viewport viewport() const;
-
-        /// Convert screen space coordinates to world space coordinates.
-        /// @param screenCoordinates Coordinates in screen space starting the from the top left with +y pointing down.
-        /// @return 2D world coordinates.
-        /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
-        /// right-handed coordinate system is used.
-        [[nodiscard]] glm::vec2 toWorld(glm::vec2 screenCoordinates) const;
 
         /// Update the camera.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
@@ -92,9 +75,12 @@ namespace EconSimPlusPlus {
         void onWindowResize(glm::vec2 viewport_);
 
     private:
-        /// Generate a projection matrix for the given viewport size.
-        /// @param viewport The width and height of the camera view in pixels.
-        static glm::mat4 createProjectionMatrix(const glm::vec2& viewport);
+        /// The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport.
+        glm::vec2 m_viewport;
+        /// The position of the camera in world space.
+        glm::vec3 m_position{};
+        /// The projection matrix (e.g., perspective or orthographic).
+        glm::mat4 m_projection;
     };
 } // namespace EconSimPlusPlus
 

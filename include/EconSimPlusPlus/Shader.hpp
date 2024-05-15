@@ -58,7 +58,7 @@ namespace EconSimPlusPlus {
         /// Get the location of a uniform variable in the shader program.
         /// @param name The name of the uniform in the shader source code.
         /// @return An integer indicating the location.
-        [[nodiscard]] int getUniformLocation(const std::string& name) const;
+        [[nodiscard]] int uniformLocation(const std::string& name) const;
 
         /// Set a bool uniform value.
         /// @param name The name of the uniform.

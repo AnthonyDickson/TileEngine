@@ -29,11 +29,6 @@
 namespace EconSimPlusPlus {
     /// Wrapper for OpenGL vertex buffer objects.
     class VertexBuffer {
-        /// The ID for the vertex buffer object.
-        GLuint vboID{};
-        /// The number of vertices in the buffered vertex data.
-        int vertexCount{};
-
     public:
         /// Create a vertex buffer object.
         VertexBuffer();
@@ -57,6 +52,12 @@ namespace EconSimPlusPlus {
         /// Call OpenGL::glDrawArrays with suitable parameters.
         /// @param mode How to draw the vertex data.
         void drawArrays(GLenum mode = GL_TRIANGLES) const;
+
+    private:
+        /// The ID for the vertex buffer object.
+        GLuint m_id{};
+        /// The number of vertices in the buffered vertex data.
+        int m_vertexCount{};
     };
 } // namespace EconSimPlusPlus
 

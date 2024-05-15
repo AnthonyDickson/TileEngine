@@ -28,46 +28,55 @@
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/Game.hpp>
 
-// TODO: Change classes to use m_ prefix for data members.
-// TODO: Change classes use data member names minus the m_ prefix for getter functions.
-// TODO: Ensure classes use "set" plus data member names minus the m_ prefix for setter functions.
 // TODO: Ensure auto is only used when type is written out in same line (i.e., don't use for returned types).
 namespace EconSimPlusPlus {
-    bool Game::isInitialised = false;
+    namespace {
+        /// Convert screen space coordinates to world space coordinates.
+        /// @param camera The camera to use for the coordinate space conversion.
+        /// @param screenCoordinates Coordinates in screen space starting the from the top left with +y pointing down.
+        /// @return 2D world coordinates.
+        /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
+        /// right-handed coordinate system is used.
+        glm::vec2 screenToWorldCoordinates(const Camera& camera, const glm::vec2 screenCoordinates) {
+            const auto [bottomLeft, topRight]{camera.viewport()};
+            return {screenCoordinates.x + bottomLeft.x, -screenCoordinates.y + topRight.y};
+        }
+    } // namespace
 
-    Game::Game(std::unique_ptr<Window> window_, std::unique_ptr<TileMap> tileMap_,
-               std::unique_ptr<GridLines> gridLines_) :
-        window(std::move(window_)), tileMap(std::move(tileMap_)), gridLines(std::move(gridLines_)),
-        camera{{static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())},
-               {0.0f, 0.0f, 100.0f}} {
-        assert(!isInitialised && "Cannot have more than one instance of `Game`.");
-        isInitialised = true;
+    bool Game::m_isInitialised = false;
+
+    Game::Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap, std::unique_ptr<GridLines> gridLines) :
+        m_window(std::move(window)), m_tileMap(std::move(tileMap)), m_gridLines(std::move(gridLines)),
+        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                 {0.0f, 0.0f, 100.0f}} {
+        assert(!m_isInitialised && "Cannot have more than one instance of `Game`.");
+        m_isInitialised = true;
     }
 
     Game Game::create(glm::ivec2 windowSize) {
         auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
         auto tileMap{TileMap::create("resource/terrain.yaml")};
-        auto gridLines{std::make_unique<GridLines>(tileMap->getMapSize(), tileMap->getTileSize())};
+        auto gridLines{std::make_unique<GridLines>(tileMap->mapSize(), tileMap->tileSize())};
 
         return {std::move(window), std::move(tileMap), std::move(gridLines)};
     }
 
     void Game::update(const float deltaTime) {
-        if (window->hasWindowSizeChanged()) {
-            camera.onWindowResize({static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight())});
+        if (m_window->hasWindowSizeChanged()) {
+            m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
         }
 
-        camera.update(deltaTime, window->getInputState());
+        m_camera.update(deltaTime, m_window->inputState());
 
-        if (const InputState input{window->getInputState()}; input.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            const glm::vec2 cursorPos{camera.toWorld(input.getMousePosition())};
+        if (const InputState input{m_window->inputState()}; input.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            const glm::vec2 cursorPos{screenToWorldCoordinates(m_camera, input.getMousePosition())};
 
-            if (tileMap->contains(cursorPos)) {
+            if (m_tileMap->contains(cursorPos)) {
                 std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x,
                                          cursorPos.y);
             }
 
-            if (gridLines->contains(cursorPos)) {
+            if (m_gridLines->contains(cursorPos)) {
                 std::cout << std::format("Mouse clicked over grid lines at ({:.2f}, {:.2f}).\n", cursorPos.x,
                                          cursorPos.y);
             }
@@ -88,8 +97,8 @@ namespace EconSimPlusPlus {
 
         glEnable(GL_CULL_FACE);
 
-        tileMap->render(camera, 0.0f);
-        gridLines->render(camera, 50.0f);
+        m_tileMap->render(m_camera, 0.0f);
+        m_gridLines->render(m_camera, 50.0f);
     }
 
     void Game::run() {
@@ -116,11 +125,11 @@ namespace EconSimPlusPlus {
                 std::this_thread::sleep_for(targetFrameTime - deltaTime);
             }
 
-            if (window->getInputState().getKey(GLFW_KEY_ESCAPE) or window->shouldClose()) {
+            if (m_window->inputState().getKey(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
                 return;
             }
 
-            window->preUpdate();
+            m_window->preUpdate();
             updateTimer.startStep();
             update(timeStep);
             updateTimer.endStep();
@@ -131,11 +140,11 @@ namespace EconSimPlusPlus {
 
             const auto frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                     updateTimer.average(), renderTimer.average())};
-            const glm::vec3 position{-static_cast<float>(window->getWidth()) / 2.0f,
-                                     static_cast<float>(window->getHeight()) / 2.0f, 99.0f};
-            font->render(frameTimeSummary, position, camera, fontSettings);
+            const glm::vec3 position{-static_cast<float>(m_window->width()) / 2.0f,
+                                     static_cast<float>(m_window->height()) / 2.0f, 99.0f};
+            m_font->render(frameTimeSummary, position, m_camera, fontSettings);
 
-            window->postUpdate();
+            m_window->postUpdate();
         }
     }
 } // namespace EconSimPlusPlus
