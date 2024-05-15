@@ -134,4 +134,9 @@ namespace EconSimPlusPlus {
         m_projection = createProjectionMatrix(viewport_);
     }
 
+    glm::vec2 screenToWorldCoordinates(const Camera& camera, const glm::vec2 screenCoordinates) {
+        const auto [bottomLeft, topRight]{camera.viewport()};
+        return {screenCoordinates.x + bottomLeft.x, -screenCoordinates.y + topRight.y};
+    }
+
 } // namespace EconSimPlusPlus

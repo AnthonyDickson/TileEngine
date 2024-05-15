@@ -83,6 +83,14 @@ namespace EconSimPlusPlus {
         /// The projection matrix (e.g., perspective or orthographic).
         glm::mat4 m_projection;
     };
+
+    /// Convert screen space coordinates to world space coordinates.
+    /// @param camera The camera to use for the coordinate space conversion.
+    /// @param screenCoordinates Coordinates in screen space starting the from the top left with +y pointing down.
+    /// @return 2D world coordinates.
+    /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
+    /// right-handed coordinate system is used.
+    glm::vec2 screenToWorldCoordinates(const Camera& camera, glm::vec2 screenCoordinates);
 } // namespace EconSimPlusPlus
 
 

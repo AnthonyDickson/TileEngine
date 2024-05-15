@@ -19,6 +19,8 @@
 // Created by Anthony Dickson on 10/05/2024.
 //
 
+#include <format>
+#include <iostream>
 #include <vector>
 
 #include "glm/ext/matrix_transform.hpp"
@@ -67,5 +69,13 @@ namespace EconSimPlusPlus {
         m_shader.setUniform("transform", glm::translate(m_transform, glm::vec3{0.0f, 0.0f, z}));
         m_vao.bind();
         m_vbo.drawArrays(GL_LINES);
+    }
+
+    void GridLines::update(float, const InputState& inputState, const Camera& camera) {
+        const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
+
+        if (contains(cursorPos) and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            std::cout << std::format("Mouse clicked over grid lines at ({:.2f}, {:.2f}).\n", cursorPos.x, cursorPos.y);
+        }
     }
 } // namespace EconSimPlusPlus

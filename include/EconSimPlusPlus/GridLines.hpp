@@ -46,6 +46,8 @@ namespace EconSimPlusPlus {
         /// @param z The 'layer' to render the grid lines on.
         void render(const Camera& camera, float z = 0.0f) const;
 
+        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+
     private:
         /// The vertex array object.
         const VertexArray m_vao{};

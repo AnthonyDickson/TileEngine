@@ -57,6 +57,8 @@ namespace EconSimPlusPlus {
         /// @param z The 'layer' to render the tile map on.
         void render(const Camera& camera, float z = 0.0f) const;
 
+        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+
     private:
         /// Bounds of a tile grid.
         struct GridBounds {

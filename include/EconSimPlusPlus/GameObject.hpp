@@ -24,8 +24,11 @@
 
 #include "glm/matrix.hpp"
 
-namespace EconSimPlusPlus {
+#include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/InputState.hpp>
 
+namespace EconSimPlusPlus {
+    // TODO: Refactor GameObject along the lines of https://gameprogrammingpatterns.com/component.html
     /// The general base object that represents physical objects that can be placed in a game world.
     class GameObject {
     public:
@@ -46,6 +49,12 @@ namespace EconSimPlusPlus {
         /// Set the size of the object.
         /// @param size The 3D dimensions of the object in pixels.
         void setSize(glm::vec3 size);
+
+        /// Update the object.
+        /// @param deltaTime The size of the step to take in terms of time (seconds).
+        /// @param inputState The state of keyboard and mouse input.
+        /// @param camera
+        virtual void update(float deltaTime, const InputState& inputState, const Camera& camera) = 0;
 
         /// Check whether a point is contained in the object's axis-aligned bounding box.
         /// @param point The 2D point to test.

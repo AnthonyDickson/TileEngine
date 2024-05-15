@@ -29,18 +29,6 @@
 #include <EconSimPlusPlus/Game.hpp>
 
 namespace EconSimPlusPlus {
-    namespace {
-        /// Convert screen space coordinates to world space coordinates.
-        /// @param camera The camera to use for the coordinate space conversion.
-        /// @param screenCoordinates Coordinates in screen space starting the from the top left with +y pointing down.
-        /// @return 2D world coordinates.
-        /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
-        /// right-handed coordinate system is used.
-        glm::vec2 screenToWorldCoordinates(const Camera& camera, const glm::vec2 screenCoordinates) {
-            const auto [bottomLeft, topRight]{camera.viewport()};
-            return {screenCoordinates.x + bottomLeft.x, -screenCoordinates.y + topRight.y};
-        }
-    } // namespace
 
     bool Game::m_isInitialised = false;
 
@@ -65,21 +53,11 @@ namespace EconSimPlusPlus {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
         }
 
-        m_camera.update(deltaTime, m_window->inputState());
-
-        if (const InputState input{m_window->inputState()}; input.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            const glm::vec2 cursorPos{screenToWorldCoordinates(m_camera, input.getMousePosition())};
-
-            if (m_tileMap->contains(cursorPos)) {
-                std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x,
-                                         cursorPos.y);
-            }
-
-            if (m_gridLines->contains(cursorPos)) {
-                std::cout << std::format("Mouse clicked over grid lines at ({:.2f}, {:.2f}).\n", cursorPos.x,
-                                         cursorPos.y);
-            }
-        }
+        const InputState input{m_window->inputState()};
+        /// TODO: Refactor this into loop over all game objects.
+        m_camera.update(deltaTime, input);
+        m_tileMap->update(deltaTime, input, m_camera);
+        m_gridLines->update(deltaTime, input, m_camera);
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
         // TODO: Set up observer/observable pattern to propogate input events to game objects.
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor position in both screen and world coordinates?

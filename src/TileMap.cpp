@@ -19,6 +19,8 @@
 // Created by Anthony Dickson on 22/04/2024.
 //
 
+#include <format>
+#include <iostream>
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
@@ -52,13 +54,13 @@ namespace EconSimPlusPlus {
 
             return textureCoordinates;
         }
-    }
+    } // namespace
 
     TileMap::TileMap(std::unique_ptr<Texture> texture, const glm::vec2 tileSize, const glm::ivec2 mapSize,
                      const std::vector<int>& tiles) :
         m_texture(std::move(texture)), m_tileSize(tileSize),
-        m_sheetSize{m_texture->resolution() / static_cast<glm::ivec2>(tileSize)},
-        m_mapSize(mapSize), m_tiles(tiles), m_textureCoordinates(generateTextureCoordinates(m_sheetSize)) {
+        m_sheetSize{m_texture->resolution() / static_cast<glm::ivec2>(tileSize)}, m_mapSize(mapSize), m_tiles(tiles),
+        m_textureCoordinates(generateTextureCoordinates(m_sheetSize)) {
         const std::vector vertexData{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
         m_vao.bind();
         m_vbo.loadData(vertexData, {2});
@@ -138,8 +140,7 @@ namespace EconSimPlusPlus {
             }
 
             glUniformMatrix4fv(m_shader.uniformLocation("transforms"), tileIndex, GL_FALSE, &transforms[0][0][0]);
-            glUniform2fv(m_shader.uniformLocation("textureCoordinates"), tileIndex,
-                         &textureCoordinatesInstanced[0][0]);
+            glUniform2fv(m_shader.uniformLocation("textureCoordinates"), tileIndex, &textureCoordinatesInstanced[0][0]);
             glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, tileIndex);
         };
 
@@ -160,5 +161,13 @@ namespace EconSimPlusPlus {
         }
 
         renderFn();
+    }
+
+    void TileMap::update(float, const InputState& inputState, const Camera& camera) {
+        const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
+
+        if (contains(cursorPos) and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x, cursorPos.y);
+        }
     }
 } // namespace EconSimPlusPlus
