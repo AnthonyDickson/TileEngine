@@ -19,15 +19,15 @@
 // Created by Anthony Dickson on 04/05/2024.
 //
 
-#ifndef DEADRECKONINGALGORITHM_HPP
-#define DEADRECKONINGALGORITHM_HPP
+#ifndef SIGNEDDISTANCEFIELD_HPP
+#define SIGNEDDISTANCEFIELD_HPP
 
 #include <vector>
 
 #include <glm/vec2.hpp>
 
 /// An algorithm for creating a signed distance field from a binary image.
-namespace EconSimPlusPlus::DeadReckoningAlgorithm {
+namespace EconSimPlusPlus::SignedDistanceField {
     /// Create a signed distance field (SDF) from a binary image.
     /// @param bitmap A black and white image where white pixels denote regions inside an object and black
     /// pixels regions outside an object.
@@ -39,6 +39,6 @@ namespace EconSimPlusPlus::DeadReckoningAlgorithm {
     /// @return An 8-bit signed distance field (128.0f = 0).
     std::vector<std::uint8_t> createSDF(const std::uint8_t* bitmap, glm::ivec2 bitmapSize, glm::ivec2 paddedSize,
                                         glm::ivec2 outputSize, float spread = 16.0f);
-} // namespace EconSimPlusPlus::DeadReckoningAlgorithm
+} // namespace EconSimPlusPlus::SignedDistanceField
 
-#endif // DEADRECKONINGALGORITHM_HPP
+#endif // SIGNEDDISTANCEFIELD_HPP

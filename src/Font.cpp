@@ -29,8 +29,8 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
 #include <EconSimPlusPlus/Font.hpp>
+#include <EconSimPlusPlus/SignedDistanceField.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
@@ -83,7 +83,7 @@ namespace EconSimPlusPlus {
             const glm::vec2 resolution(static_cast<float>(glyph->bitmap.width), static_cast<float>(glyph->bitmap.rows));
 
             if (resolution.x != 0.0f and resolution.y != 0.0f) {
-                const auto sdf{DeadReckoningAlgorithm::createSDF(glyph->bitmap.buffer, resolution, sdfFontSize,
+                const auto sdf{SignedDistanceField::createSDF(glyph->bitmap.buffer, resolution, sdfFontSize,
                                                                  textureSize, spread)};
                 textureArray->bufferSubImage(c, textureSize, sdf.data());
             }

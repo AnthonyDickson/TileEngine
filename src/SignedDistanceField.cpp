@@ -23,7 +23,7 @@
 
 #include <stb_image_resize2.h>
 
-#include <EconSimPlusPlus/DeadReckoningAlgorithm.hpp>
+#include <EconSimPlusPlus/SignedDistanceField.hpp>
 
 namespace EconSimPlusPlus {
     namespace {
@@ -224,7 +224,7 @@ namespace EconSimPlusPlus {
         }
     }
 
-    std::vector<std::uint8_t> DeadReckoningAlgorithm::createSDF(const std::uint8_t* bitmap, const glm::ivec2 bitmapSize,
+    std::vector<std::uint8_t> SignedDistanceField::createSDF(const std::uint8_t* bitmap, const glm::ivec2 bitmapSize,
                                         const glm::ivec2 paddedSize, const glm::ivec2 outputSize, const float spread) {
         const auto paddedBitmap{padImage(bitmap, bitmapSize, paddedSize)};
         const auto sdf{createFloatSDF(paddedBitmap.data(), paddedSize)};
@@ -235,4 +235,4 @@ namespace EconSimPlusPlus {
 
         return resizedSDFImage;
     }
-} // namespace EconSimPlusPlus::DeadReckoningAlgorithm
+} // namespace EconSimPlusPlus::SignedDistanceField

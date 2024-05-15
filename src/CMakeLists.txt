@@ -1,6 +1,5 @@
 add_library(LibEconSimPlusPlus
         Camera.cpp
-        DeadReckoningAlgorithm.cpp
         Font.cpp
         FrameTimer.cpp
         Game.cpp
@@ -9,6 +8,7 @@ add_library(LibEconSimPlusPlus
         GridLines.cpp
         InputState.cpp
         Shader.cpp
+        SignedDistanceField.cpp
         Texture.cpp
         TextureArray.cpp
         TileMap.cpp
