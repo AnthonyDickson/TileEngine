@@ -41,12 +41,11 @@ namespace EconSimPlusPlus {
 
         GridLines(GridLines&) = delete; // Prevent copy to avoid issues w/ OpenGL
 
+        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+
         /// Draw the grid lines on screen.
         /// @param camera The camera to render the grid lines with.
-        /// @param z The 'layer' to render the grid lines on.
-        void render(const Camera& camera, float z = 0.0f) const;
-
-        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+        void render(const Camera& camera) const override;
 
     private:
         /// The vertex array object.

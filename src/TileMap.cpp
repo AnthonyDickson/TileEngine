@@ -118,7 +118,15 @@ namespace EconSimPlusPlus {
         return m_tileSize;
     }
 
-    void TileMap::render(const Camera& camera, const float z) const {
+    void TileMap::update(float, const InputState& inputState, const Camera& camera) {
+        const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
+
+        if (contains(cursorPos) and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x, cursorPos.y);
+        }
+    }
+
+    void TileMap::render(const Camera& camera) const {
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
         const glm::vec2 textureCoordStride{1.0f / static_cast<float>(m_sheetSize.x),
                                            1.0f / static_cast<float>(m_sheetSize.y)};
@@ -147,7 +155,7 @@ namespace EconSimPlusPlus {
         for (int row = rowStart; row < rowEnd; ++row) {
             for (int col = colStart; col < colEnd; ++col) {
                 transforms[tileIndex] =
-                    glm::translate(m_transform, glm::vec3{static_cast<float>(col), static_cast<float>(row), z});
+                    glm::translate(m_transform, glm::vec3{static_cast<float>(col), static_cast<float>(row), layer()});
                 const int tileID{m_tiles.at(row * m_mapSize.x + col)};
                 textureCoordinatesInstanced[tileIndex] = m_textureCoordinates[tileID];
 
@@ -161,13 +169,5 @@ namespace EconSimPlusPlus {
         }
 
         renderFn();
-    }
-
-    void TileMap::update(float, const InputState& inputState, const Camera& camera) {
-        const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
-
-        if (contains(cursorPos) and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x, cursorPos.y);
-        }
     }
 } // namespace EconSimPlusPlus

@@ -62,20 +62,20 @@ namespace EconSimPlusPlus {
         setSize({scaledSize, 1.0f});
     }
 
-    void GridLines::render(const Camera& camera, const float z) const {
-        m_shader.bind();
-        m_shader.setUniform("color", glm::vec3{1.0f});
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
-        m_shader.setUniform("transform", glm::translate(m_transform, glm::vec3{0.0f, 0.0f, z}));
-        m_vao.bind();
-        m_vbo.drawArrays(GL_LINES);
-    }
-
     void GridLines::update(float, const InputState& inputState, const Camera& camera) {
         const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
 
         if (contains(cursorPos) and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             std::cout << std::format("Mouse clicked over grid lines at ({:.2f}, {:.2f}).\n", cursorPos.x, cursorPos.y);
         }
+    }
+
+    void GridLines::render(const Camera& camera) const {
+        m_shader.bind();
+        m_shader.setUniform("color", glm::vec3{1.0f});
+        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
+        m_shader.setUniform("transform", glm::translate(m_transform, glm::vec3{0.0f, 0.0f, layer()}));
+        m_vao.bind();
+        m_vbo.drawArrays(GL_LINES);
     }
 } // namespace EconSimPlusPlus

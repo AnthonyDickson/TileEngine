@@ -52,12 +52,11 @@ namespace EconSimPlusPlus {
         /// The size (width and height) of a single tile in pixels.
         [[nodiscard]] glm::vec2 tileSize() const;
 
+        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+
         /// Draw the tile map on screen.
         /// @param camera The camera to render the tile map with.
-        /// @param z The 'layer' to render the tile map on.
-        void render(const Camera& camera, float z = 0.0f) const;
-
-        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+        void render(const Camera& camera) const override;
 
     private:
         /// Bounds of a tile grid.

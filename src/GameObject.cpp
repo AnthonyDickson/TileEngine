@@ -42,6 +42,15 @@ namespace EconSimPlusPlus {
         m_size = size;
     }
 
+    float GameObject::layer() const {
+        return m_layer;
+    }
+
+    void GameObject::setLayer(const float layer) {
+        assert(layer >= 0.0f && "Layer must be non-negative.");
+        m_layer = layer;
+    }
+
     bool GameObject::contains(glm::vec2 point) const {
         for (int axis = 0; axis < 2; ++axis) {
             constexpr int translationCol = 3;

@@ -50,11 +50,24 @@ namespace EconSimPlusPlus {
         /// @param size The 3D dimensions of the object in pixels.
         void setSize(glm::vec3 size);
 
+        /// The layer the object exists on.
+        /// This controls the ordering during rendering. Higher values put the object closer to the camera.
+        /// @return A non-negative number.
+        [[nodiscard]] float layer() const;
+
+        /// Set the object's layer.
+        /// @param layer The layer the object exists on. Higher values put the object closer to the camera.
+        void setLayer(float layer);
+
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
         /// @param inputState The state of keyboard and mouse input.
         /// @param camera
         virtual void update(float deltaTime, const InputState& inputState, const Camera& camera) = 0;
+
+        /// Draw the object on screen.
+        /// @param camera The camera to render the tile map with.
+        virtual void render(const Camera& camera) const = 0;
 
         /// Check whether a point is contained in the object's axis-aligned bounding box.
         /// @param point The 2D point to test.
@@ -67,6 +80,8 @@ namespace EconSimPlusPlus {
         glm::mat4 m_transform{1.0f};
         /// The width, height and depth of the object in world space coordinates.
         glm::vec3 m_size{1.0f};
+        /// This controls the ordering during rendering. Higher values put the object closer to the camera.
+        float m_layer{0.0f};
     };
 
 } // namespace EconSimPlusPlus

@@ -64,7 +64,6 @@ namespace EconSimPlusPlus {
             object->update(deltaTime, input, m_camera);
         }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
-        // TODO: Set up observer/observable pattern to propogate input events to game objects.
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor position in both screen and world coordinates?
     }
 
@@ -79,14 +78,9 @@ namespace EconSimPlusPlus {
 
         glEnable(GL_CULL_FACE);
 
-        // TODO: Render game objects by looping over collection
-        // for (const auto& object: objects) {
-        //     // TODO: `GameObject` should have a render function.
-        //     // TODO: Have `GameObject` hold render layer for render call.
-        //     object->render(m_camera);
-        // }
-        m_tileMap->render(m_camera, 0.0f);
-        m_gridLines->render(m_camera, 50.0f);
+        for (const auto& object : objects) {
+            object->render(m_camera);
+        }
     }
 
     void Game::run() {
@@ -105,6 +99,8 @@ namespace EconSimPlusPlus {
                                                     .outlineColor = {0.0f, 0.0f, 0.0f}};
 
         // TODO: Move this to factory function?
+        m_tileMap->setLayer(1.0f);
+        m_gridLines->setLayer(2.0f);
         objects.push_back(m_tileMap.get());
         objects.push_back(m_gridLines.get());
 
@@ -130,6 +126,7 @@ namespace EconSimPlusPlus {
             render();
             renderTimer.endStep();
 
+            // TODO: Convert frame time summary into game object?
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
             const glm::vec3 position{-static_cast<float>(m_window->width()) / 2.0f,
