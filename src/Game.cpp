@@ -48,16 +48,21 @@ namespace EconSimPlusPlus {
         return {std::move(window), std::move(tileMap), std::move(gridLines)};
     }
 
+    void Game::addObject(GameObject* object) {
+        objects.push_back(object);
+    }
+
     void Game::update(const float deltaTime) {
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
         }
 
         const InputState input{m_window->inputState()};
-        /// TODO: Refactor this into loop over all game objects.
         m_camera.update(deltaTime, input);
-        m_tileMap->update(deltaTime, input, m_camera);
-        m_gridLines->update(deltaTime, input, m_camera);
+
+        for (const auto& object : objects) {
+            object->update(deltaTime, input, m_camera);
+        }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
         // TODO: Set up observer/observable pattern to propogate input events to game objects.
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor position in both screen and world coordinates?
@@ -74,6 +79,12 @@ namespace EconSimPlusPlus {
 
         glEnable(GL_CULL_FACE);
 
+        // TODO: Render game objects by looping over collection
+        // for (const auto& object: objects) {
+        //     // TODO: `GameObject` should have a render function.
+        //     // TODO: Have `GameObject` hold render layer for render call.
+        //     object->render(m_camera);
+        // }
         m_tileMap->render(m_camera, 0.0f);
         m_gridLines->render(m_camera, 50.0f);
     }
@@ -92,6 +103,10 @@ namespace EconSimPlusPlus {
                                                     .anchor = Font::Anchor::topLeft,
                                                     .outlineSize = 0.3f,
                                                     .outlineColor = {0.0f, 0.0f, 0.0f}};
+
+        // TODO: Move this to factory function?
+        objects.push_back(m_tileMap.get());
+        objects.push_back(m_gridLines.get());
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};

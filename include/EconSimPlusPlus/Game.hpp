@@ -39,6 +39,12 @@ namespace EconSimPlusPlus {
         Game(Game&) = delete;
         Game(Game&&) = delete;
 
+        /// Register a game object. Registered objects will be automatically updated and rendered in the main loop.
+        /// @param object A pointer to the game object.
+        /// @note This list and class will not manage the lifetimes of objects pointed to, that is the responsibility of
+        /// the caller.
+        void addObject(GameObject* object);
+
         /// Update the game by one step.
         /// @param deltaTime the size of the step to take in term of time (seconds).
         void update(float deltaTime);
@@ -65,6 +71,8 @@ namespace EconSimPlusPlus {
         std::unique_ptr<TileMap> m_tileMap;
         /// 2D grid lines.
         std::unique_ptr<GridLines> m_gridLines;
+        /// A list of all game objects.
+        std::vector<GameObject*> objects{};
         /// The render camera.
         Camera m_camera;
         /// The font for rendering text on screen.
