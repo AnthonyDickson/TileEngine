@@ -48,6 +48,8 @@ namespace EconSimPlusPlus {
         void render(const Camera& camera) const override;
 
     private:
+        /// The gap between lines.
+        const glm::vec2 m_cellSize;
         /// The vertex array object.
         const VertexArray m_vao{};
         /// The vertex buffer object.
