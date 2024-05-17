@@ -42,13 +42,13 @@ namespace EconSimPlusPlus {
         /// @param transform The new homogeneous transform matrix.
         void setTransform(const glm::mat4& transform);
 
-        /// Get the object's dimensions.
-        /// @return A 3-vector.
-        [[nodiscard]] glm::vec3 size() const;
+        /// Get the object's 2D coordinate in world space.
+        /// @return A 2-vector.
+        [[nodiscard]] glm::vec2 position() const;
 
-        /// Set the size of the object.
-        /// @param size The 3D dimensions of the object in pixels.
-        void setSize(glm::vec3 size);
+        /// Set the 2D coordinates of an object.
+        /// @param position The object's 2D coordinate in world space.
+        void setPosition(glm::vec2 position);
 
         /// The layer the object exists on.
         /// This controls the ordering during rendering. Higher values put the object closer to the camera.
@@ -58,6 +58,14 @@ namespace EconSimPlusPlus {
         /// Set the object's layer.
         /// @param layer The layer the object exists on. Higher values put the object closer to the camera.
         void setLayer(float layer);
+
+        /// Get the object's dimensions.
+        /// @return A 2-vector.
+        [[nodiscard]] glm::vec2 size() const;
+
+        /// Set the size of the object.
+        /// @param size The 2D dimensions of the object in pixels.
+        void setSize(glm::vec2 size);
 
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
@@ -74,14 +82,12 @@ namespace EconSimPlusPlus {
         /// @return Whether the point interects the object.
         [[nodiscard]] bool contains(glm::vec2 point) const;
 
-    protected:
+    private:
         /// The 4x4 homogeneous transform matrix representing the object's position, orientation and scale.
         /// Corresponds to the model matrix in the model-view-projection matrix triplet.
         glm::mat4 m_transform{1.0f};
-        /// The width, height and depth of the object in world space coordinates.
-        glm::vec3 m_size{1.0f};
-        /// This controls the ordering during rendering. Higher values put the object closer to the camera.
-        float m_layer{0.0f};
+        /// The width and height of the object in world space coordinates.
+        glm::vec2 m_size{1.0f};
     };
 
 } // namespace EconSimPlusPlus

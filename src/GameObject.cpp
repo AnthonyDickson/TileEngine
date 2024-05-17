@@ -32,23 +32,32 @@ namespace EconSimPlusPlus {
         m_transform = transform;
     }
 
-    glm::vec3 GameObject::size() const {
-        return m_size;
+    glm::vec2 GameObject::position() const {
+        return {m_transform[3][0], m_transform[3][1]};
     }
 
-    void GameObject::setSize(const glm::vec3 size) {
-        assert(glm::all(glm::greaterThanEqual(size, glm::vec3{1.0f})) &&
-               "All components of size must be greater than or equal to 1.0.");
-        m_size = size;
+    void GameObject::setPosition(const glm::vec2 position) {
+        m_transform[3][0] = position.x;
+        m_transform[3][1] = position.y;
     }
 
     float GameObject::layer() const {
-        return m_layer;
+        return m_transform[3][2];
     }
 
     void GameObject::setLayer(const float layer) {
         assert(layer >= 0.0f && "Layer must be non-negative.");
-        m_layer = layer;
+        m_transform[3][2] = layer;
+    }
+
+    glm::vec2 GameObject::size() const {
+        return m_size;
+    }
+
+    void GameObject::setSize(const glm::vec2 size) {
+        assert(glm::all(glm::greaterThanEqual(size, glm::vec3{1.0f})) &&
+               "All components of size must be greater than or equal to 1.0.");
+        m_size = size;
     }
 
     bool GameObject::contains(glm::vec2 point) const {

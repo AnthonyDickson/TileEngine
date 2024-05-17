@@ -58,11 +58,12 @@ namespace EconSimPlusPlus {
         m_vbo.bind();
         m_vbo.loadData(vertices, {2});
 
-        setTransform(glm::translate(m_transform, {-0.5f * scaledSize, 0.0}));
-        setSize({scaledSize, 1.0f});
+        setTransform(glm::translate(transform(), {-0.5f * scaledSize, 0.0}));
+        setSize(scaledSize);
     }
 
     void GridLines::update(float, const InputState& inputState, const Camera& camera) {
+        // ReSharper disable once CppTooWideScopeInitStatement
         const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
 
         if (contains(cursorPos) and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
@@ -74,7 +75,7 @@ namespace EconSimPlusPlus {
         m_shader.bind();
         m_shader.setUniform("color", glm::vec3{1.0f});
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
-        m_shader.setUniform("transform", glm::translate(m_transform, glm::vec3{0.0f, 0.0f, layer()}));
+        m_shader.setUniform("transform", transform());
         m_vao.bind();
         m_vbo.drawArrays(GL_LINES);
     }

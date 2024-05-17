@@ -68,7 +68,7 @@ namespace EconSimPlusPlus {
         glm::mat4 transform{glm::scale(glm::mat4(1.0f), {tileSize, 1.0f})};
         transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
         setTransform(transform);
-        setSize({tileSize * static_cast<glm::vec2>(mapSize), 1.0f});
+        setSize(tileSize * static_cast<glm::vec2>(mapSize));
     }
 
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
@@ -99,11 +99,11 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::update(float, const InputState& inputState, const Camera& camera) {
+        // ReSharper disable once CppTooWideScopeInitStatement
         const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
 
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
-            const glm::vec2 pos2D{m_transform[3][0], m_transform[3][1]};
-            const glm::ivec2 gridPos{((cursorPos - pos2D) / m_tileSize)};
+            const glm::ivec2 gridPos{((cursorPos - position()) / m_tileSize)};
 
             std::cout << std::format(
                 "Mouse clicked over tile map at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
@@ -140,7 +140,7 @@ namespace EconSimPlusPlus {
         for (int row = rowStart; row < rowEnd; ++row) {
             for (int col = colStart; col < colEnd; ++col) {
                 transforms[tileIndex] =
-                    glm::translate(m_transform, glm::vec3{static_cast<float>(col), static_cast<float>(row), layer()});
+                    glm::translate(transform(), glm::vec3{static_cast<float>(col), static_cast<float>(row), 0.0f});
                 const int tileID{m_tiles.at(row * m_mapSize.x + col)};
                 textureCoordinatesInstanced[tileIndex] = m_textureCoordinates[tileID];
 
@@ -158,10 +158,9 @@ namespace EconSimPlusPlus {
 
     TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
         const auto [bottomLeft, topRight]{camera.viewport()};
-        const glm::vec2 position{m_transform[3][0], m_transform[3][1]};
 
-        const glm::vec2 gridCoordinatesMin{(bottomLeft - position) / m_tileSize};
-        const glm::vec2 gridCoordinatesMax{(topRight - position) / m_tileSize};
+        const glm::vec2 gridCoordinatesMin{(bottomLeft - position()) / m_tileSize};
+        const glm::vec2 gridCoordinatesMax{(topRight - position()) / m_tileSize};
 
         // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
         // appearing' only once they are fully in view.
