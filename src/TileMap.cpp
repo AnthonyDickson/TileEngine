@@ -71,26 +71,6 @@ namespace EconSimPlusPlus {
         setSize({tileSize * static_cast<glm::vec2>(mapSize), 1.0f});
     }
 
-    TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
-        const auto [bottomLeft, topRight]{camera.viewport()};
-        const glm::vec2 position{m_transform[3][0], m_transform[3][1]};
-
-        const glm::vec2 gridCoordinatesMin{(bottomLeft - position) / m_tileSize};
-        const glm::vec2 gridCoordinatesMax{(topRight - position) / m_tileSize};
-
-        // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
-        // appearing' only once they are fully in view.
-        constexpr int padding{1};
-
-        const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
-        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + padding, m_mapSize.y);
-
-        const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
-        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + padding, m_mapSize.x);
-
-        return {rowStart, rowEnd, colStart, colEnd};
-    }
-
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
         const YAML::Node tileMapConfig{YAML::LoadFile(yamlPath)};
         const YAML::Node tileSheetNode{tileMapConfig["tile-sheet"]};
@@ -121,8 +101,13 @@ namespace EconSimPlusPlus {
     void TileMap::update(float, const InputState& inputState, const Camera& camera) {
         const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
 
-        if (contains(cursorPos) and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            std::cout << std::format("Mouse clicked over tile map at ({:.2f}, {:.2f}).\n", cursorPos.x, cursorPos.y);
+        if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
+            const glm::vec2 pos2D{m_transform[3][0], m_transform[3][1]};
+            const glm::ivec2 gridPos{((cursorPos - pos2D) / m_tileSize)};
+
+            std::cout << std::format(
+                "Mouse clicked over tile map at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
+                cursorPos.y, gridPos.x, gridPos.y);
         }
     }
 
@@ -169,5 +154,25 @@ namespace EconSimPlusPlus {
         }
 
         renderFn();
+    }
+
+    TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
+        const auto [bottomLeft, topRight]{camera.viewport()};
+        const glm::vec2 position{m_transform[3][0], m_transform[3][1]};
+
+        const glm::vec2 gridCoordinatesMin{(bottomLeft - position) / m_tileSize};
+        const glm::vec2 gridCoordinatesMax{(topRight - position) / m_tileSize};
+
+        // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
+        // appearing' only once they are fully in view.
+        constexpr int padding{1};
+
+        const int rowStart = std::max(0, static_cast<int>(gridCoordinatesMin.y));
+        const int rowEnd = std::min(static_cast<int>(gridCoordinatesMax.y) + padding, m_mapSize.y);
+
+        const int colStart = std::max(0, static_cast<int>(gridCoordinatesMin.x));
+        const int colEnd = std::min(static_cast<int>(gridCoordinatesMax.x) + padding, m_mapSize.x);
+
+        return {rowStart, rowEnd, colStart, colEnd};
     }
 } // namespace EconSimPlusPlus
