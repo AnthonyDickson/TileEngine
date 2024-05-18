@@ -10,5 +10,6 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 
 add_subdirectory(lib)
+add_subdirectory(LibEconSimPlusPlusEditor)
 add_subdirectory(src)
 add_subdirectory(apps)
