@@ -27,7 +27,7 @@
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 #include <EconSimPlusPlus/Engine/InputState.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     // TODO: Refactor GameObject along the lines of https://gameprogrammingpatterns.com/component.html
     /// The general base object that represents physical objects that can be placed in a game world.
     class GameObject {
@@ -90,6 +90,6 @@ namespace EconSimPlusPlus {
         glm::vec2 m_size{1.0f};
     };
 
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // GAMEOBJECT_HPP

@@ -24,7 +24,7 @@
 
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     VertexBuffer::VertexBuffer() {
         glGenBuffers(1, &m_id);
     }
@@ -61,4 +61,4 @@ namespace EconSimPlusPlus {
     VertexBuffer::~VertexBuffer() {
         glDeleteBuffers(1, &m_id);
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

@@ -29,7 +29,7 @@
 
 #include <EconSimPlusPlus/Engine/Shader.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     Shader Shader::create(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath,
                           const int maxInstances) {
         // Load the shader source code.
@@ -167,4 +167,4 @@ namespace EconSimPlusPlus {
     void Shader::setUniform(const std::string& name, const glm::mat4x4& value) const {
         glUniformMatrix4fv(uniformLocation(name), 1, GL_FALSE, value_ptr(value));
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

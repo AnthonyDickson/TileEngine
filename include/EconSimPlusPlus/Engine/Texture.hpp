@@ -24,7 +24,7 @@
 
 #include "glad/glad.h"
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Handles the creation and setup of an OpenGL texture from a image on disk.
     class Texture {
     public:
@@ -70,6 +70,6 @@ namespace EconSimPlusPlus {
         const glm::ivec2 m_resolution;
 
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // ECONSIMPLUSPLUS_TEXTURE_H

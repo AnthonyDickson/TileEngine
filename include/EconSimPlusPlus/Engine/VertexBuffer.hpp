@@ -26,7 +26,7 @@
 #include <vector>
 #include "glad/glad.h"
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Wrapper for OpenGL vertex buffer objects.
     class VertexBuffer {
     public:
@@ -59,6 +59,6 @@ namespace EconSimPlusPlus {
         /// The number of vertices in the buffered vertex data.
         int m_vertexCount{};
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // ECONSIMPLUSPLUS_VERTEXBUFFER_H

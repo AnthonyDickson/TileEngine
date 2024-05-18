@@ -31,7 +31,7 @@
 #include <EconSimPlusPlus/Engine/VertexArray.hpp>
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Handles the loading and rendering of TrueType fonts.
     class Font {
 
@@ -118,7 +118,7 @@ namespace EconSimPlusPlus {
         /// The target size (width, height) of the glyphs in pixels.
         const glm::vec2 m_fontSize;
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 
 #endif // FONT_HPP

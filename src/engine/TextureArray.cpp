@@ -23,7 +23,7 @@
 
 #include <EconSimPlusPlus/Engine/TextureArray.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     TextureArray::TextureArray(const unsigned int id_) : m_id(id_) {
     }
     TextureArray::~TextureArray() {
@@ -53,4 +53,4 @@ namespace EconSimPlusPlus {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

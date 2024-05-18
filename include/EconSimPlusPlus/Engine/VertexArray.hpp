@@ -24,7 +24,7 @@
 
 #include "glad/glad.h"
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Wrapper for OpenGL vertex array objects.
     class VertexArray {
     public:
@@ -46,7 +46,7 @@ namespace EconSimPlusPlus {
         /// The ID for the bound vertex array object.
         GLuint m_id{};
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 
 #endif // ECONSIMPLUSPLUS_VERTEXARRAY_H

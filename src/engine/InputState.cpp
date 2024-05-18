@@ -21,7 +21,7 @@
 
 #include <EconSimPlusPlus/Engine/InputState.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     namespace {
         /// The integer codes that map to a valid key code in GLFW.
         constexpr std::array validKeys{
@@ -228,4 +228,4 @@ namespace EconSimPlusPlus {
     bool InputState::getMouseButtonUp(const int button) const {
         return !m_currentMouseButtonState[button] and m_previousMouseButtonState[button];
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

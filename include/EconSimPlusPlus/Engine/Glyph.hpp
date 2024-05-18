@@ -24,7 +24,7 @@
 
 #include "glm/vec2.hpp"
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Represents a single character in a TrueType font.
     struct Glyph {
         /// The character this glyph represents.
@@ -46,7 +46,7 @@ namespace EconSimPlusPlus {
         Glyph(Glyph&) = delete;
         Glyph(Glyph&&) = delete;
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 
 #endif // GLYPH_HPP

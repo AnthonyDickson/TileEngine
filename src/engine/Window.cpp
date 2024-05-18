@@ -24,7 +24,7 @@
 
 #include <EconSimPlusPlus/Engine/Window.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     bool Window::m_isInitialised = false;
 
     Window::Window(const int windowWidth_, const int windowHeight_, const std::string& windowName) :
@@ -127,4 +127,4 @@ namespace EconSimPlusPlus {
             windowHandle->m_inputState.updateScroll(scrollX, scrollY);
         }
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

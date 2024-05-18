@@ -24,7 +24,7 @@
 
 #include <glm/vec2.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// The area visible from a camera or window, defined by its extents.
     struct Viewport {
         /// The bottom left corner of the viewport in world space.
@@ -32,6 +32,6 @@ namespace EconSimPlusPlus {
         /// The top right corner of the viewport in world space.
         glm::vec2 topRight;
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // VIEWPORT_HPP

@@ -27,7 +27,7 @@
 #include <EconSimPlusPlus/Engine/FrameTimer.hpp>
 #include <EconSimPlusPlus/Engine/Game.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
 
     bool Game::m_isInitialised = false;
 
@@ -135,4 +135,4 @@ namespace EconSimPlusPlus {
             m_window->postUpdate();
         }
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

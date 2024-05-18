@@ -30,7 +30,7 @@
 #include <EconSimPlusPlus/Engine/InputState.hpp>
 #include <EconSimPlusPlus/Engine/Viewport.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
 
     /// An object used to manipulate the view of a scene in OpenGL.
     class Camera {
@@ -91,7 +91,7 @@ namespace EconSimPlusPlus {
     /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
     /// right-handed coordinate system is used.
     glm::vec2 screenToWorldCoordinates(const Camera& camera, glm::vec2 screenCoordinates);
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 
 #endif // ECONSIMPLUSPLUS_CAMERA_H

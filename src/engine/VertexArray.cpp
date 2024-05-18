@@ -21,7 +21,7 @@
 
 #include <EconSimPlusPlus/Engine/VertexArray.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     VertexArray::VertexArray() {
         glGenVertexArrays(1, &m_id);
     }
@@ -33,4 +33,4 @@ namespace EconSimPlusPlus {
     void VertexArray::bind() const {
         glBindVertexArray(m_id);
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

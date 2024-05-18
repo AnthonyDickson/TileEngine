@@ -22,7 +22,7 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// The four cardinal directions on a 2D plane.
     enum class Direction { Up, Down, Left, Right };
 }

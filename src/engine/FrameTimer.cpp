@@ -21,7 +21,7 @@
 
 #include <EconSimPlusPlus/Engine/FrameTimer.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     FrameTimer::FrameTimer(const float alpha) : m_alpha(alpha) {
     }
 
@@ -37,4 +37,4 @@ namespace EconSimPlusPlus {
     float FrameTimer::average() const {
         return m_averageStepDuration.count() / 1e6f;
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

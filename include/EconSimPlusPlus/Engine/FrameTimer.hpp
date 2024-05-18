@@ -24,7 +24,7 @@
 
 #include <chrono>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Measures the average time for repeating tasks such as rendering frames.
     class FrameTimer {
     public:
@@ -53,6 +53,6 @@ namespace EconSimPlusPlus {
         std::chrono::time_point<std::chrono::steady_clock> m_stepStartTime{};
     };
 
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // FRAMETIMER_HPP

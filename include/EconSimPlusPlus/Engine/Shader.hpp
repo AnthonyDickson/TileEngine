@@ -24,7 +24,7 @@
 
 #include "glm/mat4x4.hpp"
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Handles the loading, compilation, linking and usage of an OpenGL shader program.
     class Shader {
     public:
@@ -96,6 +96,6 @@ namespace EconSimPlusPlus {
         /// The max number of instances supported by the shader.
         const int m_maxInstances;
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // ECONSIMPLUSPLUS_SHADER_H

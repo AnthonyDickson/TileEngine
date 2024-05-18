@@ -34,7 +34,7 @@
 #include <EconSimPlusPlus/Engine/VertexArray.hpp>
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
 
     namespace {
         /// The range of ASCII characters to generate glyphs for.
@@ -225,4 +225,4 @@ namespace EconSimPlusPlus {
 
         return textSize;
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

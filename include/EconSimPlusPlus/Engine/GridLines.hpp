@@ -30,7 +30,7 @@
 #include <EconSimPlusPlus/Engine/VertexArray.hpp>
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Draws 2D grid lines.
     class GridLines final : public GameObject {
     public:
@@ -58,6 +58,6 @@ namespace EconSimPlusPlus {
         const Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // GRIDLINES_HPP

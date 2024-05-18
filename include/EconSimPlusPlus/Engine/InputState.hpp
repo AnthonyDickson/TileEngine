@@ -28,7 +28,7 @@
 #include "GLFW/glfw3.h"
 #include "glm/vec2.hpp"
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Keeps track of keyboard and mouse input.
     class InputState {
     public:
@@ -103,6 +103,6 @@ namespace EconSimPlusPlus {
         /// The net change in the scroll wheel since the most recent update step.
         float m_scrollDelta{};
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // INPUTSTATE_H

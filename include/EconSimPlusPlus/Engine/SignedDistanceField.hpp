@@ -26,8 +26,7 @@
 
 #include <glm/vec2.hpp>
 
-/// An algorithm for creating a signed distance field from a binary image.
-namespace EconSimPlusPlus::SignedDistanceField {
+namespace EconSimPlusPlus::Engine::SignedDistanceField {
     /// Create a signed distance field (SDF) from a binary image.
     /// @param bitmap A black and white image where white pixels denote regions inside an object and black
     /// pixels regions outside an object.
@@ -39,6 +38,6 @@ namespace EconSimPlusPlus::SignedDistanceField {
     /// @return An 8-bit signed distance field (128.0f = 0).
     std::vector<std::uint8_t> createSDF(const std::uint8_t* bitmap, glm::ivec2 bitmapSize, glm::ivec2 paddedSize,
                                         glm::ivec2 outputSize, float spread = 16.0f);
-} // namespace EconSimPlusPlus::SignedDistanceField
+} // namespace EconSimPlusPlus::Engine::SignedDistanceField
 
 #endif // SIGNEDDISTANCEFIELD_HPP

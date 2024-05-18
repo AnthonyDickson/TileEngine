@@ -25,7 +25,7 @@
 
 #include <EconSimPlusPlus/Engine/SignedDistanceField.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     namespace {
         /// Pad an image with zeros.
         /// @param binaryImage An image buffer.
@@ -229,4 +229,4 @@ namespace EconSimPlusPlus {
 
         return resizedSDFImage;
     }
-} // namespace EconSimPlusPlus::SignedDistanceField
+} // namespace EconSimPlusPlus::Engine::SignedDistanceField

@@ -29,7 +29,7 @@
 #include <EconSimPlusPlus/Engine/Shader.hpp>
 #include <EconSimPlusPlus/Engine/TileMap.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     namespace {
         /// Generate the texture coordinates for a tile sheet.
         /// @note The UV coordinates are returned as a flat array, however each tile's coordinates take up 4 consecutive
@@ -174,4 +174,4 @@ namespace EconSimPlusPlus {
 
         return {rowStart, rowEnd, colStart, colEnd};
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

@@ -27,7 +27,7 @@
 
 #include <EconSimPlusPlus/Engine/GridLines.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     GridLines::GridLines(const glm::ivec2 size, const glm::vec2 cellSize) : m_cellSize(cellSize) {
         std::vector<float> vertices{};
         const auto scaledSize{static_cast<glm::vec2>(size) * cellSize};
@@ -83,4 +83,4 @@ namespace EconSimPlusPlus {
         m_vao.bind();
         m_vbo.drawArrays(GL_LINES);
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

@@ -24,7 +24,7 @@
 
 int main() {
     try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
+        auto game{EconSimPlusPlus::Engine::Game::create({1920, 1080})};
         game.run();
     } catch (const std::exception &exception) {
         std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;

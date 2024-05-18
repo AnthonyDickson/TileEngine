@@ -27,7 +27,7 @@
 
 #include <EconSimPlusPlus/Engine/Texture.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
 
     std::unique_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
         int width{};
@@ -101,4 +101,4 @@ namespace EconSimPlusPlus {
     int Texture::getUniformTextureUnit() const {
         return m_textureUnit - GL_TEXTURE0;
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

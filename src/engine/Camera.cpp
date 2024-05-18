@@ -24,7 +24,7 @@
 
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     namespace {
         /// The point of interest that the camera is "looking at". Used for calculating the view matrix.
         constexpr glm::vec3 forward{0.0f, 0.0f, -1.0f};
@@ -139,4 +139,4 @@ namespace EconSimPlusPlus {
         return {screenCoordinates.x + bottomLeft.x, -screenCoordinates.y + topRight.y};
     }
 
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

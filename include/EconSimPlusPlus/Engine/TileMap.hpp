@@ -29,7 +29,7 @@
 #include <EconSimPlusPlus/Engine/VertexArray.hpp>
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Handles loading and accessing a textured-based tile map.
     class TileMap final : public GameObject {
 
@@ -92,6 +92,6 @@ namespace EconSimPlusPlus {
         /// The UV corners for each tile.
         const std::vector<glm::vec2> m_textureCoordinates;
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // TILEMAP_H

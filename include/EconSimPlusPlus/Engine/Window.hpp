@@ -28,7 +28,7 @@
 
 #include <EconSimPlusPlus/Engine/InputState.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// Handles the basic functions of an OpenGL window.
     class Window {
     public:
@@ -109,6 +109,6 @@ namespace EconSimPlusPlus {
         /// Keeps track of keyboard and mouse input.
         InputState m_inputState{};
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // ECONSIMPLUSPLUS_WINDOW_H

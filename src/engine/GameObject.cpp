@@ -21,7 +21,7 @@
 
 #include <EconSimPlusPlus/Engine/GameObject.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     GameObject::~GameObject() = default;
 
     glm::mat4 GameObject::transform() const {
@@ -55,7 +55,7 @@ namespace EconSimPlusPlus {
     }
 
     void GameObject::setSize(const glm::vec2 size) {
-        assert(glm::all(glm::greaterThanEqual(size, glm::vec3{1.0f})) &&
+        assert(glm::all(glm::greaterThanEqual(size, glm::vec2{1.0f})) &&
                "All components of size must be greater than or equal to 1.0.");
         m_size = size;
     }
@@ -75,4 +75,4 @@ namespace EconSimPlusPlus {
 
         return true;
     }
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine

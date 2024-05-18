@@ -26,7 +26,7 @@
 
 #include <glm/vec2.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
 
     /// A collection of textures stored in an OpenGL texture array.
     /// @note Assumes single channel textures.
@@ -60,6 +60,6 @@ namespace EconSimPlusPlus {
         const unsigned int m_id{};
     };
 
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // TEXTUREARRAY_HPP

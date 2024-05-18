@@ -27,7 +27,7 @@
 #include <EconSimPlusPlus/Engine/TileMap.hpp>
 #include <EconSimPlusPlus/Engine/Window.hpp>
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Engine {
     /// This is the main class for the program.
     class Game {
     public:
@@ -78,6 +78,6 @@ namespace EconSimPlusPlus {
         /// The font for rendering text on screen.
         std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
     };
-} // namespace EconSimPlusPlus
+} // namespace EconSimPlusPlus::Engine
 
 #endif // GAME_H
