@@ -27,7 +27,7 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
-#include <EconSimPlusPlus/Shader.hpp>
+#include <EconSimPlusPlus/Engine/Shader.hpp>
 
 namespace EconSimPlusPlus {
     Shader Shader::create(const std::string& vertexShaderSourcePath, const std::string& fragmentShaderSourcePath,

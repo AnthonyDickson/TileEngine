@@ -28,11 +28,11 @@
 #include <freetype/freetype.h>
 #include <glm/ext/matrix_transform.hpp>
 
-#include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/Font.hpp>
-#include <EconSimPlusPlus/SignedDistanceField.hpp>
-#include <EconSimPlusPlus/VertexArray.hpp>
-#include <EconSimPlusPlus/VertexBuffer.hpp>
+#include <EconSimPlusPlus/Engine/Camera.hpp>
+#include <EconSimPlusPlus/Engine/Font.hpp>
+#include <EconSimPlusPlus/Engine/SignedDistanceField.hpp>
+#include <EconSimPlusPlus/Engine/VertexArray.hpp>
+#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
 

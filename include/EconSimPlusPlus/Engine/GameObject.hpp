@@ -24,8 +24,8 @@
 
 #include "glm/matrix.hpp"
 
-#include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/InputState.hpp>
+#include <EconSimPlusPlus/Engine/Camera.hpp>
+#include <EconSimPlusPlus/Engine/InputState.hpp>
 
 namespace EconSimPlusPlus {
     // TODO: Refactor GameObject along the lines of https://gameprogrammingpatterns.com/component.html

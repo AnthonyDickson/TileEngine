@@ -19,7 +19,7 @@
 // Created by Anthony Dickson on 12/05/2024.
 //
 
-#include <EconSimPlusPlus/GameObject.hpp>
+#include <EconSimPlusPlus/Engine/GameObject.hpp>
 
 namespace EconSimPlusPlus {
     GameObject::~GameObject() = default;

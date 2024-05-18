@@ -26,7 +26,7 @@
 
 #include "GLFW/glfw3.h"
 
-#include <EconSimPlusPlus/InputState.hpp>
+#include <EconSimPlusPlus/Engine/InputState.hpp>
 
 namespace EconSimPlusPlus {
     /// Handles the basic functions of an OpenGL window.

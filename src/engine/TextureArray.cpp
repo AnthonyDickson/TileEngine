@@ -21,7 +21,7 @@
 
 #include "glad/glad.h"
 
-#include <EconSimPlusPlus/TextureArray.hpp>
+#include <EconSimPlusPlus/Engine/TextureArray.hpp>
 
 namespace EconSimPlusPlus {
     TextureArray::TextureArray(const unsigned int id_) : m_id(id_) {

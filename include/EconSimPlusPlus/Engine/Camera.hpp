@@ -26,9 +26,9 @@
 // ReSharper disable once CppWrongIncludesOrder
 #include "glm/vec3.hpp"
 
-#include <EconSimPlusPlus/Direction.hpp>
-#include <EconSimPlusPlus/InputState.hpp>
-#include <EconSimPlusPlus/Viewport.hpp>
+#include <EconSimPlusPlus/Engine/Direction.hpp>
+#include <EconSimPlusPlus/Engine/InputState.hpp>
+#include <EconSimPlusPlus/Engine/Viewport.hpp>
 
 namespace EconSimPlusPlus {
 

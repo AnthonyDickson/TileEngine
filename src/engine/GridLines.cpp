@@ -25,7 +25,7 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
-#include <EconSimPlusPlus/GridLines.hpp>
+#include <EconSimPlusPlus/Engine/GridLines.hpp>
 
 namespace EconSimPlusPlus {
     GridLines::GridLines(const glm::ivec2 size, const glm::vec2 cellSize) : m_cellSize(cellSize) {

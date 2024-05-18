@@ -24,11 +24,11 @@
 
 #include "glm/vec2.hpp"
 
-#include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/GameObject.hpp>
-#include <EconSimPlusPlus/Shader.hpp>
-#include <EconSimPlusPlus/VertexArray.hpp>
-#include <EconSimPlusPlus/VertexBuffer.hpp>
+#include <EconSimPlusPlus/Engine/Camera.hpp>
+#include <EconSimPlusPlus/Engine/GameObject.hpp>
+#include <EconSimPlusPlus/Engine/Shader.hpp>
+#include <EconSimPlusPlus/Engine/VertexArray.hpp>
+#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     /// Draws 2D grid lines.

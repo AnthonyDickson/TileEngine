@@ -22,7 +22,7 @@
 #include <cassert>
 #include <numeric>
 
-#include <EconSimPlusPlus/VertexBuffer.hpp>
+#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     VertexBuffer::VertexBuffer() {

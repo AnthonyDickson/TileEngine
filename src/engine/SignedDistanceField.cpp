@@ -23,7 +23,7 @@
 
 #include <stb_image_resize2.h>
 
-#include <EconSimPlusPlus/SignedDistanceField.hpp>
+#include <EconSimPlusPlus/Engine/SignedDistanceField.hpp>
 
 namespace EconSimPlusPlus {
     namespace {

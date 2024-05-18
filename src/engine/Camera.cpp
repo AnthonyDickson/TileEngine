@@ -22,7 +22,7 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
-#include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/Engine/Camera.hpp>
 
 namespace EconSimPlusPlus {
     namespace {

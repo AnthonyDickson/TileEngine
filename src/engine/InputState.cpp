@@ -19,7 +19,7 @@
 // Created by Anthony Dickson on 20/04/2024.
 //
 
-#include <EconSimPlusPlus/InputState.hpp>
+#include <EconSimPlusPlus/Engine/InputState.hpp>
 
 namespace EconSimPlusPlus {
     namespace {

@@ -24,12 +24,12 @@
 
 #include <map>
 
-#include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/Glyph.hpp>
-#include <EconSimPlusPlus/Shader.hpp>
-#include <EconSimPlusPlus/TextureArray.hpp>
-#include <EconSimPlusPlus/VertexArray.hpp>
-#include <EconSimPlusPlus/VertexBuffer.hpp>
+#include <EconSimPlusPlus/Engine/Camera.hpp>
+#include <EconSimPlusPlus/Engine/Glyph.hpp>
+#include <EconSimPlusPlus/Engine/Shader.hpp>
+#include <EconSimPlusPlus/Engine/TextureArray.hpp>
+#include <EconSimPlusPlus/Engine/VertexArray.hpp>
+#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     /// Handles the loading and rendering of TrueType fonts.

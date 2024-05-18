@@ -16,21 +16,14 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 1/04/2024.
+// Created by Anthony Dickson on 26/04/2024.
 //
 
-#include <EconSimPlusPlus/VertexArray.hpp>
+#include <EconSimPlusPlus/Engine/Glyph.hpp>
 
 namespace EconSimPlusPlus {
-    VertexArray::VertexArray() {
-        glGenVertexArrays(1, &m_id);
+    Glyph::Glyph(const unsigned char character_, const glm::vec2 size_, const glm::vec2 bearing_,
+                 const float advance_) : character(character_), size(size_), bearing(bearing_), advance(advance_) {
     }
 
-    VertexArray::~VertexArray() {
-        glDeleteVertexArrays(1, &m_id);
-    }
-
-    void VertexArray::bind() const {
-        glBindVertexArray(m_id);
-    }
 } // namespace EconSimPlusPlus

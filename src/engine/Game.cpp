@@ -19,14 +19,13 @@
 // Created by Anthony Dickson on 13/04/2024.
 //
 
-#include <iostream>
 #include <thread>
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
 
-#include <EconSimPlusPlus/FrameTimer.hpp>
-#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/Engine/FrameTimer.hpp>
+#include <EconSimPlusPlus/Engine/Game.hpp>
 
 namespace EconSimPlusPlus {
 

@@ -22,10 +22,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <EconSimPlusPlus/Font.hpp>
-#include <EconSimPlusPlus/GridLines.hpp>
-#include <EconSimPlusPlus/TileMap.hpp>
-#include <EconSimPlusPlus/Window.hpp>
+#include <EconSimPlusPlus/Engine/Font.hpp>
+#include <EconSimPlusPlus/Engine/GridLines.hpp>
+#include <EconSimPlusPlus/Engine/TileMap.hpp>
+#include <EconSimPlusPlus/Engine/Window.hpp>
 
 namespace EconSimPlusPlus {
     /// This is the main class for the program.

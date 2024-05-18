@@ -19,7 +19,7 @@
 // Created by Anthony Dickson on 03/05/2024.
 //
 
-#include <EconSimPlusPlus/FrameTimer.hpp>
+#include <EconSimPlusPlus/Engine/FrameTimer.hpp>
 
 namespace EconSimPlusPlus {
     FrameTimer::FrameTimer(const float alpha) : m_alpha(alpha) {

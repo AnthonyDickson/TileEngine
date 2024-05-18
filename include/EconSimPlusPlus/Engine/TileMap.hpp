@@ -22,12 +22,12 @@
 #ifndef TILEMAP_H
 #define TILEMAP_H
 
-#include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/GameObject.hpp>
-#include <EconSimPlusPlus/Shader.hpp>
-#include <EconSimPlusPlus/Texture.hpp>
-#include <EconSimPlusPlus/VertexArray.hpp>
-#include <EconSimPlusPlus/VertexBuffer.hpp>
+#include <EconSimPlusPlus/Engine/Camera.hpp>
+#include <EconSimPlusPlus/Engine/GameObject.hpp>
+#include <EconSimPlusPlus/Engine/Shader.hpp>
+#include <EconSimPlusPlus/Engine/Texture.hpp>
+#include <EconSimPlusPlus/Engine/VertexArray.hpp>
+#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.

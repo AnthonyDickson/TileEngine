@@ -26,8 +26,8 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "yaml-cpp/yaml.h"
 
-#include <EconSimPlusPlus/Shader.hpp>
-#include <EconSimPlusPlus/TileMap.hpp>
+#include <EconSimPlusPlus/Engine/Shader.hpp>
+#include <EconSimPlusPlus/Engine/TileMap.hpp>
 
 namespace EconSimPlusPlus {
     namespace {

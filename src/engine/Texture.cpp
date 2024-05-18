@@ -25,7 +25,7 @@
 #include <glm/vec2.hpp>
 #include "stb_image.h"
 
-#include <EconSimPlusPlus/Texture.hpp>
+#include <EconSimPlusPlus/Engine/Texture.hpp>
 
 namespace EconSimPlusPlus {
 
