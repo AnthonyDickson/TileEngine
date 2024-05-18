@@ -24,7 +24,6 @@
 
 #include <EconSimPlusPlus/Engine/Font.hpp>
 #include <EconSimPlusPlus/Engine/GridLines.hpp>
-#include <EconSimPlusPlus/Engine/TileMap.hpp>
 #include <EconSimPlusPlus/Engine/Window.hpp>
 
 namespace EconSimPlusPlus::Editor {
@@ -58,17 +57,10 @@ namespace EconSimPlusPlus::Editor {
     private:
         /// Create a new editor instance.
         /// @param window The window to display the editor.
-        /// @param tileMap The game map made up of square tiles.
-        /// @param gridLines 2D grid lines to draw over the tile map.
-        Editor(std::unique_ptr<Engine::Window> window, std::unique_ptr<Engine::TileMap> tileMap,
-               std::unique_ptr<Engine::GridLines> gridLines);
+        explicit Editor(std::unique_ptr<Engine::Window> window);
 
         /// The window we use to display the editor.
         std::unique_ptr<Engine::Window> m_window;
-        /// The game 'map'.
-        std::unique_ptr<Engine::TileMap> m_tileMap;
-        /// 2D grid lines.
-        std::unique_ptr<Engine::GridLines> m_gridLines;
         /// A list of all game objects.
         std::vector<Engine::GameObject*> objects{};
         /// The render camera.

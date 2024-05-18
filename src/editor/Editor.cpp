@@ -19,29 +19,30 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
+#include <iostream>
 #include <thread>
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
 
+#include <EconSimPlusPlus/Editor/Button.hpp>
 #include <EconSimPlusPlus/Editor/Editor.hpp>
 #include <EconSimPlusPlus/Engine/FrameTimer.hpp>
 
+// TODO: Create class for buttons that 1) renders a button with text and 2) handles click events.
+// TODO: Open texture from disk and create an empty tile map with grid lines overlay.
 namespace EconSimPlusPlus::Editor {
 
-    Editor::Editor(std::unique_ptr<Engine::Window> window, std::unique_ptr<Engine::TileMap> tileMap,
-                   std::unique_ptr<Engine::GridLines> gridLines) :
-        m_window(std::move(window)), m_tileMap(std::move(tileMap)), m_gridLines(std::move(gridLines)),
+    Editor::Editor(std::unique_ptr<Engine::Window> window) :
+        m_window(std::move(window)),
         m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
                  {0.0f, 0.0f, 100.0f}} {
     }
 
     Editor Editor::create(glm::ivec2 windowSize) {
         auto window{std::make_unique<Engine::Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
-        std::unique_ptr tileMap{Engine::TileMap::create("resource/terrain.yaml")};
-        auto gridLines{std::make_unique<Engine::GridLines>(tileMap->mapSize(), tileMap->tileSize())};
 
-        return {std::move(window), std::move(tileMap), std::move(gridLines)};
+        return Editor{std::move(window)};
     }
 
     void Editor::addObject(Engine::GameObject* object) {
@@ -95,11 +96,9 @@ namespace EconSimPlusPlus::Editor {
                                                             .outlineSize = 0.3f,
                                                             .outlineColor = {0.0f, 0.0f, 0.0f}};
 
-        // TODO: Move this to factory function?
-        m_tileMap->setLayer(1.0f);
-        m_gridLines->setLayer(2.0f);
-        objects.push_back(m_tileMap.get());
-        objects.push_back(m_gridLines.get());
+        // TODO: Add utility function that calculates the screen coordinates of anchor points on the window.
+        glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
+        Button testButton{m_font.get(), "Open...", topLeft, [&] { std::cout << "Button pressed.\n"; }};
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
