@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 10/05/2024.
 //
 
-#ifndef GRIDLINES_HPP
-#define GRIDLINES_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GRIDLINES_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GRIDLINES_HPP
 
 #include "glm/vec2.hpp"
 
@@ -60,4 +60,4 @@ namespace EconSimPlusPlus::Engine {
 
 } // namespace EconSimPlusPlus::Engine
 
-#endif // GRIDLINES_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GRIDLINES_HPP

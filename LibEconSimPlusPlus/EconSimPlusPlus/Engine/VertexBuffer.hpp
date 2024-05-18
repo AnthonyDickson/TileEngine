@@ -19,12 +19,12 @@
 // Created by Anthony on 1/04/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_VERTEXBUFFER_H
-#define ECONSIMPLUSPLUS_VERTEXBUFFER_H
-
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VERTEXBUFFER_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VERTEXBUFFER_H
 
 #include <vector>
-#include "../../../lib/glad/include/glad/glad.h"
+
+#include "glad/glad.h"
 
 namespace EconSimPlusPlus::Engine {
     /// Wrapper for OpenGL vertex buffer objects.
@@ -61,4 +61,4 @@ namespace EconSimPlusPlus::Engine {
     };
 } // namespace EconSimPlusPlus::Engine
 
-#endif // ECONSIMPLUSPLUS_VERTEXBUFFER_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VERTEXBUFFER_H

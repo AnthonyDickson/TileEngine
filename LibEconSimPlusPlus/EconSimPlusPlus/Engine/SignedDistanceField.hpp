@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 04/05/2024.
 //
 
-#ifndef SIGNEDDISTANCEFIELD_HPP
-#define SIGNEDDISTANCEFIELD_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SIGNEDDISTANCEFIELD_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SIGNEDDISTANCEFIELD_HPP
 
 #include <vector>
 
@@ -40,4 +40,4 @@ namespace EconSimPlusPlus::Engine::SignedDistanceField {
                                         glm::ivec2 outputSize, float spread = 16.0f);
 } // namespace EconSimPlusPlus::Engine::SignedDistanceField
 
-#endif // SIGNEDDISTANCEFIELD_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SIGNEDDISTANCEFIELD_HPP

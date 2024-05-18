@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
-#ifndef EDITOR_H
-#define EDITOR_H
+#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_H
+#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_H
 
 #include <EconSimPlusPlus/Engine/Font.hpp>
 #include <EconSimPlusPlus/Engine/GridLines.hpp>
@@ -71,4 +71,4 @@ namespace EconSimPlusPlus::Editor {
     };
 } // namespace EconSimPlusPlus::Editor
 
-#endif // EDITOR_H
+#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_H

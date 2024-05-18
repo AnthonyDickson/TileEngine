@@ -19,8 +19,8 @@
 // Created by Anthony on 26/03/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_CAMERA_H
-#define ECONSIMPLUSPLUS_CAMERA_H
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_CAMERA_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_CAMERA_H
 
 #include "glm/ext/matrix_float4x4.hpp"
 // ReSharper disable once CppWrongIncludesOrder
@@ -94,4 +94,4 @@ namespace EconSimPlusPlus::Engine {
 } // namespace EconSimPlusPlus::Engine
 
 
-#endif // ECONSIMPLUSPLUS_CAMERA_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_CAMERA_H

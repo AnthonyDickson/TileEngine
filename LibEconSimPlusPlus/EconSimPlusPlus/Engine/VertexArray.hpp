@@ -19,10 +19,10 @@
 // Created by Anthony on 1/04/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_VERTEXARRAY_H
-#define ECONSIMPLUSPLUS_VERTEXARRAY_H
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VERTEXARRAY_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VERTEXARRAY_H
 
-#include "../../../lib/glad/include/glad/glad.h"
+#include "glad/glad.h"
 
 namespace EconSimPlusPlus::Engine {
     /// Wrapper for OpenGL vertex array objects.
@@ -49,4 +49,4 @@ namespace EconSimPlusPlus::Engine {
 } // namespace EconSimPlusPlus::Engine
 
 
-#endif // ECONSIMPLUSPLUS_VERTEXARRAY_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VERTEXARRAY_H

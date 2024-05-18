@@ -19,13 +19,13 @@
 // Created by Anthony Dickson on 20/04/2024.
 //
 
-#ifndef INPUTSTATE_H
-#define INPUTSTATE_H
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_INPUTSTATE_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_INPUTSTATE_H
 
 #include <array>
 
 #define GLFW_INCLUDE_NONE
-#include "../../../cmake-build-release/_deps/glfw-src/include/GLFW/glfw3.h"
+#include "GLFW/glfw3.h"
 #include "glm/vec2.hpp"
 
 namespace EconSimPlusPlus::Engine {
@@ -105,4 +105,4 @@ namespace EconSimPlusPlus::Engine {
     };
 } // namespace EconSimPlusPlus::Engine
 
-#endif // INPUTSTATE_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_INPUTSTATE_H

@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
-#ifndef BUTTON_HPP
-#define BUTTON_HPP
+#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_BUTTON_HPP
+#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_BUTTON_HPP
 
 #include <functional>
 
@@ -49,6 +49,5 @@ namespace EconSimPlusPlus::Editor {
     };
 
 } // namespace EconSimPlusPlus::Editor
-// EconSimPlusPlus
 
-#endif // BUTTON_HPP
+#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_BUTTON_HPP

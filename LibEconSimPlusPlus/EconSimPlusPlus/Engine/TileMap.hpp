@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 22/04/2024.
 //
 
-#ifndef TILEMAP_H
-#define TILEMAP_H
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TILEMAP_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TILEMAP_H
 
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 #include <EconSimPlusPlus/Engine/GameObject.hpp>
@@ -94,4 +94,4 @@ namespace EconSimPlusPlus::Engine {
     };
 } // namespace EconSimPlusPlus::Engine
 
-#endif // TILEMAP_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TILEMAP_H

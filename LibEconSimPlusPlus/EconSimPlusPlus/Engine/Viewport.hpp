@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 13/05/2024.
 //
 
-#ifndef VIEWPORT_HPP
-#define VIEWPORT_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VIEWPORT_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VIEWPORT_HPP
 
 #include <glm/vec2.hpp>
 
@@ -34,4 +34,4 @@ namespace EconSimPlusPlus::Engine {
     };
 } // namespace EconSimPlusPlus::Engine
 
-#endif // VIEWPORT_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_VIEWPORT_HPP

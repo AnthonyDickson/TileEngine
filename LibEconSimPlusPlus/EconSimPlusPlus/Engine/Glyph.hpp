@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 26/04/2024.
 //
 
-#ifndef GLYPH_HPP
-#define GLYPH_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GLYPH_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GLYPH_HPP
 
 #include "glm/vec2.hpp"
 
@@ -49,4 +49,4 @@ namespace EconSimPlusPlus::Engine {
 } // namespace EconSimPlusPlus::Engine
 
 
-#endif // GLYPH_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GLYPH_HPP

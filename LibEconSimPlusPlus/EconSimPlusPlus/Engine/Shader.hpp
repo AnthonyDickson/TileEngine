@@ -19,8 +19,8 @@
 // Created by Anthony on 23/03/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_SHADER_H
-#define ECONSIMPLUSPLUS_SHADER_H
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SHADER_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SHADER_H
 
 #include "glm/mat4x4.hpp"
 
@@ -98,4 +98,4 @@ namespace EconSimPlusPlus::Engine {
     };
 } // namespace EconSimPlusPlus::Engine
 
-#endif // ECONSIMPLUSPLUS_SHADER_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SHADER_H

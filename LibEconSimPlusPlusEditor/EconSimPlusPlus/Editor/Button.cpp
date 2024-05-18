@@ -52,4 +52,3 @@ namespace EconSimPlusPlus::Editor {
         /// TODO: Draw button text
     }
 } // namespace EconSimPlusPlus::Editor
-// EconSimPlusPlus

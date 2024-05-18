@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 26/04/2024.
 //
 
-#ifndef FONT_HPP
-#define FONT_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_FONT_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_FONT_HPP
 
 #include <map>
 
@@ -121,4 +121,4 @@ namespace EconSimPlusPlus::Engine {
 } // namespace EconSimPlusPlus::Engine
 
 
-#endif // FONT_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_FONT_HPP

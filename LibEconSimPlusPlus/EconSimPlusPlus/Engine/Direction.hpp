@@ -19,12 +19,12 @@
 // Created by Anthony Dickson on 25/04/2024.
 //
 
-#ifndef DIRECTION_H
-#define DIRECTION_H
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_DIRECTION_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_DIRECTION_H
 
 namespace EconSimPlusPlus::Engine {
     /// The four cardinal directions on a 2D plane.
     enum class Direction { Up, Down, Left, Right };
 }
 
-#endif // DIRECTION_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_DIRECTION_H

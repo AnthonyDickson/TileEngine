@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 03/05/2024.
 //
 
-#ifndef FRAMETIMER_HPP
-#define FRAMETIMER_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_FRAMETIMER_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_FRAMETIMER_HPP
 
 #include <chrono>
 
@@ -55,4 +55,4 @@ namespace EconSimPlusPlus::Engine {
 
 } // namespace EconSimPlusPlus::Engine
 
-#endif // FRAMETIMER_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_FRAMETIMER_HPP

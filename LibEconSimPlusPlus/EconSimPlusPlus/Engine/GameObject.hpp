@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 12/05/2024.
 //
 
-#ifndef GAMEOBJECT_HPP
-#define GAMEOBJECT_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GAMEOBJECT_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GAMEOBJECT_HPP
 
 #include "glm/matrix.hpp"
 
@@ -92,4 +92,4 @@ namespace EconSimPlusPlus::Engine {
 
 } // namespace EconSimPlusPlus::Engine
 
-#endif // GAMEOBJECT_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GAMEOBJECT_HPP

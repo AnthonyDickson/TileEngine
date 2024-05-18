@@ -19,10 +19,10 @@
 // Created by Anthony on 24/03/2024.
 //
 
-#ifndef ECONSIMPLUSPLUS_TEXTURE_H
-#define ECONSIMPLUSPLUS_TEXTURE_H
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXTURE_H
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXTURE_H
 
-#include "../../../lib/glad/include/glad/glad.h"
+#include "glad/glad.h"
 
 namespace EconSimPlusPlus::Engine {
     /// Handles the creation and setup of an OpenGL texture from a image on disk.
@@ -72,4 +72,4 @@ namespace EconSimPlusPlus::Engine {
     };
 } // namespace EconSimPlusPlus::Engine
 
-#endif // ECONSIMPLUSPLUS_TEXTURE_H
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXTURE_H
