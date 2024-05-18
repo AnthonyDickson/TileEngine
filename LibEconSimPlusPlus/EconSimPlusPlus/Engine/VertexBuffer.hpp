@@ -24,7 +24,7 @@
 
 
 #include <vector>
-#include "glad/glad.h"
+#include "../../../lib/glad/include/glad/glad.h"
 
 namespace EconSimPlusPlus::Engine {
     /// Wrapper for OpenGL vertex buffer objects.

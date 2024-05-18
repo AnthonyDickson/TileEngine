@@ -25,7 +25,7 @@
 #include <array>
 
 #define GLFW_INCLUDE_NONE
-#include "GLFW/glfw3.h"
+#include "../../../cmake-build-release/_deps/glfw-src/include/GLFW/glfw3.h"
 #include "glm/vec2.hpp"
 
 namespace EconSimPlusPlus::Engine {

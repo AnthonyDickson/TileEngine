@@ -22,7 +22,7 @@
 #ifndef ECONSIMPLUSPLUS_VERTEXARRAY_H
 #define ECONSIMPLUSPLUS_VERTEXARRAY_H
 
-#include "glad/glad.h"
+#include "../../../lib/glad/include/glad/glad.h"
 
 namespace EconSimPlusPlus::Engine {
     /// Wrapper for OpenGL vertex array objects.

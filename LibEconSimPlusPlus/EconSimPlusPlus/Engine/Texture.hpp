@@ -22,7 +22,7 @@
 #ifndef ECONSIMPLUSPLUS_TEXTURE_H
 #define ECONSIMPLUSPLUS_TEXTURE_H
 
-#include "glad/glad.h"
+#include "../../../lib/glad/include/glad/glad.h"
 
 namespace EconSimPlusPlus::Engine {
     /// Handles the creation and setup of an OpenGL texture from a image on disk.
