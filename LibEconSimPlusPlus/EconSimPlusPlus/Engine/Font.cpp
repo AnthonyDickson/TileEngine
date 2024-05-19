@@ -135,7 +135,8 @@ namespace EconSimPlusPlus::Engine {
 
         const float scale{settings.size / m_fontSize.y};
         const glm::vec2 textSize{calculateTextSize(text)};
-        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, settings.anchor) * scale};
+        // The `m_fontSize.y` puts the text origin at the top left corner of the first character.
+        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, settings.anchor, m_fontSize.y) * scale};
         int workingIndex{0};
         std::vector transforms(m_shader.maxInstances(), glm::mat4());
         std::vector letterMap(m_shader.maxInstances(), 0);
@@ -161,10 +162,9 @@ namespace EconSimPlusPlus::Engine {
                 break;
             }
 
-            // The `- m_fontSize.y` puts the text origin at the top left corner of the first character.
             const glm::vec2 screenCoordinates{drawPosition.x + anchorOffset.x + glyph->bearing.x * scale,
                                               drawPosition.y + anchorOffset.y +
-                                                  (glyph->bearing.y - glyph->size.y - m_fontSize.y) * scale};
+                                                  (glyph->bearing.y - glyph->size.y) * scale};
 
             glm::mat4 transform =
                 glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, drawPosition.z));

@@ -47,6 +47,8 @@ namespace EconSimPlusPlus::Editor {
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
 
+        const Engine::Font* m_font;
+
         // TODO: Refactor common pattern of having a VAO, VBO and shader.
         // TODO: Also refactor common shapes, e.g., a quad.
         Engine::VertexArray m_vao{};

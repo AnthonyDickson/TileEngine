@@ -28,6 +28,7 @@
 #include <EconSimPlusPlus/Editor/Button.hpp>
 #include <EconSimPlusPlus/Editor/Editor.hpp>
 #include <EconSimPlusPlus/Engine/FrameTimer.hpp>
+#include <EconSimPlusPlus/Engine/GridLines.hpp>
 
 // TODO: Create class for buttons that 1) renders a button with text and 2) handles click events.
 // TODO: Open texture from disk and create an empty tile map with grid lines overlay.
@@ -109,6 +110,9 @@ namespace EconSimPlusPlus::Editor {
         Button testButton{m_font.get(), "Open...", {}, [&] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);
         guiObjects.push_back(&testButton);
+
+        Engine::GridLines gridLines{{64, 64}, {32.0f, 32.0f}};
+        objects.push_back(&gridLines);
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
