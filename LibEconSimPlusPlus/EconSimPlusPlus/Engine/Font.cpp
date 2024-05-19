@@ -134,7 +134,8 @@ namespace EconSimPlusPlus::Engine {
         glm::vec3 drawPosition{position};
 
         const float scale{settings.size / m_fontSize.y};
-        const glm::vec2 anchorOffset{calculateAnchorOffset(text, settings.anchor) * scale};
+        const glm::vec2 textSize{calculateTextSize(text)};
+        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, settings.anchor) * scale};
         int workingIndex{0};
         std::vector transforms(m_shader.maxInstances(), glm::mat4());
         std::vector letterMap(m_shader.maxInstances(), 0);
@@ -160,9 +161,10 @@ namespace EconSimPlusPlus::Engine {
                 break;
             }
 
+            // The `- m_fontSize.y` puts the text origin at the top left corner of the first character.
             const glm::vec2 screenCoordinates{drawPosition.x + anchorOffset.x + glyph->bearing.x * scale,
                                               drawPosition.y + anchorOffset.y +
-                                                  (glyph->bearing.y - glyph->size.y) * scale};
+                                                  (glyph->bearing.y - glyph->size.y - m_fontSize.y) * scale};
 
             glm::mat4 transform =
                 glm::translate(glm::mat4(1.0f), glm::vec3(screenCoordinates.x, screenCoordinates.y, drawPosition.z));
@@ -204,25 +206,5 @@ namespace EconSimPlusPlus::Engine {
         textSize.y = std::max(m_fontSize.y, textSize.y);
 
         return textSize;
-    }
-
-    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Anchor anchor) const {
-        const glm::vec2 textSize{calculateTextSize(text)};
-
-        // -fontSize.y puts the text origin at the top left corner of the first character.
-        switch (anchor) {
-        case Anchor::bottomLeft:
-            return glm::vec2{0.0f, textSize.y - m_fontSize.y};
-        case Anchor::bottomRight:
-            return glm::vec2{-textSize.x, textSize.y - m_fontSize.y};
-        case Anchor::topLeft:
-            return glm::vec2{0.0f, -m_fontSize.y};
-        case Anchor::topRight:
-            return glm::vec2{-textSize.x, -m_fontSize.y};
-        case Anchor::center:
-            return {-textSize.x / 2.0f, textSize.y / 2.0f - m_fontSize.y};
-        default:
-            return glm::vec2{0.0f};
-        }
     }
 } // namespace EconSimPlusPlus::Engine

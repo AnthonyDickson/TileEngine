@@ -19,21 +19,23 @@
 // Created by Anthony Dickson on 19/05/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_ANCHOR_HPP
-#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_ANCHOR_HPP
-
-#include "glm/vec2.hpp"
+#include <EconSimPlusPlus/Engine/Anchor.hpp>
 
 namespace EconSimPlusPlus::Engine {
-    /// The point on an object that its position refers to.
-    enum class Anchor { bottomLeft, bottomRight, topLeft, topRight, center };
-
-    /// Calculate the positional offset for the given object size and anchor.
-    /// @param size The dimensions (width, height) of the object.
-    /// @param anchor The point on the object to use as the origin.
-    /// @return A 2D offset.
-    /// @note Assumes screen space coordinates, i.e., +y points down.
-    [[nodiscard]] glm::vec2 calculateAnchorOffset(glm::vec2 size, Anchor anchor);
+    glm::vec2 calculateAnchorOffset(const glm::vec2 size, const Anchor anchor) {
+        switch (anchor) {
+        case Anchor::bottomLeft:
+            return glm::vec2{0.0f, size.y};
+        case Anchor::bottomRight:
+            return glm::vec2{-size.x, size.y};
+        case Anchor::topLeft:
+            return glm::vec2{0.0f, 0.0f};
+        case Anchor::topRight:
+            return glm::vec2{-size.x, 0.0f};
+        case Anchor::center:
+            return {-size.x / 2.0f, size.y / 2.0f};
+        default:
+            return glm::vec2{0.0f};
+        }
+    }
 } // namespace EconSimPlusPlus::Engine
-
-#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_ANCHOR_HPP

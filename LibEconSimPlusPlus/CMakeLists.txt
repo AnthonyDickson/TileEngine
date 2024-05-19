@@ -15,6 +15,7 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Engine/Window.cpp
         EconSimPlusPlus/Engine/VertexArray.cpp
         EconSimPlusPlus/Engine/VertexBuffer.cpp
+        EconSimPlusPlus/Engine/Anchor.cpp
 )
 target_include_directories(LibEconSimPlusPlus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(LibEconSimPlusPlus PRIVATE -Werror -Wall -Wextra -Wpedantic -Wshadow)
