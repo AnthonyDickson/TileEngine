@@ -22,6 +22,9 @@
 #ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_GUIOBJECT_HPP
 #define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_GUIOBJECT_HPP
 
+#include <EconSimPlusPlus/Engine/Anchor.hpp>
+
+
 #include "glm/ext/matrix_common.hpp"
 #include "glm/vec2.hpp"
 
@@ -59,6 +62,14 @@ namespace EconSimPlusPlus::Editor {
         /// @param size The 2D dimensions of the object in pixels.
         void setSize(glm::vec2 size);
 
+        /// Get the point on the object that is used as the origin for its position.
+        /// @return An anchor.
+        [[nodiscard]] Engine::Anchor anchor() const;
+
+        /// Set the object's anchor point.
+        /// @param anchor The point on the object that is used as the origin for its position.
+        void setAnchor(Engine::Anchor anchor);
+
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
         /// @param inputState The state of keyboard and mouse input.
@@ -80,6 +91,8 @@ namespace EconSimPlusPlus::Editor {
         glm::vec3 m_position{0.0f};
         /// The width and height of the object in world space coordinates.
         glm::vec2 m_size{1.0f};
+        /// The point on the object that is used as the origin for its position.
+        Engine::Anchor m_anchor{Engine::Anchor::topLeft};
     };
 
 } // namespace EconSimPlusPlus::Editor

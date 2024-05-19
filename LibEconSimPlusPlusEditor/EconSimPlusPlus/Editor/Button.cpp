@@ -19,8 +19,6 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
-#include <iostream>
-#include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
 
@@ -30,12 +28,14 @@ namespace EconSimPlusPlus::Editor {
     Button::Button(const Engine::Font* font, std::string text, const glm::vec2 position,
                    std::function<void()> callback) :
         m_text(std::move(text)), m_callback(std::move(callback)), m_font(font) {
-        // TODO: This seems to calculate an innacurate size (too tall and wide). Make sure it produces a tight bounding box.
+        // TODO: This seems to calculate an innacurate size (too tall and wide). Make sure it produces a tight bounding
+        // box.
         const glm::vec2 textSize{font->calculateTextSize(m_text)};
         // TODO: Create TextLabel class that stores text render settings, position and dimensions.
         // TODO: Calculate button size w/ padding.
         setPosition(position);
         setSize(textSize);
+        setAnchor(Engine::Anchor::topLeft);
 
         // Separate vao/vbo for outline.
         m_vao.bind();
@@ -43,14 +43,11 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
-
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             glm::vec2 cursorPos{Engine::screenToWorldCoordinates(inputState.getMousePosition(), camera)};
-            constexpr auto anchor{Engine::Anchor::topLeft};
-            const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(size(), anchor, size().y)};
+            const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(size(), anchor(), size().y)};
 
             if (contains(cursorPos - anchorOffset)) {
-                std::cout << "Button pressed.\n";
                 m_callback();
             }
         }
@@ -60,7 +57,6 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Make these options configurable.
         constexpr glm::vec3 outlineColor{1.0f, 0.0f, 1.0f};
         constexpr glm::vec3 fillColor{1.0f};
-        constexpr auto anchor{Engine::Anchor::topLeft};
 
         m_shader.bind();
 
@@ -68,7 +64,7 @@ namespace EconSimPlusPlus::Editor {
         const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
 
-        const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(size(), anchor, size().y)};
+        const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(size(), anchor(), size().y)};
         glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {position() + anchorOffset, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
@@ -80,6 +76,6 @@ namespace EconSimPlusPlus::Editor {
         m_vbo.drawArrays(GL_LINES);
 
         // TODO: Add padding for text.
-        m_font->render(m_text, {position(), layer()}, camera, {.anchor = anchor, .color = {0.0f, 0.0f, 0.0f}});
+        m_font->render(m_text, {position(), layer()}, camera, {.anchor = anchor(), .color = {0.0f, 0.0f, 0.0f}});
     }
 } // namespace EconSimPlusPlus::Editor

@@ -53,6 +53,14 @@ namespace EconSimPlusPlus::Editor {
         m_size = size;
     }
 
+    Engine::Anchor GUIObject::anchor() const {
+        return m_anchor;
+    }
+
+    void GUIObject::setAnchor(const Engine::Anchor anchor) {
+        m_anchor = anchor;
+    }
+
     bool GUIObject::contains(glm::vec2 point) const {
         for (int axis = 0; axis < 2; ++axis) {
             const bool exceedsMinExtent = point[axis] < m_position[axis];
