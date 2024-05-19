@@ -22,7 +22,7 @@
 #include <EconSimPlusPlus/Engine/Anchor.hpp>
 
 namespace EconSimPlusPlus::Engine {
-    glm::vec2 calculateAnchorOffset(const glm::vec2 size, const Anchor anchor, float verticalBaseline) {
+    glm::vec2 calculateAnchorOffset(const glm::vec2 size, const Anchor anchor, const float verticalBaseline) {
         switch (anchor) {
         case Anchor::bottomLeft:
             return glm::vec2{0.0f, size.y - verticalBaseline};

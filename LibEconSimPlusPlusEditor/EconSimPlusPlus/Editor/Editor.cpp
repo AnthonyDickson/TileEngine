@@ -101,13 +101,12 @@ namespace EconSimPlusPlus::Editor {
         Engine::FrameTimer renderTimer{};
         constexpr Engine::Font::RenderSettings fontSettings{.color = {1.0f, 1.0f, 0.0f},
                                                             .size = 32.0f,
-                                                            .anchor = Engine::Anchor::topLeft,
+                                                            .anchor = Engine::Anchor::topRight,
                                                             .outlineSize = 0.3f,
                                                             .outlineColor = {0.0f, 0.0f, 0.0f}};
 
-        // TODO: Add utility function that calculates the screen coordinates of anchor points on the window.
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
-        Button testButton{m_font.get(), "Open...", {}, [&] { std::cout << "Button pressed.\n"; }};
+        Button testButton{m_font.get(), "Open...", topLeft, [&] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);
         guiObjects.push_back(&testButton);
 
@@ -139,7 +138,7 @@ namespace EconSimPlusPlus::Editor {
             // TODO: Convert frame time summary into game object?
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
-            const glm::vec3 position{-static_cast<float>(m_window->width()) / 2.0f,
+            const glm::vec3 position{static_cast<float>(m_window->width()) / 2.0f,
                                      static_cast<float>(m_window->height()) / 2.0f, 99.0f};
             m_font->render(frameTimeSummary, position, m_camera, fontSettings);
 
