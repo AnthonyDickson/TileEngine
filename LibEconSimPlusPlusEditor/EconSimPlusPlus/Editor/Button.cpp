@@ -19,6 +19,7 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
+#include <iostream>
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
@@ -29,6 +30,7 @@ namespace EconSimPlusPlus::Editor {
     Button::Button(const Engine::Font* font, std::string text, const glm::vec2 position,
                    std::function<void()> callback) :
         m_text(std::move(text)), m_callback(std::move(callback)), m_font(font) {
+        // TODO: This seems to calculate an innacurate size (too tall and wide). Make sure it produces a tight bounding box.
         const glm::vec2 textSize{font->calculateTextSize(m_text)};
         // TODO: Create TextLabel class that stores text render settings, position and dimensions.
         // TODO: Calculate button size w/ padding.
@@ -40,9 +42,15 @@ namespace EconSimPlusPlus::Editor {
         m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
     }
 
-    void Button::update(float, const Engine::InputState& inputState, const Engine::Camera&) {
-        if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(inputState.getMousePosition())) {
-            m_callback();
+    void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
+        if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            glm::vec2 cursorPos{Engine::screenToWorldCoordinates(inputState.getMousePosition(), camera)};
+
+            // TODO: Fix this not working. Need to adjust for anchor using in render function?
+            if (contains(cursorPos)) {
+                std::cout << "Button pressed.\n";
+                m_callback();
+            }
         }
     }
 

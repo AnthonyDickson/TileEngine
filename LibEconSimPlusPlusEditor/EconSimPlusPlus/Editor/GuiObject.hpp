@@ -75,9 +75,9 @@ namespace EconSimPlusPlus::Editor {
         [[nodiscard]] bool contains(glm::vec2 point) const;
 
     private:
-        /// The screen space coordinates of the object along with the layer. Note this refers to the top left of the
+        /// The world space coordinates of the object along with the layer. Note this refers to the top left of the
         /// object.
-        glm::vec3 m_position{1.0f};
+        glm::vec3 m_position{0.0f};
         /// The width and height of the object in world space coordinates.
         glm::vec2 m_size{1.0f};
     };

@@ -106,7 +106,7 @@ namespace EconSimPlusPlus::Editor {
                                                             .outlineColor = {0.0f, 0.0f, 0.0f}};
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
-        Button testButton{m_font.get(), "Open...", topLeft, [&] { std::cout << "Button pressed.\n"; }};
+        Button testButton{m_font.get(), "Open...", topLeft, [] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);
         guiObjects.push_back(&testButton);
 
