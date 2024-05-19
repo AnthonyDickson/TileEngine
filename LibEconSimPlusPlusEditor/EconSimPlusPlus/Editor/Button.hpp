@@ -24,17 +24,17 @@
 
 #include <functional>
 
+#include <EconSimPlusPlus/Editor/GuiObject.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
-#include <EconSimPlusPlus/Engine/GameObject.hpp>
 
 namespace EconSimPlusPlus::Editor {
 
-    class Button final : public Engine::GameObject {
+    class Button final : public GUIObject {
     public:
         /// Create a button.
         /// @param font The font to use for rendering the button text.
         /// @param text The text to display in the button.
-        /// @param position Where to position the button in world space. Uses the bottom left as the origin.
+        /// @param position Where to position the button in screen space. Uses the bottom left as the origin.
         /// @param callback The function to call when the button is clicked.
         Button(Engine::Font* font, std::string text, glm::vec2 position, std::function<void()> callback);
 

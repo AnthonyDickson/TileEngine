@@ -25,23 +25,17 @@
 
 #include <EconSimPlusPlus/Editor/Button.hpp>
 
-
 namespace EconSimPlusPlus::Editor {
     Button::Button(Engine::Font*, std::string text, const glm::vec2 position, std::function<void()> callback) :
         m_text(std::move(text)), m_callback(std::move(callback)) {
-        // TODO: Lift out update and render function to own interfaces
-        // TODO: Create separate base class for GUI elements similar to GameObject that is treated differently (e.g., should live in different list).
         // TODO: Create TextLabel class that stores text render settings, position and dimensions.
         // TODO: Calculate text size
         // TODO: Calculate button size w/ padding.
-        setTransform(glm::translate(transform(), glm::vec3{position, 0.0f}));
+        setPosition(position);
     }
 
-    void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
-        // ReSharper disable once CppTooWideScopeInitStatement
-        const glm::vec2 point{Engine::screenToWorldCoordinates(camera, inputState.getMousePosition())};
-
-        if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(point)) {
+    void Button::update(float, const Engine::InputState& inputState, const Engine::Camera&) {
+        if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(inputState.getMousePosition())) {
             m_callback();
         }
     }
