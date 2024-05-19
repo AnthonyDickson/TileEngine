@@ -31,6 +31,7 @@ namespace EconSimPlusPlus::Editor {
         const glm::vec2 textSize{font->calculateTextSize(m_text)};
         // TODO: Create TextLabel class that stores text render settings, position and dimensions.
         // TODO: Calculate button size w/ padding.
+        // TODO: Add anchors, similar to Engine::Font, to change what `position` refers to.
         setPosition(position);
         setSize(textSize);
 
@@ -46,7 +47,7 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Button::render(const Engine::Camera& camera) const {
-        constexpr glm::vec3 outlineColor{0.0f};
+        constexpr glm::vec3 outlineColor{1.0f, 0.0f, 1.0f};
         constexpr glm::vec3 fillColor{1.0f};
 
         m_shader.bind();
@@ -56,8 +57,9 @@ namespace EconSimPlusPlus::Editor {
         const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
 
-        const glm::vec2 positionWorld{Engine::screenToWorldCoordinates(position(), camera)};
-        glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {positionWorld, layer()})};
+        glm::vec2 positionWorld{Engine::screenToWorldCoordinates(position(), camera)};
+        positionWorld.y -= size().y;
+        glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {positionWorld, 1.0f})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
 
@@ -66,6 +68,6 @@ namespace EconSimPlusPlus::Editor {
         m_vbo.drawArrays(GL_TRIANGLE_STRIP);
         m_shader.setUniform("color", outlineColor);
         m_vbo.drawArrays(GL_LINES);
-
+        // TODO: Draw text w/ font pointer
     }
 } // namespace EconSimPlusPlus::Editor
