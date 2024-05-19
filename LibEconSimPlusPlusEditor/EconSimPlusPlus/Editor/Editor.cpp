@@ -60,6 +60,10 @@ namespace EconSimPlusPlus::Editor {
         for (const auto& object : objects) {
             object->update(deltaTime, input, m_camera);
         }
+
+        for (const auto& object : guiObjects) {
+            object->update(deltaTime, input, m_camera);
+        }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor
         // position in both screen and world coordinates?
@@ -77,6 +81,10 @@ namespace EconSimPlusPlus::Editor {
         glEnable(GL_CULL_FACE);
 
         for (const auto& object : objects) {
+            object->render(m_camera);
+        }
+
+        for (const auto& object : guiObjects) {
             object->render(m_camera);
         }
     }
@@ -98,7 +106,9 @@ namespace EconSimPlusPlus::Editor {
 
         // TODO: Add utility function that calculates the screen coordinates of anchor points on the window.
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
-        Button testButton{m_font.get(), "Open...", topLeft, [&] { std::cout << "Button pressed.\n"; }};
+        Button testButton{m_font.get(), "Open...", {}, [&] { std::cout << "Button pressed.\n"; }};
+        testButton.setLayer(98.0f);
+        guiObjects.push_back(&testButton);
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};

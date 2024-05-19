@@ -36,7 +36,7 @@ namespace EconSimPlusPlus::Editor {
         /// @param text The text to display in the button.
         /// @param position Where to position the button in screen space. Uses the bottom left as the origin.
         /// @param callback The function to call when the button is clicked.
-        Button(Engine::Font* font, std::string text, glm::vec2 position, std::function<void()> callback);
+        Button(const Engine::Font* font, std::string text, glm::vec2 position, std::function<void()> callback);
 
         void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) override;
         void render(const Engine::Camera& camera) const override;
@@ -46,6 +46,12 @@ namespace EconSimPlusPlus::Editor {
         const std::string m_text;
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
+
+        // TODO: Refactor common pattern of having a VAO, VBO and shader.
+        // TODO: Also refactor common shapes, e.g., a quad.
+        Engine::VertexArray m_vao{};
+        Engine::VertexBuffer m_vbo{};
+        Engine::Shader m_shader{Engine::Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 
 } // namespace EconSimPlusPlus::Editor

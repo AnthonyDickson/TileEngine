@@ -64,7 +64,7 @@ namespace EconSimPlusPlus::Engine {
 
     void GridLines::update(float, const InputState& inputState, const Camera& camera) {
         // ReSharper disable once CppTooWideScopeInitStatement
-        const glm::vec2 cursorPos{screenToWorldCoordinates(camera, inputState.getMousePosition())};
+        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
             const glm::ivec2 gridPos{((cursorPos - position()) / m_cellSize)};

@@ -90,6 +90,12 @@ namespace EconSimPlusPlus::Engine {
         void render(std::string_view text, glm::vec3 position, const Camera& camera,
                     const RenderSettings& settings) const;
 
+        /// Calculate the width and height of the text if it were rendered on screen.
+        /// @note The size is for unscaled text.
+        /// @param text The string to be rendered.
+        /// @return The width and height of the text in pixels.
+        [[nodiscard]] glm::vec2 calculateTextSize(std::string_view text) const;
+
     private:
         /// Calculate the positional offset for the given text and anchor.
         /// @note The offset is for unscaled text.
@@ -97,12 +103,6 @@ namespace EconSimPlusPlus::Engine {
         /// @param anchor The reference point from which the text will be rendered.
         /// @return A 2D offset in screen coordinates.
         [[nodiscard]] glm::vec2 calculateAnchorOffset(std::string_view text, Anchor anchor) const;
-
-        /// Calculate the width and height of the text if it were rendered on screen.
-        /// @note The size is for unscaled text.
-        /// @param text The string to be rendered.
-        /// @return The width and height of the text in pixels.
-        [[nodiscard]] glm::vec2 calculateTextSize(std::string_view text) const;
 
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
         std::map<char, std::unique_ptr<Glyph>> m_glyphs;

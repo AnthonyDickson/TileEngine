@@ -183,26 +183,6 @@ namespace EconSimPlusPlus::Engine {
         }
     }
 
-    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor) const {
-        const glm::vec2 textSize{calculateTextSize(text)};
-
-        // -fontSize.y puts the text origin at the top left corner of the first character.
-        switch (anchor) {
-        case Anchor::bottomLeft:
-            return glm::vec2{0.0f, textSize.y - m_fontSize.y};
-        case Anchor::bottomRight:
-            return glm::vec2{-textSize.x, textSize.y - m_fontSize.y};
-        case Anchor::topLeft:
-            return glm::vec2{0.0f, -m_fontSize.y};
-        case Anchor::topRight:
-            return glm::vec2{-textSize.x, -m_fontSize.y};
-        case Anchor::center:
-            return {-textSize.x / 2.0f, textSize.y / 2.0f - m_fontSize.y};
-        default:
-            return glm::vec2{0.0f};
-        }
-    }
-
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
         glm::vec2 textSize{0.0f, m_fontSize.y};
         float lineWidth{};
@@ -224,5 +204,25 @@ namespace EconSimPlusPlus::Engine {
         textSize.y = std::max(m_fontSize.y, textSize.y);
 
         return textSize;
+    }
+
+    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor) const {
+        const glm::vec2 textSize{calculateTextSize(text)};
+
+        // -fontSize.y puts the text origin at the top left corner of the first character.
+        switch (anchor) {
+        case Anchor::bottomLeft:
+            return glm::vec2{0.0f, textSize.y - m_fontSize.y};
+        case Anchor::bottomRight:
+            return glm::vec2{-textSize.x, textSize.y - m_fontSize.y};
+        case Anchor::topLeft:
+            return glm::vec2{0.0f, -m_fontSize.y};
+        case Anchor::topRight:
+            return glm::vec2{-textSize.x, -m_fontSize.y};
+        case Anchor::center:
+            return {-textSize.x / 2.0f, textSize.y / 2.0f - m_fontSize.y};
+        default:
+            return glm::vec2{0.0f};
+        }
     }
 } // namespace EconSimPlusPlus::Engine

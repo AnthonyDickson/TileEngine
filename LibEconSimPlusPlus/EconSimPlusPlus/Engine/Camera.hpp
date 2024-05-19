@@ -85,12 +85,12 @@ namespace EconSimPlusPlus::Engine {
     };
 
     /// Convert screen space coordinates to world space coordinates.
-    /// @param camera The camera to use for the coordinate space conversion.
     /// @param screenCoordinates Coordinates in screen space starting the from the top left with +y pointing down.
+    /// @param camera The camera to use for the coordinate space conversion.
     /// @return 2D world coordinates.
     /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
     /// right-handed coordinate system is used.
-    glm::vec2 screenToWorldCoordinates(const Camera& camera, glm::vec2 screenCoordinates);
+    glm::vec2 screenToWorldCoordinates(glm::vec2 screenCoordinates, const Camera& camera);
 } // namespace EconSimPlusPlus::Engine
 
 

@@ -22,6 +22,7 @@
 #ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_H
 #define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_H
 
+#include <EconSimPlusPlus/Editor/GuiObject.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
 #include <EconSimPlusPlus/Engine/GridLines.hpp>
 #include <EconSimPlusPlus/Engine/Window.hpp>
@@ -63,6 +64,8 @@ namespace EconSimPlusPlus::Editor {
         std::unique_ptr<Engine::Window> m_window;
         /// A list of all game objects.
         std::vector<Engine::GameObject*> objects{};
+        /// A list of all GUI objects.
+        std::vector<GUIObject*> guiObjects{};
         /// The render camera.
         Engine::Camera m_camera;
         /// The font for rendering text on screen.

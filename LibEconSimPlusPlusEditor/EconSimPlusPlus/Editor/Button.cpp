@@ -26,12 +26,17 @@
 #include <EconSimPlusPlus/Editor/Button.hpp>
 
 namespace EconSimPlusPlus::Editor {
-    Button::Button(Engine::Font*, std::string text, const glm::vec2 position, std::function<void()> callback) :
-        m_text(std::move(text)), m_callback(std::move(callback)) {
+    Button::Button(const Engine::Font* font, std::string text, const glm::vec2 position,
+                   std::function<void()> callback) : m_text(std::move(text)), m_callback(std::move(callback)) {
+        const glm::vec2 textSize{font->calculateTextSize(m_text)};
         // TODO: Create TextLabel class that stores text render settings, position and dimensions.
-        // TODO: Calculate text size
         // TODO: Calculate button size w/ padding.
         setPosition(position);
+        setSize(textSize);
+
+        // Separate vao/vbo for outline.
+        m_vao.bind();
+        m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
     }
 
     void Button::update(float, const Engine::InputState& inputState, const Engine::Camera&) {
@@ -40,9 +45,27 @@ namespace EconSimPlusPlus::Editor {
         }
     }
 
-    void Button::render(const Engine::Camera&) const {
-        /// TODO: Draw button outline
-        /// TODO: Draw button fill
-        /// TODO: Draw button text
+    void Button::render(const Engine::Camera& camera) const {
+        constexpr glm::vec3 outlineColor{0.0f};
+        constexpr glm::vec3 fillColor{1.0f};
+
+        m_shader.bind();
+
+        // TODO: Try render simple quad to debug.
+        // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
+        const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
+        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
+
+        const glm::vec2 positionWorld{Engine::screenToWorldCoordinates(position(), camera)};
+        glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {positionWorld, layer()})};
+        transform = glm::scale(transform, {size(), 1.0f});
+        m_shader.setUniform("transform", transform);
+
+        m_vao.bind();
+        m_shader.setUniform("color", fillColor);
+        m_vbo.drawArrays(GL_TRIANGLE_STRIP);
+        m_shader.setUniform("color", outlineColor);
+        m_vbo.drawArrays(GL_LINES);
+
     }
 } // namespace EconSimPlusPlus::Editor
