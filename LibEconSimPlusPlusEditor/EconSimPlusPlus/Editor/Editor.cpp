@@ -100,7 +100,7 @@ namespace EconSimPlusPlus::Editor {
         Engine::FrameTimer renderTimer{};
         constexpr Engine::Font::RenderSettings fontSettings{.color = {1.0f, 1.0f, 0.0f},
                                                             .size = 32.0f,
-                                                            .anchor = Engine::Font::Anchor::topLeft,
+                                                            .anchor = Engine::Anchor::topLeft,
                                                             .outlineSize = 0.3f,
                                                             .outlineColor = {0.0f, 0.0f, 0.0f}};
 

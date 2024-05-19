@@ -93,7 +93,7 @@ namespace EconSimPlusPlus::Engine {
         FrameTimer renderTimer{};
         constexpr Font::RenderSettings fontSettings{.color = {1.0f, 1.0f, 0.0f},
                                                     .size = 32.0f,
-                                                    .anchor = Font::Anchor::topLeft,
+                                                    .anchor = Anchor::topLeft,
                                                     .outlineSize = 0.3f,
                                                     .outlineColor = {0.0f, 0.0f, 0.0f}};
 

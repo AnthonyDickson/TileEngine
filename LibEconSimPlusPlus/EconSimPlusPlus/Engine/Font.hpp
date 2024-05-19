@@ -24,6 +24,7 @@
 
 #include <map>
 
+#include <EconSimPlusPlus/Engine/Anchor.hpp>
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 #include <EconSimPlusPlus/Engine/Glyph.hpp>
 #include <EconSimPlusPlus/Engine/Shader.hpp>
@@ -36,9 +37,6 @@ namespace EconSimPlusPlus::Engine {
     class Font {
 
     public:
-        /// The point in the text that the render position refers to.
-        enum class Anchor { bottomLeft, bottomRight, topLeft, topRight, center };
-
         /// The collection of settings for drawing text on screen.
         struct RenderSettings {
             /// The colour to render the text.
@@ -47,7 +45,7 @@ namespace EconSimPlusPlus::Engine {
             /// maintain the aspect ratio.
             float size{32.0f};
             /// The point on the text that the position refers to.
-            Font::Anchor anchor{Font::Anchor::topLeft};
+            Anchor anchor{Anchor::topLeft};
             /// The value between zero and one in the font SDF that indicates an edge.
             /// Increasing this value will shrink the font and increasing it will expand the font.
             float sdfThreshold{0.5f};

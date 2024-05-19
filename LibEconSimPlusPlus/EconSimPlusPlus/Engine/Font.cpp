@@ -206,7 +206,7 @@ namespace EconSimPlusPlus::Engine {
         return textSize;
     }
 
-    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Font::Anchor anchor) const {
+    glm::vec2 Font::calculateAnchorOffset(const std::string_view text, const Anchor anchor) const {
         const glm::vec2 textSize{calculateTextSize(text)};
 
         // -fontSize.y puts the text origin at the top left corner of the first character.
