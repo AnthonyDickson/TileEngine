@@ -43,11 +43,13 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
+
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             glm::vec2 cursorPos{Engine::screenToWorldCoordinates(inputState.getMousePosition(), camera)};
+            constexpr auto anchor{Engine::Anchor::topLeft};
+            const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(size(), anchor, size().y)};
 
-            // TODO: Fix this not working. Need to adjust for anchor using in render function?
-            if (contains(cursorPos)) {
+            if (contains(cursorPos - anchorOffset)) {
                 std::cout << "Button pressed.\n";
                 m_callback();
             }
