@@ -73,7 +73,7 @@ namespace EconSimPlusPlus::Editor {
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
         /// @param inputState The state of keyboard and mouse input.
-        /// @param camera
+        /// @param camera The main camera. Can be used to convert between screen space and world space coordinates.
         virtual void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) = 0;
 
         /// Draw the object on screen.

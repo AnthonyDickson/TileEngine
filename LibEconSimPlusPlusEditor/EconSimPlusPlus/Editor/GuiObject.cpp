@@ -62,10 +62,13 @@ namespace EconSimPlusPlus::Editor {
     }
 
     bool GUIObject::contains(glm::vec2 point) const {
+        // Using `m_size.y` as the vertical baseline makes the top left corner the origin.
+        const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(m_size, m_anchor, m_size.y)};
+
         for (int axis = 0; axis < 2; ++axis) {
-            const bool exceedsMinExtent = point[axis] < m_position[axis];
+            const bool exceedsMinExtent = point[axis] < anchorOffset[axis] + m_position[axis];
             // ReSharper disable once CppTooWideScopeInitStatement
-            const bool exceedsMaxExtent = point[axis] > m_position[axis] + m_size[axis];
+            const bool exceedsMaxExtent = point[axis] > anchorOffset[axis] + m_position[axis] + m_size[axis];
 
             if (exceedsMinExtent or exceedsMaxExtent) {
                 return false;

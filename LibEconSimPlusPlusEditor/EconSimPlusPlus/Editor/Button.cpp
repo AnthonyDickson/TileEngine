@@ -45,9 +45,8 @@ namespace EconSimPlusPlus::Editor {
     void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             glm::vec2 cursorPos{Engine::screenToWorldCoordinates(inputState.getMousePosition(), camera)};
-            const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(size(), anchor(), size().y)};
 
-            if (contains(cursorPos - anchorOffset)) {
+            if (contains(cursorPos)) {
                 m_callback();
             }
         }
