@@ -95,7 +95,6 @@ namespace EconSimPlusPlus::Engine {
             // Divide advance by 64 to get the pixel spacing between characters since advance is in 1/64 units.
             const auto advance{static_cast<float>(glyph->advance.x >> 6)};
 
-            // const glm::vec2 scale{1.0f, 1.0f};
             const glm::vec2 scale = static_cast<glm::vec2>(textureSize) / static_cast<glm::vec2>(sdfFontSize);
             auto character{std::make_unique<Glyph>(c, textureSize, bearing * scale, advance * scale.x)};
             glyphs.emplace(c, std::move(character));

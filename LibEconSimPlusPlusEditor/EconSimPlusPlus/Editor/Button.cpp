@@ -29,8 +29,8 @@ namespace EconSimPlusPlus::Editor {
                    std::function<void()> callback) :
         m_text(std::move(text)), m_callback(std::move(callback)), m_font(font) {
         // TODO: This seems to calculate an innacurate size (too tall and wide). Make sure it produces a tight bounding
-        // box.
-        const glm::vec2 textSize{font->calculateTextSize(m_text)};
+        // box. Seems to be out by a factor of two.
+        const glm::vec2 textSize{font->calculateTextSize(m_text) / 2.0f};
         // TODO: Create TextLabel class that stores text render settings, position and dimensions.
         // TODO: Calculate button size w/ padding.
         setPosition(position);
