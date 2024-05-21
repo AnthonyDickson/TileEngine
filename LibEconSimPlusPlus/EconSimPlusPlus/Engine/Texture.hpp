@@ -22,6 +22,8 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXTURE_H
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXTURE_H
 
+#include <memory>
+
 #include "glad/glad.h"
 
 namespace EconSimPlusPlus::Engine {

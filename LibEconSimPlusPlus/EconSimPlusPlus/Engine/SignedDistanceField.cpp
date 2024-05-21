@@ -24,6 +24,7 @@
 #include <stb_image_resize2.h>
 
 #include <EconSimPlusPlus/Engine/SignedDistanceField.hpp>
+#include <cmath>
 
 namespace EconSimPlusPlus::Engine {
     namespace {

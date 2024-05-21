@@ -19,7 +19,6 @@
 // Created by Anthony on 1/04/2024.
 //
 
-#include <cassert>
 #include <numeric>
 
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>

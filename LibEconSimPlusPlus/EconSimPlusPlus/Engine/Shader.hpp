@@ -22,6 +22,8 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SHADER_H
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SHADER_H
 
+#include <string>
+
 #include "glm/mat4x4.hpp"
 
 namespace EconSimPlusPlus::Engine {

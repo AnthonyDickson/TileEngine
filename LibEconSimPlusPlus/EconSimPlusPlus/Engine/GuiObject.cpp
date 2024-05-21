@@ -48,8 +48,8 @@ namespace EconSimPlusPlus::Engine {
     }
 
     void GUIObject::setSize(const glm::vec2 size) {
-        assert(glm::all(glm::greaterThanEqual(size, glm::vec2{1.0f})) &&
-               "All components of size must be greater than or equal to 1.0.");
+        assert(glm::all(glm::greaterThanEqual(size, glm::vec2{0.0f})) &&
+               "All components of size must be greater than or equal to 0.0.");
         m_size = size;
     }
 
