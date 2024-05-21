@@ -1,4 +1,6 @@
 add_library(LibEconSimPlusPlus
+        EconSimPlusPlus/Engine/Anchor.cpp
+        EconSimPlusPlus/Engine/Button.cpp
         EconSimPlusPlus/Engine/Camera.cpp
         EconSimPlusPlus/Engine/Font.cpp
         EconSimPlusPlus/Engine/FrameTimer.cpp
@@ -6,16 +8,17 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Engine/GameObject.cpp
         EconSimPlusPlus/Engine/Glyph.cpp
         EconSimPlusPlus/Engine/GridLines.cpp
+        EconSimPlusPlus/Engine/GuiObject.cpp
         EconSimPlusPlus/Engine/InputState.cpp
         EconSimPlusPlus/Engine/Shader.cpp
         EconSimPlusPlus/Engine/SignedDistanceField.cpp
+        EconSimPlusPlus/Engine/Text.cpp
         EconSimPlusPlus/Engine/Texture.cpp
         EconSimPlusPlus/Engine/TextureArray.cpp
         EconSimPlusPlus/Engine/TileMap.cpp
         EconSimPlusPlus/Engine/Window.cpp
         EconSimPlusPlus/Engine/VertexArray.cpp
         EconSimPlusPlus/Engine/VertexBuffer.cpp
-        EconSimPlusPlus/Engine/Anchor.cpp
 )
 target_include_directories(LibEconSimPlusPlus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(LibEconSimPlusPlus PRIVATE -Werror -Wall -Wextra -Wpedantic -Wshadow)

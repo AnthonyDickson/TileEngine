@@ -22,9 +22,9 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
-#include <EconSimPlusPlus/Editor/Button.hpp>
+#include <EconSimPlusPlus/Engine/Button.hpp>
 
-namespace EconSimPlusPlus::Editor {
+namespace EconSimPlusPlus::Engine {
     Button::Button(const Text& text, const glm::vec2 position, std::function<void()> callback) :
         m_text(text), m_callback(std::move(callback)) {
         // TODO: Calculate button size w/ padding.
@@ -40,7 +40,7 @@ namespace EconSimPlusPlus::Editor {
         m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
     }
 
-    void Button::setPosition(glm::vec2 position) {
+    void Button::setPosition(const glm::vec2 position) {
         GUIObject::setPosition(position);
         m_text.setPosition(position);
     }
@@ -52,7 +52,8 @@ namespace EconSimPlusPlus::Editor {
 
     void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            glm::vec2 cursorPos{Engine::screenToWorldCoordinates(inputState.getMousePosition(), camera)};
+            // ReSharper disable once CppTooWideScopeInitStatement
+            const glm::vec2 cursorPos{Engine::screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
             if (contains(cursorPos)) {
                 m_callback();
@@ -85,4 +86,4 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add padding for text.
         m_text.render(camera);
     }
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus::Engine

@@ -19,12 +19,13 @@
 // Created by Anthony Dickson on 21/05/2024.
 //
 
-#include <EconSimPlusPlus/Editor/Text.hpp>
+#include <utility>
 
+#include <EconSimPlusPlus/Engine/Text.hpp>
 
-namespace EconSimPlusPlus::Editor {
-    Text::Text(const std::string& text, Engine::Font* font, Engine::Font::RenderSettings settings, glm::vec2 padding) :
-        m_text(text), m_font(font), m_settings(settings), m_padding(padding) {
+namespace EconSimPlusPlus::Engine {
+    Text::Text(std::string text, Engine::Font* font, Engine::Font::RenderSettings settings, glm::vec2 padding) :
+        m_text(std::move(text)), m_font(font), m_settings(settings), m_padding(padding) {
         // TODO: Add scale factor which is used to scale the below size and padding used for rendering.
         setSize(m_font->calculateTextSize(m_text) + m_padding);
     }
@@ -35,4 +36,4 @@ namespace EconSimPlusPlus::Editor {
     void Text::render(const Engine::Camera& camera) const {
         m_font->render(m_text, {position() + m_padding / 2.0f, layer()}, camera, m_settings);
     }
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus::Engine

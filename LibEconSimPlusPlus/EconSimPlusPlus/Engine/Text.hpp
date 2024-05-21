@@ -19,13 +19,13 @@
 // Created by Anthony Dickson on 21/05/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_TEXT_HPP
-#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_TEXT_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXT_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXT_HPP
 
-#include <EconSimPlusPlus/Editor/GuiObject.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
+#include <EconSimPlusPlus/Engine/GuiObject.hpp>
 
-namespace EconSimPlusPlus::Editor {
+namespace EconSimPlusPlus::Engine {
     /// A GUI element that displays text.
     class Text final : public GUIObject {
     public:
@@ -34,7 +34,7 @@ namespace EconSimPlusPlus::Editor {
         /// @param font The font to use to display the text.
         /// @param settings The configuration (e.g., color, anchor, outlines) to use for displaying the text.
         /// @param padding The amount of space to add around the text horizontally and vertically,
-        Text(const std::string& text, Engine::Font* font, Engine::Font::RenderSettings settings, glm::vec2 padding);
+        Text(std::string text, Engine::Font* font, Engine::Font::RenderSettings settings, glm::vec2 padding);
 
         void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) override;
         void render(const Engine::Camera& camera) const override;
@@ -50,6 +50,6 @@ namespace EconSimPlusPlus::Editor {
         const glm::vec2 m_padding{};
     };
 
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus::Engine
 
-#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_TEXT_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_TEXT_HPP

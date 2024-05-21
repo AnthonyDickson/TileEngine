@@ -19,19 +19,18 @@
 // Created by Anthony Dickson on 19/05/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_GUIOBJECT_HPP
-#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_GUIOBJECT_HPP
-
-#include <EconSimPlusPlus/Engine/Anchor.hpp>
-
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GUIOBJECT_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GUIOBJECT_HPP
 
 #include "glm/ext/matrix_common.hpp"
+// ReSharper disable once CppWrongIncludesOrder
 #include "glm/vec2.hpp"
 
+#include <EconSimPlusPlus/Engine/Anchor.hpp>
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 #include <EconSimPlusPlus/Engine/InputState.hpp>
 
-namespace EconSimPlusPlus::Editor {
+namespace EconSimPlusPlus::Engine {
 
     class GUIObject {
     public:
@@ -95,6 +94,6 @@ namespace EconSimPlusPlus::Editor {
         Engine::Anchor m_anchor{Engine::Anchor::topLeft};
     };
 
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus::Engine
 
-#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_GUIOBJECT_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_GUIOBJECT_HPP

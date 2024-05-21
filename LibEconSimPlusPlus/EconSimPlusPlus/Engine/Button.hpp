@@ -19,16 +19,16 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_BUTTON_HPP
-#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_BUTTON_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_BUTTON_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_BUTTON_HPP
 
 #include <functional>
 
-#include <EconSimPlusPlus/Editor/GuiObject.hpp>
-#include <EconSimPlusPlus/Editor/Text.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
+#include <EconSimPlusPlus/Engine/GuiObject.hpp>
+#include <EconSimPlusPlus/Engine/Text.hpp>
 
-namespace EconSimPlusPlus::Editor {
+namespace EconSimPlusPlus::Engine {
 
     class Button final : public GUIObject {
     public:
@@ -57,6 +57,6 @@ namespace EconSimPlusPlus::Editor {
         Engine::Shader m_shader{Engine::Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus::Engine
 
-#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_BUTTON_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_BUTTON_HPP

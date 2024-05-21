@@ -19,10 +19,10 @@
 // Created by Anthony Dickson on 19/05/2024.
 //
 
-#include <EconSimPlusPlus/Editor/GuiObject.hpp>
+#include <EconSimPlusPlus/Engine/GuiObject.hpp>
 
 
-namespace EconSimPlusPlus::Editor {
+namespace EconSimPlusPlus::Engine {
     GUIObject::~GUIObject() = default;
 
     glm::vec2 GUIObject::position() const {
@@ -77,4 +77,4 @@ namespace EconSimPlusPlus::Editor {
 
         return true;
     }
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus::Engine
