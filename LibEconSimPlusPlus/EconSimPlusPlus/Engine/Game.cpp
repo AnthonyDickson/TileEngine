@@ -126,6 +126,7 @@ namespace EconSimPlusPlus::Engine {
             renderTimer.endStep();
 
             // TODO: Convert frame time summary into game object?
+            // TODO: Use new Text class for frame time stats text.
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
             const glm::vec3 position{-static_cast<float>(m_window->width()) / 2.0f,

@@ -25,6 +25,7 @@
 #include <functional>
 
 #include <EconSimPlusPlus/Editor/GuiObject.hpp>
+#include <EconSimPlusPlus/Editor/Text.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
 
 namespace EconSimPlusPlus::Editor {
@@ -32,22 +33,22 @@ namespace EconSimPlusPlus::Editor {
     class Button final : public GUIObject {
     public:
         /// Create a button.
-        /// @param font The font to use for rendering the button text.
         /// @param text The text to display in the button.
         /// @param position Where to position the button in screen space. Uses the bottom left as the origin.
         /// @param callback The function to call when the button is clicked.
-        Button(const Engine::Font* font, std::string text, glm::vec2 position, std::function<void()> callback);
+        Button(const Text& text, glm::vec2 position, std::function<void()> callback);
+
+        void setPosition(glm::vec2 position) override;
+        void setLayer(float layer) override;
 
         void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) override;
         void render(const Engine::Camera& camera) const override;
 
     private:
         /// The text to display in the button.
-        const std::string m_text;
+        Text m_text;
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
-
-        const Engine::Font* m_font;
 
         // TODO: Refactor common pattern of having a VAO, VBO and shader.
         // TODO: Also refactor common shapes, e.g., a quad.

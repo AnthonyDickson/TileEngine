@@ -25,21 +25,29 @@
 #include <EconSimPlusPlus/Editor/Button.hpp>
 
 namespace EconSimPlusPlus::Editor {
-    Button::Button(const Engine::Font* font, std::string text, const glm::vec2 position,
-                   std::function<void()> callback) :
-        m_text(std::move(text)), m_callback(std::move(callback)), m_font(font) {
-        // TODO: This seems to calculate an innacurate size (too tall and wide). Make sure it produces a tight bounding
-        // box. Seems to be out by a factor of two.
-        const glm::vec2 textSize{font->calculateTextSize(m_text) / 2.0f};
-        // TODO: Create TextLabel class that stores text render settings, position and dimensions.
+    Button::Button(const Text& text, const glm::vec2 position, std::function<void()> callback) :
+        m_text(text), m_callback(std::move(callback)) {
         // TODO: Calculate button size w/ padding.
         setPosition(position);
+        // TODO: This seems to calculate an innacurate size (too tall and wide). Make sure it produces a tight bounding
+        // box. Seems to be out by a factor of two.
+        const glm::vec2 textSize{text.size() / 2.0f};
         setSize(textSize);
         setAnchor(Engine::Anchor::topLeft);
 
         // Separate vao/vbo for outline.
         m_vao.bind();
         m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
+    }
+
+    void Button::setPosition(glm::vec2 position) {
+        GUIObject::setPosition(position);
+        m_text.setPosition(position);
+    }
+
+    void Button::setLayer(const float layer) {
+        GUIObject::setLayer(layer);
+        m_text.setLayer(layer);
     }
 
     void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
@@ -75,6 +83,6 @@ namespace EconSimPlusPlus::Editor {
         m_vbo.drawArrays(GL_LINES);
 
         // TODO: Add padding for text.
-        m_font->render(m_text, {position(), layer()}, camera, {.anchor = anchor(), .color = {0.0f, 0.0f, 0.0f}});
+        m_text.render(camera);
     }
 } // namespace EconSimPlusPlus::Editor
