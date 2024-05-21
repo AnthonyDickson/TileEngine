@@ -26,6 +26,7 @@
 
 #include <EconSimPlusPlus/Engine/FrameTimer.hpp>
 #include <EconSimPlusPlus/Engine/Game.hpp>
+#include <EconSimPlusPlus/Engine/Text.hpp>
 
 namespace EconSimPlusPlus::Engine {
 
@@ -63,7 +64,8 @@ namespace EconSimPlusPlus::Engine {
             object->update(deltaTime, input, m_camera);
         }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
-        // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor position in both screen and world coordinates?
+        // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor
+        // position in both screen and world coordinates?
     }
 
     void Game::render() const {
@@ -91,11 +93,16 @@ namespace EconSimPlusPlus::Engine {
 
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
-        constexpr Font::RenderSettings fontSettings{.color = {1.0f, 1.0f, 0.0f},
-                                                    .size = 32.0f,
-                                                    .anchor = Anchor::topLeft,
-                                                    .outlineSize = 0.3f,
-                                                    .outlineColor = {0.0f, 0.0f, 0.0f}};
+
+        Text frameTimeText{"",
+                           m_font.get(),
+                           Font::RenderSettings{.color = {1.0f, 1.0f, 0.0f},
+                                                .size = 32.0f,
+                                                .anchor = Anchor::topLeft,
+                                                .outlineSize = 0.3f,
+                                                .outlineColor = {0.0f, 0.0f, 0.0f}},
+                           {}};
+        frameTimeText.setLayer(99.0f);
 
         // TODO: Move this to factory function?
         m_tileMap->setLayer(1.0f);
@@ -126,12 +133,13 @@ namespace EconSimPlusPlus::Engine {
             renderTimer.endStep();
 
             // TODO: Convert frame time summary into game object?
-            // TODO: Use new Text class for frame time stats text.
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
-            const glm::vec3 position{-static_cast<float>(m_window->width()) / 2.0f,
-                                     static_cast<float>(m_window->height()) / 2.0f, 99.0f};
-            m_font->render(frameTimeSummary, position, m_camera, fontSettings);
+            const glm::vec2 position{-static_cast<float>(m_window->width()) / 2.0f,
+                                     static_cast<float>(m_window->height()) / 2.0f};
+            frameTimeText.setText(frameTimeSummary);
+            frameTimeText.setPosition(position);
+            frameTimeText.render(m_camera);
 
             m_window->postUpdate();
         }

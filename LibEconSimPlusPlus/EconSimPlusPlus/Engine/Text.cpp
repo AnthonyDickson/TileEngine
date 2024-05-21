@@ -30,6 +30,10 @@ namespace EconSimPlusPlus::Engine {
         setSize(m_font->calculateTextSize(m_text) + m_padding);
     }
 
+    void Text::setText(const std::string& text) {
+        m_text = text;
+    }
+
     void Text::update(float, const Engine::InputState&, const Engine::Camera&) {
     }
 

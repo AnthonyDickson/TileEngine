@@ -36,12 +36,16 @@ namespace EconSimPlusPlus::Engine {
         /// @param padding The amount of space to add around the text horizontally and vertically,
         Text(std::string text, Engine::Font* font, Engine::Font::RenderSettings settings, glm::vec2 padding);
 
+        /// Update the text.
+        /// @param text The text to display.
+        void setText(const std::string& text);
+
         void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) override;
         void render(const Engine::Camera& camera) const override;
 
     private:
         /// The text to display.
-        const std::string m_text;
+        std::string m_text;
         /// The font to use to display the text.
         const Engine::Font* m_font;
         /// The configuration (e.g., color, anchor, outlines) to use for displaying the text.

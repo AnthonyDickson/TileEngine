@@ -99,16 +99,20 @@ namespace EconSimPlusPlus::Editor {
 
         Engine::FrameTimer updateTimer{};
         Engine::FrameTimer renderTimer{};
-        constexpr Engine::Font::RenderSettings fontSettings{.color = {1.0f, 1.0f, 0.0f},
-                                                            .size = 32.0f,
-                                                            .anchor = Engine::Anchor::topRight,
-                                                            .outlineSize = 0.3f,
-                                                            .outlineColor = {0.0f, 0.0f, 0.0f}};
+        Engine::Text frameTimeText{"",
+                                   m_font.get(),
+                                   Engine::Font::RenderSettings{.color = {1.0f, 1.0f, 0.0f},
+                                                                .size = 32.0f,
+                                                                .anchor = Engine::Anchor::topRight,
+                                                                .outlineSize = 0.3f,
+                                                                .outlineColor = {0.0f, 0.0f, 0.0f}},
+                                   {}};
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
         Engine::Text buttonText{"Open...", m_font.get(), {.color = {0.0f, 0.0f, 0.0f}}, {}};
         Engine::Button testButton{buttonText, topLeft, [] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);
+
         guiObjects.push_back(&testButton);
 
         Engine::GridLines gridLines{{64, 64}, {32.0f, 32.0f}};
@@ -139,9 +143,11 @@ namespace EconSimPlusPlus::Editor {
             // TODO: Convert frame time summary into game object?
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
-            const glm::vec3 position{static_cast<float>(m_window->width()) / 2.0f,
-                                     static_cast<float>(m_window->height()) / 2.0f, 99.0f};
-            m_font->render(frameTimeSummary, position, m_camera, fontSettings);
+            frameTimeText.setText(frameTimeSummary);
+            const glm::vec2 position{static_cast<float>(m_window->width()) / 2.0f,
+                                     static_cast<float>(m_window->height()) / 2.0f};
+            frameTimeText.setPosition(position);
+            frameTimeText.render(m_camera);
 
             m_window->postUpdate();
         }
