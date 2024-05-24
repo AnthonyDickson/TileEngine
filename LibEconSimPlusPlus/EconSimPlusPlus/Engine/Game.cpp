@@ -94,14 +94,12 @@ namespace EconSimPlusPlus::Engine {
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
 
-        Text frameTimeText{"",
-                           m_font.get(),
+        Text frameTimeText{"", m_font.get(),
                            Font::RenderSettings{.color = {1.0f, 1.0f, 0.0f},
                                                 .size = 32.0f,
                                                 .anchor = Anchor::topLeft,
                                                 .outlineSize = 0.3f,
-                                                .outlineColor = {0.0f, 0.0f, 0.0f}},
-                           {}};
+                                                .outlineColor = {0.0f, 0.0f, 0.0f}}};
         frameTimeText.setLayer(99.0f);
 
         // TODO: Move this to factory function?

@@ -27,11 +27,8 @@
 namespace EconSimPlusPlus::Engine {
     Button::Button(const Text& text, const glm::vec2 position, std::function<void()> callback) :
         m_text(text), m_callback(std::move(callback)) {
-        // TODO: Calculate button size w/ padding.
         setPosition(position);
-        // TODO: This seems to calculate an inaccurate size (too tall and wide). Make sure it produces a tight bounding
-        // box. Seems to be out by a factor of two.
-        const glm::vec2 textSize{text.size() / 2.0f};
+        const glm::vec2 textSize{text.size()};
         setSize(textSize);
         setAnchor(Engine::Anchor::topLeft);
 
@@ -83,7 +80,6 @@ namespace EconSimPlusPlus::Engine {
         m_shader.setUniform("color", outlineColor);
         m_vbo.drawArrays(GL_LINES);
 
-        // TODO: Add padding for text.
         m_text.render(camera);
     }
 } // namespace EconSimPlusPlus::Engine

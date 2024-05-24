@@ -99,17 +99,20 @@ namespace EconSimPlusPlus::Editor {
 
         Engine::FrameTimer updateTimer{};
         Engine::FrameTimer renderTimer{};
-        Engine::Text frameTimeText{"",
-                                   m_font.get(),
+        Engine::Text frameTimeText{"", m_font.get(),
                                    Engine::Font::RenderSettings{.color = {1.0f, 1.0f, 0.0f},
                                                                 .size = 32.0f,
                                                                 .anchor = Engine::Anchor::topRight,
                                                                 .outlineSize = 0.3f,
-                                                                .outlineColor = {0.0f, 0.0f, 0.0f}},
-                                   {}};
+                                                                .outlineColor = {0.0f, 0.0f, 0.0f}}};
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
-        Engine::Text buttonText{"Open...", m_font.get(), {.color = {0.0f, 0.0f, 0.0f}}, {}};
+
+        // TODO: Fix text centering only working for size = 32, padding = 16, 16
+        Engine::Text buttonText{
+            "Open...",
+            m_font.get(),
+            {.color = {0.0f, 0.0f, 0.0f}, .anchor = Engine::Anchor::topLeft, .size = 32.0f, .padding = {16.0f, 16.0f}}};
         Engine::Button testButton{buttonText, topLeft, [] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);
 

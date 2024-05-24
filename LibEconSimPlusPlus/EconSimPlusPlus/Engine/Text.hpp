@@ -33,8 +33,7 @@ namespace EconSimPlusPlus::Engine {
         /// @param text The text to display.
         /// @param font The font to use to display the text.
         /// @param settings The configuration (e.g., color, anchor, outlines) to use for displaying the text.
-        /// @param padding The amount of space to add around the text horizontally and vertically,
-        Text(std::string text, Engine::Font* font, Engine::Font::RenderSettings settings, glm::vec2 padding);
+        Text(std::string text, const Engine::Font* font, const Engine::Font::RenderSettings& settings);
 
         /// Update the text.
         /// @param text The text to display.
@@ -50,8 +49,6 @@ namespace EconSimPlusPlus::Engine {
         const Engine::Font* m_font;
         /// The configuration (e.g., color, anchor, outlines) to use for displaying the text.
         const Engine::Font::RenderSettings m_settings;
-        /// The amount of space to add around the text horizontally and vertically,
-        const glm::vec2 m_padding{};
     };
 
 } // namespace EconSimPlusPlus::Engine

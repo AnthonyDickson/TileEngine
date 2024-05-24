@@ -24,20 +24,24 @@
 #include <EconSimPlusPlus/Engine/Text.hpp>
 
 namespace EconSimPlusPlus::Engine {
-    Text::Text(std::string text, Engine::Font* font, Engine::Font::RenderSettings settings, glm::vec2 padding) :
-        m_text(std::move(text)), m_font(font), m_settings(settings), m_padding(padding) {
-        // TODO: Add scale factor which is used to scale the below size and padding used for rendering.
-        setSize(m_font->calculateTextSize(m_text) + m_padding);
+    Text::Text(std::string text, const Engine::Font* font, const Engine::Font::RenderSettings& settings) :
+        m_text(std::move(text)), m_font(font), m_settings(settings) {
+        // TODO: Refactor common code.
+        const float scale{m_settings.size / m_font->fontHeight()};
+        setSize(m_font->calculateTextSize(m_text) * scale + m_settings.padding);
     }
 
     void Text::setText(const std::string& text) {
         m_text = text;
+
+        const float scale{m_settings.size / m_font->fontHeight()};
+        setSize(m_font->calculateTextSize(text) * scale + m_settings.padding);
     }
 
     void Text::update(float, const Engine::InputState&, const Engine::Camera&) {
     }
 
     void Text::render(const Engine::Camera& camera) const {
-        m_font->render(m_text, {position() + m_padding / 2.0f, layer()}, camera, m_settings);
+        m_font->render(m_text, {position(), layer()}, camera, m_settings);
     }
 } // namespace EconSimPlusPlus::Engine

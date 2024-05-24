@@ -37,6 +37,7 @@ namespace EconSimPlusPlus::Engine {
     class Font {
 
     public:
+        // TODO: Move RenderSettings to own header file and give more descriptive name.
         /// The collection of settings for drawing text on screen.
         struct RenderSettings {
             /// The colour to render the text.
@@ -44,6 +45,8 @@ namespace EconSimPlusPlus::Engine {
             /// The height, in pixels, at which to draw the text. Note that the width will be scaled proportionately to
             /// maintain the aspect ratio.
             float size{32.0f};
+            /// The amount of horizontal and vertical space to add around the text measured in pixels.
+            glm::vec2 padding{0.0f};
             /// The point on the text that the position refers to.
             Anchor anchor{Anchor::topLeft};
             /// The value between zero and one in the font SDF that indicates an edge.
@@ -78,6 +81,10 @@ namespace EconSimPlusPlus::Engine {
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
                       std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
                       glm::vec2 fontSize);
+
+        /// Get the height of the unscaled font.
+        /// @return The height in pixels.
+        [[nodiscard]] float fontHeight() const;
 
         /// Draw text on screen.
         /// @param text The string to render.

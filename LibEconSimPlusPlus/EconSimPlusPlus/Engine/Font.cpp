@@ -44,8 +44,12 @@ namespace EconSimPlusPlus::Engine {
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
                std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
                const glm::vec2 fontSize) :
-        m_glyphs(std::move(glyphs)), m_vao(std::move(vao)), m_vbo(std::move(vbo)), m_textureArray(std::move(textureArray)),
-        m_fontSize(fontSize) {
+        m_glyphs(std::move(glyphs)), m_vao(std::move(vao)), m_vbo(std::move(vbo)),
+        m_textureArray(std::move(textureArray)), m_fontSize(fontSize) {
+    }
+
+    float Font::fontHeight() const {
+        return m_fontSize.y;
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
@@ -130,12 +134,13 @@ namespace EconSimPlusPlus::Engine {
         m_vao->bind();
         m_vbo->bind();
 
-        glm::vec3 drawPosition{position};
+        glm::vec3 drawPosition{position + glm::vec3{settings.padding / 2.0f, 0.0f}};
 
         const float scale{settings.size / m_fontSize.y};
-        const glm::vec2 textSize{calculateTextSize(text)};
+        const glm::vec2 textSize{calculateTextSize(text) + settings.padding};
         // The `m_fontSize.y` puts the text origin at the top left corner of the first character.
-        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, settings.anchor, m_fontSize.y) * scale};
+        const glm::vec2 anchorOffset{
+            calculateAnchorOffset(textSize, settings.anchor, m_fontSize.y + settings.padding.y) * scale};
         int workingIndex{0};
         std::vector transforms(m_shader.maxInstances(), glm::mat4());
         std::vector letterMap(m_shader.maxInstances(), 0);
@@ -185,6 +190,9 @@ namespace EconSimPlusPlus::Engine {
     }
 
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
+        // TODO: Take RenderSettings as an argument and include the padding in the calculation of the text size.
+        // TODO: Include space below baseline. Should use the maximum distance below the baseline across all glyphs.
+        // Calculate this in the factory function.
         glm::vec2 textSize{0.0f, m_fontSize.y};
         float lineWidth{};
 
