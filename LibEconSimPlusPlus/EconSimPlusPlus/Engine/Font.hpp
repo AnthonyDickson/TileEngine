@@ -82,9 +82,10 @@ namespace EconSimPlusPlus::Engine {
                       std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
                       glm::vec2 fontSize);
 
-        /// Get the height of the unscaled font.
-        /// @return The height in pixels.
-        [[nodiscard]] float fontHeight() const;
+        /// Get the scale factor relative to the underlying bitmap size.
+        /// @param settings The font settings to be used for rendering.
+        /// @return The scale factor.
+        [[nodiscard]] float calculateScaleFactor(const RenderSettings& settings) const;
 
         /// Draw text on screen.
         /// @param text The string to render.

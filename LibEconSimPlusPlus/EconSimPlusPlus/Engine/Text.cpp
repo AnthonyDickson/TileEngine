@@ -24,19 +24,18 @@
 #include <EconSimPlusPlus/Engine/Text.hpp>
 
 namespace EconSimPlusPlus::Engine {
-    Text::Text(std::string text, const Engine::Font* font, const Engine::Font::RenderSettings& settings) :
-        m_text(std::move(text)), m_font(font), m_settings(settings) {
-        // TODO: Refactor common code.
-        const float scale{m_settings.size / m_font->fontHeight()};
-        setSize(m_font->calculateTextSize(m_text) * scale + m_settings.padding);
+    Text::Text(const std::string& text, const Engine::Font* font, const Engine::Font::RenderSettings& settings) :
+        m_font(font), m_settings(settings) {
+        setText(text);
     }
 
     void Text::setText(const std::string& text) {
         m_text = text;
 
-        const float scale{m_settings.size / m_font->fontHeight()};
-        setSize(m_font->calculateTextSize(text) * scale + m_settings.padding);
+        const float scale{m_font->calculateScaleFactor(m_settings)};
+        setSize(m_font->calculateTextSize(m_text) * scale + m_settings.padding);
     }
+
 
     void Text::update(float, const Engine::InputState&, const Engine::Camera&) {
     }

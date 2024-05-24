@@ -33,7 +33,7 @@ namespace EconSimPlusPlus::Engine {
         /// @param text The text to display.
         /// @param font The font to use to display the text.
         /// @param settings The configuration (e.g., color, anchor, outlines) to use for displaying the text.
-        Text(std::string text, const Engine::Font* font, const Engine::Font::RenderSettings& settings);
+        Text(const std::string& text, const Engine::Font* font, const Engine::Font::RenderSettings& settings);
 
         /// Update the text.
         /// @param text The text to display.
@@ -44,7 +44,7 @@ namespace EconSimPlusPlus::Engine {
 
     private:
         /// The text to display.
-        std::string m_text;
+        std::string m_text{};
         /// The font to use to display the text.
         const Engine::Font* m_font;
         /// The configuration (e.g., color, anchor, outlines) to use for displaying the text.

@@ -48,10 +48,6 @@ namespace EconSimPlusPlus::Engine {
         m_textureArray(std::move(textureArray)), m_fontSize(fontSize) {
     }
 
-    float Font::fontHeight() const {
-        return m_fontSize.y;
-    }
-
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
                                        const glm::ivec2 textureSize, const float spread) {
         // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
@@ -116,6 +112,10 @@ namespace EconSimPlusPlus::Engine {
         return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize);
     }
 
+    float Font::calculateScaleFactor(const RenderSettings& settings) const {
+        return settings.size / m_fontSize.y;
+    }
+
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
                       const RenderSettings& settings) const {
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
@@ -136,7 +136,7 @@ namespace EconSimPlusPlus::Engine {
 
         glm::vec3 drawPosition{position + glm::vec3{settings.padding / 2.0f, 0.0f}};
 
-        const float scale{settings.size / m_fontSize.y};
+        const float scale{calculateScaleFactor(settings)};
         const glm::vec2 textSize{calculateTextSize(text) + settings.padding};
         // The `m_fontSize.y` puts the text origin at the top left corner of the first character.
         const glm::vec2 anchorOffset{
