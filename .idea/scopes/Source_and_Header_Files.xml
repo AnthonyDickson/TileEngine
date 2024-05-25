@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Source and Header Files" pattern="(file[EconSimPlusPlus]:LibEconSimPlusPlus//*||file[EconSimPlusPlus]:LibEconSimPlusPlusEditor//*||file[EconSimPlusPlus]:resource//*||file[EconSimPlusPlus]:apps//*)&amp;&amp;!file[EconSimPlusPlus]:lib//*&amp;&amp;!file[EconSimPlusPlus]:cmake-build-debug//*&amp;&amp;!file[EconSimPlusPlus]:.idea//*" />
+  <scope name="Source and Header Files" pattern="file[EconSimPlusPlus]:LibEconSimPlusPlusEditor//*||file[EconSimPlusPlus]:LibEconSimPlusPlus//*||file[EconSimPlusPlus]:apps//*" />
 </component>

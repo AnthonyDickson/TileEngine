@@ -20,7 +20,6 @@
 //
 
 #include <format>
-#include <iostream>
 
 #include <glm/vec2.hpp>
 #include "stb_image.h"

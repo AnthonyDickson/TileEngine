@@ -19,8 +19,6 @@
 // Created by Anthony Dickson on 21/05/2024.
 //
 
-#include <utility>
-
 #include <EconSimPlusPlus/Engine/Text.hpp>
 
 namespace EconSimPlusPlus::Engine {

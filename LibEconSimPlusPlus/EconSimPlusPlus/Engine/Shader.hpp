@@ -22,6 +22,7 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SHADER_H
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_ENGINE_SHADER_H
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include <string>
 
 #include "glm/mat4x4.hpp"
