@@ -83,11 +83,6 @@ namespace EconSimPlusPlus::Engine {
                       std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
                       glm::vec2 fontSize, glm::vec2 verticalExtents);
 
-        /// Get the line height.
-        /// This is defined as the total distance between the highest point above the baseline and the lowest point below the baseline.
-        /// @return The line height in pixels.
-        [[nodiscard]] float lineHeight() const;
-
         /// Get the scale factor relative to the underlying bitmap size.
         /// @param settings The font settings to be used for rendering.
         /// @return The scale factor.

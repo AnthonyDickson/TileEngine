@@ -48,10 +48,6 @@ namespace EconSimPlusPlus::Engine {
         m_textureArray(std::move(textureArray)), m_fontSize(fontSize), m_verticalExtents(verticalExtents) {
     }
 
-    float Font::lineHeight() const {
-        return abs(m_verticalExtents.x) + m_verticalExtents.y;
-    }
-
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
                                        const glm::ivec2 textureSize, const float spread) {
         // Code adapted from https://learnopengl.com/In-Practice/Text-Rendering and
@@ -128,7 +124,7 @@ namespace EconSimPlusPlus::Engine {
 
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
         // TODO: Take RenderSettings as an argument and include the padding in the calculation of the text size.
-        glm::vec2 textSize{0.0f, lineHeight()};
+        glm::vec2 textSize{0.0f, m_verticalExtents.y};
         float lineWidth{};
 
         for (const auto& character : text) {
@@ -136,7 +132,7 @@ namespace EconSimPlusPlus::Engine {
 
             if (character == '\n') {
                 textSize.x = std::max(lineWidth, textSize.x);
-                textSize.y += lineHeight();
+                textSize.y += m_verticalExtents.y;
                 lineWidth = 0.0f;
             }
             else {
@@ -145,6 +141,7 @@ namespace EconSimPlusPlus::Engine {
         }
 
         textSize.x = std::max(lineWidth, textSize.x);
+        textSize.y += abs(m_verticalExtents.x);
 
         return textSize;
     }
@@ -191,7 +188,7 @@ namespace EconSimPlusPlus::Engine {
                 drawPosition.x += glyph->advance * scale;
                 continue;
             case '\n':
-                drawPosition.y -= lineHeight() * scale;
+                drawPosition.y -= m_verticalExtents.y * scale;
                 drawPosition.x = position.x + settings.padding.x / 2.0f;
                 continue;
             default:
