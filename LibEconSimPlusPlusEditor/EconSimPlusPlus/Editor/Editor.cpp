@@ -108,11 +108,11 @@ namespace EconSimPlusPlus::Editor {
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
 
-        // TODO: Fix text centering only working for size = 32, padding = 16, 16
+        // TODO: Fix text not being centered when using padding.
         Engine::Text buttonText{
             "Open...",
             m_font.get(),
-            {.color = {0.0f, 0.0f, 0.0f}, .anchor = Engine::Anchor::topLeft, .size = 32.0f, .padding = {16.0f, 16.0f}}};
+            {.color = {0.0f, 0.0f, 0.0f}, .anchor = Engine::Anchor::topLeft, .size = 32.0f, .padding = glm::vec2{0.0f}}};
         Engine::Button testButton{buttonText, topLeft, [] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);
 

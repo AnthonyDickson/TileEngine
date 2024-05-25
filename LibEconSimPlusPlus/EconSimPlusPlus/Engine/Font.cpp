@@ -42,10 +42,14 @@ namespace EconSimPlusPlus::Engine {
     } // namespace
 
     Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
-               std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
-               const glm::vec2 fontSize) :
+               std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray, const glm::vec2 fontSize,
+               const glm::vec2 verticalExtents) :
         m_glyphs(std::move(glyphs)), m_vao(std::move(vao)), m_vbo(std::move(vbo)),
-        m_textureArray(std::move(textureArray)), m_fontSize(fontSize) {
+        m_textureArray(std::move(textureArray)), m_fontSize(fontSize), m_verticalExtents(verticalExtents) {
+    }
+
+    float Font::lineHeight() const {
+        return abs(m_verticalExtents.x) + m_verticalExtents.y;
     }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
@@ -70,6 +74,7 @@ namespace EconSimPlusPlus::Engine {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
         std::unique_ptr textureArray{TextureArray::create(charsToGenerate, textureSize)};
+        glm::vec2 verticalExtents{};
 
         for (unsigned char c = 0; c < charsToGenerate; c++) {
             // load character glyph
@@ -98,6 +103,11 @@ namespace EconSimPlusPlus::Engine {
             const glm::vec2 scale = static_cast<glm::vec2>(textureSize) / static_cast<glm::vec2>(sdfFontSize);
             auto character{std::make_unique<Glyph>(c, textureSize, bearing * scale, advance * scale.x)};
             glyphs.emplace(c, std::move(character));
+
+            float distanceAboveBaseline = bearing.y;
+            float distanceBelowBaseline = bearing.y - resolution.y;
+            verticalExtents.x = std::min(verticalExtents.x, distanceBelowBaseline * scale.y);
+            verticalExtents.y = std::max(verticalExtents.y, distanceAboveBaseline * scale.y);
         }
 
         FT_Done_Face(face);
@@ -109,11 +119,35 @@ namespace EconSimPlusPlus::Engine {
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize);
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize, verticalExtents);
     }
 
     float Font::calculateScaleFactor(const RenderSettings& settings) const {
         return settings.size / m_fontSize.y;
+    }
+
+    glm::vec2 Font::calculateTextSize(const std::string_view text) const {
+        // TODO: Take RenderSettings as an argument and include the padding in the calculation of the text size.
+        glm::vec2 textSize{0.0f, lineHeight()};
+        float lineWidth{};
+
+        for (const auto& character : text) {
+            const std::unique_ptr<Glyph>& glyph{m_glyphs.at(character)};
+
+            if (character == '\n') {
+                textSize.x = std::max(lineWidth, textSize.x);
+                textSize.y += lineHeight();
+                lineWidth = 0.0f;
+            }
+            else {
+                lineWidth += glyph->advance;
+            }
+        }
+
+        textSize.x = std::max(lineWidth, textSize.x);
+        textSize.y = std::max(m_fontSize.y, textSize.y);
+
+        return textSize;
     }
 
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
@@ -159,7 +193,7 @@ namespace EconSimPlusPlus::Engine {
                 drawPosition.x += glyph->advance * scale;
                 continue;
             case '\n':
-                drawPosition.y -= m_fontSize.y * scale;
+                drawPosition.y -= lineHeight() * scale;
                 drawPosition.x = position.x;
                 continue;
             default:
@@ -187,31 +221,5 @@ namespace EconSimPlusPlus::Engine {
         if (workingIndex > 0) {
             renderFn();
         }
-    }
-
-    glm::vec2 Font::calculateTextSize(const std::string_view text) const {
-        // TODO: Take RenderSettings as an argument and include the padding in the calculation of the text size.
-        // TODO: Include space below baseline. Should use the maximum distance below the baseline across all glyphs.
-        // Calculate this in the factory function.
-        glm::vec2 textSize{0.0f, m_fontSize.y};
-        float lineWidth{};
-
-        for (const auto& character : text) {
-            const std::unique_ptr<Glyph>& glyph{m_glyphs.at(character)};
-
-            if (character == '\n') {
-                textSize.x = std::max(lineWidth, textSize.x);
-                textSize.y += m_fontSize.y;
-                lineWidth = 0.0f;
-            }
-            else {
-                lineWidth += glyph->advance;
-            }
-        }
-
-        textSize.x = std::max(lineWidth, textSize.x);
-        textSize.y = std::max(m_fontSize.y, textSize.y);
-
-        return textSize;
     }
 } // namespace EconSimPlusPlus::Engine

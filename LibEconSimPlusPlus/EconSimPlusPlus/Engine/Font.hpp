@@ -77,15 +77,27 @@ namespace EconSimPlusPlus::Engine {
         /// @param vbo The vertex buffer for rendering text.
         /// @param textureArray The texture array that holds the textures for each glyph.
         /// @param fontSize The target size (width, height) of the glyphs in pixels.
+        /// @param verticalExtents The maximum distance below and above the baseline, respectively.
         /// glyphs.
         explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
                       std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
-                      glm::vec2 fontSize);
+                      glm::vec2 fontSize, glm::vec2 verticalExtents);
+
+        /// Get the line height.
+        /// This is defined as the total distance between the highest point above the baseline and the lowest point below the baseline.
+        /// @return The line height in pixels.
+        [[nodiscard]] float lineHeight() const;
 
         /// Get the scale factor relative to the underlying bitmap size.
         /// @param settings The font settings to be used for rendering.
         /// @return The scale factor.
         [[nodiscard]] float calculateScaleFactor(const RenderSettings& settings) const;
+
+        /// Calculate the width and height of the text if it were rendered on screen.
+        /// @note The size is for unscaled text.
+        /// @param text The string to be rendered.
+        /// @return The width and height of the text in pixels.
+        [[nodiscard]] glm::vec2 calculateTextSize(std::string_view text) const;
 
         /// Draw text on screen.
         /// @param text The string to render.
@@ -95,12 +107,6 @@ namespace EconSimPlusPlus::Engine {
         /// @param settings The various settings that control the appearance of the rendered text.
         void render(std::string_view text, glm::vec3 position, const Camera& camera,
                     const RenderSettings& settings) const;
-
-        /// Calculate the width and height of the text if it were rendered on screen.
-        /// @note The size is for unscaled text.
-        /// @param text The string to be rendered.
-        /// @return The width and height of the text in pixels.
-        [[nodiscard]] glm::vec2 calculateTextSize(std::string_view text) const;
 
     private:
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
@@ -116,6 +122,8 @@ namespace EconSimPlusPlus::Engine {
         const std::unique_ptr<TextureArray> m_textureArray;
         /// The target size (width, height) of the glyphs in pixels.
         const glm::vec2 m_fontSize;
+        /// The maximum distance below and above the baseline, respectively.
+        const glm::vec2 m_verticalExtents;
     };
 } // namespace EconSimPlusPlus::Engine
 
