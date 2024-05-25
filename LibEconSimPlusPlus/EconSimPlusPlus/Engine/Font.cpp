@@ -145,7 +145,6 @@ namespace EconSimPlusPlus::Engine {
         }
 
         textSize.x = std::max(lineWidth, textSize.x);
-        textSize.y = std::max(m_fontSize.y, textSize.y);
 
         return textSize;
     }
@@ -168,13 +167,12 @@ namespace EconSimPlusPlus::Engine {
         m_vao->bind();
         m_vbo->bind();
 
-        glm::vec3 drawPosition{position + glm::vec3{settings.padding / 2.0f, 0.0f}};
+        glm::vec3 drawPosition{position + glm::vec3{settings.padding.x / 2.0f, -settings.padding.y / 2.0f, 0.0f}};
 
         const float scale{calculateScaleFactor(settings)};
         const glm::vec2 textSize{calculateTextSize(text) + settings.padding};
         // The `m_fontSize.y` puts the text origin at the top left corner of the first character.
-        const glm::vec2 anchorOffset{
-            calculateAnchorOffset(textSize, settings.anchor, m_fontSize.y + settings.padding.y) * scale};
+        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, settings.anchor, m_fontSize.y) * scale};
         int workingIndex{0};
         std::vector transforms(m_shader.maxInstances(), glm::mat4());
         std::vector letterMap(m_shader.maxInstances(), 0);
@@ -194,7 +192,7 @@ namespace EconSimPlusPlus::Engine {
                 continue;
             case '\n':
                 drawPosition.y -= lineHeight() * scale;
-                drawPosition.x = position.x;
+                drawPosition.x = position.x + settings.padding.x / 2.0f;
                 continue;
             default:
                 break;
