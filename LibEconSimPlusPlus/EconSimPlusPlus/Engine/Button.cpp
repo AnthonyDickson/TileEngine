@@ -27,6 +27,8 @@
 namespace EconSimPlusPlus::Engine {
     Button::Button(const Text& text, const glm::vec2 position, std::function<void()> callback) :
         m_text(text), m_callback(std::move(callback)) {
+        assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");
+
         setPosition(position);
         const glm::vec2 textSize{text.size()};
         setSize(textSize);
