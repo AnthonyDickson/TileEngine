@@ -93,10 +93,6 @@ namespace EconSimPlusPlus::Engine {
         return {m_windowWidth, m_windowHeight};
     }
 
-    float Window::aspectRatio() const {
-        return static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight);
-    }
-
     bool Window::hasWindowSizeChanged() const {
         return m_hasWindowChangedSize;
     }

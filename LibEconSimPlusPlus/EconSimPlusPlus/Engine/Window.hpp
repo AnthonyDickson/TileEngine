@@ -57,10 +57,6 @@ namespace EconSimPlusPlus::Engine {
         /// @return The state of the given key as an integer (GLFW defined state enum).
         [[nodiscard]] const InputState& inputState() const;
 
-        /// Get the aspect ratio of the window.
-        /// @return The aspect ratio in pixels.
-        [[nodiscard, maybe_unused]] float aspectRatio() const;
-
         /// Get the width of the window.
         /// @return The width of the window in pixels.
         [[nodiscard]] int width() const;

@@ -144,7 +144,7 @@ namespace EconSimPlusPlus::Engine {
         return location;
     }
 
-    [[maybe_unused]] void Shader::setUniform(const std::string& name, const bool value) const {
+    void Shader::setUniform(const std::string& name, const bool value) const {
         setUniform(name, static_cast<int>(value));
     }
 

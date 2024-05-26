@@ -66,7 +66,7 @@ namespace EconSimPlusPlus::Engine {
         /// Set a bool uniform value.
         /// @param name The name of the uniform.
         /// @param value The value to set the uniform to.
-        [[maybe_unused]] void setUniform(const std::string& name, bool value) const;
+        void setUniform(const std::string& name, bool value) const;
 
         /// Set an integer uniform value.
         /// @param name The name of the uniform.
@@ -76,7 +76,7 @@ namespace EconSimPlusPlus::Engine {
         /// Set a float uniform value.
         /// @param name The name of the uniform.
         /// @param value The value to set the uniform to.
-        [[maybe_unused]] void setUniform(const std::string& name, float value) const;
+        void setUniform(const std::string& name, float value) const;
 
         /// Set a float 3-vector uniform value.
         /// @param name The name of the uniform.
