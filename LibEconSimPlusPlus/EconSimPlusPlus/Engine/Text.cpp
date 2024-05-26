@@ -22,7 +22,7 @@
 #include <EconSimPlusPlus/Engine/Text.hpp>
 
 namespace EconSimPlusPlus::Engine {
-    Text::Text(const std::string& text, const Engine::Font* font, const Engine::Font::RenderSettings& settings) :
+    Text::Text(const std::string& text, const Engine::Font* font, const Engine::FontSettings& settings) :
         m_font(font), m_settings(settings) {
         setText(text);
     }

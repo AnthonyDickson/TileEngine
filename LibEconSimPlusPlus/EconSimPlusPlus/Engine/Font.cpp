@@ -34,6 +34,8 @@
 #include <EconSimPlusPlus/Engine/VertexArray.hpp>
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
+// TODO: Remove gap above and below glyphs even w/o padding.
+// TODO: Ensure that total height of glyphs equals the size in pixels.
 namespace EconSimPlusPlus::Engine {
 
     namespace {
@@ -118,12 +120,11 @@ namespace EconSimPlusPlus::Engine {
         return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize, verticalExtents);
     }
 
-    float Font::calculateScaleFactor(const RenderSettings& settings) const {
+    float Font::calculateScaleFactor(const FontSettings& settings) const {
         return settings.size / m_fontSize.y;
     }
 
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
-        // TODO: Take RenderSettings as an argument and include the padding in the calculation of the text size.
         glm::vec2 textSize{0.0f, m_verticalExtents.y};
         float lineWidth{};
 
@@ -147,7 +148,7 @@ namespace EconSimPlusPlus::Engine {
     }
 
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
-                      const RenderSettings& settings) const {
+                      const FontSettings& settings) const {
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
         const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
 
