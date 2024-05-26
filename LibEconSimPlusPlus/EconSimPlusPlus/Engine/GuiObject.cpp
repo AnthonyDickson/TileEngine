@@ -53,17 +53,17 @@ namespace EconSimPlusPlus::Engine {
         m_size = size;
     }
 
-    Engine::Anchor GUIObject::anchor() const {
+    Anchor GUIObject::anchor() const {
         return m_anchor;
     }
 
-    void GUIObject::setAnchor(const Engine::Anchor anchor) {
+    void GUIObject::setAnchor(const Anchor anchor) {
         m_anchor = anchor;
     }
 
     bool GUIObject::contains(glm::vec2 point) const {
         // Using `m_size.y` as the vertical baseline makes the top left corner the origin.
-        const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(m_size, m_anchor, m_size.y)};
+        const glm::vec2 anchorOffset{calculateAnchorOffset(m_size, m_anchor, m_size.y)};
 
         for (int axis = 0; axis < 2; ++axis) {
             const bool exceedsMinExtent = point[axis] < anchorOffset[axis] + m_position[axis];

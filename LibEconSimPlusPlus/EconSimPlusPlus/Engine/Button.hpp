@@ -41,8 +41,8 @@ namespace EconSimPlusPlus::Engine {
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
 
-        void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) override;
-        void render(const Engine::Camera& camera) const override;
+        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+        void render(const Camera& camera) const override;
 
     private:
         /// The text to display in the button.
@@ -52,9 +52,9 @@ namespace EconSimPlusPlus::Engine {
 
         // TODO: Refactor common pattern of having a VAO, VBO and shader.
         // TODO: Also refactor common shapes, e.g., a quad.
-        Engine::VertexArray m_vao{};
-        Engine::VertexBuffer m_vbo{};
-        Engine::Shader m_shader{Engine::Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
+        VertexArray m_vao{};
+        VertexBuffer m_vbo{};
+        Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 
 } // namespace EconSimPlusPlus::Engine

@@ -33,22 +33,22 @@ namespace EconSimPlusPlus::Engine {
         /// @param text The text to display.
         /// @param font The font to use to display the text.
         /// @param settings The configuration (e.g., color, anchor, outlines) to use for displaying the text.
-        Text(const std::string& text, const Engine::Font* font, const Engine::FontSettings& settings);
+        Text(const std::string& text, const Font* font, const FontSettings& settings);
 
         /// Update the text.
         /// @param text The text to display.
         void setText(const std::string& text);
 
-        void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) override;
-        void render(const Engine::Camera& camera) const override;
+        void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
+        void render(const Camera& camera) const override;
 
     private:
         /// The text to display.
         std::string m_text{};
         /// The font to use to display the text.
-        const Engine::Font* m_font;
+        const Font* m_font;
         /// The configuration (e.g., color, anchor, outlines) to use for displaying the text.
-        const Engine::FontSettings m_settings;
+        const FontSettings m_settings;
     };
 
 } // namespace EconSimPlusPlus::Engine

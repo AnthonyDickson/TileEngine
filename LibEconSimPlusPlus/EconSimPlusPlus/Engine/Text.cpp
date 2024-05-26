@@ -22,7 +22,7 @@
 #include <EconSimPlusPlus/Engine/Text.hpp>
 
 namespace EconSimPlusPlus::Engine {
-    Text::Text(const std::string& text, const Engine::Font* font, const Engine::FontSettings& settings) :
+    Text::Text(const std::string& text, const Font* font, const FontSettings& settings) :
         m_font(font), m_settings(settings) {
         setText(text);
     }
@@ -35,10 +35,10 @@ namespace EconSimPlusPlus::Engine {
     }
 
 
-    void Text::update(float, const Engine::InputState&, const Engine::Camera&) {
+    void Text::update(float, const InputState&, const Camera&) {
     }
 
-    void Text::render(const Engine::Camera& camera) const {
+    void Text::render(const Camera& camera) const {
         m_font->render(m_text, {position(), layer()}, camera, m_settings);
     }
 } // namespace EconSimPlusPlus::Engine

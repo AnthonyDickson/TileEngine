@@ -63,21 +63,21 @@ namespace EconSimPlusPlus::Engine {
 
         /// Get the point on the object that is used as the origin for its position.
         /// @return An anchor.
-        [[nodiscard]] Engine::Anchor anchor() const;
+        [[nodiscard]] Anchor anchor() const;
 
         /// Set the object's anchor point.
         /// @param anchor The point on the object that is used as the origin for its position.
-        void setAnchor(Engine::Anchor anchor);
+        void setAnchor(Anchor anchor);
 
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
         /// @param inputState The state of keyboard and mouse input.
         /// @param camera The main camera. Can be used to convert between screen space and world space coordinates.
-        virtual void update(float deltaTime, const Engine::InputState& inputState, const Engine::Camera& camera) = 0;
+        virtual void update(float deltaTime, const InputState& inputState, const Camera& camera) = 0;
 
         /// Draw the object on screen.
         /// @param camera The camera to render the tile map with.
-        virtual void render(const Engine::Camera& camera) const = 0;
+        virtual void render(const Camera& camera) const = 0;
 
         /// Check whether a point is contained in the object's axis-aligned bounding box.
         /// @param point The 2D point to test.
@@ -91,7 +91,7 @@ namespace EconSimPlusPlus::Engine {
         /// The width and height of the object in world space coordinates.
         glm::vec2 m_size{1.0f};
         /// The point on the object that is used as the origin for its position.
-        Engine::Anchor m_anchor{Engine::Anchor::topLeft};
+        Anchor m_anchor{Anchor::topLeft};
     };
 
 } // namespace EconSimPlusPlus::Engine

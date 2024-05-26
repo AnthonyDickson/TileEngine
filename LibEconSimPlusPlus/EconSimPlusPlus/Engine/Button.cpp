@@ -30,7 +30,7 @@ namespace EconSimPlusPlus::Engine {
         setPosition(position);
         const glm::vec2 textSize{text.size()};
         setSize(textSize);
-        setAnchor(Engine::Anchor::topLeft);
+        setAnchor(Anchor::topLeft);
 
         // Separate vao/vbo for outline.
         m_vao.bind();
@@ -47,10 +47,10 @@ namespace EconSimPlusPlus::Engine {
         m_text.setLayer(layer);
     }
 
-    void Button::update(float, const Engine::InputState& inputState, const Engine::Camera& camera) {
+    void Button::update(float, const InputState& inputState, const Camera& camera) {
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             // ReSharper disable once CppTooWideScopeInitStatement
-            const glm::vec2 cursorPos{Engine::screenToWorldCoordinates(inputState.getMousePosition(), camera)};
+            const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
             if (contains(cursorPos)) {
                 m_callback();
@@ -58,7 +58,7 @@ namespace EconSimPlusPlus::Engine {
         }
     }
 
-    void Button::render(const Engine::Camera& camera) const {
+    void Button::render(const Camera& camera) const {
         // TODO: Make these options configurable.
         constexpr glm::vec3 outlineColor{1.0f, 0.0f, 1.0f};
         constexpr glm::vec3 fillColor{1.0f};
@@ -69,7 +69,7 @@ namespace EconSimPlusPlus::Engine {
         const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
 
-        const glm::vec2 anchorOffset{Engine::calculateAnchorOffset(size(), anchor(), size().y)};
+        const glm::vec2 anchorOffset{calculateAnchorOffset(size(), anchor(), size().y)};
         glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {position() + anchorOffset, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
