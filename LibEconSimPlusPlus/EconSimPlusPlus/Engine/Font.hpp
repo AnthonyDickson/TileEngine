@@ -94,7 +94,8 @@ namespace EconSimPlusPlus::Engine {
         const std::unique_ptr<TextureArray> m_textureArray;
         /// The target size (width, height) of the glyphs in pixels.
         const glm::vec2 m_fontSize;
-        /// The maximum distance below and above the baseline, respectively.
+        /// The maximum distance below and above the baseline, respectively. The distance below the baseline is stored
+        /// as a negative number.
         const glm::vec2 m_verticalExtents;
     };
 } // namespace EconSimPlusPlus::Engine

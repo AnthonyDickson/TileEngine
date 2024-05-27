@@ -35,7 +35,6 @@
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 // TODO: Remove gap above and below glyphs even w/o padding.
-// TODO: Ensure that total height of glyphs equals the size in pixels.
 namespace EconSimPlusPlus::Engine {
 
     namespace {
@@ -121,7 +120,7 @@ namespace EconSimPlusPlus::Engine {
     }
 
     float Font::calculateScaleFactor(const FontSettings& settings) const {
-        return settings.size / m_fontSize.y;
+        return settings.size / (abs(m_verticalExtents.x) + m_verticalExtents.y);
     }
 
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
