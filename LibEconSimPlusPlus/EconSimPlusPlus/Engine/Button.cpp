@@ -25,28 +25,43 @@
 #include <EconSimPlusPlus/Engine/Button.hpp>
 
 namespace EconSimPlusPlus::Engine {
+    namespace {
+        /// Update the text label settings (e.g. position, layer) to match changes to the button.
+        /// @param button The button to use as a reference.
+        /// @param text The text label to modify.
+        void syncSettings(const Button& button, Text& text) {
+            const glm::vec2 anchorOffset{calculateAnchorOffset(button.size(), button.anchor())};
+            text.setPosition(button.position() + anchorOffset);
+            text.setLayer(button.layer());
+        }
+    } // namespace
+
     Button::Button(const Text& text, const glm::vec2 position, const ButtonSettings& settings,
                    std::function<void()> callback) :
         m_text(text), m_settings(settings), m_callback(std::move(callback)) {
         assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");
 
         setPosition(position);
-        const glm::vec2 textSize{text.size()};
-        setSize(textSize);
+        setSize(glm::vec2{text.size()});
         setAnchor(m_settings.anchor);
 
-        // Separate vao/vbo for outline.
         m_vao.bind();
         m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
     }
+
     void Button::setPosition(const glm::vec2 position) {
         GUIObject::setPosition(position);
-        m_text.setPosition(position);
+        syncSettings(*this, m_text);
     }
 
     void Button::setLayer(const float layer) {
         GUIObject::setLayer(layer);
-        m_text.setLayer(layer);
+        syncSettings(*this, m_text);
+    }
+
+    void Button::setAnchor(const Anchor anchor) {
+        GUIObject::setAnchor(anchor);
+        syncSettings(*this, m_text);
     }
 
     void Button::update(float, const InputState& inputState, const Camera& camera) {

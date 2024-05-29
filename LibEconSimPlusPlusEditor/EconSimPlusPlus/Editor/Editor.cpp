@@ -113,7 +113,6 @@ namespace EconSimPlusPlus::Editor {
         Engine::Button testButton{
             buttonText,
             topLeft,
-            // TODO: Make sure text is positioned correctly for all button anchors.
             {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Engine::Anchor::topLeft},
             [] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);

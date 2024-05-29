@@ -67,7 +67,7 @@ namespace EconSimPlusPlus::Engine {
 
         /// Set the object's anchor point.
         /// @param anchor The point on the object that is used as the origin for its position.
-        void setAnchor(Anchor anchor);
+        virtual void setAnchor(Anchor anchor);
 
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).

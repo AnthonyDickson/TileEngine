@@ -42,6 +42,7 @@ namespace EconSimPlusPlus::Engine {
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
+        void setAnchor(Anchor anchor) override;
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
