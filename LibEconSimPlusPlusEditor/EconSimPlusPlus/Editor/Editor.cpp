@@ -108,12 +108,14 @@ namespace EconSimPlusPlus::Editor {
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
 
-        Engine::Text buttonText{"Open...",
-                                m_font.get(),
-                                {.color = {0.0f, 0.0f, 0.0f},
-                                 .size = 32.0f,
-                                 .padding = glm::vec2{16.0f}}};
-        Engine::Button testButton{buttonText, topLeft, [] { std::cout << "Button pressed.\n"; }};
+        Engine::Text buttonText{
+            "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
+        Engine::Button testButton{
+            buttonText,
+            topLeft,
+            // TODO: Make sure text is positioned correctly for all button anchors.
+            {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Engine::Anchor::topLeft},
+            [] { std::cout << "Button pressed.\n"; }};
         testButton.setLayer(98.0f);
 
         guiObjects.push_back(&testButton);

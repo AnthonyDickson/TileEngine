@@ -25,20 +25,20 @@
 #include <EconSimPlusPlus/Engine/Button.hpp>
 
 namespace EconSimPlusPlus::Engine {
-    Button::Button(const Text& text, const glm::vec2 position, std::function<void()> callback) :
-        m_text(text), m_callback(std::move(callback)) {
+    Button::Button(const Text& text, const glm::vec2 position, const ButtonSettings& settings,
+                   std::function<void()> callback) :
+        m_text(text), m_settings(settings), m_callback(std::move(callback)) {
         assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");
 
         setPosition(position);
         const glm::vec2 textSize{text.size()};
         setSize(textSize);
-        setAnchor(Anchor::topLeft);
+        setAnchor(m_settings.anchor);
 
         // Separate vao/vbo for outline.
         m_vao.bind();
         m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
     }
-
     void Button::setPosition(const glm::vec2 position) {
         GUIObject::setPosition(position);
         m_text.setPosition(position);
@@ -61,11 +61,6 @@ namespace EconSimPlusPlus::Engine {
     }
 
     void Button::render(const Camera& camera) const {
-        // TODO: Make these options configurable.
-        constexpr glm::vec3 outlineColor{1.0f, 0.0f, 1.0f};
-        constexpr glm::vec3 fillColor{1.0f};
-        constexpr float borderThickness{4.0f};
-
         m_vao.bind();
         m_shader.bind();
 
@@ -79,7 +74,7 @@ namespace EconSimPlusPlus::Engine {
         glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {offsetPosition, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
-        m_shader.setUniform("color", fillColor);
+        m_shader.setUniform("color", m_settings.fillColor);
         m_vbo.drawArrays(GL_TRIANGLE_STRIP);
 
         // Draw the button outline.
@@ -87,25 +82,26 @@ namespace EconSimPlusPlus::Engine {
             transform = glm::translate(glm::mat4{1.0f}, {bottomLeftCorner, layer()});
             transform = glm::scale(transform, {topRightCorner - bottomLeftCorner, 1.0f});
             m_shader.setUniform("transform", transform);
-            m_shader.setUniform("color", outlineColor);
+            m_shader.setUniform("color", m_settings.outlineColor);
             m_vbo.drawArrays(GL_TRIANGLE_STRIP);
         };
 
+        const float outlineThickness{m_settings.outlineThickness};
         // Left side
         glm::vec2 bottomLeft{offsetPosition};
-        glm::vec2 topRight{bottomLeft.x + borderThickness, bottomLeft.y + size().y};
+        glm::vec2 topRight{bottomLeft.x + outlineThickness, bottomLeft.y + size().y};
         renderBorder(bottomLeft, topRight);
         // Right side
-        bottomLeft = {offsetPosition.x + size().x - borderThickness, offsetPosition.y};
-        topRight = {bottomLeft.x + borderThickness, bottomLeft.y + size().y};
+        bottomLeft = {offsetPosition.x + size().x - outlineThickness, offsetPosition.y};
+        topRight = {bottomLeft.x + outlineThickness, bottomLeft.y + size().y};
         renderBorder(bottomLeft, topRight);
         // Bottom side
         bottomLeft = offsetPosition;
-        topRight = {bottomLeft.x + size().x, bottomLeft.y + borderThickness};
+        topRight = {bottomLeft.x + size().x, bottomLeft.y + outlineThickness};
         renderBorder(bottomLeft, topRight);
         // Top side
-        bottomLeft = {offsetPosition.x, offsetPosition.y + size().y - borderThickness};
-        topRight = {bottomLeft.x + size().x, bottomLeft.y + borderThickness};
+        bottomLeft = {offsetPosition.x, offsetPosition.y + size().y - outlineThickness};
+        topRight = {bottomLeft.x + size().x, bottomLeft.y + outlineThickness};
         renderBorder(bottomLeft, topRight);
 
         m_text.render(camera);

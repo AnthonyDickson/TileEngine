@@ -24,6 +24,7 @@
 
 #include <functional>
 
+#include <EconSimPlusPlus/Engine/ButtonSettings.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
 #include <EconSimPlusPlus/Engine/GuiObject.hpp>
 #include <EconSimPlusPlus/Engine/Text.hpp>
@@ -35,8 +36,9 @@ namespace EconSimPlusPlus::Engine {
         /// Create a button.
         /// @param text The text to display in the button.
         /// @param position Where to position the button in screen space. Uses the bottom left as the origin.
+        /// @param settings Configuration for button apperance.
         /// @param callback The function to call when the button is clicked.
-        Button(const Text& text, glm::vec2 position, std::function<void()> callback);
+        Button(const Text& text, glm::vec2 position, const ButtonSettings& settings, std::function<void()> callback);
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
@@ -47,6 +49,8 @@ namespace EconSimPlusPlus::Engine {
     private:
         /// The text to display in the button.
         Text m_text;
+        /// Configuration for button apperance.
+        const ButtonSettings m_settings;
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
 
