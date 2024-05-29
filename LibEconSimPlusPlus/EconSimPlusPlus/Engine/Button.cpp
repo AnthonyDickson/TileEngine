@@ -64,23 +64,49 @@ namespace EconSimPlusPlus::Engine {
         // TODO: Make these options configurable.
         constexpr glm::vec3 outlineColor{1.0f, 0.0f, 1.0f};
         constexpr glm::vec3 fillColor{1.0f};
+        constexpr float borderThickness{4.0f};
 
+        m_vao.bind();
         m_shader.bind();
 
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
         const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
 
+        // Draw the button fill color.
         const glm::vec2 anchorOffset{calculateAnchorOffset(size(), anchor(), size().y)};
-        glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {position() + anchorOffset, layer()})};
+        glm::vec2 offsetPosition{position() + anchorOffset};
+        glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {offsetPosition, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
-
-        m_vao.bind();
         m_shader.setUniform("color", fillColor);
         m_vbo.drawArrays(GL_TRIANGLE_STRIP);
-        m_shader.setUniform("color", outlineColor);
-        m_vbo.drawArrays(GL_LINES);
+
+        // Draw the button outline.
+        const auto renderBorder = [&](const glm::vec2& bottomLeftCorner, const glm::vec2& topRightCorner) {
+            transform = glm::translate(glm::mat4{1.0f}, {bottomLeftCorner, layer()});
+            transform = glm::scale(transform, {topRightCorner - bottomLeftCorner, 1.0f});
+            m_shader.setUniform("transform", transform);
+            m_shader.setUniform("color", outlineColor);
+            m_vbo.drawArrays(GL_TRIANGLE_STRIP);
+        };
+
+        // Left side
+        glm::vec2 bottomLeft{offsetPosition};
+        glm::vec2 topRight{bottomLeft.x + borderThickness, bottomLeft.y + size().y};
+        renderBorder(bottomLeft, topRight);
+        // Right side
+        bottomLeft = {offsetPosition.x + size().x - borderThickness, offsetPosition.y};
+        topRight = {bottomLeft.x + borderThickness, bottomLeft.y + size().y};
+        renderBorder(bottomLeft, topRight);
+        // Bottom side
+        bottomLeft = offsetPosition;
+        topRight = {bottomLeft.x + size().x, bottomLeft.y + borderThickness};
+        renderBorder(bottomLeft, topRight);
+        // Top side
+        bottomLeft = {offsetPosition.x, offsetPosition.y + size().y - borderThickness};
+        topRight = {bottomLeft.x + size().x, bottomLeft.y + borderThickness};
+        renderBorder(bottomLeft, topRight);
 
         m_text.render(camera);
     }
