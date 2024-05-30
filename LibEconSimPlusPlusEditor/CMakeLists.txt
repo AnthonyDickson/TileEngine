@@ -6,3 +6,4 @@ target_compile_options(LibEconSimPlusPlusEditor PRIVATE -Werror -Wall -Wextra -W
 
 # Libraries
 target_link_libraries(LibEconSimPlusPlusEditor PUBLIC LibEconSimPlusPlus)
+target_link_libraries(LibEconSimPlusPlusEditor PUBLIC portable_file_dialogs)

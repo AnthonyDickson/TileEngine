@@ -34,9 +34,7 @@
 #include <EconSimPlusPlus/Engine/VertexArray.hpp>
 #include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
-// TODO: Remove gap above and below glyphs even w/o padding.
 namespace EconSimPlusPlus::Engine {
-
     namespace {
         /// The range of ASCII characters to generate glyphs for.
         constexpr int charsToGenerate{128};
@@ -116,7 +114,8 @@ namespace EconSimPlusPlus::Engine {
         vao->bind();
         vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize, verticalExtents);
+        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize,
+                                      verticalExtents);
     }
 
     float Font::calculateScaleFactor(const FontSettings& settings) const {

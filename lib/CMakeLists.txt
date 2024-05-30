@@ -43,3 +43,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(harfbuzz)
 # FreeType Fonts
 add_subdirectory(freetype)
+
+# Portable File Dialogs
+FetchContent_Declare(
+        portable_file_dialogs
+        GIT_REPOSITORY https://github.com/samhocevar/portable-file-dialogs
+        GIT_TAG 0.1.0
+)
+FetchContent_MakeAvailable(portable_file_dialogs)

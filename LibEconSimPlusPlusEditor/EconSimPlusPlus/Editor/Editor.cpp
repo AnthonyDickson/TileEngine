@@ -30,7 +30,6 @@
 #include <EconSimPlusPlus/Engine/FrameTimer.hpp>
 #include <EconSimPlusPlus/Engine/GridLines.hpp>
 
-// TODO: Create class for buttons that 1) renders a button with text and 2) handles click events.
 // TODO: Open texture from disk and create an empty tile map with grid lines overlay.
 namespace EconSimPlusPlus::Editor {
 
