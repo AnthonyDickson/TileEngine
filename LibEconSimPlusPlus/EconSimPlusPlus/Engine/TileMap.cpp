@@ -61,9 +61,6 @@ namespace EconSimPlusPlus::Engine {
         m_texture(std::move(texture)), m_tileSize(tileSize),
         m_sheetSize{m_texture->resolution() / static_cast<glm::ivec2>(tileSize)}, m_mapSize(mapSize), m_tiles(tiles),
         m_textureCoordinates(generateTextureCoordinates(m_sheetSize)) {
-        const std::vector vertexData{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
-        m_vao.bind();
-        m_vbo.loadData(vertexData, {2});
 
         glm::mat4 transform{glm::scale(glm::mat4(1.0f), {tileSize, 1.0f})};
         transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
@@ -120,8 +117,6 @@ namespace EconSimPlusPlus::Engine {
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
         m_shader.setUniform("tileSize", textureCoordStride);
         m_texture->bind();
-        m_vao.bind();
-        m_vbo.bind();
 
         std::vector<glm::mat4> transforms(m_shader.maxInstances());
         std::vector<glm::vec2> textureCoordinatesInstanced(m_shader.maxInstances());
@@ -134,7 +129,7 @@ namespace EconSimPlusPlus::Engine {
 
             glUniformMatrix4fv(m_shader.uniformLocation("transforms"), tileIndex, GL_FALSE, &transforms[0][0][0]);
             glUniform2fv(m_shader.uniformLocation("textureCoordinates"), tileIndex, &textureCoordinatesInstanced[0][0]);
-            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, tileIndex);
+            m_quad.render(tileIndex, GL_TRIANGLE_STRIP);
         };
 
         for (int row = rowStart; row < rowEnd; ++row) {

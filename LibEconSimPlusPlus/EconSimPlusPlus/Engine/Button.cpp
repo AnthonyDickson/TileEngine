@@ -44,9 +44,6 @@ namespace EconSimPlusPlus::Engine {
         setPosition(position);
         setSize(glm::vec2{text.size()});
         setAnchor(m_settings.anchor);
-
-        m_vao.bind();
-        m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
     }
 
     void Button::setPosition(const glm::vec2 position) {
@@ -76,7 +73,6 @@ namespace EconSimPlusPlus::Engine {
     }
 
     void Button::render(const Camera& camera) const {
-        m_vao.bind();
         m_shader.bind();
 
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
@@ -90,7 +86,7 @@ namespace EconSimPlusPlus::Engine {
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
         m_shader.setUniform("color", m_settings.fillColor);
-        m_vbo.drawArrays(GL_TRIANGLE_STRIP);
+        m_quad.render(GL_TRIANGLE_STRIP);
 
         // Draw the button outline.
         const auto renderBorder = [&](const glm::vec2& bottomLeftCorner, const glm::vec2& topRightCorner) {
@@ -98,7 +94,7 @@ namespace EconSimPlusPlus::Engine {
             transform = glm::scale(transform, {topRightCorner - bottomLeftCorner, 1.0f});
             m_shader.setUniform("transform", transform);
             m_shader.setUniform("color", m_settings.outlineColor);
-            m_vbo.drawArrays(GL_TRIANGLE_STRIP);
+            m_quad.render(GL_TRIANGLE_STRIP);
         };
 
         const float outlineThickness{m_settings.outlineThickness};

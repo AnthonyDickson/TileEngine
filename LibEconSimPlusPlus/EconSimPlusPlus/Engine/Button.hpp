@@ -27,6 +27,7 @@
 #include <EconSimPlusPlus/Engine/ButtonSettings.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
 #include <EconSimPlusPlus/Engine/GuiObject.hpp>
+#include <EconSimPlusPlus/Engine/Quad.hpp>
 #include <EconSimPlusPlus/Engine/Text.hpp>
 
 namespace EconSimPlusPlus::Engine {
@@ -55,10 +56,8 @@ namespace EconSimPlusPlus::Engine {
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
 
-        // TODO: Refactor common pattern of having a VAO, VBO and shader.
-        // TODO: Also refactor common shapes, e.g., a quad.
-        VertexArray m_vao{};
-        VertexBuffer m_vbo{};
+        /// The button geometry.
+        Quad m_quad{};
         Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 

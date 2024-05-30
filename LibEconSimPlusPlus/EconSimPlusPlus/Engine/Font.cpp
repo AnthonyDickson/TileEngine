@@ -31,21 +31,12 @@
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 #include <EconSimPlusPlus/Engine/Font.hpp>
 #include <EconSimPlusPlus/Engine/SignedDistanceField.hpp>
-#include <EconSimPlusPlus/Engine/VertexArray.hpp>
-#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus::Engine {
     namespace {
         /// The range of ASCII characters to generate glyphs for.
         constexpr int charsToGenerate{128};
     } // namespace
-
-    Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
-               std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray, const glm::vec2 fontSize,
-               const glm::vec2 verticalExtents) :
-        m_glyphs(std::move(glyphs)), m_vao(std::move(vao)), m_vbo(std::move(vbo)),
-        m_textureArray(std::move(textureArray)), m_fontSize(fontSize), m_verticalExtents(verticalExtents) {
-    }
 
     std::unique_ptr<Font> Font::create(const std::string& fontPath, const glm::ivec2 sdfFontSize,
                                        const glm::ivec2 textureSize, const float spread) {
@@ -99,8 +90,8 @@ namespace EconSimPlusPlus::Engine {
             auto character{std::make_unique<Glyph>(c, textureSize, bearing * scale, advance * scale.x)};
             glyphs.emplace(c, std::move(character));
 
-            float distanceAboveBaseline = bearing.y;
-            float distanceBelowBaseline = bearing.y - resolution.y;
+            const float distanceAboveBaseline = bearing.y;
+            const float distanceBelowBaseline = bearing.y - resolution.y;
             verticalExtents.x = std::min(verticalExtents.x, distanceBelowBaseline * scale.y);
             verticalExtents.y = std::max(verticalExtents.y, distanceAboveBaseline * scale.y);
         }
@@ -109,13 +100,13 @@ namespace EconSimPlusPlus::Engine {
         FT_Done_FreeType(ft);
         glPixelStorei(GL_UNPACK_ALIGNMENT, unpackAlignment); // Restore unpack alignment.
 
-        auto vao{std::make_unique<VertexArray>()};
-        auto vbo{std::make_unique<VertexBuffer>()};
-        vao->bind();
-        vbo->loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
+        return std::make_unique<Font>(glyphs, std::move(textureArray), textureSize, verticalExtents);
+    }
 
-        return std::make_unique<Font>(glyphs, std::move(vao), std::move(vbo), std::move(textureArray), textureSize,
-                                      verticalExtents);
+    Font::Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<TextureArray> textureArray,
+               const glm::vec2 fontSize, const glm::vec2 verticalExtents) :
+        m_glyphs(std::move(glyphs)), m_fontSize(fontSize), m_verticalExtents(verticalExtents),
+        m_textureArray(std::move(textureArray)) {
     }
 
     float Font::calculateScaleFactor(const FontSettings& settings) const {
@@ -160,8 +151,6 @@ namespace EconSimPlusPlus::Engine {
         m_shader.setUniform("outlineColor", settings.outlineColor);
 
         m_textureArray->bind();
-        m_vao->bind();
-        m_vbo->bind();
 
         glm::vec3 drawPosition{position + glm::vec3{settings.padding.x / 2.0f, -settings.padding.y / 2.0f, 0.0f}};
 
@@ -176,7 +165,7 @@ namespace EconSimPlusPlus::Engine {
         const auto renderFn = [&] {
             glUniformMatrix4fv(m_shader.uniformLocation("transforms"), workingIndex, GL_FALSE, &transforms[0][0][0]);
             glUniform1iv(m_shader.uniformLocation("letterMap"), workingIndex, &letterMap[0]);
-            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, workingIndex);
+            m_quad.render(workingIndex, GL_TRIANGLE_STRIP);
         };
 
         for (const auto& character : text) {

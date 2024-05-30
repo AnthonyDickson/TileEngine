@@ -24,10 +24,9 @@
 
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 #include <EconSimPlusPlus/Engine/GameObject.hpp>
+#include <EconSimPlusPlus/Engine/Quad.hpp>
 #include <EconSimPlusPlus/Engine/Shader.hpp>
 #include <EconSimPlusPlus/Engine/Texture.hpp>
-#include <EconSimPlusPlus/Engine/VertexArray.hpp>
-#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus::Engine {
     /// Handles loading and accessing a textured-based tile map.
@@ -85,10 +84,8 @@ namespace EconSimPlusPlus::Engine {
 
         /// Shader to render textured tiles.
         const Shader m_shader{Shader::create("resource/shader/tile.vert", "resource/shader/tile.frag")};
-        /// The vertex array for the tile quad.
-        const VertexArray m_vao{};
-        /// The vertex buffer for the tile quad.
-        VertexBuffer m_vbo{};
+        /// The tile geometry.
+        const Quad m_quad{};
         /// The UV corners for each tile.
         const std::vector<glm::vec2> m_textureCoordinates;
     };

@@ -10,6 +10,7 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Engine/GridLines.cpp
         EconSimPlusPlus/Engine/GuiObject.cpp
         EconSimPlusPlus/Engine/InputState.cpp
+        EconSimPlusPlus/Engine/Quad.cpp
         EconSimPlusPlus/Engine/Shader.cpp
         EconSimPlusPlus/Engine/SignedDistanceField.cpp
         EconSimPlusPlus/Engine/Text.cpp

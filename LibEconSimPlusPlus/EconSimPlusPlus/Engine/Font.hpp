@@ -28,10 +28,9 @@
 #include <EconSimPlusPlus/Engine/Camera.hpp>
 #include <EconSimPlusPlus/Engine/FontSettings.hpp>
 #include <EconSimPlusPlus/Engine/Glyph.hpp>
+#include <EconSimPlusPlus/Engine/Quad.hpp>
 #include <EconSimPlusPlus/Engine/Shader.hpp>
 #include <EconSimPlusPlus/Engine/TextureArray.hpp>
-#include <EconSimPlusPlus/Engine/VertexArray.hpp>
-#include <EconSimPlusPlus/Engine/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus::Engine {
     /// Handles the loading and rendering of TrueType fonts.
@@ -50,15 +49,14 @@ namespace EconSimPlusPlus::Engine {
 
         /// Create a font (collection of glyphs).
         /// @param glyphs Mapping between ASCII chars and the corresponing font data.
-        /// @param vao The vertex array for rendering text.
-        /// @param vbo The vertex buffer for rendering text.
         /// @param textureArray The texture array that holds the textures for each glyph.
         /// @param fontSize The target size (width, height) of the glyphs in pixels.
         /// @param verticalExtents The maximum distance below and above the baseline, respectively.
         /// glyphs.
-        explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<VertexArray> vao,
-                      std::unique_ptr<VertexBuffer> vbo, std::unique_ptr<TextureArray> textureArray,
+        explicit Font(std::map<char, std::unique_ptr<Glyph>>& glyphs, std::unique_ptr<TextureArray> textureArray,
                       glm::vec2 fontSize, glm::vec2 verticalExtents);
+
+        Font(Font&) = delete; // Prevent issues with OpenGL stuff.
 
         /// Get the scale factor relative to the underlying bitmap size.
         /// @param settings The font settings to be used for rendering.
@@ -83,20 +81,18 @@ namespace EconSimPlusPlus::Engine {
     private:
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.
         std::map<char, std::unique_ptr<Glyph>> m_glyphs;
-        /// The vertex array for storing the 3D geometry and atttributes.
-        std::unique_ptr<VertexArray> m_vao;
-        /// The vertex buffer for the text geometry.
-        std::unique_ptr<VertexBuffer> m_vbo;
-        /// The shader for rendering text via OpenGL.
-        const Shader m_shader{Shader::create("resource/shader/text.vert", "resource/shader/text.frag")};
-
-        /// The texture array that holds the textures for each glyph.
-        const std::unique_ptr<TextureArray> m_textureArray;
         /// The target size (width, height) of the glyphs in pixels.
         const glm::vec2 m_fontSize;
         /// The maximum distance below and above the baseline, respectively. The distance below the baseline is stored
         /// as a negative number.
         const glm::vec2 m_verticalExtents;
+
+        /// The underlying geometry for drawing glyphs.
+        Quad m_quad{};
+        /// The shader for rendering text via OpenGL.
+        const Shader m_shader{Shader::create("resource/shader/text.vert", "resource/shader/text.frag")};
+        /// The texture array that holds the textures for each glyph.
+        const std::unique_ptr<TextureArray> m_textureArray;
     };
 } // namespace EconSimPlusPlus::Engine
 
