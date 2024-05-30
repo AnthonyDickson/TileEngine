@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
+#include "portable-file-dialogs.h"
 
 #include <EconSimPlusPlus/Editor/Editor.hpp>
 #include <EconSimPlusPlus/Engine/Button.hpp>
@@ -113,7 +114,14 @@ namespace EconSimPlusPlus::Editor {
             buttonText,
             topLeft,
             {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Engine::Anchor::topLeft},
-            [] { std::cout << "Button pressed.\n"; }};
+            [] {
+                // TODO: Use async dialog so that program doesn't hang while waiting for dialog. https://github.com/samhocevar/portable-file-dialogs/blob/main/doc/open_file.md
+                // TODO: Provide file filters for images (tile sheets) and YAML (tile map).
+                // TODO: Prevent user from selecting unsupported file types.
+                if (const std::vector selection = pfd::open_file("Select a file").result(); !selection.empty()) {
+                    std::cout << "User selected file " << selection[0] << "\n";
+                }
+            }};
         testButton.setLayer(98.0f);
 
         guiObjects.push_back(&testButton);
