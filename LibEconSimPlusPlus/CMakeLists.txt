@@ -1,25 +1,25 @@
 add_library(LibEconSimPlusPlus
-        EconSimPlusPlus/Engine/Anchor.cpp
-        EconSimPlusPlus/Engine/Button.cpp
-        EconSimPlusPlus/Engine/Camera.cpp
-        EconSimPlusPlus/Engine/Font.cpp
-        EconSimPlusPlus/Engine/FrameTimer.cpp
-        EconSimPlusPlus/Engine/Game.cpp
-        EconSimPlusPlus/Engine/GameObject.cpp
-        EconSimPlusPlus/Engine/Glyph.cpp
-        EconSimPlusPlus/Engine/GridLines.cpp
-        EconSimPlusPlus/Engine/GuiObject.cpp
-        EconSimPlusPlus/Engine/InputState.cpp
-        EconSimPlusPlus/Engine/Quad.cpp
-        EconSimPlusPlus/Engine/Shader.cpp
-        EconSimPlusPlus/Engine/SignedDistanceField.cpp
-        EconSimPlusPlus/Engine/Text.cpp
-        EconSimPlusPlus/Engine/Texture.cpp
-        EconSimPlusPlus/Engine/TextureArray.cpp
-        EconSimPlusPlus/Engine/TileMap.cpp
-        EconSimPlusPlus/Engine/Window.cpp
-        EconSimPlusPlus/Engine/VertexArray.cpp
-        EconSimPlusPlus/Engine/VertexBuffer.cpp
+        EconSimPlusPlus/Anchor.cpp
+        EconSimPlusPlus/Button.cpp
+        EconSimPlusPlus/Camera.cpp
+        EconSimPlusPlus/Font.cpp
+        EconSimPlusPlus/FrameTimer.cpp
+        EconSimPlusPlus/Game.cpp
+        EconSimPlusPlus/GameObject.cpp
+        EconSimPlusPlus/Glyph.cpp
+        EconSimPlusPlus/GridLines.cpp
+        EconSimPlusPlus/GuiObject.cpp
+        EconSimPlusPlus/InputState.cpp
+        EconSimPlusPlus/Quad.cpp
+        EconSimPlusPlus/Shader.cpp
+        EconSimPlusPlus/SignedDistanceField.cpp
+        EconSimPlusPlus/Text.cpp
+        EconSimPlusPlus/Texture.cpp
+        EconSimPlusPlus/TextureArray.cpp
+        EconSimPlusPlus/TileMap.cpp
+        EconSimPlusPlus/Window.cpp
+        EconSimPlusPlus/VertexArray.cpp
+        EconSimPlusPlus/VertexBuffer.cpp
 )
 target_include_directories(LibEconSimPlusPlus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(LibEconSimPlusPlus PRIVATE -Werror -Wall -Wextra -Wpedantic -Wshadow)

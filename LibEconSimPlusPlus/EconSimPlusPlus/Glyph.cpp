@@ -16,19 +16,14 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 26/04/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/Glyph.hpp>
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+namespace EconSimPlusPlus {
+    Glyph::Glyph(const unsigned char character_, const glm::vec2 size_, const glm::vec2 bearing_,
+                 const float advance_) : character(character_), size(size_), bearing(bearing_), advance(advance_) {
     }
 
-    return 0;
-}
+} // namespace EconSimPlusPlus

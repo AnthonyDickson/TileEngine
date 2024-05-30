@@ -16,28 +16,28 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony Dickson on 18/05/2024.
+// Created by Anthony Dickson on 13/04/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
-#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GAME_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GAME_HPP
 
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
-#include <EconSimPlusPlus/GuiObject.hpp>
+#include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
-namespace EconSimPlusPlus::Editor {
+namespace EconSimPlusPlus {
     /// This is the main class for the program.
-    class Editor {
+    class Game {
     public:
-        /// Create a new editor instance.
-        /// @param windowSize The width and height of the window to display the editor in pixels.
-        /// @return An editor instance.
-        static Editor create(glm::ivec2 windowSize);
+        /// Create a new game instance.
+        /// @param windowSize The width and height of the window to display the game in pixels.
+        /// @return A game instance.
+        static Game create(glm::ivec2 windowSize);
 
-        Editor(Editor&) = delete;
-        Editor(Editor&&) = delete;
+        Game(Game&) = delete;
+        Game(Game&&) = delete;
 
         /// Register a game object. Registered objects will be automatically updated and rendered in the main loop.
         /// @param object A pointer to the game object.
@@ -45,32 +45,39 @@ namespace EconSimPlusPlus::Editor {
         /// the caller.
         void addObject(GameObject* object);
 
-        /// Update the editor by one step.
+        /// Update the game by one step.
         /// @param deltaTime the size of the step to take in term of time (seconds).
         void update(float deltaTime);
 
-        /// Render the editor to the screen.
+        /// Render the game to the screen.
         void render() const;
 
-        /// Run the main application loop (this call blocks).
+        /// Run the main game loop (this call blocks).
         void run();
 
     private:
-        /// Create a new editor instance.
-        /// @param window The window to display the editor.
-        explicit Editor(std::unique_ptr<Window> window);
+        /// Create a new game instance.
+        /// @param window The window to display the game on.
+        /// @param tileMap The game map made up of square tiles.
+        /// @param gridLines 2D grid lines to draw over the tile map.
+        Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap, std::unique_ptr<GridLines> gridLines);
 
-        /// The window we use to display the editor.
+        /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
+        static bool m_isInitialised;
+
+        /// The window we use to display the game.
         std::unique_ptr<Window> m_window;
+        /// The game 'map'.
+        std::unique_ptr<TileMap> m_tileMap;
+        /// 2D grid lines.
+        std::unique_ptr<GridLines> m_gridLines;
         /// A list of all game objects.
         std::vector<GameObject*> objects{};
-        /// A list of all GUI objects.
-        std::vector<GUIObject*> guiObjects{};
         /// The render camera.
         Camera m_camera;
         /// The font for rendering text on screen.
         std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
     };
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus
 
-#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GAME_HPP

@@ -16,19 +16,22 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 13/05/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_VIEWPORT_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_VIEWPORT_HPP
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
-    }
+#include <glm/vec2.hpp>
 
-    return 0;
-}
+namespace EconSimPlusPlus {
+    /// The area visible from a camera or window, defined by its extents.
+    struct Viewport {
+        /// The bottom left corner of the viewport in world space.
+        glm::vec2 bottomLeft;
+        /// The top right corner of the viewport in world space.
+        glm::vec2 topRight;
+    };
+} // namespace EconSimPlusPlus
+
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_VIEWPORT_HPP

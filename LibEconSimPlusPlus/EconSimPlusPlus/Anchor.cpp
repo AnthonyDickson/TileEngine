@@ -16,19 +16,26 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 19/05/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/Anchor.hpp>
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+namespace EconSimPlusPlus {
+    glm::vec2 calculateAnchorOffset(const glm::vec2 size, const Anchor anchor, const float verticalBaseline) {
+        switch (anchor) {
+        case Anchor::bottomLeft:
+            return glm::vec2{0.0f, size.y - verticalBaseline};
+        case Anchor::bottomRight:
+            return glm::vec2{-size.x, size.y - verticalBaseline};
+        case Anchor::topLeft:
+            return glm::vec2{0.0f, 0.0f - verticalBaseline};
+        case Anchor::topRight:
+            return glm::vec2{-size.x, 0.0f - verticalBaseline};
+        case Anchor::center:
+            return {-size.x / 2.0f, size.y / 2.0f - verticalBaseline};
+        default:
+            return glm::vec2{0.0f};
+        }
     }
-
-    return 0;
-}
+} // namespace EconSimPlusPlus

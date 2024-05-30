@@ -16,19 +16,29 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 21/05/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/Text.hpp>
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+namespace EconSimPlusPlus {
+    Text::Text(const std::string& text, const Font* font, const FontSettings& settings) :
+        m_font(font), m_settings(settings) {
+        setText(text);
     }
 
-    return 0;
-}
+    void Text::setText(const std::string& text) {
+        m_text = text;
+
+        const float scale{m_font->calculateScaleFactor(m_settings)};
+        setSize(m_font->calculateTextSize(m_text) * scale + m_settings.padding);
+    }
+
+
+    void Text::update(float, const InputState&, const Camera&) {
+    }
+
+    void Text::render(const Camera& camera) const {
+        m_font->render(m_text, {position(), layer()}, camera, m_settings);
+    }
+} // namespace EconSimPlusPlus

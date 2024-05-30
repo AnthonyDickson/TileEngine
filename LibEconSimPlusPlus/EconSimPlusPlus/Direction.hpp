@@ -16,19 +16,15 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 25/04/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_DIRECTION_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_DIRECTION_HPP
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
-    }
-
-    return 0;
+namespace EconSimPlusPlus {
+    /// The four cardinal directions on a 2D plane.
+    enum class Direction { Up, Down, Left, Right };
 }
+
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_DIRECTION_HPP

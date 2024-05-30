@@ -16,19 +16,28 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 29/05/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSETTINGS_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSETTINGS_HPP
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
-    }
+#include "glm/vec3.hpp"
 
-    return 0;
-}
+#include <EconSimPlusPlus/Anchor.hpp>
+
+namespace EconSimPlusPlus {
+    /// Configuration for button appearance.
+    struct ButtonSettings {
+        /// The color to fill the background of the button with.
+        glm::vec3 fillColor{1.0f};
+        /// The color to use for the border.
+        glm::vec3 outlineColor{0.0f, 0.0f, 0.0f};
+        /// The thickness of the border in pixels.
+        float outlineThickness{1.0f};
+        /// The point on the button that the position refers to.
+        Anchor anchor{Anchor::topLeft};
+    };
+} // namespace EconSimPlusPlus
+
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSETTINGS_HPP

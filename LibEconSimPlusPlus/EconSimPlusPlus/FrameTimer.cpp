@@ -16,19 +16,25 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 03/05/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/FrameTimer.hpp>
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+namespace EconSimPlusPlus {
+    FrameTimer::FrameTimer(const float alpha) : m_alpha(alpha) {
     }
 
-    return 0;
-}
+    void FrameTimer::startStep() {
+        m_stepStartTime = std::chrono::steady_clock::now();
+    }
+
+    void FrameTimer::endStep() {
+        const std::chrono::duration stepElapsed{std::chrono::steady_clock::now() - m_stepStartTime};
+        m_averageStepDuration = m_alpha * stepElapsed + (1.0f - m_alpha) * m_averageStepDuration;
+    }
+
+    float FrameTimer::average() const {
+        return m_averageStepDuration.count() / 1e6f;
+    }
+} // namespace EconSimPlusPlus

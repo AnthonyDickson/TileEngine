@@ -16,19 +16,26 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony Dickson on 30/05/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#include "Quad.hpp"
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+
+namespace EconSimPlusPlus {
+
+    Quad::Quad() {
+        m_vao.bind();
+        m_vbo.loadData({0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f}, {2});
     }
 
-    return 0;
-}
+    void Quad::render(const GLenum mode) const {
+        m_vao.bind();
+        m_vbo.drawArrays(mode);
+    }
+
+    void Quad::render(const int instanceCount, const GLenum mode) const {
+        m_vao.bind();
+        glDrawArraysInstanced(mode, 0, 4, instanceCount);
+    }
+} // namespace EconSimPlusPlus

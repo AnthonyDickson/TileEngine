@@ -16,41 +16,43 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony Dickson on 18/05/2024.
+// Created by Anthony Dickson on 13/04/2024.
 //
 
-#include <iostream>
 #include <thread>
 #include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
-#include "portable-file-dialogs.h"
 
-#include <EconSimPlusPlus/Button.hpp>
-#include <EconSimPlusPlus/Editor/Editor.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
-#include <EconSimPlusPlus/GridLines.hpp>
+#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/Text.hpp>
 
-// TODO: Open texture from disk and create an empty tile map with grid lines overlay.
-namespace EconSimPlusPlus::Editor {
+namespace EconSimPlusPlus {
 
-    Editor::Editor(std::unique_ptr<Window> window) :
-        m_window(std::move(window)),
+    bool Game::m_isInitialised = false;
+
+    Game::Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap, std::unique_ptr<GridLines> gridLines) :
+        m_window(std::move(window)), m_tileMap(std::move(tileMap)), m_gridLines(std::move(gridLines)),
         m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
                  {0.0f, 0.0f, 100.0f}} {
+        assert(!m_isInitialised && "Cannot have more than one instance of `Game`.");
+        m_isInitialised = true;
     }
 
-    Editor Editor::create(glm::ivec2 windowSize) {
+    Game Game::create(glm::ivec2 windowSize) {
         auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
+        std::unique_ptr tileMap{TileMap::create("resource/terrain.yaml")};
+        auto gridLines{std::make_unique<GridLines>(tileMap->mapSize(), tileMap->tileSize())};
 
-        return Editor{std::move(window)};
+        return {std::move(window), std::move(tileMap), std::move(gridLines)};
     }
 
-    void Editor::addObject(GameObject* object) {
+    void Game::addObject(GameObject* object) {
         objects.push_back(object);
     }
 
-    void Editor::update(const float deltaTime) {
+    void Game::update(const float deltaTime) {
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
         }
@@ -61,16 +63,12 @@ namespace EconSimPlusPlus::Editor {
         for (const auto& object : objects) {
             object->update(deltaTime, input, m_camera);
         }
-
-        for (const auto& object : guiObjects) {
-            object->update(deltaTime, input, m_camera);
-        }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor
         // position in both screen and world coordinates?
     }
 
-    void Editor::render() const {
+    void Game::render() const {
         glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
@@ -84,13 +82,9 @@ namespace EconSimPlusPlus::Editor {
         for (const auto& object : objects) {
             object->render(m_camera);
         }
-
-        for (const auto& object : guiObjects) {
-            object->render(m_camera);
-        }
     }
 
-    void Editor::run() {
+    void Game::run() {
         constexpr int targetFramesPerSecond{60};
         constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
         constexpr float timeStep{1.0f / targetFramesPerSecond};
@@ -99,36 +93,20 @@ namespace EconSimPlusPlus::Editor {
 
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
+
         Text frameTimeText{"", m_font.get(),
                            FontSettings{.color = {1.0f, 1.0f, 0.0f},
                                         .size = 32.0f,
-                                        .anchor = Anchor::topRight,
+                                        .anchor = Anchor::topLeft,
                                         .outlineSize = 0.3f,
                                         .outlineColor = {0.0f, 0.0f, 0.0f}}};
+        frameTimeText.setLayer(99.0f);
 
-        glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
-
-        Text buttonText{
-            "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        Button testButton{
-            buttonText,
-            topLeft,
-                          {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
-                          [] {
-                              // TODO: Use async dialog so that program doesn't hang while waiting for dialog.
-                              // https://github.com/samhocevar/portable-file-dialogs/blob/main/doc/open_file.md
-                // TODO: Provide file filters for images (tile sheets) and YAML (tile map).
-                // TODO: Prevent user from selecting unsupported file types.
-                if (const std::vector selection = pfd::open_file("Select a file").result(); !selection.empty()) {
-                    std::cout << "User selected file " << selection[0] << "\n";
-                }
-            }};
-        testButton.setLayer(98.0f);
-
-        guiObjects.push_back(&testButton);
-
-        GridLines gridLines{{64, 64}, {32.0f, 32.0f}};
-        objects.push_back(&gridLines);
+        // TODO: Move this to factory function?
+        m_tileMap->setLayer(1.0f);
+        m_gridLines->setLayer(2.0f);
+        objects.push_back(m_tileMap.get());
+        objects.push_back(m_gridLines.get());
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -155,13 +133,13 @@ namespace EconSimPlusPlus::Editor {
             // TODO: Convert frame time summary into game object?
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
-            frameTimeText.setText(frameTimeSummary);
-            const glm::vec2 position{static_cast<float>(m_window->width()) / 2.0f,
+            const glm::vec2 position{-static_cast<float>(m_window->width()) / 2.0f,
                                      static_cast<float>(m_window->height()) / 2.0f};
+            frameTimeText.setText(frameTimeSummary);
             frameTimeText.setPosition(position);
             frameTimeText.render(m_camera);
 
             m_window->postUpdate();
         }
     }
-} // namespace EconSimPlusPlus::Editor
+} // namespace EconSimPlusPlus

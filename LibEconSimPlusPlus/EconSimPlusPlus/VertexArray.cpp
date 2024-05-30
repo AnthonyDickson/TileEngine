@@ -16,19 +16,21 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony on 31/10/2023.
+// Created by Anthony on 1/04/2024.
 //
-#include <iostream>
 
-#include <EconSimPlusPlus/Game.hpp>
+#include <EconSimPlusPlus/VertexArray.hpp>
 
-int main() {
-    try {
-        auto game{EconSimPlusPlus::Game::create({1920, 1080})};
-        game.run();
-    } catch (const std::exception &exception) {
-        std::cout << "Program exited with unhandled exception: " << exception.what() << std::endl;
+namespace EconSimPlusPlus {
+    VertexArray::VertexArray() {
+        glGenVertexArrays(1, &m_id);
     }
 
-    return 0;
-}
+    VertexArray::~VertexArray() {
+        glDeleteVertexArrays(1, &m_id);
+    }
+
+    void VertexArray::bind() const {
+        glBindVertexArray(m_id);
+    }
+} // namespace EconSimPlusPlus
