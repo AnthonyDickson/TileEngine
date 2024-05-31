@@ -108,21 +108,18 @@ namespace EconSimPlusPlus::Editor {
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
 
+        std::optional<pfd::open_file> openFileDialog{};
         Text buttonText{
             "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        Button testButton{
-            buttonText,
-            topLeft,
+        Button testButton{buttonText,
+                          topLeft,
                           {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
-                          [] {
-                              // TODO: Use async dialog so that program doesn't hang while waiting for dialog.
-                              // https://github.com/samhocevar/portable-file-dialogs/blob/main/doc/open_file.md
-                // TODO: Provide file filters for images (tile sheets) and YAML (tile map).
-                // TODO: Prevent user from selecting unsupported file types.
-                if (const std::vector selection = pfd::open_file("Select a file").result(); !selection.empty()) {
-                    std::cout << "User selected file " << selection[0] << "\n";
-                }
-            }};
+                          [&] {
+                              std::cout << "Button pressed.\n";
+                              openFileDialog = pfd::open_file("Select a file");
+                              // TODO: Provide file filters for images (tile sheets) and YAML (tile map).
+                              // TODO: Prevent user from selecting unsupported file types
+                          }};
         testButton.setLayer(98.0f);
 
         guiObjects.push_back(&testButton);
@@ -140,12 +137,30 @@ namespace EconSimPlusPlus::Editor {
             }
 
             if (m_window->inputState().getKey(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
+                if (openFileDialog.has_value()) {
+                    openFileDialog.value().kill();
+                }
+
                 return;
             }
 
             m_window->preUpdate();
             updateTimer.startStep();
-            update(timeStep);
+
+            // TODO: Wrap openFileDialog variable and functionality in class.
+            if (openFileDialog.has_value()) {
+                if (openFileDialog.value().ready(0)) {
+                    if (const std::vector selection = openFileDialog.value().result();!selection.empty()) {
+                        std::cout << "User selected file " << selection[0] << "\n";
+                    }
+
+                    openFileDialog.reset();
+                }
+            }
+            else {
+                update(timeStep);
+            }
+
             updateTimer.endStep();
 
             renderTimer.startStep();
