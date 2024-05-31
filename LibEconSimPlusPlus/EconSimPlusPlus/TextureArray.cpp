@@ -24,21 +24,24 @@
 #include <EconSimPlusPlus/TextureArray.hpp>
 
 namespace EconSimPlusPlus {
-    TextureArray::TextureArray(const unsigned int id_) : m_id(id_) {
+    TextureArray::TextureArray(const unsigned int id) : m_id(id) {
     }
+
     TextureArray::~TextureArray() {
         glDeleteTextures(1, &m_id);
     }
-    std::unique_ptr<TextureArray> TextureArray::create(const int depth_, const glm::ivec2 resolution_) {
+
+    std::unique_ptr<TextureArray> TextureArray::create(const int depth, const glm::ivec2 resolution) {
         unsigned int textureArrayID;
         glGenTextures(1, &textureArrayID);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayID);
-        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, resolution_.x, resolution_.y, depth_, 0, GL_RED, GL_UNSIGNED_BYTE,
+        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, resolution.x, resolution.y, depth, 0, GL_RED, GL_UNSIGNED_BYTE,
                      nullptr);
 
         return std::make_unique<TextureArray>(textureArrayID);
     }
+
     void TextureArray::bufferSubImage(const int zOffset, const glm::ivec2 bufferSize,
                                       const unsigned char* buffer) const {
         bind();
@@ -49,6 +52,7 @@ namespace EconSimPlusPlus {
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
+
     void TextureArray::bind() const {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
