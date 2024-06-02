@@ -116,17 +116,16 @@ namespace EconSimPlusPlus::Editor {
 
         Text buttonText{
             "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        Button testButton{buttonText,
-                          topLeft,
-                          {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
-                          [&] {
-                              std::cout << "Button pressed.\n";
-                              m_openFileDialog.open(pfd::open_file("Select a file"), [](const std::string& selection) {
-                                  std::cout << "User selected file " << selection << "\n";
-                              });
-                              // TODO: Provide file filters for images (tile sheets) and YAML (tile map).
-                              // TODO: Prevent user from selecting unsupported file types
-                          }};
+        Button testButton{
+            buttonText,
+            topLeft,
+            {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
+            [&] {
+                m_openFileDialog.open(
+                    pfd::open_file("Select a file", ".",
+                                   {"Image Files", "*.png *.jpg *.jpeg *.bmp", "YAML Files", "*.yaml", "*.yml"}),
+                    [](const std::string& selection) { std::cout << "User selected file " << selection << "\n"; });
+            }};
         testButton.setLayer(98.0f);
 
         guiObjects.push_back(&testButton);
