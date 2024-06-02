@@ -52,6 +52,11 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::update(const float deltaTime) {
+        if (m_openFileDialog.active()) {
+            m_openFileDialog.update();
+            return;
+        }
+
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
         }
@@ -109,7 +114,6 @@ namespace EconSimPlusPlus::Editor {
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
 
-        OpenFileDialog openFileDialog{};
         Text buttonText{
             "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
         Button testButton{buttonText,
@@ -117,7 +121,7 @@ namespace EconSimPlusPlus::Editor {
                           {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
                           [&] {
                               std::cout << "Button pressed.\n";
-                              openFileDialog.open(pfd::open_file("Select a file"), [](const std::string& selection) {
+                              m_openFileDialog.open(pfd::open_file("Select a file"), [](const std::string& selection) {
                                   std::cout << "User selected file " << selection << "\n";
                               });
                               // TODO: Provide file filters for images (tile sheets) and YAML (tile map).
@@ -140,21 +144,13 @@ namespace EconSimPlusPlus::Editor {
             }
 
             if (m_window->inputState().getKey(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
-                openFileDialog.kill();
+                m_openFileDialog.kill();
                 return;
             }
 
             m_window->preUpdate();
             updateTimer.startStep();
-
-            // TODO: Move dialog stuff into update function.
-            if (openFileDialog.active()) {
-                openFileDialog.update();
-            }
-            else {
-                update(timeStep);
-            }
-
+            update(timeStep);
             updateTimer.endStep();
 
             renderTimer.startStep();
