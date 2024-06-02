@@ -23,7 +23,6 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GUIOBJECT_HPP
 
 #include "glm/ext/matrix_common.hpp"
-// ReSharper disable once CppWrongIncludesOrder
 #include "glm/vec2.hpp"
 
 #include <EconSimPlusPlus/Anchor.hpp>
