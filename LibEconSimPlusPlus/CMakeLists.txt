@@ -17,6 +17,7 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Texture.cpp
         EconSimPlusPlus/TextureArray.cpp
         EconSimPlusPlus/TileMap.cpp
+        EconSimPlusPlus/TileSheet.cpp
         EconSimPlusPlus/Window.cpp
         EconSimPlusPlus/VertexArray.cpp
         EconSimPlusPlus/VertexBuffer.cpp

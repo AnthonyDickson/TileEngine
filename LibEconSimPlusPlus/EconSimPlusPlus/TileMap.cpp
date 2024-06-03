@@ -30,43 +30,6 @@
 #include <EconSimPlusPlus/TileMap.hpp>
 
 namespace EconSimPlusPlus {
-    namespace {
-        /// Generate the texture coordinates for a tile sheet.
-        /// @note The UV coordinates are returned as a flat array, however each tile's coordinates take up 4 consecutive
-        /// elements.
-        /// @param sheetSize The width and height of the tile sheet in tiles.
-        /// @return The UV coordinates for each tile (four elements each).
-        std::vector<glm::vec2> generateTextureCoordinates(const glm::ivec2 sheetSize) {
-            const auto width{1.0f / static_cast<float>(sheetSize.x)};
-            const auto height{1.0f / static_cast<float>(sheetSize.y)};
-
-            std::vector<glm::vec2> textureCoordinates{};
-            textureCoordinates.reserve(sheetSize.x * sheetSize.y);
-
-            for (int row = 0; row < sheetSize.y; ++row) {
-                for (int col = 0; col < sheetSize.x; ++col) {
-                    const auto u{static_cast<float>(col) * width};
-                    const auto v{static_cast<float>(row) * height};
-
-                    textureCoordinates.emplace_back(u, v);
-                }
-            }
-
-            return textureCoordinates;
-        }
-    } // namespace
-
-    TileMap::TileMap(std::unique_ptr<Texture> texture, const glm::vec2 tileSize, const glm::ivec2 mapSize,
-                     const std::vector<int>& tiles) :
-        m_texture(std::move(texture)), m_tileSize(tileSize),
-        m_sheetSize{m_texture->resolution() / static_cast<glm::ivec2>(tileSize)}, m_mapSize(mapSize), m_tiles(tiles),
-        m_textureCoordinates(generateTextureCoordinates(m_sheetSize)) {
-
-        glm::mat4 transform{glm::scale(glm::mat4(1.0f), {tileSize, 1.0f})};
-        transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
-        setTransform(transform);
-        setSize(tileSize * static_cast<glm::vec2>(mapSize));
-    }
 
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
         const YAML::Node tileMapConfig{YAML::LoadFile(yamlPath)};
@@ -84,7 +47,18 @@ namespace EconSimPlusPlus {
         const glm::ivec2 tileMapSize{tileMapNode["width"].as<int>(), tileMapNode["height"].as<int>()};
         const auto tiles{tileMapNode["tiles"].as<std::vector<int>>()};
 
-        return std::make_unique<TileMap>(std::move(texture), tileSize, tileMapSize, tiles);
+        auto tileSheet{std::make_unique<TileSheet>(std::move(texture), tileSize)};
+
+        return std::make_unique<TileMap>(std::move(tileSheet), tileMapSize, tiles);
+    }
+
+    TileMap::TileMap(std::unique_ptr<TileSheet> tileSheet, const glm::ivec2 mapSize, const std::vector<int>& tiles) :
+        m_tileSheet(std::move(tileSheet)), m_mapSize(mapSize), m_tiles(tiles) {
+
+        glm::mat4 transform{glm::scale(glm::mat4(1.0f), {m_tileSheet->tileSize(), 1.0f})};
+        transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
+        setTransform(transform);
+        setSize(m_tileSheet->tileSize() * static_cast<glm::vec2>(mapSize));
     }
 
     glm::ivec2 TileMap::mapSize() const {
@@ -92,7 +66,7 @@ namespace EconSimPlusPlus {
     }
 
     glm::vec2 TileMap::tileSize() const {
-        return m_tileSize;
+        return m_tileSheet->tileSize();
     }
 
     void TileMap::update(float, const InputState& inputState, const Camera& camera) {
@@ -100,7 +74,7 @@ namespace EconSimPlusPlus {
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
-            const glm::ivec2 gridPos{((cursorPos - position()) / m_tileSize)};
+            const glm::ivec2 gridPos{((cursorPos - position()) / m_tileSheet->tileSize())};
 
             std::cout << std::format(
                 "Mouse clicked over tile map at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
@@ -110,13 +84,11 @@ namespace EconSimPlusPlus {
 
     void TileMap::render(const Camera& camera) const {
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
-        const glm::vec2 textureCoordStride{1.0f / static_cast<float>(m_sheetSize.x),
-                                           1.0f / static_cast<float>(m_sheetSize.y)};
 
         m_shader.bind();
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
-        m_shader.setUniform("tileSize", textureCoordStride);
-        m_texture->bind();
+        m_shader.setUniform("tileSize", m_tileSheet->textureCoordinateStride());
+        m_tileSheet->bind();
 
         std::vector<glm::mat4> transforms(m_shader.maxInstances());
         std::vector<glm::vec2> textureCoordinatesInstanced(m_shader.maxInstances());
@@ -137,7 +109,7 @@ namespace EconSimPlusPlus {
                 transforms[tileIndex] =
                     glm::translate(transform(), glm::vec3{static_cast<float>(col), static_cast<float>(row), 0.0f});
                 const int tileID{m_tiles.at(row * m_mapSize.x + col)};
-                textureCoordinatesInstanced[tileIndex] = m_textureCoordinates[tileID];
+                textureCoordinatesInstanced[tileIndex] = m_tileSheet->textureCoordinates(tileID);
 
                 ++tileIndex;
 
@@ -154,8 +126,8 @@ namespace EconSimPlusPlus {
     TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
         const auto [bottomLeft, topRight]{camera.viewport()};
 
-        const glm::vec2 gridCoordinatesMin{(bottomLeft - position()) / m_tileSize};
-        const glm::vec2 gridCoordinatesMax{(topRight - position()) / m_tileSize};
+        const glm::vec2 gridCoordinatesMin{(bottomLeft - position()) / m_tileSheet->tileSize()};
+        const glm::vec2 gridCoordinatesMax{(topRight - position()) / m_tileSheet->tileSize()};
 
         // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
         // appearing' only once they are fully in view.
