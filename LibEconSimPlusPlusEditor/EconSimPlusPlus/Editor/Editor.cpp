@@ -31,8 +31,9 @@
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
+#include <EconSimPlusPlus/TileMap.hpp>
+#include <EconSimPlusPlus/TileSheet.hpp>
 
-// TODO: Open texture from disk and create an empty tile map with grid lines overlay.
 namespace EconSimPlusPlus::Editor {
 
     Editor::Editor(std::unique_ptr<Window> window) :
@@ -68,6 +69,10 @@ namespace EconSimPlusPlus::Editor {
             object->update(deltaTime, input, m_camera);
         }
 
+        if (m_tileMap != nullptr) {
+            m_tileMap->update(deltaTime, input, m_camera);
+        }
+
         for (const auto& object : guiObjects) {
             object->update(deltaTime, input, m_camera);
         }
@@ -89,6 +94,10 @@ namespace EconSimPlusPlus::Editor {
 
         for (const auto& object : objects) {
             object->render(m_camera);
+        }
+
+        if (m_tileMap != nullptr) {
+            m_tileMap->render(m_camera);
         }
 
         for (const auto& object : guiObjects) {
@@ -116,22 +125,17 @@ namespace EconSimPlusPlus::Editor {
 
         Text buttonText{
             "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        Button testButton{
-            buttonText,
-            topLeft,
-            {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
-            [&] {
-                m_openFileDialog.open(
-                    pfd::open_file("Select a file", ".",
-                                   {"Image Files", "*.png *.jpg *.jpeg *.bmp", "YAML Files", "*.yaml", "*.yml"}),
-                    [](const std::string& selection) { std::cout << "User selected file " << selection << "\n"; });
-            }};
+        Button testButton{buttonText,
+                          topLeft,
+                          {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
+                          [&] {
+                              m_openFileDialog.open(
+                                  pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
+                                  [this](const std::string& selection) { loadTileSheet(selection); });
+                          }};
         testButton.setLayer(98.0f);
 
         guiObjects.push_back(&testButton);
-
-        GridLines gridLines{{64, 64}, {32.0f, 32.0f}};
-        objects.push_back(&gridLines);
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -167,5 +171,19 @@ namespace EconSimPlusPlus::Editor {
 
             m_window->postUpdate();
         }
+    }
+
+    void Editor::loadTileSheet(const std::string& filepath) {
+        constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
+        constexpr glm::ivec2 defaultMapSize{16, 16};
+        const std::vector defaultTiles(defaultMapSize.x * defaultMapSize.y, 0);
+
+        auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
+        auto tileMap{std::make_unique<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles)};
+        tileMap->enableGridLines();
+
+        m_tileMap = std::move(tileMap);
+        // TODO: Display tile sheet separately in a side panel with a grid overlay.
+        // TODO: Add GUI elements to adjust tile size, map size etc.
     }
 } // namespace EconSimPlusPlus::Editor

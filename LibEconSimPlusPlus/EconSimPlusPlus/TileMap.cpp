@@ -69,7 +69,11 @@ namespace EconSimPlusPlus {
         return m_tileSheet->tileSize();
     }
 
-    void TileMap::update(float, const InputState& inputState, const Camera& camera) {
+    void TileMap::enableGridLines() {
+        m_gridLines.emplace(mapSize(), tileSize());
+    }
+
+    void TileMap::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         // ReSharper disable once CppTooWideScopeInitStatement
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
@@ -79,6 +83,10 @@ namespace EconSimPlusPlus {
             std::cout << std::format(
                 "Mouse clicked over tile map at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
                 cursorPos.y, gridPos.x, gridPos.y);
+        }
+
+        if (m_gridLines.has_value()) {
+            m_gridLines->update(deltaTime, inputState, camera);
         }
     }
 
@@ -121,6 +129,10 @@ namespace EconSimPlusPlus {
         }
 
         renderFn();
+
+        if (m_gridLines.has_value()) {
+            m_gridLines->render(camera);
+        }
     }
 
     TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {

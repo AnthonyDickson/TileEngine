@@ -26,6 +26,7 @@
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/GuiObject.hpp>
+#include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
 namespace EconSimPlusPlus::Editor {
@@ -56,6 +57,10 @@ namespace EconSimPlusPlus::Editor {
         /// Run the main application loop (this call blocks).
         void run();
 
+        /// Load a tile sheet image from disk and create an empty tilemap.
+        /// @param filepath The path to the tile sheet image.
+        void loadTileSheet(const std::string& filepath);
+
     private:
         /// Create a new editor instance.
         /// @param window The window to display the editor.
@@ -73,6 +78,9 @@ namespace EconSimPlusPlus::Editor {
         Camera m_camera;
         /// The font for rendering text on screen.
         std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
+
+        /// The tile map that is currently being edited.
+        std::unique_ptr<TileMap> m_tileMap{};
     };
 } // namespace EconSimPlusPlus::Editor
 

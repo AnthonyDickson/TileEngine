@@ -24,6 +24,7 @@
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/GameObject.hpp>
+#include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
@@ -48,6 +49,9 @@ namespace EconSimPlusPlus {
 
         /// The size (width and height) of a single tile in pixels.
         [[nodiscard]] glm::vec2 tileSize() const;
+
+        /// Add grid lines over the tile map.
+        void enableGridLines();
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
 
@@ -80,6 +84,9 @@ namespace EconSimPlusPlus {
         const Shader m_shader{Shader::create("resource/shader/tile.vert", "resource/shader/tile.frag")};
         /// The tile geometry.
         const Quad m_quad{};
+
+        /// Optional grid lines to draw over the tile map.
+        std::optional<GridLines> m_gridLines{};
     };
 } // namespace EconSimPlusPlus
 
