@@ -31,6 +31,7 @@
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
+#include <EconSimPlusPlus/Panel.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
 
@@ -49,7 +50,7 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::addObject(GameObject* object) {
-        objects.push_back(object);
+        m_objects.push_back(object);
     }
 
     void Editor::update(const float deltaTime) {
@@ -65,7 +66,7 @@ namespace EconSimPlusPlus::Editor {
         const InputState input{m_window->inputState()};
         m_camera.update(deltaTime, input);
 
-        for (const auto& object : objects) {
+        for (const auto& object : m_objects) {
             object->update(deltaTime, input, m_camera);
         }
 
@@ -73,7 +74,7 @@ namespace EconSimPlusPlus::Editor {
             m_tileMap->update(deltaTime, input, m_camera);
         }
 
-        for (const auto& object : guiObjects) {
+        for (const auto& object : m_guiObjects) {
             object->update(deltaTime, input, m_camera);
         }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
@@ -92,7 +93,7 @@ namespace EconSimPlusPlus::Editor {
 
         glEnable(GL_CULL_FACE);
 
-        for (const auto& object : objects) {
+        for (const auto& object : m_objects) {
             object->render(m_camera);
         }
 
@@ -100,7 +101,7 @@ namespace EconSimPlusPlus::Editor {
             m_tileMap->render(m_camera);
         }
 
-        for (const auto& object : guiObjects) {
+        for (const auto& object : m_guiObjects) {
             object->render(m_camera);
         }
     }
@@ -133,7 +134,7 @@ namespace EconSimPlusPlus::Editor {
             })};
         testButton->setLayer(98.0f);
 
-        guiObjects.push_back(std::move(testButton));
+        m_guiObjects.push_back(std::move(testButton));
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -181,6 +182,12 @@ namespace EconSimPlusPlus::Editor {
         tileMap->enableGridLines();
 
         m_tileMap = std::move(tileMap);
+
+        auto panel{std::make_unique<Panel>(
+            glm::vec2{0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())},
+            glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+            Anchor::topRight)};
+        m_guiObjects.push_back(std::move(panel));
         // TODO: Display tile sheet separately in a side panel with a grid overlay.
         // TODO: Add GUI elements to adjust tile size, map size etc.
     }

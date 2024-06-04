@@ -71,9 +71,9 @@ namespace EconSimPlusPlus::Editor {
         /// Handles asynchronous file dialogs.
         OpenFileDialog m_openFileDialog{};
         /// A list of all game objects.
-        std::vector<GameObject*> objects{};
+        std::vector<GameObject*> m_objects{};
         /// A list of all GUI objects.
-        std::vector<std::unique_ptr<GUIObject>> guiObjects{};
+        std::vector<std::unique_ptr<GUIObject>> m_guiObjects{};
         /// The render camera.
         Camera m_camera;
         /// The font for rendering text on screen.
