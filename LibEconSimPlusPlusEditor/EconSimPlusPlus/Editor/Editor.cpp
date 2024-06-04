@@ -125,17 +125,15 @@ namespace EconSimPlusPlus::Editor {
 
         Text buttonText{
             "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        Button testButton{buttonText,
-                          topLeft,
-                          {.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft},
-                          [&] {
-                              m_openFileDialog.open(
-                                  pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
-                                  [this](const std::string& selection) { loadTileSheet(selection); });
-                          }};
-        testButton.setLayer(98.0f);
+        auto testButton{std::make_unique<Button>(
+            buttonText, topLeft,
+            ButtonSettings{.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft}, [&] {
+                m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
+                                      [this](const std::string& selection) { loadTileSheet(selection); });
+            })};
+        testButton->setLayer(98.0f);
 
-        guiObjects.push_back(&testButton);
+        guiObjects.push_back(std::move(testButton));
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
