@@ -186,7 +186,10 @@ namespace EconSimPlusPlus::Editor {
         auto panel{std::make_unique<Panel>(
             glm::vec2{0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())},
             glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
-            Anchor::topRight)};
+            PanelSettings{.anchor = Anchor::topRight,
+                          .fillColor = glm::vec3{0.3f},
+                          .outlineThickness = 1.0f,
+                          .outlineColor = glm::vec3{0.6f}})};
         m_guiObjects.push_back(std::move(panel));
         // TODO: Display tile sheet separately in a side panel with a grid overlay.
         // TODO: Add GUI elements to adjust tile size, map size etc.

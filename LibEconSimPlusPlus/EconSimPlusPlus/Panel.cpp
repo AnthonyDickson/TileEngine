@@ -25,21 +25,16 @@
 #include <EconSimPlusPlus/Panel.hpp>
 
 namespace EconSimPlusPlus {
-    Panel::Panel(const glm::vec2 position, const glm::vec2 size, const Anchor anchor) {
+    Panel::Panel(const glm::vec2 position, const glm::vec2 size, PanelSettings settings) : m_settings(settings) {
         GUIObject::setPosition(position);
         setSize(size);
-        GUIObject::setAnchor(anchor);
+        GUIObject::setAnchor(m_settings.anchor);
     }
 
     void Panel::update(float, const InputState&, const Camera&) {
     }
 
     void Panel::render(const Camera& camera) const {
-        // TODO: Wrap panel settings in struct.
-        constexpr glm::vec3 fillColor{0.3f};
-        constexpr float outlineThickness{1.0f};
-        constexpr glm::vec3 outlineColor{0.6f};
-
         m_shader.bind();
 
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
@@ -52,9 +47,9 @@ namespace EconSimPlusPlus {
         glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {offsetPosition, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
-        m_shader.setUniform("color", fillColor);
+        m_shader.setUniform("color", m_settings.fillColor);
         m_quad.render(GL_TRIANGLE_STRIP);
 
-        drawOutline(*this, m_shader, m_quad, outlineColor, outlineThickness);
+        drawOutline(*this, m_shader, m_quad, m_settings.outlineColor, m_settings.outlineThickness);
     }
 } // namespace EconSimPlusPlus
