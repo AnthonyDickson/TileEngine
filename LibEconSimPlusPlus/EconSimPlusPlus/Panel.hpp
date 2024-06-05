@@ -28,8 +28,6 @@
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 
-// TODO: Draw quad with solid fill colour.
-// TODO: Draw borders.
 // TODO: Allow objects to be added to the panel.
 // TODO: Make the panel's object transforms to be relative to the panel's transform.
 // TODO: Ensure that objects are not rendered past the borders of the panel.
