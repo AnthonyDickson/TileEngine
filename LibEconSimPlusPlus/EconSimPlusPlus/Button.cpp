@@ -23,6 +23,7 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include <EconSimPlusPlus/Button.hpp>
+#include <EconSimPlusPlus/Outline.hpp>
 
 namespace EconSimPlusPlus {
     namespace {
@@ -88,32 +89,7 @@ namespace EconSimPlusPlus {
         m_shader.setUniform("color", m_settings.fillColor);
         m_quad.render(GL_TRIANGLE_STRIP);
 
-        // Draw the button outline.
-        const auto renderBorder = [&](const glm::vec2& bottomLeftCorner, const glm::vec2& topRightCorner) {
-            transform = glm::translate(glm::mat4{1.0f}, {bottomLeftCorner, layer()});
-            transform = glm::scale(transform, {topRightCorner - bottomLeftCorner, 1.0f});
-            m_shader.setUniform("transform", transform);
-            m_shader.setUniform("color", m_settings.outlineColor);
-            m_quad.render(GL_TRIANGLE_STRIP);
-        };
-
-        const float outlineThickness{m_settings.outlineThickness};
-        // Left side
-        glm::vec2 bottomLeft{offsetPosition};
-        glm::vec2 topRight{bottomLeft.x + outlineThickness, bottomLeft.y + size().y};
-        renderBorder(bottomLeft, topRight);
-        // Right side
-        bottomLeft = {offsetPosition.x + size().x - outlineThickness, offsetPosition.y};
-        topRight = {bottomLeft.x + outlineThickness, bottomLeft.y + size().y};
-        renderBorder(bottomLeft, topRight);
-        // Bottom side
-        bottomLeft = offsetPosition;
-        topRight = {bottomLeft.x + size().x, bottomLeft.y + outlineThickness};
-        renderBorder(bottomLeft, topRight);
-        // Top side
-        bottomLeft = {offsetPosition.x, offsetPosition.y + size().y - outlineThickness};
-        topRight = {bottomLeft.x + size().x, bottomLeft.y + outlineThickness};
-        renderBorder(bottomLeft, topRight);
+        drawOutline(*this, m_shader, m_quad, m_settings.outlineColor, m_settings.outlineThickness);
 
         m_text.render(camera);
     }
