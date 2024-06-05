@@ -36,13 +36,19 @@ namespace EconSimPlusPlus {
     /// Provides a logical and visual container for other objects.
     class Panel final : public GUIObject {
     public:
+        /// Create an empty panel.
+        /// @param position The x and y coordinates of the panel in world space.
+        /// @param size The height and width of the panel in pixels.
+        /// @param anchor The point on the panel that the position refers to.
         Panel(glm::vec2 position, glm::vec2 size, Anchor anchor);
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 
     private:
+        /// The quad geometry for drawing the panel background and outlines.
         Quad m_quad{};
+        /// The shader for coloring the quad with a solid color.
         Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 
