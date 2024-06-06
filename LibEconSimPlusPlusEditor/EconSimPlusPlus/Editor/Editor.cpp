@@ -198,17 +198,11 @@ namespace EconSimPlusPlus::Editor {
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 0);
-        int tilesPerRow{static_cast<int>(panel->size().x / defaultTileSize.x)};
-
-        if (const int tileSheetRows{static_cast<int>(tileSheet->sheetSize().x)};
-            tilesPerRow > tileSheetRows) {
-            tilesPerRow = tileSheetRows;
-        }
-
+        const int tilesPerRow{std::min(static_cast<int>(panel->size().x / defaultTileSize.x),
+                                       static_cast<int>(tileSheet->sheetSize().x))};
         const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
-        tileMap = std::make_unique<TileMap>(std::move(tileSheet),
-            glm::vec2{tilesPerRow, rows}, tiles);
-        tileMap->enableGridLines(); // TODO: Ensure that when the tile map's position is updated, the grid's position is updated too.
+        tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
+        tileMap->enableGridLines();
 
         panel->addObject(std::move(tileMap));
 

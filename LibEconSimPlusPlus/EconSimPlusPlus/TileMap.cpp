@@ -71,6 +71,15 @@ namespace EconSimPlusPlus {
 
     void TileMap::enableGridLines() {
         m_gridLines.emplace(mapSize(), tileSize());
+        m_gridLines->setPosition(position());
+    }
+
+    void TileMap::setPosition(const glm::vec2 position) {
+        GameObject::setPosition(position);
+
+        if (m_gridLines.has_value()) {
+            m_gridLines->setPosition(position);
+        }
     }
 
     void TileMap::update(const float deltaTime, const InputState& inputState, const Camera& camera) {

@@ -48,7 +48,7 @@ namespace EconSimPlusPlus {
 
         /// Set the 2D coordinates of an object.
         /// @param position The object's 2D coordinate in world space.
-        void setPosition(glm::vec2 position);
+        virtual void setPosition(glm::vec2 position);
 
         /// The layer the object exists on.
         /// This controls the ordering during rendering. Higher values put the object closer to the camera.

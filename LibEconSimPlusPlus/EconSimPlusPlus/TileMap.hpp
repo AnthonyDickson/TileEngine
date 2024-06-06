@@ -53,6 +53,8 @@ namespace EconSimPlusPlus {
         /// Add grid lines over the tile map.
         void enableGridLines();
 
+        void setPosition(glm::vec2 position) override;
+
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
 
         /// Draw the tile map on screen.
