@@ -20,6 +20,7 @@
 //
 
 #include <iostream>
+#include <numeric>
 #include <thread>
 #include <utility>
 
@@ -177,12 +178,14 @@ namespace EconSimPlusPlus::Editor {
         constexpr glm::ivec2 defaultMapSize{16, 16};
         const std::vector defaultTiles(defaultMapSize.x * defaultMapSize.y, 0);
 
+        // Tile map display
         auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
         auto tileMap{std::make_unique<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles)};
         tileMap->enableGridLines();
 
         m_tileMap = std::move(tileMap);
 
+        // Side panel
         auto panel{std::make_unique<Panel>(
             glm::vec2{0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())},
             glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
@@ -190,8 +193,26 @@ namespace EconSimPlusPlus::Editor {
                           .fillColor = glm::vec3{0.3f},
                           .outlineThickness = 1.0f,
                           .outlineColor = glm::vec3{0.6f}})};
+
+        // Tile sheet display
+        tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
+        std::vector<int> tiles(tileSheet->tileCount());
+        std::iota(tiles.begin(), tiles.end(), 0);
+        int tilesPerRow{static_cast<int>(panel->size().x / defaultTileSize.x)};
+
+        if (const int tileSheetRows{static_cast<int>(tileSheet->sheetSize().x)};
+            tilesPerRow > tileSheetRows) {
+            tilesPerRow = tileSheetRows;
+        }
+
+        const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
+        tileMap = std::make_unique<TileMap>(std::move(tileSheet),
+            glm::vec2{tilesPerRow, rows}, tiles);
+        tileMap->enableGridLines(); // TODO: Ensure that when the tile map's position is updated, the grid's position is updated too.
+
+        panel->addObject(std::move(tileMap));
+
         m_guiObjects.push_back(std::move(panel));
-        // TODO: Display tile sheet separately in a side panel with a grid overlay.
         // TODO: Add GUI elements to adjust tile size, map size etc.
     }
 } // namespace EconSimPlusPlus::Editor

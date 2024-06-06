@@ -24,12 +24,12 @@
 
 #include "glm/vec2.hpp"
 
+#include <EconSimPlusPlus/GameObject.hpp>
 #include <EconSimPlusPlus/GuiObject.hpp>
 #include <EconSimPlusPlus/PanelSettings.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 
-// TODO: Allow objects to be added to the panel.
 // TODO: Make the panel's object transforms to be relative to the panel's transform.
 // TODO: Ensure that objects are not rendered past the borders of the panel.
 namespace EconSimPlusPlus {
@@ -43,6 +43,10 @@ namespace EconSimPlusPlus {
         /// @param settings Configuration for panel apperance.
         Panel(glm::vec2 position, glm::vec2 size, PanelSettings settings);
 
+        /// Add a game object to the panel.
+        /// @param object A game object.
+        void addObject(std::unique_ptr<GameObject> object);
+
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 
@@ -53,6 +57,8 @@ namespace EconSimPlusPlus {
         Quad m_quad{};
         /// The shader for coloring the quad with a solid color.
         Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
+        /// Objects contained by this panel.
+        std::vector<std::unique_ptr<GameObject>> m_objects;
     };
 
 } // namespace EconSimPlusPlus

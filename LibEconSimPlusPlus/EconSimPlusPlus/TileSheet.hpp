@@ -53,6 +53,13 @@ namespace EconSimPlusPlus {
         /// @return The texture coordinates for the given tile.
         [[nodiscard]] glm::vec2 textureCoordinates(int tileID) const;
 
+        /// Get the number of tiles in the tile sheet.
+        [[nodiscard]] int tileCount() const;
+
+        /// Get the tile sheet dimensions.
+        /// @return The width and height measured in tiles.
+        [[nodiscard]] glm::vec2 sheetSize() const;
+
         /// Bind the tile sheet texture for rendering.
         void bind() const;
 

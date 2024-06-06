@@ -70,6 +70,14 @@ namespace EconSimPlusPlus {
         return m_textureCoordinates.at(tileID);
     }
 
+    int TileSheet::tileCount() const {
+        return static_cast<int>(m_sheetSize.x * m_sheetSize.y);
+    }
+
+    glm::vec2 TileSheet::sheetSize() const {
+        return m_sheetSize;
+    }
+
     void TileSheet::bind() const {
         m_texture->bind();
     }

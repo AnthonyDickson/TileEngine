@@ -31,7 +31,17 @@ namespace EconSimPlusPlus {
         GUIObject::setAnchor(m_settings.anchor);
     }
 
-    void Panel::update(float, const InputState&, const Camera&) {
+    void Panel::addObject(std::unique_ptr<GameObject> object) {
+        object->setPosition(glm::vec2{position() - object->size()});
+        object->setLayer(layer());
+        m_objects.push_back(std::move(object));
+    }
+
+    void Panel::update(float deltaTime, const InputState& inputState, const Camera& camera) {
+        for (const auto& game_object : m_objects) {
+            // TODO: Stop tile sheet display from being moved.
+            game_object->update(deltaTime, inputState, camera);
+        }
     }
 
     void Panel::render(const Camera& camera) const {
@@ -51,5 +61,9 @@ namespace EconSimPlusPlus {
         m_quad.render(GL_TRIANGLE_STRIP);
 
         drawOutline(*this, m_shader, m_quad, m_settings.outlineColor, m_settings.outlineThickness);
+
+        for (const auto& game_object : m_objects) {
+            game_object->render(camera);
+        }
     }
 } // namespace EconSimPlusPlus
