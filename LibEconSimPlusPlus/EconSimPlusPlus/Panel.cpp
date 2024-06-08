@@ -39,7 +39,6 @@ namespace EconSimPlusPlus {
 
     void Panel::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         for (const auto& game_object : m_objects) {
-            // TODO: Stop tile sheet display from being moved.
             game_object->update(deltaTime, inputState, camera);
         }
     }

@@ -40,8 +40,9 @@ namespace EconSimPlusPlus::Editor {
 
     Editor::Editor(std::unique_ptr<Window> window) :
         m_window(std::move(window)),
-        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
-                 {0.0f, 0.0f, 100.0f}} {
+        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())}, {0.0f, 0.0f, 100.0f}},
+        m_GuiCamera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                    {0.0f, 0.0f, 100.0f}} {
     }
 
     Editor Editor::create(glm::ivec2 windowSize) {
@@ -62,6 +63,7 @@ namespace EconSimPlusPlus::Editor {
 
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+            m_GuiCamera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
         }
 
         const InputState input{m_window->inputState()};
@@ -76,7 +78,7 @@ namespace EconSimPlusPlus::Editor {
         }
 
         for (const auto& object : m_guiObjects) {
-            object->update(deltaTime, input, m_camera);
+            object->update(deltaTime, input, m_GuiCamera);
         }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor
@@ -103,7 +105,7 @@ namespace EconSimPlusPlus::Editor {
         }
 
         for (const auto& object : m_guiObjects) {
-            object->render(m_camera);
+            object->render(m_GuiCamera);
         }
     }
 
