@@ -53,6 +53,11 @@ namespace EconSimPlusPlus {
 
         [[nodiscard]] int tileID(glm::ivec2 gridCoordinates) const;
 
+        /// Set the value of a given tile.
+        /// @param gridCoordinates The coordinates (row and column) of the tile to set.
+        /// @param tileID The value to set the tile to.
+        void setTileID(glm::ivec2 gridCoordinates, int tileID);
+
         /// Register a callback for when a tile is clicked.
         /// @param callback A function that takes a grid coordinate (glm::vec2) and tile ID (int) as an argument.
         void addClickListener(const std::function<void(glm::ivec2 gridCoordinates, int tileID)>& callback);
@@ -87,7 +92,7 @@ namespace EconSimPlusPlus {
         /// The size (width, height) of the tile map in tiles.
         const glm::ivec2 m_mapSize;
         /// The tiles of the tile map.
-        const std::vector<int> m_tiles;
+        std::vector<int> m_tiles;
 
         /// Shader to render textured tiles.
         const Shader m_shader{Shader::create("resource/shader/tile.vert", "resource/shader/tile.frag")};
@@ -96,7 +101,6 @@ namespace EconSimPlusPlus {
 
         /// Optional grid lines to draw over the tile map.
         std::optional<GridLines> m_gridLines{};
-
         /// Functions to be called when a tile is clicked.
         std::vector<std::function<void(glm::ivec2 gridCoordinates, int tileID)>> m_clickListeners;
     };

@@ -73,6 +73,10 @@ namespace EconSimPlusPlus {
         return m_tiles.at(gridCoordinates.y * mapSize().x + gridCoordinates.x);
     }
 
+    void TileMap::setTileID(const glm::ivec2 gridCoordinates, const int tileID) {
+        m_tiles.at(gridCoordinates.y * mapSize().x + gridCoordinates.x) = tileID;
+    }
+
     void TileMap::addClickListener(const std::function<void(glm::ivec2 gridCoordinate, int tileID)>& callback) {
         m_clickListeners.push_back(callback);
     }
@@ -95,12 +99,7 @@ namespace EconSimPlusPlus {
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
-            glm::vec2 gridPos{(cursorPos - position()) / m_tileSheet->tileSize()};
-            // The above calculates the grid position w/ the bottom left as the origin.
-            // This results in the y-coordinates being in reverse order compared to the underlying array.
-            // Therefore, we need to flip the y-coordinate here to ensure that the grid coordinates can be used to
-            // recover the correct tileID.
-            gridPos.y = static_cast<float>(mapSize().y) - gridPos.y;
+            const glm::vec2 gridPos{(cursorPos - position()) / m_tileSheet->tileSize()};
 
             for (const auto& callback : m_clickListeners) {
                 callback(gridPos, tileID(gridPos));
