@@ -69,7 +69,11 @@ namespace EconSimPlusPlus {
         return m_tileSheet->tileSize();
     }
 
-    void TileMap::addClickListener(const std::function<void(glm::ivec2)>& callback) {
+    int TileMap::tileID(const glm::ivec2 gridCoordinates) const {
+        return m_tiles.at(gridCoordinates.y * mapSize().x + gridCoordinates.x);
+    }
+
+    void TileMap::addClickListener(const std::function<void(glm::ivec2 gridCoordinate, int tileID)>& callback) {
         m_clickListeners.push_back(callback);
     }
 
@@ -99,7 +103,7 @@ namespace EconSimPlusPlus {
             gridPos.y = static_cast<float>(mapSize().y) - gridPos.y;
 
             for (const auto& callback : m_clickListeners) {
-                callback(gridPos);
+                callback(gridPos, tileID(gridPos));
             }
         }
 

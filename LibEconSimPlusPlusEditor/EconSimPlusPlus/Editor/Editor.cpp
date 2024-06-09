@@ -205,8 +205,9 @@ namespace EconSimPlusPlus::Editor {
         const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
         tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
         tileMap->enableGridLines();
-        tileMap->addClickListener([&](glm::ivec2 gridCoordinates) {
-            std::cout << std::format("Tile map clicked at ({:d}, {:d})\n", gridCoordinates.x, gridCoordinates.y);
+        tileMap->addClickListener([&](glm::ivec2 gridCoordinates, int tileID) {
+            std::cout << std::format("Tile #{:d} clicked at ({:d}, {:d}).\n", tileID, gridCoordinates.x,
+                                     gridCoordinates.y);
         });
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is clicked in the tile sheet, the editor should store the tileID of the clicked tile.

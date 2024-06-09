@@ -51,9 +51,11 @@ namespace EconSimPlusPlus {
         /// The size (width and height) of a single tile in pixels.
         [[nodiscard]] glm::vec2 tileSize() const;
 
+        [[nodiscard]] int tileID(glm::ivec2 gridCoordinates) const;
+
         /// Register a callback for when a tile is clicked.
-        /// @param callback A function that takes a grid coordinate as an argument.
-        void addClickListener(const std::function<void(glm::ivec2)>& callback);
+        /// @param callback A function that takes a grid coordinate (glm::vec2) and tile ID (int) as an argument.
+        void addClickListener(const std::function<void(glm::ivec2 gridCoordinates, int tileID)>& callback);
 
         /// Add grid lines over the tile map.
         void enableGridLines();
@@ -96,7 +98,7 @@ namespace EconSimPlusPlus {
         std::optional<GridLines> m_gridLines{};
 
         /// Functions to be called when a tile is clicked.
-        std::vector<std::function<void(glm::ivec2)>> m_clickListeners;
+        std::vector<std::function<void(glm::ivec2 gridCoordinates, int tileID)>> m_clickListeners;
     };
 } // namespace EconSimPlusPlus
 
