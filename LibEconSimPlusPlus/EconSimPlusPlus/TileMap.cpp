@@ -69,6 +69,10 @@ namespace EconSimPlusPlus {
         return m_tileSheet->tileSize();
     }
 
+    void TileMap::addClickListener(const std::function<void(glm::ivec2)>& callback) {
+        m_clickListeners.push_back(callback);
+    }
+
     void TileMap::enableGridLines() {
         m_gridLines.emplace(mapSize(), tileSize());
         m_gridLines->setPosition(position());
@@ -87,11 +91,16 @@ namespace EconSimPlusPlus {
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
-            const glm::ivec2 gridPos{((cursorPos - position()) / m_tileSheet->tileSize())};
+            glm::vec2 gridPos{(cursorPos - position()) / m_tileSheet->tileSize()};
+            // The above calculates the grid position w/ the bottom left as the origin.
+            // This results in the y-coordinates being in reverse order compared to the underlying array.
+            // Therefore, we need to flip the y-coordinate here to ensure that the grid coordinates can be used to
+            // recover the correct tileID.
+            gridPos.y = static_cast<float>(mapSize().y) - gridPos.y;
 
-            std::cout << std::format(
-                "Mouse clicked over tile map at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
-                cursorPos.y, gridPos.x, gridPos.y);
+            for (const auto& callback : m_clickListeners) {
+                callback(gridPos);
+            }
         }
 
         if (m_gridLines.has_value()) {

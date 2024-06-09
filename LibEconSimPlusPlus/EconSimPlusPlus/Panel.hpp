@@ -30,8 +30,6 @@
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 
-// TODO: Make the panel's object transforms to be relative to the panel's transform.
-// TODO: Ensure that objects are not rendered past the borders of the panel.
 namespace EconSimPlusPlus {
 
     /// Provides a logical and visual container for other objects.

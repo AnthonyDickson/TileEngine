@@ -28,6 +28,7 @@
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
+#include <functional>
 
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
@@ -49,6 +50,10 @@ namespace EconSimPlusPlus {
 
         /// The size (width and height) of a single tile in pixels.
         [[nodiscard]] glm::vec2 tileSize() const;
+
+        /// Register a callback for when a tile is clicked.
+        /// @param callback A function that takes a grid coordinate as an argument.
+        void addClickListener(const std::function<void(glm::ivec2)>& callback);
 
         /// Add grid lines over the tile map.
         void enableGridLines();
@@ -89,6 +94,9 @@ namespace EconSimPlusPlus {
 
         /// Optional grid lines to draw over the tile map.
         std::optional<GridLines> m_gridLines{};
+
+        /// Functions to be called when a tile is clicked.
+        std::vector<std::function<void(glm::ivec2)>> m_clickListeners;
     };
 } // namespace EconSimPlusPlus
 
