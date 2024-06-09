@@ -51,6 +51,10 @@ namespace EconSimPlusPlus {
         /// The size (width and height) of a single tile in pixels.
         [[nodiscard]] glm::vec2 tileSize() const;
 
+        /// Get the tile ID at the given map coordinates.
+        /// @note Tile IDs are one-based and zero is reserved to indicate an empty tile.
+        /// @param gridCoordinates The coordinates (row and column) of the tile to set.
+        /// @return the tile ID.
         [[nodiscard]] int tileID(glm::ivec2 gridCoordinates) const;
 
         /// Set the value of a given tile.

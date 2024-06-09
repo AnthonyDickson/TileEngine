@@ -48,8 +48,8 @@ namespace EconSimPlusPlus {
         [[nodiscard]] glm::vec2 textureCoordinateStride() const;
 
         /// Get the texture coordindates for a given tile.
-        /// @param tileID The ID of a tile. IDs correspond to the indices calculated as `row * width + col` using the
-        /// tile sheet dimensions.
+        /// @param tileID The ID of a tile. Note that the IDs correspond to the indices calculated as
+        /// `1 + row * width + col` using the tile sheet dimensions.
         /// @return The texture coordinates for the given tile.
         [[nodiscard]] glm::vec2 textureCoordinates(int tileID) const;
 

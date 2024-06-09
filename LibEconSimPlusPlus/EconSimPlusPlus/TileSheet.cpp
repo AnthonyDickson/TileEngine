@@ -67,7 +67,7 @@ namespace EconSimPlusPlus {
     }
 
     glm::vec2 TileSheet::textureCoordinates(const int tileID) const {
-        return m_textureCoordinates.at(tileID);
+        return m_textureCoordinates.at(tileID - 1);
     }
 
     int TileSheet::tileCount() const {

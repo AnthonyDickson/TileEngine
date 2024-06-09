@@ -135,9 +135,15 @@ namespace EconSimPlusPlus {
 
         for (int row = rowStart; row < rowEnd; ++row) {
             for (int col = colStart; col < colEnd; ++col) {
+                const glm::ivec2 gridCoordinates{col, row};
+                const int tileID = this->tileID(gridCoordinates);
+
+                if (tileID == 0) {
+                    continue;
+                }
+
                 transforms[tileIndex] =
                     glm::translate(transform(), glm::vec3{static_cast<float>(col), static_cast<float>(row), 0.0f});
-                const int tileID{m_tiles.at(row * m_mapSize.x + col)};
                 textureCoordinatesInstanced[tileIndex] = m_tileSheet->textureCoordinates(tileID);
 
                 ++tileIndex;

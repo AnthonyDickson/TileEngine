@@ -19,7 +19,6 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
-#include <iostream>
 #include <numeric>
 #include <thread>
 #include <utility>
@@ -201,7 +200,7 @@ namespace EconSimPlusPlus::Editor {
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
-        std::iota(tiles.begin(), tiles.end(), 0);
+        std::iota(tiles.begin(), tiles.end(), 1);
         const int tilesPerRow{std::min(static_cast<int>(panel->size().x / defaultTileSize.x),
                                        static_cast<int>(tileSheet->sheetSize().x))};
         const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
@@ -217,5 +216,9 @@ namespace EconSimPlusPlus::Editor {
 
         m_guiObjects.push_back(std::move(panel));
         // TODO: Add GUI elements to adjust tile size, map size etc.
+        // TODO: Add GUI element that shows currently selected tile.
+        // TODO: Add undo/redo functionality.
+        // TODO: Paint tiles by holding down mouse button and moving over grid cells in addition to single clicks.
+        // TODO: 'Color picking' tool where right clicking on a tile will select that tile for painting.
     }
 } // namespace EconSimPlusPlus::Editor
