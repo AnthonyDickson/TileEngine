@@ -83,6 +83,8 @@ namespace EconSimPlusPlus::Editor {
 
         /// The tile map that is currently being edited.
         std::unique_ptr<TileMap> m_tileMap{};
+        /// The tile to paint onto the tile map.
+        int m_selectedTileID{0};
     };
 } // namespace EconSimPlusPlus::Editor
 

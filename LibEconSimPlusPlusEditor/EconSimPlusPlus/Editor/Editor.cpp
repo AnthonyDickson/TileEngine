@@ -208,9 +208,9 @@ namespace EconSimPlusPlus::Editor {
         tileMap->addClickListener([&](glm::ivec2 gridCoordinates, int tileID) {
             std::cout << std::format("Tile #{:d} clicked at ({:d}, {:d}).\n", tileID, gridCoordinates.x,
                                      gridCoordinates.y);
+            m_selectedTileID = tileID;
         });
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
-        // TODO: When a tile is clicked in the tile sheet, the editor should store the tileID of the clicked tile.
         // TODO: When a tile is clicked in the tile map, that tile should be assigned the tileID stored in the editor.
 
         panel->addObject(std::move(tileMap));
