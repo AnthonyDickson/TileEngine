@@ -19,12 +19,14 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
+#include <filesystem>
+#include <fstream>
 #include <numeric>
 #include <thread>
-#include <utility>
 
 #include "glm/ext/matrix_transform.hpp"
 #include "portable-file-dialogs.h"
+#include "yaml-cpp/yaml.h"
 
 #include <EconSimPlusPlus/Button.hpp>
 #include <EconSimPlusPlus/Editor/Editor.hpp>
@@ -37,19 +39,48 @@
 
 namespace EconSimPlusPlus::Editor {
     namespace {
-        void saveTileMap(TileMap*, const std::string& path) {
-            // TODO: Save tile map as YAML
-            // YAML Format:
-            // tile-sheet:
-            //   path: string (path relative to project root.
-            //   tile-size:
-            //     width: int
-            //     height: int
-            // tile-map:
-            //   width: int
-            //   height: int
-            //   tiles: int[]
-            std::cout << "Save button clicked... " << path << "\n";
+        void save(const TileMap* tileMap, const std::string& path) {
+            YAML::Emitter yamlOut{};
+
+            yamlOut << YAML::BeginDoc;
+            yamlOut << YAML::BeginMap;
+            yamlOut << YAML::Key << "tile-sheet";
+            yamlOut << YAML::Value;
+            {
+                yamlOut << YAML::BeginMap;
+                yamlOut << YAML::Key << "path";
+                yamlOut << YAML::Value << std::filesystem::relative({tileMap->texturePath()}, std::filesystem::current_path());
+                yamlOut << YAML::Key << "tile-size" << YAML::Comment("in pixels");
+                yamlOut << YAML::Value;
+                {
+                    yamlOut << YAML::BeginMap;
+                    yamlOut << YAML::Key << "width" << YAML::Value << tileMap->tileSize().x;
+                    yamlOut << YAML::Key << "height" << YAML::Value << tileMap->tileSize().y;
+                    yamlOut << YAML::EndMap; // tile-size
+                }
+                yamlOut << YAML::EndMap; // tile-sheet
+            }
+            yamlOut << YAML::Key << "tile-map";
+            yamlOut << YAML::Value;
+            {
+                yamlOut << YAML::BeginMap;
+                yamlOut << YAML::Key << "width" << YAML::Value << tileMap->mapSize().x << YAML::Comment("in tiles");
+                yamlOut << YAML::Key << "height" << YAML::Value << tileMap->mapSize().y << YAML::Comment("in tiles");
+                yamlOut << YAML::Key << "tiles" << YAML::Value << YAML::Flow << tileMap->tiles();
+                yamlOut << YAML::EndMap; // tile-map
+            }
+            yamlOut << YAML::EndMap;
+            yamlOut << YAML::EndDoc;
+
+            std::filesystem::path yamlRelativePath{std::filesystem::relative({path}, std::filesystem::current_path())};
+
+            if (!yamlRelativePath.has_extension()) {
+                yamlRelativePath.replace_extension("yaml");
+            }
+
+            std::ofstream yamlFile(yamlRelativePath.generic_string());
+            yamlFile << yamlOut.c_str() << std::endl;
+            yamlFile.close();
         }
     } // namespace
 
@@ -157,12 +188,13 @@ namespace EconSimPlusPlus::Editor {
         })};
         openFileButton->setLayer(98.0f);
 
+        // TODO: Disable save button until a tile sheet has been loaded (and therefore an empty tile map has been created).
         Text saveButtonText{
             "Save...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
         auto saveFileButton{std::make_unique<Button>(
             saveButtonText, topLeft + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, buttonStyle, [&] {
                 m_saveFileDialog.open(pfd::save_file("Select a file", ".", {"YAML Files", "*.yaml"}),
-                                      [this](const std::string& filepath) { saveTileMap(m_tileMap.get(), filepath); });
+                                      [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
             })};
         saveFileButton->setLayer(98.0f);
 

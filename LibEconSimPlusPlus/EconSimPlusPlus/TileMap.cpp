@@ -77,6 +77,14 @@ namespace EconSimPlusPlus {
         m_tiles.at(gridCoordinates.y * mapSize().x + gridCoordinates.x) = tileID;
     }
 
+    std::vector<int> TileMap::tiles() const {
+        return m_tiles;
+    }
+
+    std::string TileMap::texturePath() const {
+        return m_tileSheet->texturePath();
+    }
+
     void TileMap::addClickListener(const std::function<void(glm::ivec2 gridCoordinate, int tileID)>& callback) {
         m_clickListeners.push_back(callback);
     }
@@ -180,4 +188,5 @@ namespace EconSimPlusPlus {
 
         return {rowStart, rowEnd, colStart, colEnd};
     }
+
 } // namespace EconSimPlusPlus

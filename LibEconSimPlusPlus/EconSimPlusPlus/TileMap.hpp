@@ -62,6 +62,13 @@ namespace EconSimPlusPlus {
         /// @param tileID The value to set the tile to.
         void setTileID(glm::ivec2 gridCoordinates, int tileID);
 
+        /// Get the tiles of the tile map as a flat list.
+        /// @return A list of tile IDs.
+        [[nodiscard]] std::vector<int> tiles() const;
+
+        /// Get the path to the image file used to create the underlying texture.
+        [[nodiscard]] std::string texturePath() const;
+
         /// Register a callback for when a tile is clicked.
         /// @param callback A function that takes a grid coordinate (glm::vec2) and tile ID (int) as an argument.
         void addClickListener(const std::function<void(glm::ivec2 gridCoordinates, int tileID)>& callback);

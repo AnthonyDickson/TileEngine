@@ -60,6 +60,9 @@ namespace EconSimPlusPlus {
         /// @return The width and height measured in tiles.
         [[nodiscard]] glm::vec2 sheetSize() const;
 
+        /// Get the path to the image file used to create the underlying texture.
+        [[nodiscard]] std::string texturePath() const;
+
         /// Bind the tile sheet texture for rendering.
         void bind() const;
 

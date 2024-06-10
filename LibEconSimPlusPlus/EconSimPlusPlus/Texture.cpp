@@ -28,7 +28,7 @@
 
 namespace EconSimPlusPlus {
 
-    std::unique_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit_) {
+    std::unique_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit) {
         int width{};
         int height{};
         int channelCount{};
@@ -40,7 +40,7 @@ namespace EconSimPlusPlus {
                 std::format("Texture failed to load image from {0}: {1}", imagePath, stbi_failure_reason()));
         }
 
-        std::unique_ptr texture{create(imageData, {width, height}, channelCount, textureUnit_)};
+        std::unique_ptr texture{create(imageData, {width, height}, channelCount, textureUnit, imagePath)};
 
         stbi_image_free(imageData);
 
@@ -48,7 +48,7 @@ namespace EconSimPlusPlus {
     }
 
     std::unique_ptr<Texture> Texture::create(const unsigned char* image, const glm::ivec2 resolution,
-                                             const int channelCount, const int textureUnit_) {
+                                             const int channelCount, const int textureUnit, const std::string& path) {
         GLenum imageFormat;
 
         switch (channelCount) {
@@ -77,15 +77,20 @@ namespace EconSimPlusPlus {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        return std::make_unique<Texture>(textureID, textureUnit_, resolution);
+        return std::make_unique<Texture>(textureID, textureUnit, resolution, path);
     }
 
-    Texture::Texture(const unsigned int textureID_, const int textureUnit_, const glm::ivec2 resolution_) :
-        m_textureID(textureID_), m_textureUnit(textureUnit_), m_resolution(resolution_) {
+    Texture::Texture(const unsigned int textureID, const int textureUnit, const glm::ivec2 resolution,
+                     const std::string& path) :
+        m_textureID(textureID), m_textureUnit(textureUnit), m_resolution(resolution), m_path(path) {
     }
 
     Texture::~Texture() {
         glDeleteTextures(1, &m_textureID);
+    }
+
+    std::string Texture::path() const {
+        return m_path;
     }
 
     glm::ivec2 Texture::resolution() const {

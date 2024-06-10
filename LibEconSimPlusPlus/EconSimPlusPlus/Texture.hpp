@@ -32,21 +32,23 @@ namespace EconSimPlusPlus {
     public:
         /// Create a texture from an image file path.
         /// @param imagePath The path to an image.
-        /// @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
-        static std::unique_ptr<Texture> create(const std::string& imagePath, int textureUnit_ = GL_TEXTURE0);
+        /// @param textureUnit (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
+        static std::unique_ptr<Texture> create(const std::string& imagePath, int textureUnit = GL_TEXTURE0);
 
         /// Create a texture from an image.
         /// @param image The image data.
         /// @param resolution The width and height of the image data in pixels.
         /// @param channelCount The number of channels in the image data.
-        /// @param textureUnit_ (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
+        /// @param textureUnit Which texture unit to bind. Defaults to GL_TEXTURE0.
+        /// @param path Where the texture was loaded from.
         static std::unique_ptr<Texture> create(const unsigned char* image, glm::ivec2 resolution, int channelCount,
-                                               int textureUnit_ = GL_TEXTURE0);
+                                               int textureUnit = GL_TEXTURE0, const std::string& path = "");
 
-        /// @param textureID_ The OpenGL ID for the texture.
-        /// @param textureUnit_ The texture unit to bind the texture to.
-        /// @param resolution_ The resolution of the texture.
-        Texture(unsigned int textureID_, int textureUnit_, glm::ivec2 resolution_);
+        /// @param textureID The OpenGL ID for the texture.
+        /// @param textureUnit The texture unit to bind the texture to.
+        /// @param resolution The resolution of the texture.
+        /// @param path Where the texture was loaded from.
+        Texture(unsigned int textureID, int textureUnit, glm::ivec2 resolution, const std::string& path = "");
 
         /// Delete copy constructor to avoid OpenGL issues.
         Texture(Texture&) = delete;
@@ -55,6 +57,10 @@ namespace EconSimPlusPlus {
 
         /// Clean up OpenGL related stuff.
         ~Texture();
+
+        /// Get the path to the image file used to create this texture.
+        /// @note Potentially empty if the texture was not directly created from a file path.
+        [[nodiscard]] std::string path() const;
 
         /// Get the size (width, height) of the texture in pixels.
         [[nodiscard]] glm::ivec2 resolution() const;
@@ -70,6 +76,8 @@ namespace EconSimPlusPlus {
         const int m_textureUnit;
         /// The size (width, height) of the texture in pixels.
         const glm::ivec2 m_resolution;
+        /// Where the texture was loaded from.
+        const std::string m_path;
 
     };
 } // namespace EconSimPlusPlus

@@ -78,6 +78,10 @@ namespace EconSimPlusPlus {
         return m_sheetSize;
     }
 
+    std::string TileSheet::texturePath() const {
+        return m_texture->path();
+    }
+
     void TileSheet::bind() const {
         m_texture->bind();
     }
