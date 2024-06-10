@@ -36,6 +36,22 @@
 #include <EconSimPlusPlus/TileSheet.hpp>
 
 namespace EconSimPlusPlus::Editor {
+    namespace {
+        void saveTileMap(TileMap*, const std::string& path) {
+            // TODO: Save tile map as YAML
+            // YAML Format:
+            // tile-sheet:
+            //   path: string (path relative to project root.
+            //   tile-size:
+            //     width: int
+            //     height: int
+            // tile-map:
+            //   width: int
+            //   height: int
+            //   tiles: int[]
+            std::cout << "Save button clicked... " << path << "\n";
+        }
+    } // namespace
 
     Editor::Editor(std::unique_ptr<Window> window) :
         m_window(std::move(window)),
@@ -57,6 +73,11 @@ namespace EconSimPlusPlus::Editor {
     void Editor::update(const float deltaTime) {
         if (m_openFileDialog.active()) {
             m_openFileDialog.update();
+            return;
+        }
+
+        if (m_saveFileDialog.active()) {
+            m_saveFileDialog.update();
             return;
         }
 
@@ -128,15 +149,25 @@ namespace EconSimPlusPlus::Editor {
 
         Text buttonText{
             "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        auto testButton{std::make_unique<Button>(
-            buttonText, topLeft,
-            ButtonSettings{.outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft}, [&] {
-                m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
-                                      [this](const std::string& selection) { loadTileSheet(selection); });
-            })};
-        testButton->setLayer(98.0f);
+        ButtonSettings buttonStyle{
+            .outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft};
+        auto openFileButton{std::make_unique<Button>(buttonText, topLeft, buttonStyle, [&] {
+            m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
+                                  [this](const std::string& selection) { loadTileSheet(selection); });
+        })};
+        openFileButton->setLayer(98.0f);
 
-        m_guiObjects.push_back(std::move(testButton));
+        Text saveButtonText{
+            "Save...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
+        auto saveFileButton{std::make_unique<Button>(
+            saveButtonText, topLeft + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, buttonStyle, [&] {
+                m_saveFileDialog.open(pfd::save_file("Select a file", ".", {"YAML Files", "*.yaml"}),
+                                      [this](const std::string& filepath) { saveTileMap(m_tileMap.get(), filepath); });
+            })};
+        saveFileButton->setLayer(98.0f);
+
+        m_guiObjects.push_back(std::move(openFileButton));
+        m_guiObjects.push_back(std::move(saveFileButton));
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -149,6 +180,7 @@ namespace EconSimPlusPlus::Editor {
 
             if (m_window->inputState().getKey(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
                 m_openFileDialog.kill();
+                m_saveFileDialog.kill();
                 return;
             }
 
@@ -206,9 +238,7 @@ namespace EconSimPlusPlus::Editor {
         const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
         tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
         tileMap->enableGridLines();
-        tileMap->addClickListener([&](glm::ivec2, const int tileID) {
-            m_selectedTileID = tileID;
-        });
+        tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 

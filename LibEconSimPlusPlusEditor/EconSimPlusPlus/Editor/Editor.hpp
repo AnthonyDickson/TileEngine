@@ -23,6 +23,7 @@
 #define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
+#include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/GuiObject.hpp>
@@ -68,8 +69,10 @@ namespace EconSimPlusPlus::Editor {
 
         /// The window we use to display the editor.
         std::unique_ptr<Window> m_window;
-        /// Handles asynchronous file dialogs.
+        /// Handles asynchronous open file dialogs.
         OpenFileDialog m_openFileDialog{};
+        /// Handles asynchronous save file dialogs.
+        SaveFileDialog m_saveFileDialog{};
         /// A list of all game objects.
         std::vector<GameObject*> m_objects{};
         /// A list of all GUI objects.
