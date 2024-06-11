@@ -31,6 +31,7 @@
 #include <EconSimPlusPlus/Button.hpp>
 #include <EconSimPlusPlus/Editor/Editor.hpp>
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
+#include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/Panel.hpp>
@@ -38,6 +39,7 @@
 #include <EconSimPlusPlus/TileSheet.hpp>
 
 namespace EconSimPlusPlus::Editor {
+
     namespace {
         void save(const TileMap* tileMap, const std::string& path) {
             YAML::Emitter yamlOut{};
@@ -49,7 +51,8 @@ namespace EconSimPlusPlus::Editor {
             {
                 yamlOut << YAML::BeginMap;
                 yamlOut << YAML::Key << "path";
-                yamlOut << YAML::Value << std::filesystem::relative({tileMap->texturePath()}, std::filesystem::current_path());
+                yamlOut << YAML::Value
+                        << std::filesystem::relative({tileMap->texturePath()}, std::filesystem::current_path());
                 yamlOut << YAML::Key << "tile-size" << YAML::Comment("in pixels");
                 yamlOut << YAML::Value;
                 {
@@ -182,24 +185,28 @@ namespace EconSimPlusPlus::Editor {
             "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
         ButtonSettings buttonStyle{
             .outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft};
-        auto openFileButton{std::make_unique<Button>(buttonText, topLeft, buttonStyle, [&] {
+        auto openFileButton{std::make_shared<Button>(buttonText, topLeft, buttonStyle, [&] {
             m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
                                   [this](const std::string& selection) { loadTileSheet(selection); });
         })};
         openFileButton->setLayer(98.0f);
+        m_guiObjects.push_back(openFileButton);
 
-        // TODO: Disable save button until a tile sheet has been loaded (and therefore an empty tile map has been created).
         Text saveButtonText{
             "Save...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        auto saveFileButton{std::make_unique<Button>(
+        auto saveFileButton{std::make_shared<Button>(
             saveButtonText, topLeft + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, buttonStyle, [&] {
                 m_saveFileDialog.open(pfd::save_file("Select a file", ".", {"YAML Files", "*.yaml"}),
                                       [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
             })};
         saveFileButton->setLayer(98.0f);
-
-        m_guiObjects.push_back(std::move(openFileButton));
-        m_guiObjects.push_back(std::move(saveFileButton));
+        saveFileButton->setEnabled(false);
+        saveFileButton->addEventHandler([&](const Event event) {
+            if (event == Event::tileMapLoaded) {
+                saveFileButton->setEnabled(true);
+            }
+        });
+        m_guiObjects.push_back(saveFileButton);
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -282,5 +289,9 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add undo/redo functionality.
         // TODO: Paint tiles by holding down mouse button and moving over grid cells in addition to single clicks.
         // TODO: 'Color picking' tool where right clicking on a tile will select that tile for painting.
+
+        for (const auto& object : m_guiObjects) {
+            object->notify(Event::tileMapLoaded);
+        }
     }
 } // namespace EconSimPlusPlus::Editor

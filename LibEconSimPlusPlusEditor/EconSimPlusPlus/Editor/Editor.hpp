@@ -76,7 +76,7 @@ namespace EconSimPlusPlus::Editor {
         /// A list of all game objects.
         std::vector<GameObject*> m_objects{};
         /// A list of all GUI objects.
-        std::vector<std::unique_ptr<GUIObject>> m_guiObjects{};
+        std::vector<std::shared_ptr<GUIObject>> m_guiObjects{};
         /// The render camera.
         Camera m_camera;
         /// The camera for rendering GUI elements (doesn't move).

@@ -22,11 +22,14 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GUIOBJECT_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GUIOBJECT_HPP
 
+#include <functional>
+
 #include "glm/ext/matrix_common.hpp"
 #include "glm/vec2.hpp"
 
 #include <EconSimPlusPlus/Anchor.hpp>
 #include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
 
 namespace EconSimPlusPlus {
@@ -68,6 +71,14 @@ namespace EconSimPlusPlus {
         /// @param anchor The point on the object that is used as the origin for its position.
         virtual void setAnchor(Anchor anchor);
 
+        /// Register an event handler for this object.
+        /// @param eventHandler A function that responds to events.
+        void addEventHandler(const std::function<void(Event event)>& eventHandler);
+
+        /// Tell the object that an event has occured.
+        /// @param event The event that has occured.
+        void notify(Event event);
+
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
         /// @param inputState The state of keyboard and mouse input.
@@ -91,6 +102,8 @@ namespace EconSimPlusPlus {
         glm::vec2 m_size{1.0f};
         /// The point on the object that is used as the origin for its position.
         Anchor m_anchor{Anchor::topLeft};
+        /// The registered event handlers.
+        std::vector<std::function<void(Event event)>> m_eventHandlers{};
     };
 
 } // namespace EconSimPlusPlus

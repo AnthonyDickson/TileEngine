@@ -61,6 +61,16 @@ namespace EconSimPlusPlus {
         m_anchor = anchor;
     }
 
+    void GUIObject::addEventHandler(const std::function<void(Event event)>& eventHandler) {
+        m_eventHandlers.push_back(eventHandler);
+    }
+
+    void GUIObject::notify(Event event) {
+        for (auto& handler : m_eventHandlers) {
+            handler(event);
+        }
+    }
+
     bool GUIObject::contains(glm::vec2 point) const {
         // Using `m_size.y` as the vertical baseline makes the top left corner the origin.
         const glm::vec2 anchorOffset{calculateAnchorOffset(m_size, m_anchor, m_size.y)};

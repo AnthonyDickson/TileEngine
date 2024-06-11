@@ -47,6 +47,10 @@ namespace EconSimPlusPlus {
         setAnchor(m_settings.anchor);
     }
 
+    void Button::setEnabled(const bool enabled) {
+        m_enabled = enabled;
+    }
+
     void Button::setPosition(const glm::vec2 position) {
         GUIObject::setPosition(position);
         syncSettings(*this, m_text);
@@ -63,6 +67,10 @@ namespace EconSimPlusPlus {
     }
 
     void Button::update(float, const InputState& inputState, const Camera& camera) {
+        if (!m_enabled) {
+            return;
+        }
+
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             // ReSharper disable once CppTooWideScopeInitStatement
             const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
@@ -74,6 +82,7 @@ namespace EconSimPlusPlus {
     }
 
     void Button::render(const Camera& camera) const {
+        // TODO: Different style when button is disabled.
         m_shader.bind();
 
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.

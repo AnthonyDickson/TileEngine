@@ -41,6 +41,11 @@ namespace EconSimPlusPlus {
         /// @param callback The function to call when the button is clicked.
         Button(const Text& text, glm::vec2 position, const ButtonSettings& settings, std::function<void()> callback);
 
+        /// Enable or disable the button.
+        /// @note When the button is disabled, the button's callback will not be called.
+        /// @param enabled Whether the button should be enabled (`true`) or disabled (`false`).
+        void setEnabled(bool enabled);
+
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
         void setAnchor(Anchor anchor) override;
@@ -55,6 +60,8 @@ namespace EconSimPlusPlus {
         const ButtonSettings m_settings;
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
+        /// Whether the button is clickable.
+        bool m_enabled{true};
 
         /// The button geometry.
         Quad m_quad{};
