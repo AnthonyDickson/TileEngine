@@ -81,7 +81,7 @@ namespace EconSimPlusPlus {
     }
 
     Texture::Texture(const unsigned int textureID, const int textureUnit, const glm::ivec2 resolution,
-                     const std::string& path) :
+                     const std::string& path) : // NOLINT(*-pass-by-value)
         m_textureID(textureID), m_textureUnit(textureUnit), m_resolution(resolution), m_path(path) {
     }
 

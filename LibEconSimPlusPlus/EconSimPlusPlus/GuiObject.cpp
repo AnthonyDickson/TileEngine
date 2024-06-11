@@ -65,7 +65,8 @@ namespace EconSimPlusPlus {
         m_eventHandlers.push_back(eventHandler);
     }
 
-    void GUIObject::notify(Event event) {
+    // ReSharper disable once CppMemberFunctionMayBeConst
+    void GUIObject::notify(const Event event) {
         for (auto& handler : m_eventHandlers) {
             handler(event);
         }
