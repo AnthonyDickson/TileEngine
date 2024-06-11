@@ -181,24 +181,29 @@ namespace EconSimPlusPlus::Editor {
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
 
-        Text buttonText{
-            "Open...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
-        ButtonSettings buttonStyle{
-            .outlineColor = glm::vec3{0.3f}, .outlineThickness = 2.0f, .anchor = Anchor::topLeft};
-        auto openFileButton{std::make_shared<Button>(buttonText, topLeft, buttonStyle, [&] {
-            m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
-                                  [this](const std::string& selection) { loadTileSheet(selection); });
-        })};
+        ButtonStyle buttonStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.9f}};
+        ButtonStyle buttonActiveStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.8f}};
+        ButtonStyle buttonDisabledStyle{.textColor = glm::vec3{0.4f}, .fillColor = glm::vec3{0.5f}};
+
+        Text buttonText{"Open...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
+        auto openFileButton{std::make_shared<Button>(
+            buttonText, topLeft, Anchor::topLeft,
+            [&] {
+                m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
+                                      [this](const std::string& selection) { loadTileSheet(selection); });
+            },
+            buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         openFileButton->setLayer(98.0f);
         m_guiObjects.push_back(openFileButton);
 
-        Text saveButtonText{
-            "Save...", m_font.get(), {.color = glm::vec3{0.0f}, .size = 32.0f, .padding = glm::vec2{16.0f}}};
+        Text saveButtonText{"Save...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
         auto saveFileButton{std::make_shared<Button>(
-            saveButtonText, topLeft + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, buttonStyle, [&] {
+            saveButtonText, topLeft + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, Anchor::topLeft,
+            [&] {
                 m_saveFileDialog.open(pfd::save_file("Select a file", ".", {"YAML Files", "*.yaml"}),
                                       [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
-            })};
+            },
+            buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         saveFileButton->setLayer(98.0f);
         saveFileButton->setEnabled(false);
         saveFileButton->addEventHandler([&](const Event event) {

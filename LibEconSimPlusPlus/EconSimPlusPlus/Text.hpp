@@ -22,6 +22,8 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXT_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXT_HPP
 
+#include "glm/vec3.hpp"
+
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GuiObject.hpp>
 
@@ -39,6 +41,10 @@ namespace EconSimPlusPlus {
         /// @param text The text to display.
         void setText(const std::string& text);
 
+        /// Update the text color.
+        /// @param color An RGB color with values between 0.0 and 1.0 inclusive.
+        void setColor(glm::vec3 color);
+
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 
@@ -48,7 +54,7 @@ namespace EconSimPlusPlus {
         /// The font to use to display the text.
         const Font* m_font;
         /// The configuration (e.g., color, anchor, outlines) to use for displaying the text.
-        const FontSettings m_settings;
+        FontSettings m_settings;
     };
 
 } // namespace EconSimPlusPlus

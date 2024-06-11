@@ -24,7 +24,7 @@
 
 #include <functional>
 
-#include <EconSimPlusPlus/ButtonSettings.hpp>
+#include <EconSimPlusPlus/ButtonStyle.hpp>
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GuiObject.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
@@ -34,17 +34,26 @@ namespace EconSimPlusPlus {
 
     class Button final : public GUIObject {
     public:
+        enum class Style { normal, active, disabled };
+
         /// Create a button.
-        /// @param text The text to display in the button.
+        /// @param text The text to display in the button. Note that the text color will be overriden by the color in
+        /// the button style(s).
         /// @param position Where to position the button in screen space. Uses the bottom left as the origin.
-        /// @param settings Configuration for button apperance.
+        /// @param anchor The point on the button that the position refers to.
         /// @param callback The function to call when the button is clicked.
-        Button(const Text& text, glm::vec2 position, const ButtonSettings& settings, std::function<void()> callback);
+        /// @param style Configuration for button apperance.
+        /// @param activeStyle Configuration for button apperance when the button is pressed/clicked.
+        /// @param disabledStyle Configuration for button apperance when the button is disabled.
+        Button(const Text& text, glm::vec2 position, Anchor anchor, std::function<void()> callback,
+               const ButtonStyle& style, const ButtonStyle& activeStyle = {}, const ButtonStyle& disabledStyle = {});
 
         /// Enable or disable the button.
         /// @note When the button is disabled, the button's callback will not be called.
         /// @param enabled Whether the button should be enabled (`true`) or disabled (`false`).
         void setEnabled(bool enabled);
+
+        void setStyle(Style style);
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
@@ -56,10 +65,16 @@ namespace EconSimPlusPlus {
     private:
         /// The text to display in the button.
         Text m_text;
-        /// Configuration for button apperance.
-        const ButtonSettings m_settings;
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
+        /// Configuration for button apperance.
+        const ButtonStyle m_normalStyle;
+        /// Configuration for button apperance when the button is pressed/clicked.
+        const ButtonStyle m_activeStyle;
+        /// Configuration for button apperance when the button is disabled.
+        const ButtonStyle m_disabledStyle;
+        /// The style currently being used.
+        ButtonStyle m_currentStyle;
         /// Whether the button is clickable.
         bool m_enabled{true};
 

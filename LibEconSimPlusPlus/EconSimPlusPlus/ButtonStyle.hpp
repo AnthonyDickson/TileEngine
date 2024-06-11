@@ -19,25 +19,23 @@
 // Created by Anthony Dickson on 29/05/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSETTINGS_HPP
-#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSETTINGS_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSTYLE_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSTYLE_HPP
 
 #include "glm/vec3.hpp"
 
-#include <EconSimPlusPlus/Anchor.hpp>
-
 namespace EconSimPlusPlus {
     /// Configuration for button appearance.
-    struct ButtonSettings {
+    struct ButtonStyle {
+        /// The color of the button's text.
+        glm::vec3 textColor{0.0f};
         /// The color to fill the background of the button with.
         glm::vec3 fillColor{1.0f};
         /// The color to use for the border.
         glm::vec3 outlineColor{0.0f, 0.0f, 0.0f};
         /// The thickness of the border in pixels.
-        float outlineThickness{1.0f};
-        /// The point on the button that the position refers to.
-        Anchor anchor{Anchor::topLeft};
+        float outlineThickness{0.0f};
     };
 } // namespace EconSimPlusPlus
 
-#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSETTINGS_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_BUTTONSTYLE_HPP

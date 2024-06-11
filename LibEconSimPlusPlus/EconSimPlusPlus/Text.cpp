@@ -34,6 +34,9 @@ namespace EconSimPlusPlus {
         setSize(m_font->calculateTextSize(m_text) * scale + m_settings.padding);
     }
 
+    void Text::setColor(const glm::vec3 color) {
+        m_settings.color = color;
+    }
 
     void Text::update(float, const InputState&, const Camera&) {
     }

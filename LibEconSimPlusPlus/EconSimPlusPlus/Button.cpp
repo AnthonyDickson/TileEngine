@@ -37,18 +37,37 @@ namespace EconSimPlusPlus {
         }
     } // namespace
 
-    Button::Button(const Text& text, const glm::vec2 position, const ButtonSettings& settings,
-                   std::function<void()> callback) :
-        m_text(text), m_settings(settings), m_callback(std::move(callback)) {
+    Button::Button(const Text& text, const glm::vec2 position, const Anchor anchor, std::function<void()> callback,
+                   const ButtonStyle& style, const ButtonStyle& activeStyle, const ButtonStyle& disabledStyle) :
+        m_text(text), m_callback(std::move(callback)), m_normalStyle(style), m_activeStyle(activeStyle),
+        m_disabledStyle(disabledStyle), m_currentStyle(style) {
         assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");
 
         setPosition(position);
         setSize(glm::vec2{text.size()});
-        setAnchor(m_settings.anchor);
+        setAnchor(anchor);
+        setStyle(Style::normal);
     }
 
     void Button::setEnabled(const bool enabled) {
         m_enabled = enabled;
+        setStyle(enabled ? Style::normal : Style::disabled);
+    }
+
+    void Button::setStyle(const Style style) {
+        switch (style) {
+        case Style::normal:
+            m_currentStyle = m_normalStyle;
+            break;
+        case Style::active:
+            m_currentStyle = m_activeStyle;
+            break;
+        case Style::disabled:
+            m_currentStyle = m_disabledStyle;
+            break;
+        }
+
+        m_text.setColor(m_currentStyle.textColor);
     }
 
     void Button::setPosition(const glm::vec2 position) {
@@ -71,6 +90,8 @@ namespace EconSimPlusPlus {
             return;
         }
 
+        // TODO: Set style to active when button is enabled and clicked, and revert back to the appropiate style once
+        //  the mouse button is released.
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             // ReSharper disable once CppTooWideScopeInitStatement
             const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
@@ -82,7 +103,6 @@ namespace EconSimPlusPlus {
     }
 
     void Button::render(const Camera& camera) const {
-        // TODO: Different style when button is disabled.
         m_shader.bind();
 
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
@@ -95,10 +115,10 @@ namespace EconSimPlusPlus {
         glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {offsetPosition, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
-        m_shader.setUniform("color", m_settings.fillColor);
+        m_shader.setUniform("color", m_currentStyle.fillColor);
         m_quad.render(GL_TRIANGLE_STRIP);
 
-        drawOutline(*this, m_shader, m_quad, m_settings.outlineColor, m_settings.outlineThickness);
+        drawOutline(*this, m_shader, m_quad, m_currentStyle.outlineColor, m_currentStyle.outlineThickness);
 
         m_text.render(camera);
     }
