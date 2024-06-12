@@ -178,6 +178,7 @@ namespace EconSimPlusPlus::Editor {
                                         .anchor = Anchor::topRight,
                                         .outlineSize = 0.3f,
                                         .outlineColor = {0.0f, 0.0f, 0.0f}}};
+        frameTimeText.setLayer(99.0f);
 
         glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
 
@@ -275,6 +276,23 @@ namespace EconSimPlusPlus::Editor {
                           .outlineColor = glm::vec3{0.6f}})};
         panel->setLayer(10.0f);
 
+        // TODO: Fix black space under letters.
+        // TODO: Add these labels to the panel.
+        // TODO: Automate placement of objects within a panel to stack objects top to bottom along the left margin.
+        FontSettings labelSettings{.anchor = Anchor::topLeft};
+        auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelSettings)};
+        mapSizeLabel->setPosition({panel->position() - glm::vec2{panel->size().x, 0.0f}});
+        mapSizeLabel->setLayer(90.0f);
+        // TODO: Create GUI object that contains: Text label and editable text box
+        auto mapWidthLabel{
+            std::make_unique<Text>(std::format("Width: {:d}", defaultMapSize.x), m_font.get(), labelSettings)};
+        mapWidthLabel->setPosition({mapSizeLabel->position() - glm::vec2{0.0f, mapSizeLabel->size().y}});
+        mapWidthLabel->setLayer(90.0f);
+        auto mapHeightLabel{
+            std::make_unique<Text>(std::format("Height: {:d}", defaultMapSize.y), m_font.get(), labelSettings)};
+        mapHeightLabel->setPosition({mapWidthLabel->position() - glm::vec2{0.0f, mapWidthLabel->size().y}});
+        mapHeightLabel->setLayer(90.0f);
+
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
@@ -283,11 +301,15 @@ namespace EconSimPlusPlus::Editor {
                                        static_cast<int>(tileSheet->sheetSize().x))};
         const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
         tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
+        tileMap->setPosition(mapHeightLabel->position() - glm::vec2{0.0f, mapHeightLabel->size().y + tileMap->size().y});
         tileMap->enableGridLines();
         tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 
+        m_guiObjects.push_back(std::move(mapSizeLabel));
+        m_guiObjects.push_back(std::move(mapWidthLabel));
+        m_guiObjects.push_back(std::move(mapHeightLabel));
         panel->addObject(std::move(tileMap));
 
         m_guiObjects.push_back(std::move(panel));

@@ -32,7 +32,6 @@ namespace EconSimPlusPlus {
     }
 
     void Panel::addObject(std::unique_ptr<GameObject> object) {
-        object->setPosition(glm::vec2{position() - object->size()});
         object->setLayer(layer());
         m_objects.push_back(std::move(object));
     }
