@@ -92,6 +92,7 @@ namespace EconSimPlusPlus {
     void TileMap::enableGridLines() {
         m_gridLines.emplace(mapSize(), tileSize());
         m_gridLines->setPosition(position());
+        m_gridLines->setLayer(layer());
     }
 
     void TileMap::setPosition(const glm::vec2 position) {
@@ -99,6 +100,14 @@ namespace EconSimPlusPlus {
 
         if (m_gridLines.has_value()) {
             m_gridLines->setPosition(position);
+        }
+    }
+
+    void TileMap::setLayer(const float layer) {
+        GameObject::setLayer(layer);
+
+        if (m_gridLines.has_value()) {
+            m_gridLines->setLayer(layer);
         }
     }
 

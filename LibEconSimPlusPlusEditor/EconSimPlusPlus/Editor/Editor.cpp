@@ -259,6 +259,7 @@ namespace EconSimPlusPlus::Editor {
         auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
         auto tileMap{std::make_unique<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles)};
         tileMap->enableGridLines();
+        tileMap->setLayer(1.0f);
 
         m_tileMap = std::move(tileMap);
         m_tileMap->addClickListener(
@@ -272,6 +273,7 @@ namespace EconSimPlusPlus::Editor {
                           .fillColor = glm::vec3{0.3f},
                           .outlineThickness = 1.0f,
                           .outlineColor = glm::vec3{0.6f}})};
+        panel->setLayer(10.0f);
 
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);

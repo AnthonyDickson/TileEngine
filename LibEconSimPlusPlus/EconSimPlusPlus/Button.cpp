@@ -75,6 +75,7 @@ namespace EconSimPlusPlus {
             return;
         }
 
+        // TODO: Add hover state.
         // TODO: Show hand cursor when hovering over enabled button.
 
         // ReSharper disable once CppTooWideScopeInitStatement

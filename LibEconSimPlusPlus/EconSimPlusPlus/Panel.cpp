@@ -37,6 +37,14 @@ namespace EconSimPlusPlus {
         m_objects.push_back(std::move(object));
     }
 
+    void Panel::setLayer(const float layer) {
+        GUIObject::setLayer(layer);
+
+        for (const auto& object : m_objects) {
+            object->setLayer(layer);
+        }
+    }
+
     void Panel::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         for (const auto& game_object : m_objects) {
             game_object->update(deltaTime, inputState, camera);

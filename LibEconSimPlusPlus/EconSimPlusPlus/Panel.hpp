@@ -45,6 +45,8 @@ namespace EconSimPlusPlus {
         /// @param object A game object.
         void addObject(std::unique_ptr<GameObject> object);
 
+        void setLayer(float layer) override;
+
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 

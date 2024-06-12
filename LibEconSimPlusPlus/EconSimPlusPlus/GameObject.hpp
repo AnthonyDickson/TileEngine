@@ -57,7 +57,7 @@ namespace EconSimPlusPlus {
 
         /// Set the object's layer.
         /// @param layer The layer the object exists on. Higher values put the object closer to the camera.
-        void setLayer(float layer);
+        virtual void setLayer(float layer);
 
         /// Get the object's dimensions.
         /// @return A 2-vector.
