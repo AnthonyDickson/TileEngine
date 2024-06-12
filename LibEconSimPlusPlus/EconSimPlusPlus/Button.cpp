@@ -20,6 +20,8 @@
 //
 
 
+#include <iostream>
+
 #include "glm/ext/matrix_transform.hpp"
 
 #include <EconSimPlusPlus/Button.hpp>
@@ -46,28 +48,11 @@ namespace EconSimPlusPlus {
         setPosition(position);
         setSize(glm::vec2{text.size()});
         setAnchor(anchor);
-        setStyle(Style::normal);
+        setState(State::normal);
     }
 
     void Button::setEnabled(const bool enabled) {
-        m_enabled = enabled;
-        setStyle(enabled ? Style::normal : Style::disabled);
-    }
-
-    void Button::setStyle(const Style style) {
-        switch (style) {
-        case Style::normal:
-            m_currentStyle = m_normalStyle;
-            break;
-        case Style::active:
-            m_currentStyle = m_activeStyle;
-            break;
-        case Style::disabled:
-            m_currentStyle = m_disabledStyle;
-            break;
-        }
-
-        m_text.setColor(m_currentStyle.textColor);
+        setState(enabled ? State::normal : State::disabled);
     }
 
     void Button::setPosition(const glm::vec2 position) {
@@ -86,19 +71,22 @@ namespace EconSimPlusPlus {
     }
 
     void Button::update(float, const InputState& inputState, const Camera& camera) {
-        if (!m_enabled) {
+        if (m_state == State::disabled) {
             return;
         }
 
-        // TODO: Set style to active when button is enabled and clicked, and revert back to the appropiate style once
-        //  the mouse button is released.
-        if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            // ReSharper disable once CppTooWideScopeInitStatement
-            const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
+        // TODO: Show hand cursor when hovering over enabled button.
 
-            if (contains(cursorPos)) {
-                m_callback();
-            }
+        // ReSharper disable once CppTooWideScopeInitStatement
+        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
+
+        if (m_state == State::normal and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+            contains(cursorPos)) {
+            setState(State::active);
+            m_callback();
+        }
+        else if (m_state == State::active and not inputState.getMouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
+            setState(State::normal);
         }
     }
 
@@ -121,5 +109,26 @@ namespace EconSimPlusPlus {
         drawOutline(*this, m_shader, m_quad, m_currentStyle.outlineColor, m_currentStyle.outlineThickness);
 
         m_text.render(camera);
+    }
+
+    void Button::setState(const State state) {
+        m_state = state;
+        updateStyle();
+    }
+
+    void Button::updateStyle() {
+        switch (m_state) {
+        case State::normal:
+            m_currentStyle = m_normalStyle;
+            break;
+        case State::active:
+            m_currentStyle = m_activeStyle;
+            break;
+        case State::disabled:
+            m_currentStyle = m_disabledStyle;
+            break;
+        }
+
+        m_text.setColor(m_currentStyle.textColor);
     }
 } // namespace EconSimPlusPlus

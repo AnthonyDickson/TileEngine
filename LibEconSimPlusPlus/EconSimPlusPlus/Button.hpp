@@ -34,7 +34,6 @@ namespace EconSimPlusPlus {
 
     class Button final : public GUIObject {
     public:
-        enum class Style { normal, active, disabled };
 
         /// Create a button.
         /// @param text The text to display in the button. Note that the text color will be overriden by the color in
@@ -53,8 +52,6 @@ namespace EconSimPlusPlus {
         /// @param enabled Whether the button should be enabled (`true`) or disabled (`false`).
         void setEnabled(bool enabled);
 
-        void setStyle(Style style);
-
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
         void setAnchor(Anchor anchor) override;
@@ -63,6 +60,15 @@ namespace EconSimPlusPlus {
         void render(const Camera& camera) const override;
 
     private:
+        /// The state of a button.
+        enum class State { normal, active, disabled };
+
+        /// Set the state of the button.
+        /// @param state The state to put the button into.
+        void setState(State state);
+        /// Update the style based on the current button state.
+        void updateStyle();
+
         /// The text to display in the button.
         Text m_text;
         /// The function to call when the button is clicked.
@@ -75,8 +81,8 @@ namespace EconSimPlusPlus {
         const ButtonStyle m_disabledStyle;
         /// The style currently being used.
         ButtonStyle m_currentStyle;
-        /// Whether the button is clickable.
-        bool m_enabled{true};
+        /// The current state of the button.
+        State m_state{State::normal};
 
         /// The button geometry.
         Quad m_quad{};
