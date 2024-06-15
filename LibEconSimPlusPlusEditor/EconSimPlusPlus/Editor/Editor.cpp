@@ -276,7 +276,6 @@ namespace EconSimPlusPlus::Editor {
                           .outlineColor = glm::vec3{0.6f}})};
         panel->setLayer(10.0f);
 
-        // TODO: Fix black space under letters.
         // TODO: Add these labels to the panel.
         // TODO: Automate placement of objects within a panel to stack objects top to bottom along the left margin.
         FontSettings labelSettings{.anchor = Anchor::topLeft};
@@ -284,6 +283,9 @@ namespace EconSimPlusPlus::Editor {
         mapSizeLabel->setPosition({panel->position() - glm::vec2{panel->size().x, 0.0f}});
         mapSizeLabel->setLayer(90.0f);
         // TODO: Create GUI object that contains: Text label and editable text box
+        // TODO: Create editable text field. Should consist of: background Quad, Text. Clicking on text field should
+        // then allow the user to enter text. Clicking on anything else, or pressing the escape button should defocus
+        // the text field and not longer allow text entry.
         auto mapWidthLabel{
             std::make_unique<Text>(std::format("Width: {:d}", defaultMapSize.x), m_font.get(), labelSettings)};
         mapWidthLabel->setPosition({mapSizeLabel->position() - glm::vec2{0.0f, mapSizeLabel->size().y}});
@@ -301,18 +303,19 @@ namespace EconSimPlusPlus::Editor {
                                        static_cast<int>(tileSheet->sheetSize().x))};
         const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
         tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
-        tileMap->setPosition(mapHeightLabel->position() - glm::vec2{0.0f, mapHeightLabel->size().y + tileMap->size().y});
+        tileMap->setPosition(mapHeightLabel->position() -
+                             glm::vec2{0.0f, mapHeightLabel->size().y + tileMap->size().y});
         tileMap->enableGridLines();
         tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 
-        m_guiObjects.push_back(std::move(mapSizeLabel));
-        m_guiObjects.push_back(std::move(mapWidthLabel));
-        m_guiObjects.push_back(std::move(mapHeightLabel));
         panel->addObject(std::move(tileMap));
 
         m_guiObjects.push_back(std::move(panel));
+        m_guiObjects.push_back(std::move(mapSizeLabel));
+        m_guiObjects.push_back(std::move(mapWidthLabel));
+        m_guiObjects.push_back(std::move(mapHeightLabel));
         // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.
