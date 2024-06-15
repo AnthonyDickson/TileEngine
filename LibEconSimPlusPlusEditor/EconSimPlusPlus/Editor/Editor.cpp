@@ -276,7 +276,6 @@ namespace EconSimPlusPlus::Editor {
                           .outlineColor = glm::vec3{0.6f}})};
         panel->setLayer(10.0f);
 
-        // TODO: Add these labels to the panel.
         // TODO: Automate placement of objects within a panel to stack objects top to bottom along the left margin.
         FontSettings labelSettings{.anchor = Anchor::topLeft};
         auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelSettings)};
@@ -310,12 +309,12 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 
+        panel->addObject(std::move(mapSizeLabel));
+        panel->addObject(std::move(mapWidthLabel));
+        panel->addObject(std::move(mapHeightLabel));
         panel->addObject(std::move(tileMap));
 
         m_guiObjects.push_back(std::move(panel));
-        m_guiObjects.push_back(std::move(mapSizeLabel));
-        m_guiObjects.push_back(std::move(mapWidthLabel));
-        m_guiObjects.push_back(std::move(mapHeightLabel));
         // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.

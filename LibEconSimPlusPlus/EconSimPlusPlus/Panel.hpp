@@ -45,6 +45,10 @@ namespace EconSimPlusPlus {
         /// @param object A game object.
         void addObject(std::unique_ptr<GameObject> object);
 
+        /// Add a GUI object to the panel.
+        /// @param object A GUI object.
+        void addObject(std::unique_ptr<GUIObject> object);
+
         void setLayer(float layer) override;
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
@@ -59,6 +63,8 @@ namespace EconSimPlusPlus {
         Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
         /// Objects contained by this panel.
         std::vector<std::unique_ptr<GameObject>> m_objects;
+        /// GUI Objects contained by this panel.
+        std::vector<std::unique_ptr<GUIObject>> m_guiObjects;
     };
 
 } // namespace EconSimPlusPlus

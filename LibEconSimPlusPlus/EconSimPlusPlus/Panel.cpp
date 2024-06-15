@@ -36,17 +36,30 @@ namespace EconSimPlusPlus {
         m_objects.push_back(std::move(object));
     }
 
+    void Panel::addObject(std::unique_ptr<GUIObject> object) {
+        object->setLayer(layer());
+        m_guiObjects.push_back(std::move(object));
+    }
+
     void Panel::setLayer(const float layer) {
         GUIObject::setLayer(layer);
 
         for (const auto& object : m_objects) {
             object->setLayer(layer);
         }
+
+        for (const auto& object : m_guiObjects) {
+            object->setLayer(layer);
+        }
     }
 
     void Panel::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
-        for (const auto& game_object : m_objects) {
-            game_object->update(deltaTime, inputState, camera);
+        for (const auto& object : m_objects) {
+            object->update(deltaTime, inputState, camera);
+        }
+
+        for (const auto& object : m_guiObjects) {
+            object->update(deltaTime, inputState, camera);
         }
     }
 
@@ -68,8 +81,13 @@ namespace EconSimPlusPlus {
 
         drawOutline(*this, m_shader, m_quad, m_settings.outlineColor, m_settings.outlineThickness);
 
-        for (const auto& game_object : m_objects) {
-            game_object->render(camera);
+        for (const auto& object : m_objects) {
+            object->render(camera);
         }
+
+        for (const auto& object : m_guiObjects) {
+            object->render(camera);
+        }
+
     }
 } // namespace EconSimPlusPlus
