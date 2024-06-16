@@ -22,6 +22,8 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANEL_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANEL_HPP
 
+#include <stack>
+
 #include "glm/vec2.hpp"
 
 #include <EconSimPlusPlus/Object.hpp>
@@ -31,9 +33,6 @@
 
 namespace EconSimPlusPlus {
 
-    // TODO: Add layout manager class. It should keep track of the objects added to the panel, and give the position for
-    // the next object. Internally, it should keep a stack of object dimensions so that the next position can calculated
-    // easily even if objects are being added and removed.
     /// Provides a logical and visual container for other objects.
     class Panel final : public Object {
     public:
@@ -41,7 +40,7 @@ namespace EconSimPlusPlus {
         /// @param position The x and y coordinates of the panel in world space.
         /// @param size The height and width of the panel in pixels.
         /// @param settings Configuration for panel apperance.
-        Panel(glm::vec2 position, glm::vec2 size, PanelSettings settings);
+        Panel(glm::vec2 position, glm::vec2 size, const PanelSettings& settings);
 
         /// Add an object to the panel.
         /// @param object An object.
@@ -60,7 +59,9 @@ namespace EconSimPlusPlus {
         /// The shader for coloring the quad with a solid color.
         Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
         /// Objects contained by this panel.
-        std::vector<std::unique_ptr<Object>> m_objects;
+        std::vector<std::unique_ptr<Object>> m_objects{};
+        /// Where to place the next object.
+        glm::vec2 m_nextObjectPosition{};
     };
 
 } // namespace EconSimPlusPlus

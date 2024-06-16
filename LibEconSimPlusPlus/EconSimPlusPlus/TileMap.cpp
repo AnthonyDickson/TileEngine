@@ -59,6 +59,7 @@ namespace EconSimPlusPlus {
         setPosition(tileSize() * -static_cast<glm::vec2>(mapSize) / 2.0f);
         setScale(tileSize());
         setSize(tileSize() * static_cast<glm::vec2>(mapSize));
+        // TODO: Get TileMap positioned correctly w/o initially setting anchor to bottomLeft.
         Object::setAnchor(Anchor::bottomLeft);
     }
 
@@ -112,12 +113,20 @@ namespace EconSimPlusPlus {
         }
     }
 
+    void TileMap::setAnchor(const Anchor anchor) {
+        Object::setAnchor(anchor);
+
+        if (m_gridLines.has_value()) {
+            m_gridLines->setAnchor(anchor);
+        }
+    }
+
     void TileMap::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         // ReSharper disable once CppTooWideScopeInitStatement
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
-            const glm::vec2 gridPos{(cursorPos - position()) / m_tileSheet->tileSize()};
+            const glm::vec2 gridPos{(cursorPos - bottomLeft(*this)) / m_tileSheet->tileSize()};
 
             for (const auto& callback : m_clickListeners) {
                 callback(gridPos, tileID(gridPos));
@@ -181,10 +190,11 @@ namespace EconSimPlusPlus {
     }
 
     TileMap::GridBounds TileMap::calculateVisibleGridBounds(const Camera& camera) const {
-        const auto [bottomLeft, topRight]{camera.viewport()};
+        const auto [viewBottomLeft, viewTopRight]{camera.viewport()};
+        const glm::vec2 bottomLeft{EconSimPlusPlus::bottomLeft(*this)};
 
-        const glm::vec2 gridCoordinatesMin{(bottomLeft - position()) / m_tileSheet->tileSize()};
-        const glm::vec2 gridCoordinatesMax{(topRight - position()) / m_tileSheet->tileSize()};
+        const glm::vec2 gridCoordinatesMin{(viewBottomLeft - bottomLeft) / m_tileSheet->tileSize()};
+        const glm::vec2 gridCoordinatesMax{(viewTopRight - bottomLeft) / m_tileSheet->tileSize()};
 
         // This padding ensures that partially visible tiles at the edge of the screen are drawn to stop them 'suddenly
         // appearing' only once they are fully in view.

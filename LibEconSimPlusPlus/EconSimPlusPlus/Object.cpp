@@ -65,7 +65,8 @@ namespace EconSimPlusPlus {
     }
 
     glm::mat4 Object::transform() const {
-        return glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{position(), layer()}), glm::vec3{scale(), 1.0f});
+        return glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(*this), layer()}),
+                          glm::vec3{scale(), 1.0f});
     }
 
     Anchor Object::anchor() const {
@@ -102,5 +103,17 @@ namespace EconSimPlusPlus {
         }
 
         return true;
+    }
+
+    glm::vec2 topLeft(const Object& object) {
+        const glm::vec2 anchorOffset{calculateAnchorOffset(object.size(), object.anchor())};
+
+        return object.position() + anchorOffset;
+    }
+
+    glm::vec2 bottomLeft(const Object& object) {
+        const glm::vec2 topLeft{EconSimPlusPlus::topLeft(object)};
+
+        return topLeft - glm::vec2{0.0f, object.size().y};
     }
 } // namespace EconSimPlusPlus

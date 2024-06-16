@@ -72,6 +72,7 @@ namespace EconSimPlusPlus {
         void setSize(glm::vec2 size);
 
         /// Get the 4x4 homogeneous transform matrix of the object.
+        /// @note Assumes bottom left as position/origin.
         [[nodiscard]] glm::mat4 transform() const;
 
         /// Get the point on the object that is used as the origin for its position.
@@ -118,6 +119,16 @@ namespace EconSimPlusPlus {
         /// The registered event handlers.
         std::vector<std::function<void(Event event)>> m_eventHandlers{};
     };
+
+    /// Get the coordinates of the top left corner of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] glm::vec2 topLeft(const Object& object);
+
+    /// Get the coordinates of the bottom left corner of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] glm::vec2 bottomLeft(const Object& object);
 
 } // namespace EconSimPlusPlus
 

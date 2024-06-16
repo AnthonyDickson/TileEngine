@@ -61,6 +61,7 @@ namespace EconSimPlusPlus {
 
         Object::setPosition(-0.5f * scaledSize);
         setSize(scaledSize);
+        // TODO: Get GridLines positioned correctly w/o initially setting anchor to bottomLeft.
         Object::setAnchor(Anchor::bottomLeft);
     }
 
@@ -69,7 +70,7 @@ namespace EconSimPlusPlus {
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
 
         if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
-            const glm::ivec2 gridPos{((cursorPos - position()) / m_cellSize)};
+            const glm::ivec2 gridPos{((cursorPos - bottomLeft(*this)) / m_cellSize)};
 
             std::cout << std::format(
                 "Mouse clicked over grid lines at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
