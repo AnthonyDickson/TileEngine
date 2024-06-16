@@ -16,63 +16,78 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony Dickson on 19/05/2024.
+// Created by Anthony Dickson on 16/06/2024.
 //
 
-#include <EconSimPlusPlus/GuiObject.hpp>
+#include "Object.hpp"
 
+#include "glm/ext/matrix_transform.hpp"
 
 namespace EconSimPlusPlus {
-    GUIObject::~GUIObject() = default;
+    Object::~Object() = default;
 
-    glm::vec2 GUIObject::position() const {
+    glm::vec2 Object::position() const {
         return {m_position.x, m_position.y};
     }
 
-    void GUIObject::setPosition(const glm::vec2 position) {
+    void Object::setPosition(const glm::vec2 position) {
         m_position.x = position.x;
         m_position.y = position.y;
     }
 
-    float GUIObject::layer() const {
+    float Object::layer() const {
         return m_position.z;
     }
 
-    void GUIObject::setLayer(const float layer) {
+    void Object::setLayer(const float layer) {
         assert(layer >= 0.0f && "Layer must be non-negative.");
         m_position.z = layer;
     }
 
-    glm::vec2 GUIObject::size() const {
+    glm::vec2 Object::scale() const {
+        return m_scale;
+    }
+
+    void Object::setScale(const glm::vec2 scale) {
+        assert(glm::all(glm::greaterThanEqual(scale, glm::vec2{0.0f})) &&
+               "All components of scale must be greater than or equal to 0.0.");
+        m_scale = scale;
+    }
+
+    glm::vec2 Object::size() const {
         return m_size;
     }
 
-    void GUIObject::setSize(const glm::vec2 size) {
+    void Object::setSize(const glm::vec2 size) {
         assert(glm::all(glm::greaterThanEqual(size, glm::vec2{0.0f})) &&
                "All components of size must be greater than or equal to 0.0.");
         m_size = size;
     }
 
-    Anchor GUIObject::anchor() const {
+    glm::mat4 Object::transform() const {
+        return glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{position(), layer()}), glm::vec3{scale(), 1.0f});
+    }
+
+    Anchor Object::anchor() const {
         return m_anchor;
     }
 
-    void GUIObject::setAnchor(const Anchor anchor) {
+    void Object::setAnchor(const Anchor anchor) {
         m_anchor = anchor;
     }
 
-    void GUIObject::addEventHandler(const std::function<void(Event event)>& eventHandler) {
+    void Object::addEventHandler(const std::function<void(Event event)>& eventHandler) {
         m_eventHandlers.push_back(eventHandler);
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst
-    void GUIObject::notify(const Event event) {
+    void Object::notify(const Event event) {
         for (auto& handler : m_eventHandlers) {
             handler(event);
         }
     }
 
-    bool GUIObject::contains(glm::vec2 point) const {
+    bool Object::contains(glm::vec2 point) const {
         // Using `m_size.y` as the vertical baseline makes the top left corner the origin.
         const glm::vec2 anchorOffset{calculateAnchorOffset(m_size, m_anchor, m_size.y)};
 

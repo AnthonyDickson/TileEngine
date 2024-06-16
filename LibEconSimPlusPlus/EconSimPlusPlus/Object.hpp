@@ -16,11 +16,11 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony Dickson on 19/05/2024.
+// Created by Anthony Dickson on 16/06/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GUIOBJECT_HPP
-#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GUIOBJECT_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_OBJECT_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_OBJECT_HPP
 
 #include <functional>
 
@@ -34,9 +34,9 @@
 
 namespace EconSimPlusPlus {
 
-    class GUIObject {
+    class Object {
     public:
-        virtual ~GUIObject();
+        virtual ~Object();
 
         /// Get the object's 2D coordinate in world space.
         /// @return A 2-vector.
@@ -55,6 +55,14 @@ namespace EconSimPlusPlus {
         /// @param layer The layer the object exists on. Higher values put the object closer to the camera.
         virtual void setLayer(float layer);
 
+        /// Get the scale of the object.
+        /// @return The non-negative scale factor of the object along the x and y axis.
+        [[nodiscard]] glm::vec2 scale() const;
+
+        /// Set the scale of the object.
+        /// @param scale The non-negative scale factor of the object along the x and y axis.
+        void setScale(glm::vec2 scale);
+
         /// Get the object's dimensions.
         /// @return A 2-vector.
         [[nodiscard]] glm::vec2 size() const;
@@ -62,6 +70,9 @@ namespace EconSimPlusPlus {
         /// Set the size of the object.
         /// @param size The 2D dimensions of the object in pixels.
         void setSize(glm::vec2 size);
+
+        /// Get the 4x4 homogeneous transform matrix of the object.
+        [[nodiscard]] glm::mat4 transform() const;
 
         /// Get the point on the object that is used as the origin for its position.
         /// @return An anchor.
@@ -98,6 +109,8 @@ namespace EconSimPlusPlus {
         /// The world space coordinates of the object along with the layer. Note this refers to the top left of the
         /// object.
         glm::vec3 m_position{0.0f};
+        /// The non-negative scale factor of the object along the x and y axis.
+        glm::vec2 m_scale{1.0f};
         /// The width and height of the object in world space coordinates.
         glm::vec2 m_size{1.0f};
         /// The point on the object that is used as the origin for its position.
@@ -108,4 +121,4 @@ namespace EconSimPlusPlus {
 
 } // namespace EconSimPlusPlus
 
-#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GUIOBJECT_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_OBJECT_HPP

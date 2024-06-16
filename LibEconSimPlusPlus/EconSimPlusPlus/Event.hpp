@@ -24,7 +24,7 @@
 
 namespace EconSimPlusPlus {
     enum class Event { tileMapLoaded };
-    // Add event listener interface to button or guiobject
+    // Add event listener interface to button or Object
 } // namespace EconSimPlusPlus
 
 #endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_EVENT_HPP

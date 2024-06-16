@@ -56,17 +56,17 @@ namespace EconSimPlusPlus {
     }
 
     void Button::setPosition(const glm::vec2 position) {
-        GUIObject::setPosition(position);
+        Object::setPosition(position);
         syncSettings(*this, m_text);
     }
 
     void Button::setLayer(const float layer) {
-        GUIObject::setLayer(layer);
+        Object::setLayer(layer);
         syncSettings(*this, m_text);
     }
 
     void Button::setAnchor(const Anchor anchor) {
-        GUIObject::setAnchor(anchor);
+        Object::setAnchor(anchor);
         syncSettings(*this, m_text);
     }
 

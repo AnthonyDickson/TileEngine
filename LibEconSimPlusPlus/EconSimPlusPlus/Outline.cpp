@@ -25,7 +25,7 @@
 
 
 namespace EconSimPlusPlus {
-    void drawOutline(const GUIObject& object, const Shader& shader, const Quad& quad, const glm::vec3 outlineColor,
+    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const glm::vec3 outlineColor,
                      const float outlineThickness) {
         if (outlineThickness < 1.0f) {
             return;

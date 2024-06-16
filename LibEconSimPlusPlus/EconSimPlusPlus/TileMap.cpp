@@ -29,6 +29,7 @@
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 
+
 namespace EconSimPlusPlus {
 
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
@@ -55,10 +56,10 @@ namespace EconSimPlusPlus {
     TileMap::TileMap(std::unique_ptr<TileSheet> tileSheet, const glm::ivec2 mapSize, const std::vector<int>& tiles) :
         m_tileSheet(std::move(tileSheet)), m_mapSize(mapSize), m_tiles(tiles) {
 
-        glm::mat4 transform{glm::scale(glm::mat4(1.0f), {m_tileSheet->tileSize(), 1.0f})};
-        transform = glm::translate(transform, glm::vec3{-static_cast<glm::vec2>(mapSize) / 2.0f, 0.0f});
-        setTransform(transform);
-        setSize(m_tileSheet->tileSize() * static_cast<glm::vec2>(mapSize));
+        setPosition(tileSize() * -static_cast<glm::vec2>(mapSize) / 2.0f);
+        setScale(tileSize());
+        setSize(tileSize() * static_cast<glm::vec2>(mapSize));
+        Object::setAnchor(Anchor::bottomLeft);
     }
 
     glm::ivec2 TileMap::mapSize() const {
@@ -96,7 +97,7 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::setPosition(const glm::vec2 position) {
-        GameObject::setPosition(position);
+        Object::setPosition(position);
 
         if (m_gridLines.has_value()) {
             m_gridLines->setPosition(position);
@@ -104,7 +105,7 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::setLayer(const float layer) {
-        GameObject::setLayer(layer);
+        Object::setLayer(layer);
 
         if (m_gridLines.has_value()) {
             m_gridLines->setLayer(layer);

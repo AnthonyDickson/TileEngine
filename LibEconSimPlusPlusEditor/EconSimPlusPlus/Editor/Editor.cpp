@@ -100,7 +100,7 @@ namespace EconSimPlusPlus::Editor {
         return Editor{std::move(window)};
     }
 
-    void Editor::addObject(GameObject* object) {
+    void Editor::addObject(Object* object) {
         m_objects.push_back(object);
     }
 
@@ -280,7 +280,6 @@ namespace EconSimPlusPlus::Editor {
         FontSettings labelSettings{.anchor = Anchor::topLeft};
         auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelSettings)};
         mapSizeLabel->setPosition({panel->position() - glm::vec2{panel->size().x, 0.0f}});
-        mapSizeLabel->setLayer(90.0f);
         // TODO: Create GUI object that contains: Text label and editable text box
         // TODO: Create editable text field. Should consist of: background Quad, Text. Clicking on text field should
         // then allow the user to enter text. Clicking on anything else, or pressing the escape button should defocus
@@ -288,11 +287,9 @@ namespace EconSimPlusPlus::Editor {
         auto mapWidthLabel{
             std::make_unique<Text>(std::format("Width: {:d}", defaultMapSize.x), m_font.get(), labelSettings)};
         mapWidthLabel->setPosition({mapSizeLabel->position() - glm::vec2{0.0f, mapSizeLabel->size().y}});
-        mapWidthLabel->setLayer(90.0f);
         auto mapHeightLabel{
             std::make_unique<Text>(std::format("Height: {:d}", defaultMapSize.y), m_font.get(), labelSettings)};
         mapHeightLabel->setPosition({mapWidthLabel->position() - glm::vec2{0.0f, mapWidthLabel->size().y}});
-        mapHeightLabel->setLayer(90.0f);
 
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);

@@ -26,13 +26,13 @@
 
 #include <EconSimPlusPlus/ButtonStyle.hpp>
 #include <EconSimPlusPlus/Font.hpp>
-#include <EconSimPlusPlus/GuiObject.hpp>
+#include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Text.hpp>
 
 namespace EconSimPlusPlus {
 
-    class Button final : public GUIObject {
+    class Button final : public Object {
     public:
 
         /// Create a button.

@@ -25,14 +25,14 @@
 #include "glm/vec2.hpp"
 
 #include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/GameObject.hpp>
+#include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/VertexArray.hpp>
 #include <EconSimPlusPlus/VertexBuffer.hpp>
 
 namespace EconSimPlusPlus {
     /// Draws 2D grid lines.
-    class GridLines final : public GameObject {
+    class GridLines final : public Object {
     public:
         /// Create a grid lines object.
         /// @param size The width and height of the grid in tiles.

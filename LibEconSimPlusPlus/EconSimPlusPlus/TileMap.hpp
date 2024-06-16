@@ -23,8 +23,8 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TILEMAP_HPP
 
 #include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/GameObject.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
+#include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
@@ -32,7 +32,7 @@
 
 namespace EconSimPlusPlus {
     /// Handles loading and accessing a textured-based tile map.
-    class TileMap final : public GameObject {
+    class TileMap final : public Object {
 
     public:
         /// Construct a `TileMap` object from a YAML file.

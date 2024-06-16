@@ -5,11 +5,10 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Font.cpp
         EconSimPlusPlus/FrameTimer.cpp
         EconSimPlusPlus/Game.cpp
-        EconSimPlusPlus/GameObject.cpp
         EconSimPlusPlus/Glyph.cpp
         EconSimPlusPlus/GridLines.cpp
-        EconSimPlusPlus/GuiObject.cpp
         EconSimPlusPlus/InputState.cpp
+        EconSimPlusPlus/Object.cpp
         EconSimPlusPlus/Outline.cpp
         EconSimPlusPlus/Panel.cpp
         EconSimPlusPlus/Quad.cpp

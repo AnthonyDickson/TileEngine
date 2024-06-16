@@ -26,7 +26,7 @@
 #include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
-#include <EconSimPlusPlus/GuiObject.hpp>
+#include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
@@ -46,7 +46,7 @@ namespace EconSimPlusPlus::Editor {
         /// @param object A pointer to the game object.
         /// @note This list and class will not manage the lifetimes of objects pointed to, that is the responsibility of
         /// the caller.
-        void addObject(GameObject* object);
+        void addObject(Object* object);
 
         /// Update the editor by one step.
         /// @param deltaTime the size of the step to take in term of time (seconds).
@@ -74,9 +74,9 @@ namespace EconSimPlusPlus::Editor {
         /// Handles asynchronous save file dialogs.
         SaveFileDialog m_saveFileDialog{};
         /// A list of all game objects.
-        std::vector<GameObject*> m_objects{};
+        std::vector<Object*> m_objects{};
         /// A list of all GUI objects.
-        std::vector<std::shared_ptr<GUIObject>> m_guiObjects{};
+        std::vector<std::shared_ptr<Object>> m_guiObjects{};
         /// The render camera.
         Camera m_camera;
         /// The camera for rendering GUI elements (doesn't move).

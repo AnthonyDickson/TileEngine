@@ -48,7 +48,7 @@ namespace EconSimPlusPlus {
         return {std::move(window), std::move(tileMap), std::move(gridLines)};
     }
 
-    void Game::addObject(GameObject* object) {
+    void Game::addObject(Object* object) {
         objects.push_back(object);
     }
 

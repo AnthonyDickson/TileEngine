@@ -26,39 +26,26 @@
 
 namespace EconSimPlusPlus {
     Panel::Panel(const glm::vec2 position, const glm::vec2 size, PanelSettings settings) : m_settings(settings) {
-        GUIObject::setPosition(position);
+        Object::setPosition(position);
         setSize(size);
-        GUIObject::setAnchor(m_settings.anchor);
+        Object::setAnchor(m_settings.anchor);
     }
 
-    void Panel::addObject(std::unique_ptr<GameObject> object) {
+    void Panel::addObject(std::unique_ptr<Object> object) {
         object->setLayer(layer());
         m_objects.push_back(std::move(object));
     }
 
-    void Panel::addObject(std::unique_ptr<GUIObject> object) {
-        object->setLayer(layer());
-        m_guiObjects.push_back(std::move(object));
-    }
-
     void Panel::setLayer(const float layer) {
-        GUIObject::setLayer(layer);
+        Object::setLayer(layer);
 
         for (const auto& object : m_objects) {
-            object->setLayer(layer);
-        }
-
-        for (const auto& object : m_guiObjects) {
             object->setLayer(layer);
         }
     }
 
     void Panel::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         for (const auto& object : m_objects) {
-            object->update(deltaTime, inputState, camera);
-        }
-
-        for (const auto& object : m_guiObjects) {
             object->update(deltaTime, inputState, camera);
         }
     }
@@ -84,10 +71,5 @@ namespace EconSimPlusPlus {
         for (const auto& object : m_objects) {
             object->render(camera);
         }
-
-        for (const auto& object : m_guiObjects) {
-            object->render(camera);
-        }
-
     }
 } // namespace EconSimPlusPlus

@@ -24,16 +24,18 @@
 
 #include "glm/vec2.hpp"
 
-#include <EconSimPlusPlus/GameObject.hpp>
-#include <EconSimPlusPlus/GuiObject.hpp>
+#include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/PanelSettings.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 
 namespace EconSimPlusPlus {
 
+    // TODO: Add layout manager class. It should keep track of the objects added to the panel, and give the position for
+    // the next object. Internally, it should keep a stack of object dimensions so that the next position can calculated
+    // easily even if objects are being added and removed.
     /// Provides a logical and visual container for other objects.
-    class Panel final : public GUIObject {
+    class Panel final : public Object {
     public:
         /// Create an empty panel.
         /// @param position The x and y coordinates of the panel in world space.
@@ -41,13 +43,9 @@ namespace EconSimPlusPlus {
         /// @param settings Configuration for panel apperance.
         Panel(glm::vec2 position, glm::vec2 size, PanelSettings settings);
 
-        /// Add a game object to the panel.
-        /// @param object A game object.
-        void addObject(std::unique_ptr<GameObject> object);
-
-        /// Add a GUI object to the panel.
-        /// @param object A GUI object.
-        void addObject(std::unique_ptr<GUIObject> object);
+        /// Add an object to the panel.
+        /// @param object An object.
+        void addObject(std::unique_ptr<Object> object);
 
         void setLayer(float layer) override;
 
@@ -62,9 +60,7 @@ namespace EconSimPlusPlus {
         /// The shader for coloring the quad with a solid color.
         Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
         /// Objects contained by this panel.
-        std::vector<std::unique_ptr<GameObject>> m_objects;
-        /// GUI Objects contained by this panel.
-        std::vector<std::unique_ptr<GUIObject>> m_guiObjects;
+        std::vector<std::unique_ptr<Object>> m_objects;
     };
 
 } // namespace EconSimPlusPlus

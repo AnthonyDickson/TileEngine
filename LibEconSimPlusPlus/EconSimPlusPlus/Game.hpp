@@ -43,7 +43,7 @@ namespace EconSimPlusPlus {
         /// @param object A pointer to the game object.
         /// @note This list and class will not manage the lifetimes of objects pointed to, that is the responsibility of
         /// the caller.
-        void addObject(GameObject* object);
+        void addObject(Object* object);
 
         /// Update the game by one step.
         /// @param deltaTime the size of the step to take in term of time (seconds).
@@ -72,7 +72,7 @@ namespace EconSimPlusPlus {
         /// 2D grid lines.
         std::unique_ptr<GridLines> m_gridLines;
         /// A list of all game objects.
-        std::vector<GameObject*> objects{};
+        std::vector<Object*> objects{};
         /// The render camera.
         Camera m_camera;
         /// The font for rendering text on screen.

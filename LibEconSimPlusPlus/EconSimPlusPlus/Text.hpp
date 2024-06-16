@@ -25,11 +25,11 @@
 #include "glm/vec3.hpp"
 
 #include <EconSimPlusPlus/Font.hpp>
-#include <EconSimPlusPlus/GuiObject.hpp>
+#include <EconSimPlusPlus/Object.hpp>
 
 namespace EconSimPlusPlus {
     /// A GUI element that displays text.
-    class Text final : public GUIObject {
+    class Text final : public Object {
     public:
         /// Create a text label.
         /// @param text The text to display.

@@ -23,7 +23,7 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_OUTLINE_HPP
 
 
-#include <EconSimPlusPlus/GuiObject.hpp>
+#include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 
@@ -39,7 +39,7 @@ namespace EconSimPlusPlus {
     /// @param quad The quad geometry to use for drawing the outline.
     /// @param outlineColor The outline color RGB.
     /// @param outlineThickness The thickness of the outline in pixels.
-    void drawOutline(const GUIObject& object, const Shader& shader, const Quad& quad, glm::vec3 outlineColor,
+    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, glm::vec3 outlineColor,
                      float outlineThickness);
 
 } // namespace EconSimPlusPlus

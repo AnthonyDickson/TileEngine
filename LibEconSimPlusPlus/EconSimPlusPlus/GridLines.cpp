@@ -27,6 +27,7 @@
 
 #include <EconSimPlusPlus/GridLines.hpp>
 
+
 namespace EconSimPlusPlus {
     GridLines::GridLines(const glm::ivec2 size, const glm::vec2 cellSize) : m_cellSize(cellSize) {
         std::vector<float> vertices{};
@@ -58,8 +59,9 @@ namespace EconSimPlusPlus {
         m_vbo.bind();
         m_vbo.loadData(vertices, {2});
 
-        setTransform(glm::translate(transform(), {-0.5f * scaledSize, 0.0}));
+        Object::setPosition(-0.5f * scaledSize);
         setSize(scaledSize);
+        Object::setAnchor(Anchor::bottomLeft);
     }
 
     void GridLines::update(float, const InputState& inputState, const Camera& camera) {
@@ -70,7 +72,7 @@ namespace EconSimPlusPlus {
             const glm::ivec2 gridPos{((cursorPos - position()) / m_cellSize)};
 
             std::cout << std::format(
-                "Mouse clicked over tile map at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
+                "Mouse clicked over grid lines at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
                 cursorPos.y, gridPos.x, gridPos.y);
         }
     }
