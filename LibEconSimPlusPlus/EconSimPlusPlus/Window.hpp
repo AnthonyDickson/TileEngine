@@ -105,6 +105,16 @@ namespace EconSimPlusPlus {
         /// Keeps track of keyboard and mouse input.
         InputState m_inputState{};
     };
+
+    /// Get the coordinate for the top left corner of the window.
+    /// @param window A window.
+    /// @return 2D camera space coordinates of the top left corner.
+    [[nodiscard]] glm::vec2 topLeft(const Window& window);
+
+    /// Get the coordinate for the top right corner of the window.
+    /// @param window A window.
+    /// @return 2D camera space coordinates of the top right corner.
+    [[nodiscard]] glm::vec2 topRight(const Window& window);
 } // namespace EconSimPlusPlus
 
 #endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_WINDOW_HPP

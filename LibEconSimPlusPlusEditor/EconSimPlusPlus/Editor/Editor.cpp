@@ -118,6 +118,10 @@ namespace EconSimPlusPlus::Editor {
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
             m_GuiCamera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+
+            for (const auto& object : m_guiObjects) {
+                object->notify(Event::windowResize);
+            }
         }
 
         const InputState input{m_window->inputState()};
@@ -180,26 +184,30 @@ namespace EconSimPlusPlus::Editor {
                                         .outlineColor = {0.0f, 0.0f, 0.0f}}};
         frameTimeText.setLayer(99.0f);
 
-        glm::vec2 topLeft{-0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())};
-
         ButtonStyle buttonStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.9f}};
         ButtonStyle buttonActiveStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.8f}};
         ButtonStyle buttonDisabledStyle{.textColor = glm::vec3{0.4f}, .fillColor = glm::vec3{0.5f}};
 
         Text buttonText{"Open...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
         auto openFileButton{std::make_shared<Button>(
-            buttonText, topLeft, Anchor::topLeft,
+            buttonText, topLeft(*m_window), Anchor::topLeft,
             [&] {
                 m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
                                       [this](const std::string& selection) { loadTileSheet(selection); });
             },
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         openFileButton->setLayer(98.0f);
+        openFileButton->addEventHandler([&](const Event event) {
+            if (event == Event::windowResize) {
+                openFileButton->setPosition(topLeft(*m_window));
+            }
+        });
+
         m_guiObjects.push_back(openFileButton);
 
         Text saveButtonText{"Save...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
         auto saveFileButton{std::make_shared<Button>(
-            saveButtonText, topLeft + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, Anchor::topLeft,
+            saveButtonText, topLeft(*m_window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, Anchor::topLeft,
             [&] {
                 m_saveFileDialog.open(pfd::save_file("Select a file", ".", {"YAML Files", "*.yaml"}),
                                       [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
@@ -208,8 +216,12 @@ namespace EconSimPlusPlus::Editor {
         saveFileButton->setLayer(98.0f);
         saveFileButton->setEnabled(false);
         saveFileButton->addEventHandler([&](const Event event) {
-            if (event == Event::tileMapLoaded) {
+            switch (event) {
+            case Event::tileMapLoaded:
                 saveFileButton->setEnabled(true);
+                break;
+            case Event::windowResize:
+                saveFileButton->setPosition(topLeft(*m_window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f});
             }
         });
         m_guiObjects.push_back(saveFileButton);
@@ -242,9 +254,7 @@ namespace EconSimPlusPlus::Editor {
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
             frameTimeText.setText(frameTimeSummary);
-            const glm::vec2 position{static_cast<float>(m_window->width()) / 2.0f,
-                                     static_cast<float>(m_window->height()) / 2.0f};
-            frameTimeText.setPosition(position);
+            frameTimeText.setPosition(topRight(*m_window));
             frameTimeText.render(m_camera);
 
             m_window->postUpdate();
@@ -304,6 +314,7 @@ namespace EconSimPlusPlus::Editor {
         panel->addObject(std::move(mapWidthLabel));
         panel->addObject(std::move(mapHeightLabel));
         panel->addObject(std::move(tileMap));
+        // TODO: Re-position and re-scale panel when window size is changed.
 
         m_guiObjects.push_back(std::move(panel));
         // TODO: Add GUI elements to adjust tile size, map size etc.

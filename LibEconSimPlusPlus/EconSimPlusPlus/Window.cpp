@@ -123,4 +123,12 @@ namespace EconSimPlusPlus {
             windowHandle->m_inputState.updateScroll(scrollX, scrollY);
         }
     }
+
+    glm::vec2 topLeft(const Window& window) {
+        return {-0.5f * static_cast<float>(window.width()), 0.5f * static_cast<float>(window.height())};
+    }
+
+    glm::vec2 topRight(const Window& window) {
+        return 0.5f * static_cast<glm::vec2>(window.size());
+    }
 } // namespace EconSimPlusPlus
