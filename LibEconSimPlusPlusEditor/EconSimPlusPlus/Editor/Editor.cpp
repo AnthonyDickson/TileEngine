@@ -262,6 +262,7 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::loadTileSheet(const std::string& filepath) {
+        // TODO: Handle case where a tile map & sheet are already open.
         constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
         constexpr glm::ivec2 defaultMapSize{16, 16};
         const std::vector defaultTiles(defaultMapSize.x * defaultMapSize.y, 0);
@@ -277,14 +278,20 @@ namespace EconSimPlusPlus::Editor {
             [&](const glm::ivec2 gridCoordinates, int) { m_tileMap->setTileID(gridCoordinates, m_selectedTileID); });
 
         // Side panel
-        auto panel{std::make_unique<Panel>(
-            glm::vec2{0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())},
+        auto panel{std::make_shared<Panel>(
+            topRight(*m_window),
             glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
             PanelSettings{.fillColor = glm::vec3{0.3f},
                           .outlineColor = glm::vec3{0.6f},
                           .outlineThickness = 1.0f,
                           .anchor = Anchor::topRight})};
         panel->setLayer(10.0f);
+        panel->addEventHandler([&, panel](const Event event) {
+            if (event == Event::windowResize) {
+                panel->setPosition(topRight(*m_window));
+                panel->setSize({0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+            }
+        });
 
         FontSettings labelSettings{.anchor = Anchor::topLeft};
         auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelSettings)};
@@ -303,7 +310,7 @@ namespace EconSimPlusPlus::Editor {
         std::iota(tiles.begin(), tiles.end(), 1);
         const int tilesPerRow{std::min(static_cast<int>(panel->size().x / defaultTileSize.x),
                                        static_cast<int>(tileSheet->sheetSize().x))};
-        const int rows{static_cast<int>(ceil(tileSheet->tileCount() / tilesPerRow))};
+        const int rows{static_cast<int>(ceil(static_cast<double>(tileSheet->tileCount()) / tilesPerRow))};
         tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
         tileMap->enableGridLines();
         tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
@@ -314,9 +321,8 @@ namespace EconSimPlusPlus::Editor {
         panel->addObject(std::move(mapWidthLabel));
         panel->addObject(std::move(mapHeightLabel));
         panel->addObject(std::move(tileMap));
-        // TODO: Re-position and re-scale panel when window size is changed.
 
-        m_guiObjects.push_back(std::move(panel));
+        m_guiObjects.push_back(panel);
         // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.

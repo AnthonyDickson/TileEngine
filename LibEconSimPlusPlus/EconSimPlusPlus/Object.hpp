@@ -69,7 +69,7 @@ namespace EconSimPlusPlus {
 
         /// Set the size of the object.
         /// @param size The 2D dimensions of the object in pixels.
-        void setSize(glm::vec2 size);
+        virtual void setSize(glm::vec2 size);
 
         /// Get the 4x4 homogeneous transform matrix of the object.
         /// @note Assumes bottom left as position/origin.

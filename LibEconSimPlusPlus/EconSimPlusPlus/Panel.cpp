@@ -42,6 +42,16 @@ namespace EconSimPlusPlus {
         m_objects.push_back(std::move(object));
     }
 
+    void Panel::setPosition(const glm::vec2 position) {
+        Object::setPosition(position);
+        recalculateObjectPositions();
+    }
+
+    void Panel::setSize(const glm::vec2 size) {
+        Object::setSize(size);
+        recalculateObjectPositions();
+    }
+
     void Panel::setLayer(const float layer) {
         Object::setLayer(layer);
 
@@ -76,6 +86,15 @@ namespace EconSimPlusPlus {
 
         for (const auto& object : m_objects) {
             object->render(camera);
+        }
+    }
+
+    void Panel::recalculateObjectPositions() {
+        m_nextObjectPosition = topLeft(*this);
+
+        for (auto& object : m_objects) {
+            object->setPosition(m_nextObjectPosition);
+            m_nextObjectPosition = bottomLeft(*object);
         }
     }
 } // namespace EconSimPlusPlus

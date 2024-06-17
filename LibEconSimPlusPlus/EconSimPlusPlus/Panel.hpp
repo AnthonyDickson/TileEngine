@@ -46,12 +46,19 @@ namespace EconSimPlusPlus {
         /// @param object An object.
         void addObject(std::unique_ptr<Object> object);
 
+        void setPosition(glm::vec2 position) override;
+        void setSize(glm::vec2 size) override;
         void setLayer(float layer) override;
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 
     private:
+        /// Recalculate the panel objects layout from scratch.
+        /// @note Intended to be called after the panel's position or size are updated so that objects are positioned
+        /// correctly.
+        void recalculateObjectPositions();
+
         /// Configuration for panel apperance.
         PanelSettings m_settings;
         /// The quad geometry for drawing the panel background and outlines.
