@@ -51,3 +51,4 @@ FetchContent_Declare(
         GIT_TAG 0.1.0
 )
 FetchContent_MakeAvailable(portable_file_dialogs)
+target_compile_options(portable_file_dialogs INTERFACE -w)

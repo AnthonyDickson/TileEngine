@@ -21,7 +21,6 @@
 
 #include <format>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 
 #include "glad/glad.h"

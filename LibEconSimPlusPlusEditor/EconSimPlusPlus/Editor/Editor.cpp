@@ -270,10 +270,10 @@ namespace EconSimPlusPlus::Editor {
         auto panel{std::make_unique<Panel>(
             glm::vec2{0.5f * static_cast<float>(m_window->width()), 0.5f * static_cast<float>(m_window->height())},
             glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
-            PanelSettings{.anchor = Anchor::topRight,
-                          .fillColor = glm::vec3{0.3f},
+            PanelSettings{.fillColor = glm::vec3{0.3f},
+                          .outlineColor = glm::vec3{0.6f},
                           .outlineThickness = 1.0f,
-                          .outlineColor = glm::vec3{0.6f}})};
+                          .anchor = Anchor::topRight})};
         panel->setLayer(10.0f);
 
         FontSettings labelSettings{.anchor = Anchor::topLeft};

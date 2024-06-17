@@ -22,7 +22,7 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANEL_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANEL_HPP
 
-#include <stack>
+#include <memory>
 
 #include "glm/vec2.hpp"
 
