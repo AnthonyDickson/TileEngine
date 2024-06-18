@@ -59,8 +59,7 @@ namespace EconSimPlusPlus {
         /// Create a new game instance.
         /// @param window The window to display the game on.
         /// @param tileMap The game map made up of square tiles.
-        /// @param gridLines 2D grid lines to draw over the tile map.
-        Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap, std::unique_ptr<GridLines> gridLines);
+        Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap);
 
         /// We only want one instance of `Game`, we use this bool to track whether an instance was already created.
         static bool m_isInitialised;
@@ -69,8 +68,6 @@ namespace EconSimPlusPlus {
         std::unique_ptr<Window> m_window;
         /// The game 'map'.
         std::unique_ptr<TileMap> m_tileMap;
-        /// 2D grid lines.
-        std::unique_ptr<GridLines> m_gridLines;
         /// A list of all game objects.
         std::vector<Object*> objects{};
         /// The render camera.

@@ -59,8 +59,6 @@ namespace EconSimPlusPlus {
         setPosition(tileSize() * -static_cast<glm::vec2>(mapSize) / 2.0f);
         setScale(tileSize());
         Object::setSize(tileSize() * static_cast<glm::vec2>(mapSize));
-        // TODO: Get TileMap positioned correctly w/o initially setting anchor to bottomLeft.
-        Object::setAnchor(Anchor::bottomLeft);
     }
 
     glm::ivec2 TileMap::mapSize() const {
@@ -95,6 +93,7 @@ namespace EconSimPlusPlus {
         m_gridLines.emplace(mapSize(), tileSize());
         m_gridLines->setPosition(position());
         m_gridLines->setLayer(layer());
+        m_gridLines->setAnchor(anchor());
     }
 
     void TileMap::setPosition(const glm::vec2 position) {

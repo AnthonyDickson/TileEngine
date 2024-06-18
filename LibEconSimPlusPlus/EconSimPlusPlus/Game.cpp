@@ -32,8 +32,8 @@ namespace EconSimPlusPlus {
 
     bool Game::m_isInitialised = false;
 
-    Game::Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap, std::unique_ptr<GridLines> gridLines) :
-        m_window(std::move(window)), m_tileMap(std::move(tileMap)), m_gridLines(std::move(gridLines)),
+    Game::Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap) :
+        m_window(std::move(window)), m_tileMap(std::move(tileMap)),
         m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
                  {0.0f, 0.0f, 100.0f}} {
         assert(!m_isInitialised && "Cannot have more than one instance of `Game`.");
@@ -43,9 +43,8 @@ namespace EconSimPlusPlus {
     Game Game::create(glm::ivec2 windowSize) {
         auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
         std::unique_ptr tileMap{TileMap::create("resource/terrain.yaml")};
-        auto gridLines{std::make_unique<GridLines>(tileMap->mapSize(), tileMap->tileSize())};
 
-        return {std::move(window), std::move(tileMap), std::move(gridLines)};
+        return {std::move(window), std::move(tileMap)};
     }
 
     void Game::addObject(Object* object) {
@@ -104,9 +103,9 @@ namespace EconSimPlusPlus {
 
         // TODO: Move this to factory function?
         m_tileMap->setLayer(1.0f);
-        m_gridLines->setLayer(2.0f);
+        m_tileMap->setAnchor(Anchor::bottomLeft);
+        m_tileMap->enableGridLines();
         objects.push_back(m_tileMap.get());
-        objects.push_back(m_gridLines.get());
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};

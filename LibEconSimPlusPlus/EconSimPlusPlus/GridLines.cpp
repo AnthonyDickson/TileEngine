@@ -61,8 +61,6 @@ namespace EconSimPlusPlus {
 
         Object::setPosition(-0.5f * scaledSize);
         Object::setSize(scaledSize);
-        // TODO: Get GridLines positioned correctly w/o initially setting anchor to bottomLeft.
-        Object::setAnchor(Anchor::bottomLeft);
     }
 
     void GridLines::update(float, const InputState& inputState, const Camera& camera) {
