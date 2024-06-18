@@ -100,10 +100,6 @@ namespace EconSimPlusPlus::Editor {
         return Editor{std::move(window)};
     }
 
-    void Editor::addObject(Object* object) {
-        m_objects.push_back(object);
-    }
-
     void Editor::update(const float deltaTime) {
         if (m_openFileDialog.active()) {
             m_openFileDialog.update();
@@ -127,10 +123,6 @@ namespace EconSimPlusPlus::Editor {
         const InputState input{m_window->inputState()};
         m_camera.update(deltaTime, input);
 
-        for (const auto& object : m_objects) {
-            object->update(deltaTime, input, m_camera);
-        }
-
         if (m_tileMap != nullptr) {
             m_tileMap->update(deltaTime, input, m_camera);
         }
@@ -153,10 +145,6 @@ namespace EconSimPlusPlus::Editor {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glEnable(GL_CULL_FACE);
-
-        for (const auto& object : m_objects) {
-            object->render(m_camera);
-        }
 
         if (m_tileMap != nullptr) {
             m_tileMap->render(m_camera);

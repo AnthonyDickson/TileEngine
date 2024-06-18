@@ -42,12 +42,6 @@ namespace EconSimPlusPlus::Editor {
         Editor(Editor&) = delete;
         Editor(Editor&&) = delete;
 
-        /// Register a game object. Registered objects will be automatically updated and rendered in the main loop.
-        /// @param object A pointer to the game object.
-        /// @note This list and class will not manage the lifetimes of objects pointed to, that is the responsibility of
-        /// the caller.
-        void addObject(Object* object);
-
         /// Update the editor by one step.
         /// @param deltaTime the size of the step to take in term of time (seconds).
         void update(float deltaTime);
@@ -73,8 +67,6 @@ namespace EconSimPlusPlus::Editor {
         OpenFileDialog m_openFileDialog{};
         /// Handles asynchronous save file dialogs.
         SaveFileDialog m_saveFileDialog{};
-        /// A list of all game objects.
-        std::vector<Object*> m_objects{};
         /// A list of all GUI objects.
         std::vector<std::shared_ptr<Object>> m_guiObjects{};
         /// The render camera.
