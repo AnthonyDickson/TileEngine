@@ -27,6 +27,7 @@
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/Object.hpp>
+#include <EconSimPlusPlus/Panel.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
@@ -63,12 +64,6 @@ namespace EconSimPlusPlus::Editor {
 
         /// The window we use to display the editor.
         std::unique_ptr<Window> m_window;
-        /// Handles asynchronous open file dialogs.
-        OpenFileDialog m_openFileDialog{};
-        /// Handles asynchronous save file dialogs.
-        SaveFileDialog m_saveFileDialog{};
-        /// A list of all GUI objects.
-        std::vector<std::shared_ptr<Object>> m_guiObjects{};
         /// The render camera.
         Camera m_camera;
         /// The camera for rendering GUI elements (doesn't move).
@@ -76,10 +71,19 @@ namespace EconSimPlusPlus::Editor {
         /// The font for rendering text on screen.
         std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
 
-        /// The tile map that is currently being edited.
-        std::unique_ptr<TileMap> m_tileMap{};
         /// The tile to paint onto the tile map.
         int m_selectedTileID{0};
+        /// The tile map that is currently being edited.
+        std::unique_ptr<TileMap> m_tileMap{};
+        /// The GUI panel that will hold the tile sheet and related GUI.
+        std::unique_ptr<Panel> m_tileSheetPanel{};
+        /// A list of all GUI objects.
+        std::vector<std::shared_ptr<Object>> m_guiObjects{};
+
+        /// Handles asynchronous open file dialogs.
+        OpenFileDialog m_openFileDialog{};
+        /// Handles asynchronous save file dialogs.
+        SaveFileDialog m_saveFileDialog{};
     };
 } // namespace EconSimPlusPlus::Editor
 

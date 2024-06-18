@@ -127,6 +127,10 @@ namespace EconSimPlusPlus::Editor {
             m_tileMap->update(deltaTime, input, m_camera);
         }
 
+        if (m_tileSheetPanel != nullptr) {
+            m_tileSheetPanel->update(deltaTime, input, m_GuiCamera);
+        }
+
         for (const auto& object : m_guiObjects) {
             object->update(deltaTime, input, m_GuiCamera);
         }
@@ -148,6 +152,10 @@ namespace EconSimPlusPlus::Editor {
 
         if (m_tileMap != nullptr) {
             m_tileMap->render(m_camera);
+        }
+
+        if (m_tileSheetPanel != nullptr) {
+            m_tileSheetPanel->render(m_GuiCamera);
         }
 
         for (const auto& object : m_guiObjects) {
@@ -250,7 +258,8 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::loadTileSheet(const std::string& filepath) {
-        // TODO: Handle case where a tile map & sheet are already open.
+        // TODO: Show dialog that asks user whether save current tile map, discard any changes or cancel the open
+        // operation.
         constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
         constexpr glm::ivec2 defaultMapSize{16, 16};
         const std::vector defaultTiles(defaultMapSize.x * defaultMapSize.y, 0);
@@ -267,18 +276,19 @@ namespace EconSimPlusPlus::Editor {
             [&](const glm::ivec2 gridCoordinates, int) { m_tileMap->setTileID(gridCoordinates, m_selectedTileID); });
 
         // Side panel
-        auto panel{std::make_shared<Panel>(
+        m_tileSheetPanel = std::make_unique<Panel>(
             topRight(*m_window),
             glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
             PanelSettings{.fillColor = glm::vec3{0.3f},
                           .outlineColor = glm::vec3{0.6f},
                           .outlineThickness = 1.0f,
-                          .anchor = Anchor::topRight})};
-        panel->setLayer(10.0f);
-        panel->addEventHandler([&, panel](const Event event) {
+                          .anchor = Anchor::topRight});
+        m_tileSheetPanel->setLayer(10.0f);
+        m_tileSheetPanel->addEventHandler([&](const Event event) {
             if (event == Event::windowResize) {
-                panel->setPosition(topRight(*m_window));
-                panel->setSize({0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+                m_tileSheetPanel->setPosition(topRight(*m_window));
+                m_tileSheetPanel->setSize(
+                    {0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
             }
         });
 
@@ -297,7 +307,7 @@ namespace EconSimPlusPlus::Editor {
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);
-        const int tilesPerRow{std::min(static_cast<int>(panel->size().x / defaultTileSize.x),
+        const int tilesPerRow{std::min(static_cast<int>(m_tileSheetPanel->size().x / defaultTileSize.x),
                                        static_cast<int>(tileSheet->sheetSize().x))};
         const int rows{static_cast<int>(ceil(static_cast<double>(tileSheet->tileCount()) / tilesPerRow))};
         tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
@@ -306,12 +316,10 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 
-        panel->addObject(std::move(mapSizeLabel));
-        panel->addObject(std::move(mapWidthLabel));
-        panel->addObject(std::move(mapHeightLabel));
-        panel->addObject(std::move(tileMap));
-
-        m_guiObjects.push_back(panel);
+        m_tileSheetPanel->addObject(std::move(mapSizeLabel));
+        m_tileSheetPanel->addObject(std::move(mapWidthLabel));
+        m_tileSheetPanel->addObject(std::move(mapHeightLabel));
+        m_tileSheetPanel->addObject(std::move(tileMap));;
         // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.
