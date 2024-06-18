@@ -319,7 +319,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileSheetPanel->addObject(std::move(mapSizeLabel));
         m_tileSheetPanel->addObject(std::move(mapWidthLabel));
         m_tileSheetPanel->addObject(std::move(mapHeightLabel));
-        m_tileSheetPanel->addObject(std::move(tileMap));;
+        m_tileSheetPanel->addObject(std::move(tileMap));
         // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.
