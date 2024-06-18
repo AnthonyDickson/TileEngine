@@ -21,7 +21,7 @@
 
 #include <cassert>
 
-#include "SaveFileDialog.hpp"
+#include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 
 namespace EconSimPlusPlus::Editor {
     void SaveFileDialog::open(const pfd::save_file& fileDialog, const std::function<void(std::string)>& callback) {

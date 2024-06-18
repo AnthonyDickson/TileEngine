@@ -19,7 +19,7 @@
 // Created by Anthony Dickson on 16/06/2024.
 //
 
-#include "Object.hpp"
+#include <EconSimPlusPlus/Object.hpp>
 
 #include "glm/ext/matrix_transform.hpp"
 

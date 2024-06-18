@@ -21,7 +21,7 @@
 
 #include <cassert>
 
-#include "OpenFileDialog.hpp"
+#include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
 
 namespace EconSimPlusPlus::Editor {
     void OpenFileDialog::open(const pfd::open_file& fileDialog, const std::function<void(std::string)>& callback) {

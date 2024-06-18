@@ -19,7 +19,7 @@
 // Created by Anthony Dickson on 30/05/2024.
 //
 
-#include "Quad.hpp"
+#include <EconSimPlusPlus/Quad.hpp>
 
 
 namespace EconSimPlusPlus {
