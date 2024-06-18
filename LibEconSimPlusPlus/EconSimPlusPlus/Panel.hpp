@@ -22,6 +22,7 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANEL_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANEL_HPP
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include <memory>
 
 #include "glm/vec2.hpp"

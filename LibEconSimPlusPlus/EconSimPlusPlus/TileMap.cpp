@@ -58,7 +58,7 @@ namespace EconSimPlusPlus {
 
         setPosition(tileSize() * -static_cast<glm::vec2>(mapSize) / 2.0f);
         setScale(tileSize());
-        setSize(tileSize() * static_cast<glm::vec2>(mapSize));
+        Object::setSize(tileSize() * static_cast<glm::vec2>(mapSize));
         // TODO: Get TileMap positioned correctly w/o initially setting anchor to bottomLeft.
         Object::setAnchor(Anchor::bottomLeft);
     }

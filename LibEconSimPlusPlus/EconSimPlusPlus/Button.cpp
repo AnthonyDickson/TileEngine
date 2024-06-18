@@ -46,7 +46,7 @@ namespace EconSimPlusPlus {
         assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");
 
         setPosition(position);
-        setSize(glm::vec2{text.size()});
+        Object::setSize(glm::vec2{text.size()});
         setAnchor(anchor);
         setState(State::normal);
     }

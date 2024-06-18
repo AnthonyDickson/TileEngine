@@ -60,7 +60,7 @@ namespace EconSimPlusPlus {
         m_vbo.loadData(vertices, {2});
 
         Object::setPosition(-0.5f * scaledSize);
-        setSize(scaledSize);
+        Object::setSize(scaledSize);
         // TODO: Get GridLines positioned correctly w/o initially setting anchor to bottomLeft.
         Object::setAnchor(Anchor::bottomLeft);
     }
