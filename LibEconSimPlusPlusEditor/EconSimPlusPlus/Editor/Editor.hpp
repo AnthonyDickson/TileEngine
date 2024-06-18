@@ -62,6 +62,10 @@ namespace EconSimPlusPlus::Editor {
         /// @param window The window to display the editor.
         explicit Editor(std::unique_ptr<Window> window);
 
+        /// Notify all objects of an event.
+        /// @param event What happened.
+        void notify(Event event);
+
         /// The window we use to display the editor.
         std::unique_ptr<Window> m_window;
         /// The render camera.

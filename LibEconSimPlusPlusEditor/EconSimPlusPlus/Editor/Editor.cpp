@@ -87,13 +87,6 @@ namespace EconSimPlusPlus::Editor {
         }
     } // namespace
 
-    Editor::Editor(std::unique_ptr<Window> window) :
-        m_window(std::move(window)),
-        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())}, {0.0f, 0.0f, 100.0f}},
-        m_GuiCamera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
-                    {0.0f, 0.0f, 100.0f}} {
-    }
-
     Editor Editor::create(glm::ivec2 windowSize) {
         auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
 
@@ -114,10 +107,7 @@ namespace EconSimPlusPlus::Editor {
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
             m_GuiCamera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
-
-            for (const auto& object : m_guiObjects) {
-                object->notify(Event::windowResize);
-            }
+            notify(Event::windowResize);
         }
 
         const InputState input{m_window->inputState()};
@@ -326,8 +316,24 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Paint tiles by holding down mouse button and moving over grid cells in addition to single clicks.
         // TODO: 'Color picking' tool where right clicking on a tile will select that tile for painting.
 
+        notify(Event::tileMapLoaded);
+    }
+
+    Editor::Editor(std::unique_ptr<Window> window) :
+        m_window(std::move(window)),
+        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())}, {0.0f, 0.0f, 100.0f}},
+        m_GuiCamera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                    {0.0f, 0.0f, 100.0f}} {
+    }
+
+    void Editor::notify(const Event event) {
         for (const auto& object : m_guiObjects) {
-            object->notify(Event::tileMapLoaded);
+            object->notify(event);
+        }
+
+        if (m_tileSheetPanel != nullptr) {
+            m_tileSheetPanel->notify(event);
         }
     }
+
 } // namespace EconSimPlusPlus::Editor
