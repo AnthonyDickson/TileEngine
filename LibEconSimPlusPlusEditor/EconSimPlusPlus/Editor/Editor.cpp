@@ -209,7 +209,7 @@ namespace EconSimPlusPlus::Editor {
         auto saveFileButton{std::make_shared<Button>(
             saveButtonText, topLeft(*m_window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, Anchor::topLeft,
             [&] {
-                m_saveFileDialog.open(pfd::save_file("Select a file", ".", {"YAML Files", "*.yaml"}),
+                m_saveFileDialog.open(pfd::save_file("Select a file", "", {"YAML Files", "*.yaml"}),
                                       [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
             },
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};

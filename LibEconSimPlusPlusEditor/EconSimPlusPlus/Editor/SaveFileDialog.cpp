@@ -39,7 +39,10 @@ namespace EconSimPlusPlus::Editor {
             return;
         }
 
-        m_callback(m_fileDialog->result());
+        // TODO: Find way to check which button was clicked (e.g., the cancel button).
+        if (const std::string filePath = m_fileDialog->result(); not filePath.empty()) {
+            m_callback(filePath);
+        }
 
         m_fileDialog.reset();
     }
