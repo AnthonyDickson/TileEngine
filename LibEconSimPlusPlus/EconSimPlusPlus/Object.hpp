@@ -110,6 +110,7 @@ namespace EconSimPlusPlus {
         /// The world space coordinates of the object along with the layer. Note this refers to the top left of the
         /// object.
         glm::vec3 m_position{0.0f};
+        // TODO: Merge scale and size. It is confusing to have two very similar variables.
         /// The non-negative scale factor of the object along the x and y axis.
         glm::vec2 m_scale{1.0f};
         /// The width and height of the object in world space coordinates.

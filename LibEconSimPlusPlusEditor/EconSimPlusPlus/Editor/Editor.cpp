@@ -35,6 +35,7 @@
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/Panel.hpp>
+#include <EconSimPlusPlus/TextField.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
 
@@ -233,6 +234,8 @@ namespace EconSimPlusPlus::Editor {
         });
         m_guiObjects.push_back(saveFileButton);
 
+        m_guiObjects.push_back(std::make_shared<TextField>());
+
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
             const std::chrono::duration deltaTime{currentTime - lastFrameTime};
@@ -348,6 +351,7 @@ namespace EconSimPlusPlus::Editor {
                     {0.0f, 0.0f, 100.0f}} {
     }
 
+    // ReSharper disable once CppMemberFunctionMayBeConst
     void Editor::notify(const Event event) {
         for (const auto& object : m_guiObjects) {
             object->notify(event);
