@@ -22,6 +22,7 @@
 #ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 #define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 
+#include <EconSimPlusPlus/Editor/MessageDialog.hpp>
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
 #include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 #include <EconSimPlusPlus/Font.hpp>
@@ -83,11 +84,12 @@ namespace EconSimPlusPlus::Editor {
         std::unique_ptr<Panel> m_tileSheetPanel{};
         /// A list of all GUI objects.
         std::vector<std::shared_ptr<Object>> m_guiObjects{};
-
         /// Handles asynchronous open file dialogs.
         OpenFileDialog m_openFileDialog{};
         /// Handles asynchronous save file dialogs.
         SaveFileDialog m_saveFileDialog{};
+        /// Handles asynchronous message dialogs.
+        MessageDialog m_messageDialog{};
     };
 } // namespace EconSimPlusPlus::Editor
 

@@ -104,6 +104,11 @@ namespace EconSimPlusPlus::Editor {
             return;
         }
 
+        if (m_messageDialog.active()) {
+            m_messageDialog.update();
+            return;
+        }
+
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
             m_GuiCamera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
@@ -174,14 +179,30 @@ namespace EconSimPlusPlus::Editor {
         ButtonStyle buttonActiveStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.8f}};
         ButtonStyle buttonDisabledStyle{.textColor = glm::vec3{0.4f}, .fillColor = glm::vec3{0.5f}};
 
+        auto openFile = [&] {
+            m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
+                                  [this](const std::string& selection) { loadTileSheet(selection); });
+        };
+
+        auto openFileButtonCallback = [&] {
+            if (m_tileSheetPanel == nullptr) {
+                openFile();
+                return;
+            }
+
+            // TODO: Check whether there are unsaved changes (dirty flag?)
+
+            m_messageDialog.open(
+                pfd::message("Unsaved Changes",
+                             "Any unsaved changes will be lost if you open a new file. Do you want to continue?",
+                             pfd::choice::yes_no, pfd::icon::warning),
+                openFile, [&] {});
+        };
+
         Text buttonText{"Open...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
-        auto openFileButton{std::make_shared<Button>(
-            buttonText, topLeft(*m_window), Anchor::topLeft,
-            [&] {
-                m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
-                                      [this](const std::string& selection) { loadTileSheet(selection); });
-            },
-            buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
+        auto openFileButton{std::make_shared<Button>(buttonText, topLeft(*m_window), Anchor::topLeft,
+                                                     openFileButtonCallback, buttonStyle, buttonActiveStyle,
+                                                     buttonDisabledStyle)};
         openFileButton->setLayer(98.0f);
         openFileButton->addEventHandler([&](const Event event) {
             if (event == Event::windowResize) {
@@ -236,7 +257,6 @@ namespace EconSimPlusPlus::Editor {
             render();
             renderTimer.endStep();
 
-            // TODO: Convert frame time summary into game object?
             const std::string frameTimeSummary{std::format("Update Time: {:>5.2f} ms\nRender Time: {:>5.2f} ms",
                                                            updateTimer.average(), renderTimer.average())};
             frameTimeText.setText(frameTimeSummary);
@@ -294,6 +314,8 @@ namespace EconSimPlusPlus::Editor {
             std::make_unique<Text>(std::format("Height: {:d}", defaultMapSize.y), m_font.get(), labelSettings)};
 
         // Tile sheet display
+        // TODO: Tile sheet should be displayed as it appears in the texture, and the panel should be sized to fit the
+        // tile sheet. This is instead of the tile sheet being sized to fit the panel.
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);

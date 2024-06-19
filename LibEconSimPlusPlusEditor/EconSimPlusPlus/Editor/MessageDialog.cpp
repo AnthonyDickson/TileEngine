@@ -16,42 +16,56 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony Dickson on 02/06/2024.
+// Created by Anthony Dickson on 19/06/2024.
 //
 
 #include <cassert>
 
-#include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
+#include <EconSimPlusPlus/Editor/MessageDialog.hpp>
 
 namespace EconSimPlusPlus::Editor {
-    void SaveFileDialog::open(const pfd::save_file& fileDialog, const std::function<void(std::string)>& callback) {
+
+
+    void MessageDialog::open(const pfd::message& messageDialog, const std::function<void()>& yesCallback,
+                             const std::function<void()>& noCallback) {
         assert(not active() && "Cannot open a new dialog when one is already open.");
-        m_fileDialog = fileDialog;
-        m_callback = callback;
+        m_messageDialog = messageDialog;
+        m_yesCallback = yesCallback;
+        m_noCallback = noCallback;
     }
 
-    bool SaveFileDialog::active() const {
-        return m_fileDialog.has_value();
+    bool MessageDialog::active() const {
+        return m_messageDialog.has_value();
     }
 
-    void SaveFileDialog::update() {
-        if (not active() or not m_fileDialog->ready(0)) {
+    void MessageDialog::update() {
+        if (not active() or not m_messageDialog->ready(0)) {
             return;
         }
 
-        if (const std::string filePath = m_fileDialog->result(); not filePath.empty()) {
-            m_callback(filePath);
+        switch (m_messageDialog->result()) {
+        case pfd::button::yes:
+            m_yesCallback();
+            break;
+        case pfd::button::no:
+            m_noCallback();
+            break;
+        case pfd::button::cancel:
+            break;
+        default:
+            throw std::runtime_error("Unexpected result from message dialog.");
         }
 
-        m_fileDialog.reset();
+        m_messageDialog.reset();
     }
 
-    void SaveFileDialog::kill() {
+    void MessageDialog::kill() {
         if (not active()) {
             return;
         }
 
-        m_fileDialog->kill();
-        m_fileDialog.reset();
+        m_messageDialog->kill();
+        m_messageDialog.reset();
     }
+
 } // namespace EconSimPlusPlus::Editor
