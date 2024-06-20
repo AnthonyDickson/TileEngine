@@ -234,7 +234,7 @@ namespace EconSimPlusPlus::Editor {
         });
         m_guiObjects.push_back(saveFileButton);
 
-        m_guiObjects.push_back(std::make_shared<TextField>());
+        m_guiObjects.push_back(std::make_shared<TextField>(m_font.get()));
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -289,6 +289,7 @@ namespace EconSimPlusPlus::Editor {
             [&](const glm::ivec2 gridCoordinates, int) { m_tileMap->setTileID(gridCoordinates, m_selectedTileID); });
 
         // Side panel
+        // TODO: Add padding to panel.
         m_tileSheetPanel = std::make_unique<Panel>(
             topRight(*m_window),
             glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},

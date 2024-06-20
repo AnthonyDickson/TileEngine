@@ -19,23 +19,46 @@
 // Created by Anthony Dickson on 19/06/2024.
 //
 
-#include "TextField.hpp"
+#include <iostream>
 
+#include <EconSimPlusPlus/TextField.hpp>
+
+// TODO: Capture input while text field is active, store in text label (this will also update the display).
+// TODO: Add blinking text cursor while text field is active.
+// TODO: Switch to text edit cursor while mouse is hovering over text field.
 namespace EconSimPlusPlus {
-    TextField::TextField() {
-        Object::setSize({32.0f, 32.0f});
-        Object::setScale({32.0f, 32.0f});
+    TextField::TextField(const Font* font) : m_text("Foo", font, {}) {
+        Object::setSize(m_text.size());
+        Object::setScale(m_text.size());
         Object::setLayer(99.0f);
+        m_text.setLayer(layer());
     }
-    void TextField::update(float, const InputState&, const Camera&) {
+    void TextField::update(float, const InputState& inputState, const Camera& camera) {
+        switch (m_state) {
+        case TextFieldState::inactive:
+            if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
+                m_state = TextFieldState::active;
+                std::cout << "Text field is now active.\n";
+            }
+            break;
+        case TextFieldState::active:
+            if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                not contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
+                m_state = TextFieldState::inactive;
+                std::cout << "Text field is now inactive.\n";
+            }
+            break;
+        }
     }
 
     void TextField::render(const Camera& camera) const {
         m_shader.bind();
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
         m_shader.setUniform("transform", transform());
-        m_shader.setUniform("color", glm::vec3{1.0f, 0.0f, 1.0f});
+        m_shader.setUniform("color", glm::vec3{0.4f});
 
         m_quad.render(GL_TRIANGLE_STRIP);
+        m_text.render(camera);
     }
 } // namespace EconSimPlusPlus

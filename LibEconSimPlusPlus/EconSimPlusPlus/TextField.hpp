@@ -25,17 +25,30 @@
 #include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
+#include <EconSimPlusPlus/Text.hpp>
 
 namespace EconSimPlusPlus {
 
-    class TextField : public Object {
+    /// A box where the user can type in text.
+    class TextField final : public Object {
     public:
-        TextField();
+        /// Create a text field for user text entry.
+        /// @param font The font to render text with.
+        explicit TextField(const Font* font);
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 
     private:
+        /// The possible states of a text field.
+        enum class TextFieldState { inactive, active };
+
+        /// The text that is displayed and edited in the text field.
+        Text m_text;
+        /// The current state of the text field.
+        TextFieldState m_state{TextFieldState::inactive};
+
+        /// The geometry used to draw the background.
         Quad m_quad{};
         Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
