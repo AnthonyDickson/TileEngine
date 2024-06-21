@@ -27,6 +27,10 @@ namespace EconSimPlusPlus {
         setText(text);
     }
 
+    std::string Text::text() const {
+        return m_text;
+    }
+
     void Text::setText(const std::string& text) {
         m_text = text;
 

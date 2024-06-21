@@ -37,6 +37,10 @@ namespace EconSimPlusPlus {
         /// @param settings The configuration (e.g., color, anchor, outlines) to use for displaying the text.
         Text(const std::string& text, const Font* font, const FontSettings& settings);
 
+        /// Get the label's text.
+        /// @return a string.
+        [[nodiscard]] std::string text() const;
+
         /// Update the text.
         /// @param text The text to display.
         void setText(const std::string& text);

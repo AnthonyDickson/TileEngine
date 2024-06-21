@@ -23,16 +23,30 @@
 
 #include <EconSimPlusPlus/TextField.hpp>
 
-// TODO: Capture input while text field is active, store in text label (this will also update the display).
 // TODO: Add blinking text cursor while text field is active.
 // TODO: Switch to text edit cursor while mouse is hovering over text field.
 namespace EconSimPlusPlus {
+    namespace {
+        /// GLFW keycodes for number keys.
+        constexpr std::array numeric = {
+            GLFW_KEY_0, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4,
+            GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9,
+        };
+
+        /// GLFW keycodes for alphabet keys.
+        constexpr std::array alpha = {
+            GLFW_KEY_A, GLFW_KEY_B, GLFW_KEY_C, GLFW_KEY_D, GLFW_KEY_E, GLFW_KEY_F, GLFW_KEY_G, GLFW_KEY_H, GLFW_KEY_I,
+            GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_M, GLFW_KEY_N, GLFW_KEY_O, GLFW_KEY_P, GLFW_KEY_Q, GLFW_KEY_R,
+            GLFW_KEY_S, GLFW_KEY_T, GLFW_KEY_U, GLFW_KEY_V, GLFW_KEY_W, GLFW_KEY_X, GLFW_KEY_Y, GLFW_KEY_Z};
+    } // namespace
+
     TextField::TextField(const Font* font) : m_text("Foo", font, {}) {
         Object::setSize(m_text.size());
         Object::setScale(m_text.size());
         Object::setLayer(99.0f);
         m_text.setLayer(layer());
     }
+
     void TextField::update(float, const InputState& inputState, const Camera& camera) {
         switch (m_state) {
         case TextFieldState::inactive:
@@ -48,6 +62,22 @@ namespace EconSimPlusPlus {
                 m_state = TextFieldState::inactive;
                 std::cout << "Text field is now inactive.\n";
             }
+
+            for (const int& key : numeric) {
+                if (inputState.getKeyDown(key)) {
+                    m_text.setText(m_text.text() + static_cast<char>(key));
+                }
+            }
+
+            for (const int& key : alpha) {
+                if (inputState.getKeyDown(key)) {
+                    const char character{static_cast<char>(inputState.getKey(GLFW_KEY_LEFT_SHIFT) ? key : key + 32)};
+                    m_text.setText(m_text.text() + character);
+                }
+            }
+
+            // TODO: Pressing backspace should delete the last character.
+
             break;
         }
     }
