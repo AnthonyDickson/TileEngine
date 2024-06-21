@@ -169,8 +169,7 @@ namespace EconSimPlusPlus {
             m_hasInitializedMousePosition = true;
         }
 
-        m_mouseMovement.x = position.x - m_mousePosition.x;
-        m_mouseMovement.y = m_mousePosition.y - position.y;
+        m_mouseMovement = m_mousePosition - position;
         m_mousePosition = position;
 
         std::swap(m_currentMouseButtonState, m_previousMouseButtonState);
@@ -197,35 +196,35 @@ namespace EconSimPlusPlus {
         m_scrollDelta += static_cast<float>(scrollY);
     }
 
-    const glm::vec2& InputState::getMousePosition() const {
+    const glm::vec2& InputState::mousePosition() const {
         return m_mousePosition;
     }
 
-    const glm::vec2& InputState::getMouseMovement() const {
+    const glm::vec2& InputState::mouseMovement() const {
         return m_mouseMovement;
     }
 
-    bool InputState::getKey(const int key) const {
+    bool InputState::key(const int key) const {
         return m_currentKeyState[key];
     }
 
-    bool InputState::getKeyDown(const int key) const {
-        return m_currentKeyState[key] and !m_previousKeyState[key];
+    bool InputState::keyDown(const int key) const {
+        return this->key(key) and not m_previousKeyState[key];
     }
 
-    bool InputState::getKeyUp(const int key) const {
-        return !m_currentKeyState[key] and m_previousKeyState[key];
+    bool InputState::keyUp(const int key) const {
+        return not this->key(key) and m_previousKeyState[key];
     }
 
-    bool InputState::getMouseButton(const int button) const {
+    bool InputState::mouseButton(const int button) const {
         return m_currentMouseButtonState[button];
     }
 
-    bool InputState::getMouseButtonDown(const int button) const {
-        return m_currentMouseButtonState[button] and !m_previousMouseButtonState[button];
+    bool InputState::mouseButtonDown(const int button) const {
+        return mouseButton(button) and not m_previousMouseButtonState[button];
     }
 
-    bool InputState::getMouseButtonUp(const int button) const {
-        return !m_currentMouseButtonState[button] and m_previousMouseButtonState[button];
+    bool InputState::mouseButtonUp(const int button) const {
+        return not mouseButton(button) and m_previousMouseButtonState[button];
     }
 } // namespace EconSimPlusPlus

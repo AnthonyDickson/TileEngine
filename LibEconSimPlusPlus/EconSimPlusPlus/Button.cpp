@@ -55,10 +55,6 @@ namespace EconSimPlusPlus {
         setState(enabled ? State::normal : State::disabled);
     }
 
-    void Button::setHoverCallback(const std::function<void()>& callback) {
-        m_hoverCallback = callback;
-    }
-
     void Button::setPosition(const glm::vec2 position) {
         Object::setPosition(position);
         syncSettings(*this, m_text);
@@ -79,22 +75,17 @@ namespace EconSimPlusPlus {
         case State::disabled:
             return;
         case State::normal:
-            if (not contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
+            if (not contains(screenToWorldCoordinates(inputState.mousePosition(), camera))) {
                 break;
             }
 
-            if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
                 setState(State::active);
                 m_callback();
             }
-            else {
-                // TODO: Add hover state.
-                // TODO: Show hand cursor when hovering over enabled button.
-                m_hoverCallback();
-            }
             break;
         case State::active:
-            if (not inputState.getMouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
+            if (not inputState.mouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
                 setState(State::normal);
             }
             break;

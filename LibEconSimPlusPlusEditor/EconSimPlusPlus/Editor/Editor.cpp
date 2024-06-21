@@ -127,12 +127,46 @@ namespace EconSimPlusPlus::Editor {
             m_tileSheetPanel->update(deltaTime, input, m_GuiCamera);
         }
 
+        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), m_GuiCamera)};
+        const glm::vec2 previousCursorPos{
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_GuiCamera)};
+
         for (const auto& object : m_guiObjects) {
             object->update(deltaTime, input, m_GuiCamera);
         }
-        // TODO: Get tile map and grid lines to react to mouse over and mouse click
-        // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor
-        // position in both screen and world coordinates?
+
+        // Detect and notify objects about mouse events.
+        std::ranges::sort(m_guiObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+            return a->layer() > b->layer();
+        });
+
+        for (const auto& object : m_guiObjects) {
+            if (object->contains(cursorPos) and not object->contains(previousCursorPos)) {
+                object->notify(Event::mouseEnter);
+                break;
+            }
+        }
+
+        for (const auto& object : m_guiObjects) {
+            if (not object->contains(cursorPos) and object->contains(previousCursorPos)) {
+                object->notify(Event::mouseLeave);
+                break;
+            }
+        }
+
+        for (const auto& object : m_guiObjects) {
+            if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
+                object->notify(Event::mouseHover);
+                break;
+            }
+        }
+
+        for (const auto& object : m_guiObjects) {
+            if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
+                object->notify(Event::mouseClick);
+                break;
+            }
+        }
     }
 
     void Editor::render() const {
@@ -183,6 +217,9 @@ namespace EconSimPlusPlus::Editor {
         auto openFile = [&] {
             m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
                                   [this](const std::string& selection) { loadTileSheet(selection); });
+            // This ensures the cursor is restored even if the mouseLeave event is not triggered for the button that
+            // opened the file dialog.
+            m_window->setCursor(GLFW_CURSOR_NORMAL);
         };
 
         auto openFileButtonCallback = [&] {
@@ -205,14 +242,23 @@ namespace EconSimPlusPlus::Editor {
                                                      openFileButtonCallback, buttonStyle, buttonActiveStyle,
                                                      buttonDisabledStyle)};
         openFileButton->setLayer(98.0f);
+        // TODO: Add default event handlers that can access private members.
         openFileButton->addEventHandler([&](const Event event) {
-            if (event == Event::windowResize) {
+            switch (event) {
+            case Event::mouseEnter:
+                // TODO: Do not set hand cursor for buttons if in `inactive` state.
+                m_window->setCursor(GLFW_HAND_CURSOR);
+                break;
+            case Event::mouseLeave:
+                m_window->setCursor(GLFW_CURSOR_NORMAL);
+                break;
+            case Event::windowResize:
                 openFileButton->setPosition(topLeft(*m_window));
+                break;
+            default:
+                break;
             }
         });
-        // TODO: Wrap the below behaviour into the event handler system and have the update loop push events to objects
-        // (e.g., it would check whether the mouse is over an object and send a "mouse hover" event).
-        openFileButton->setHoverCallback([&] { m_window->setCursor(GLFW_HAND_CURSOR); });
 
         m_guiObjects.push_back(openFileButton);
 
@@ -228,11 +274,19 @@ namespace EconSimPlusPlus::Editor {
         saveFileButton->setEnabled(false);
         saveFileButton->addEventHandler([&](const Event event) {
             switch (event) {
+            case Event::mouseEnter:
+                m_window->setCursor(GLFW_HAND_CURSOR);
+                break;
+            case Event::mouseLeave:
+                m_window->setCursor(GLFW_CURSOR_NORMAL);
+                break;
             case Event::tileMapLoaded:
                 saveFileButton->setEnabled(true);
                 break;
             case Event::windowResize:
                 saveFileButton->setPosition(topLeft(*m_window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f});
+            default:
+                break;
             }
         });
         m_guiObjects.push_back(saveFileButton);
@@ -248,7 +302,7 @@ namespace EconSimPlusPlus::Editor {
                 std::this_thread::sleep_for(targetFrameTime - deltaTime);
             }
 
-            if (m_window->inputState().getKey(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
+            if (m_window->inputState().key(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
                 m_openFileDialog.kill();
                 m_saveFileDialog.kill();
                 return;

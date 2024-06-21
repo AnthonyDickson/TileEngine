@@ -122,9 +122,9 @@ namespace EconSimPlusPlus {
 
     void TileMap::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         // ReSharper disable once CppTooWideScopeInitStatement
-        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
+        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.mousePosition(), camera)};
 
-        if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
+        if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
             const glm::vec2 gridPos{(cursorPos - bottomLeft(*this)) / m_tileSheet->tileSize()};
 
             for (const auto& callback : m_clickListeners) {

@@ -68,26 +68,26 @@ namespace EconSimPlusPlus {
     void Camera::update(const float deltaTime, const InputState& inputState) {
         constexpr float speed = 512.0f;
 
-        if (inputState.getKey(GLFW_KEY_W)) {
+        if (inputState.key(GLFW_KEY_W)) {
             move(Direction::Up, deltaTime * speed);
         }
 
-        if (inputState.getKey(GLFW_KEY_S)) {
+        if (inputState.key(GLFW_KEY_S)) {
             move(Direction::Down, deltaTime * speed);
         }
 
-        if (inputState.getKey(GLFW_KEY_A)) {
+        if (inputState.key(GLFW_KEY_A)) {
             move(Direction::Left, deltaTime * speed);
         }
 
-        if (inputState.getKey(GLFW_KEY_D)) {
+        if (inputState.key(GLFW_KEY_D)) {
             move(Direction::Right, deltaTime * speed);
         }
 
-        const glm::vec2& mouseMovement{inputState.getMouseMovement()};
+        const glm::vec2& mouseMovement{inputState.mouseMovement()};
 
-        if (inputState.getMouseButton(GLFW_MOUSE_BUTTON_MIDDLE) or inputState.getKey(GLFW_KEY_LEFT_ALT)) {
-            if (mouseMovement.x > 0.0f) {
+        if (inputState.mouseButton(GLFW_MOUSE_BUTTON_MIDDLE) or inputState.key(GLFW_KEY_LEFT_ALT)) {
+            if (mouseMovement.x < 0.0f) {
                 move(Direction::Left, abs(mouseMovement.x));
             }
             else {
@@ -102,7 +102,7 @@ namespace EconSimPlusPlus {
             }
         }
 
-        if (inputState.getKeyDown(GLFW_KEY_C)) {
+        if (inputState.keyDown(GLFW_KEY_C)) {
             resetPosition();
         }
     }

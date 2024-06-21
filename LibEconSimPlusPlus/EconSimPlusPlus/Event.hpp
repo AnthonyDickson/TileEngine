@@ -23,7 +23,7 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_EVENT_HPP
 
 namespace EconSimPlusPlus {
-    enum class Event { tileMapLoaded, windowResize };
+    enum class Event { tileMapLoaded, windowResize, mouseEnter, mouseLeave, mouseHover, mouseClick };
     // Add event listener interface to button or Object
 } // namespace EconSimPlusPlus
 

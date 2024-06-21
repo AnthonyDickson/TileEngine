@@ -116,7 +116,7 @@ namespace EconSimPlusPlus {
                 std::this_thread::sleep_for(targetFrameTime - deltaTime);
             }
 
-            if (m_window->inputState().getKey(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
+            if (m_window->inputState().key(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
                 return;
             }
 

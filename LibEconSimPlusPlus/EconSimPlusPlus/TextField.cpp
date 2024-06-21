@@ -50,31 +50,33 @@ namespace EconSimPlusPlus {
     void TextField::update(float, const InputState& inputState, const Camera& camera) {
         switch (m_state) {
         case TextFieldState::inactive:
-            if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
+            if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                contains(screenToWorldCoordinates(inputState.mousePosition(), camera))) {
                 m_state = TextFieldState::active;
             }
             break;
         case TextFieldState::active:
-            if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                not contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
+            if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                not contains(screenToWorldCoordinates(inputState.mousePosition(), camera))) {
                 m_state = TextFieldState::inactive;
             }
 
+            // TODO: Key strokes entered while in the active state should 'consume' those key strokes and prevent them
+            // from being propagated to other objects.
             for (const int& key : numeric) {
-                if (inputState.getKeyDown(key)) {
+                if (inputState.keyDown(key)) {
                     m_text.setText(m_text.text() + static_cast<char>(key));
                 }
             }
 
             for (const int& key : alpha) {
-                if (inputState.getKeyDown(key)) {
-                    const char character{static_cast<char>(inputState.getKey(GLFW_KEY_LEFT_SHIFT) ? key : key + 32)};
+                if (inputState.keyDown(key)) {
+                    const char character{static_cast<char>(inputState.key(GLFW_KEY_LEFT_SHIFT) ? key : key + 32)};
                     m_text.setText(m_text.text() + character);
                 }
             }
 
-            if (inputState.getKeyDown(GLFW_KEY_BACKSPACE)) {
+            if (inputState.keyDown(GLFW_KEY_BACKSPACE)) {
                 m_text.setText(m_text.text().substr(0, m_text.text().length() - 1));
             }
 
