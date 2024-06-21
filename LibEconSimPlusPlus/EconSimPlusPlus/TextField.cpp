@@ -76,7 +76,9 @@ namespace EconSimPlusPlus {
                 }
             }
 
-            // TODO: Pressing backspace should delete the last character.
+            if (inputState.getKeyDown(GLFW_KEY_BACKSPACE)) {
+                m_text.setText(m_text.text().substr(0, m_text.text().length() - 1));
+            }
 
             break;
         }
