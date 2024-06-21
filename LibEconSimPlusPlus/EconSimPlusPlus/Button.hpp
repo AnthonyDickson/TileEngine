@@ -65,8 +65,14 @@ namespace EconSimPlusPlus {
         /// Set the state of the button.
         /// @param state The state to put the button into.
         void setState(State state);
+
         /// Update the style based on the current button state.
         void updateStyle();
+
+        /// The default event handler for a button.
+        /// @param event What happened.
+        /// @param window The window where the event happened.
+        void handleEvents(Event event, Window& window);
 
         /// The text to display in the button.
         Text m_text;

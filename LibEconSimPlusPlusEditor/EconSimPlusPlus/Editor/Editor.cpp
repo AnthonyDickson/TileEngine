@@ -142,28 +142,28 @@ namespace EconSimPlusPlus::Editor {
 
         for (const auto& object : m_guiObjects) {
             if (object->contains(cursorPos) and not object->contains(previousCursorPos)) {
-                object->notify(Event::mouseEnter);
+                object->notify(Event::mouseEnter, *m_window);
                 break;
             }
         }
 
         for (const auto& object : m_guiObjects) {
             if (not object->contains(cursorPos) and object->contains(previousCursorPos)) {
-                object->notify(Event::mouseLeave);
+                object->notify(Event::mouseLeave, *m_window);
                 break;
             }
         }
 
         for (const auto& object : m_guiObjects) {
             if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
-                object->notify(Event::mouseHover);
+                object->notify(Event::mouseHover, *m_window);
                 break;
             }
         }
 
         for (const auto& object : m_guiObjects) {
             if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
-                object->notify(Event::mouseClick);
+                object->notify(Event::mouseClick, *m_window);
                 break;
             }
         }
@@ -242,21 +242,9 @@ namespace EconSimPlusPlus::Editor {
                                                      openFileButtonCallback, buttonStyle, buttonActiveStyle,
                                                      buttonDisabledStyle)};
         openFileButton->setLayer(98.0f);
-        // TODO: Add default event handlers that can access private members.
-        openFileButton->addEventHandler([&](const Event event) {
-            switch (event) {
-            case Event::mouseEnter:
-                // TODO: Do not set hand cursor for buttons if in `inactive` state.
-                m_window->setCursor(GLFW_HAND_CURSOR);
-                break;
-            case Event::mouseLeave:
-                m_window->setCursor(GLFW_CURSOR_NORMAL);
-                break;
-            case Event::windowResize:
-                openFileButton->setPosition(topLeft(*m_window));
-                break;
-            default:
-                break;
+        openFileButton->addEventHandler([&](const Event event, const Window& window) {
+            if (event == Event::windowResize) {
+                openFileButton->setPosition(topLeft(window));
             }
         });
 
@@ -272,19 +260,13 @@ namespace EconSimPlusPlus::Editor {
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         saveFileButton->setLayer(98.0f);
         saveFileButton->setEnabled(false);
-        saveFileButton->addEventHandler([&](const Event event) {
+        saveFileButton->addEventHandler([&](const Event event, const Window& window) {
             switch (event) {
-            case Event::mouseEnter:
-                m_window->setCursor(GLFW_HAND_CURSOR);
-                break;
-            case Event::mouseLeave:
-                m_window->setCursor(GLFW_CURSOR_NORMAL);
-                break;
             case Event::tileMapLoaded:
                 saveFileButton->setEnabled(true);
                 break;
             case Event::windowResize:
-                saveFileButton->setPosition(topLeft(*m_window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f});
+                saveFileButton->setPosition(topLeft(window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f});
             default:
                 break;
             }
@@ -355,11 +337,11 @@ namespace EconSimPlusPlus::Editor {
                           .outlineThickness = 1.0f,
                           .anchor = Anchor::topRight});
         m_tileSheetPanel->setLayer(10.0f);
-        m_tileSheetPanel->addEventHandler([&](const Event event) {
+        m_tileSheetPanel->addEventHandler([&](const Event event, const Window& window) {
             if (event == Event::windowResize) {
-                m_tileSheetPanel->setPosition(topRight(*m_window));
+                m_tileSheetPanel->setPosition(topRight(window));
                 m_tileSheetPanel->setSize(
-                    {0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+                    {0.2f * static_cast<float>(window.width()), static_cast<float>(window.height())});
             }
         });
 
@@ -412,11 +394,11 @@ namespace EconSimPlusPlus::Editor {
     // ReSharper disable once CppMemberFunctionMayBeConst
     void Editor::notify(const Event event) {
         for (const auto& object : m_guiObjects) {
-            object->notify(event);
+            object->notify(event, *m_window);
         }
 
         if (m_tileSheetPanel != nullptr) {
-            m_tileSheetPanel->notify(event);
+            m_tileSheetPanel->notify(event, *m_window);
         }
     }
 

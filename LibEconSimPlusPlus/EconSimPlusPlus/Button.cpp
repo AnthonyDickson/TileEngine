@@ -49,6 +49,8 @@ namespace EconSimPlusPlus {
         Object::setSize(glm::vec2{text.size()});
         setAnchor(anchor);
         setState(State::normal);
+
+        addEventHandler([&](const Event event, Window& window) { handleEvents(event, window); });
     }
 
     void Button::setEnabled(const bool enabled) {
@@ -70,19 +72,10 @@ namespace EconSimPlusPlus {
         syncSettings(*this, m_text);
     }
 
-    void Button::update(float, const InputState& inputState, const Camera& camera) {
+    void Button::update(float, const InputState& inputState, const Camera&) {
         switch (m_state) {
         case State::disabled:
-            return;
         case State::normal:
-            if (not contains(screenToWorldCoordinates(inputState.mousePosition(), camera))) {
-                break;
-            }
-
-            if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-                setState(State::active);
-                m_callback();
-            }
             break;
         case State::active:
             if (not inputState.mouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
@@ -132,5 +125,30 @@ namespace EconSimPlusPlus {
         }
 
         m_text.setColor(m_currentStyle.textColor);
+    }
+
+    void Button::handleEvents(const Event event, Window& window) {
+        switch (event) {
+        case Event::mouseEnter:
+            if (m_state != State::normal) {
+                break;
+            }
+
+            window.setCursor(GLFW_HAND_CURSOR);
+            break;
+        case Event::mouseLeave:
+            window.setCursor(GLFW_CURSOR_NORMAL);
+            break;
+        case Event::mouseClick:
+            if (m_state != State::normal) {
+                break;
+            }
+
+            setState(State::active);
+            m_callback();
+            break;
+        default:
+            break;
+        }
     }
 } // namespace EconSimPlusPlus
