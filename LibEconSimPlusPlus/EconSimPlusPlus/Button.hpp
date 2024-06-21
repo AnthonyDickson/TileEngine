@@ -34,7 +34,6 @@ namespace EconSimPlusPlus {
 
     class Button final : public Object {
     public:
-
         /// Create a button.
         /// @param text The text to display in the button. Note that the text color will be overriden by the color in
         /// the button style(s).
@@ -51,6 +50,10 @@ namespace EconSimPlusPlus {
         /// @note When the button is disabled, the button's callback will not be called.
         /// @param enabled Whether the button should be enabled (`true`) or disabled (`false`).
         void setEnabled(bool enabled);
+
+        /// Set the hover callback.
+        /// @param callback The function to call when the mouse is hovered over the button.
+        void setHoverCallback(const std::function<void()>& callback);
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
@@ -83,6 +86,8 @@ namespace EconSimPlusPlus {
         ButtonStyle m_currentStyle;
         /// The current state of the button.
         State m_state{State::normal};
+        /// The function to call when the mouse is hovered over the button.
+        std::function<void()> m_hoverCallback{};
 
         /// The button geometry.
         Quad m_quad{};

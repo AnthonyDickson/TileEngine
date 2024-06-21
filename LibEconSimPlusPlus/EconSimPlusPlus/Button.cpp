@@ -55,6 +55,10 @@ namespace EconSimPlusPlus {
         setState(enabled ? State::normal : State::disabled);
     }
 
+    void Button::setHoverCallback(const std::function<void()>& callback) {
+        m_hoverCallback = callback;
+    }
+
     void Button::setPosition(const glm::vec2 position) {
         Object::setPosition(position);
         syncSettings(*this, m_text);
@@ -71,23 +75,29 @@ namespace EconSimPlusPlus {
     }
 
     void Button::update(float, const InputState& inputState, const Camera& camera) {
-        if (m_state == State::disabled) {
+        switch (m_state) {
+        case State::disabled:
             return;
-        }
+        case State::normal:
+            if (not contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
+                break;
+            }
 
-        // TODO: Add hover state.
-        // TODO: Show hand cursor when hovering over enabled button.
-
-        // ReSharper disable once CppTooWideScopeInitStatement
-        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.getMousePosition(), camera)};
-
-        if (m_state == State::normal and inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-            contains(cursorPos)) {
-            setState(State::active);
-            m_callback();
-        }
-        else if (m_state == State::active and not inputState.getMouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
-            setState(State::normal);
+            if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+                setState(State::active);
+                m_callback();
+            }
+            else {
+                // TODO: Add hover state.
+                // TODO: Show hand cursor when hovering over enabled button.
+                m_hoverCallback();
+            }
+            break;
+        case State::active:
+            if (not inputState.getMouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
+                setState(State::normal);
+            }
+            break;
         }
     }
 

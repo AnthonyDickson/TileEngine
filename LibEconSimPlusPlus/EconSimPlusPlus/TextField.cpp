@@ -53,14 +53,12 @@ namespace EconSimPlusPlus {
             if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
                 contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
                 m_state = TextFieldState::active;
-                std::cout << "Text field is now active.\n";
             }
             break;
         case TextFieldState::active:
             if (inputState.getMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
                 not contains(screenToWorldCoordinates(inputState.getMousePosition(), camera))) {
                 m_state = TextFieldState::inactive;
-                std::cout << "Text field is now inactive.\n";
             }
 
             for (const int& key : numeric) {

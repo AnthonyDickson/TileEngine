@@ -97,6 +97,15 @@ namespace EconSimPlusPlus {
         return m_hasWindowChangedSize;
     }
 
+    void Window::setCursor(const int standardCursorType) {
+        if (m_cursor != nullptr) {
+            glfwDestroyCursor(m_cursor);
+        }
+
+        m_cursor = glfwCreateStandardCursor(standardCursorType);
+        glfwSetCursor(m_window, m_cursor);
+    }
+
     void Window::onWindowResize(GLFWwindow* window, const int width, const int height) {
         if (const auto windowHandle{static_cast<Window*>(glfwGetWindowUserPointer(window))}) {
             windowHandle->updateWindowSize(width, height);

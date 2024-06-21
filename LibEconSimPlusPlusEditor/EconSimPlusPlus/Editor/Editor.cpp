@@ -210,6 +210,9 @@ namespace EconSimPlusPlus::Editor {
                 openFileButton->setPosition(topLeft(*m_window));
             }
         });
+        // TODO: Wrap the below behaviour into the event handler system and have the update loop push events to objects
+        // (e.g., it would check whether the mouse is over an object and send a "mouse hover" event).
+        openFileButton->setHoverCallback([&] { m_window->setCursor(GLFW_HAND_CURSOR); });
 
         m_guiObjects.push_back(openFileButton);
 

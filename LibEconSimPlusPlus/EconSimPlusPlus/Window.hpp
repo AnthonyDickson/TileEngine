@@ -73,6 +73,10 @@ namespace EconSimPlusPlus {
         /// @return A bool indicating whether the user has resized the window.
         [[nodiscard]] bool hasWindowSizeChanged() const;
 
+        /// Set the window's cursor display.
+        /// @param standardCursorType A standard cursor type as defined by GLFW.
+        void setCursor(int standardCursorType);
+
     private:
         /// Handle the window being resized by the user.
         /// @param window A handle to the window.
@@ -104,6 +108,8 @@ namespace EconSimPlusPlus {
         bool m_hasWindowChangedSize{false};
         /// Keeps track of keyboard and mouse input.
         InputState m_inputState{};
+
+        GLFWcursor* m_cursor{};
     };
 
     /// Get the coordinate for the top left corner of the window.
