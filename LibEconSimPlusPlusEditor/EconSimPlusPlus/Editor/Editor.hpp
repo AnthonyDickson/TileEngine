@@ -83,9 +83,9 @@ namespace EconSimPlusPlus::Editor {
         /// The tile map that is currently being edited.
         std::unique_ptr<TileMap> m_tileMap{};
         /// The GUI panel that will hold the tile sheet and related GUI.
-        std::unique_ptr<Panel> m_tileSheetPanel{};
-        /// A list of all GUI objects.
-        std::vector<std::shared_ptr<Object>> m_guiObjects{};
+        std::shared_ptr<Panel> m_tileSheetPanel{};
+        /// A list of all objects.
+        std::vector<std::shared_ptr<Object>> m_objects{};
         /// Handles asynchronous open file dialogs.
         OpenFileDialog m_openFileDialog{};
         /// Handles asynchronous save file dialogs.

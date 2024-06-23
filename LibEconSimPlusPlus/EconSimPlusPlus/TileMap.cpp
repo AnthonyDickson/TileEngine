@@ -121,6 +121,7 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
+        // TODO: Move code handling mouse click to default event handler.
         // ReSharper disable once CppTooWideScopeInitStatement
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.mousePosition(), camera)};
 

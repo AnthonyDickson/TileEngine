@@ -129,15 +129,11 @@ namespace EconSimPlusPlus::Editor {
             m_tileMap->update(deltaTime, input, m_camera);
         }
 
-        if (m_tileSheetPanel != nullptr) {
-            m_tileSheetPanel->update(deltaTime, input, m_GuiCamera);
-        }
-
         const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), m_GuiCamera)};
         const glm::vec2 previousCursorPos{
             screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_GuiCamera)};
 
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : m_objects) {
             if (m_exclusiveKeyboardInputTarget != nullptr and object.get() != m_exclusiveKeyboardInputTarget) {
                 continue; // Avoid a double update.
             }
@@ -145,33 +141,34 @@ namespace EconSimPlusPlus::Editor {
             object->update(deltaTime, input, m_GuiCamera);
         }
 
+        // TODO: Make sure tile map is in objects list to ensure it receives event notifications.
         // Detect and notify objects about mouse events.
-        std::ranges::sort(m_guiObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+        std::ranges::sort(m_objects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
             return a->layer() > b->layer();
         });
 
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : m_objects) {
             if (object->contains(cursorPos) and not object->contains(previousCursorPos)) {
                 object->notify(Event::mouseEnter, *m_window);
                 break;
             }
         }
 
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : m_objects) {
             if (not object->contains(cursorPos) and object->contains(previousCursorPos)) {
                 object->notify(Event::mouseLeave, *m_window);
                 break;
             }
         }
 
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : m_objects) {
             if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
                 object->notify(Event::mouseHover, *m_window);
                 break;
             }
         }
 
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : m_objects) {
             if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
                 object->notify(Event::mouseClick, *m_window);
                 break;
@@ -194,11 +191,7 @@ namespace EconSimPlusPlus::Editor {
             m_tileMap->render(m_camera);
         }
 
-        if (m_tileSheetPanel != nullptr) {
-            m_tileSheetPanel->render(m_GuiCamera);
-        }
-
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : m_objects) {
             object->render(m_GuiCamera);
         }
     }
@@ -258,7 +251,7 @@ namespace EconSimPlusPlus::Editor {
             }
         });
 
-        m_guiObjects.push_back(openFileButton);
+        m_objects.push_back(openFileButton);
 
         Text saveButtonText{"Save...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
         auto saveFileButton{std::make_shared<Button>(
@@ -281,13 +274,13 @@ namespace EconSimPlusPlus::Editor {
                 break;
             }
         });
-        m_guiObjects.push_back(saveFileButton);
+        m_objects.push_back(saveFileButton);
 
         auto textField = std::make_shared<TextField>(m_font.get());
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
-        m_guiObjects.push_back(textField);
+        m_objects.push_back(textField);
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -330,6 +323,9 @@ namespace EconSimPlusPlus::Editor {
         constexpr glm::ivec2 defaultMapSize{16, 16};
         const std::vector defaultTiles(defaultMapSize.x * defaultMapSize.y, 0);
 
+        m_selectedTileID = 0;
+        std::erase(m_objects, m_tileSheetPanel);
+
         // Tile map display
         auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
         auto tileMap{std::make_unique<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles)};
@@ -343,7 +339,7 @@ namespace EconSimPlusPlus::Editor {
 
         // Side panel
         // TODO: Add padding to panel.
-        m_tileSheetPanel = std::make_unique<Panel>(
+        m_tileSheetPanel = std::make_shared<Panel>(
             topRight(*m_window),
             PanelSettings{.fillColor = glm::vec3{0.3f},
                           .outlineColor = glm::vec3{0.6f},
@@ -384,6 +380,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileSheetPanel->addObject(std::move(mapWidthLabel));
         m_tileSheetPanel->addObject(std::move(mapHeightLabel));
         m_tileSheetPanel->addObject(std::move(tileMap));
+        m_objects.push_back(m_tileSheetPanel);
         // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.
@@ -402,7 +399,7 @@ namespace EconSimPlusPlus::Editor {
 
     // ReSharper disable once CppMemberFunctionMayBeConst
     void Editor::notify(const Event event) {
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : m_objects) {
             object->notify(event, *m_window);
         }
 
