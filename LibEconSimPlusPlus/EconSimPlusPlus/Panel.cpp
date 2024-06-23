@@ -25,15 +25,22 @@
 #include <EconSimPlusPlus/Panel.hpp>
 
 namespace EconSimPlusPlus {
-    Panel::Panel(const glm::vec2 position, const glm::vec2 size, const PanelSettings& settings) : m_settings(settings) {
+    Panel::Panel(const glm::vec2 position, const PanelSettings& settings) : m_settings(settings) {
         Object::setPosition(position);
-        Object::setSize(size);
         Object::setAnchor(m_settings.anchor);
 
         m_nextObjectPosition = topLeft(*this);
     }
 
     void Panel::addObject(std::unique_ptr<Object> object) {
+        if (object->size().x > size().x) {
+            setSize(glm::vec2{object->size().x, size().y});
+        }
+
+        if (m_nextObjectPosition.y - object->size().y < bottomLeft(*this).y) {
+            setSize(glm::vec2{size().x, size().y + object->size().y});
+        }
+
         object->setAnchor(Anchor::topLeft);
         object->setPosition(m_nextObjectPosition);
         object->setLayer(layer());

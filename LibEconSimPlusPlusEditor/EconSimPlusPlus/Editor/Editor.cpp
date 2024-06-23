@@ -345,7 +345,6 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add padding to panel.
         m_tileSheetPanel = std::make_unique<Panel>(
             topRight(*m_window),
-            glm::vec2{0.2f * static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
             PanelSettings{.fillColor = glm::vec3{0.3f},
                           .outlineColor = glm::vec3{0.6f},
                           .outlineThickness = 1.0f,
@@ -354,6 +353,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileSheetPanel->addEventHandler([&](const Event event, const Window& window) {
             if (event == Event::windowResize) {
                 m_tileSheetPanel->setPosition(topRight(window));
+                // TODO: Set width to widest object instead of proportion of window width.
                 m_tileSheetPanel->setSize(
                     {0.2f * static_cast<float>(window.width()), static_cast<float>(window.height())});
             }
@@ -371,15 +371,10 @@ namespace EconSimPlusPlus::Editor {
             std::make_unique<Text>(std::format("Height: {:d}", defaultMapSize.y), m_font.get(), labelSettings)};
 
         // Tile sheet display
-        // TODO: Tile sheet should be displayed as it appears in the texture, and the panel should be sized to fit the
-        // tile sheet. This is instead of the tile sheet being sized to fit the panel.
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);
-        const int tilesPerRow{std::min(static_cast<int>(m_tileSheetPanel->size().x / defaultTileSize.x),
-                                       static_cast<int>(tileSheet->sheetSize().x))};
-        const int rows{static_cast<int>(ceil(static_cast<double>(tileSheet->tileCount()) / tilesPerRow))};
-        tileMap = std::make_unique<TileMap>(std::move(tileSheet), glm::vec2{tilesPerRow, rows}, tiles);
+        tileMap = std::make_unique<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles);
         tileMap->enableGridLines();
         tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).

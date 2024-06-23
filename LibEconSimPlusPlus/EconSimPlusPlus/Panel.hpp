@@ -39,9 +39,8 @@ namespace EconSimPlusPlus {
     public:
         /// Create an empty panel.
         /// @param position The x and y coordinates of the panel in world space.
-        /// @param size The height and width of the panel in pixels.
         /// @param settings Configuration for panel apperance.
-        Panel(glm::vec2 position, glm::vec2 size, const PanelSettings& settings);
+        Panel(glm::vec2 position, const PanelSettings& settings);
 
         /// Add an object to the panel.
         /// @param object An object.
