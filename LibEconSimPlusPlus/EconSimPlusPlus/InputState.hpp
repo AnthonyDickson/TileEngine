@@ -39,6 +39,10 @@ namespace EconSimPlusPlus {
         /// Perform any actions necessary for the post-update step.
         void postUpdate();
 
+        /// Create a copy of the input state where all keys are set to the released state.
+        /// @return A new `InputState` object.
+        [[nodiscard]] InputState withoutKeyboardInput() const;
+
         /// Check whether a key is pressed down.
         /// @param key A GLFW key code.
         /// @return `true` if the key is pressed down, otherwise `false`.

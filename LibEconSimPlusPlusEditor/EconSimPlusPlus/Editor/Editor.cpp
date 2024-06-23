@@ -116,7 +116,13 @@ namespace EconSimPlusPlus::Editor {
             notify(Event::windowResize);
         }
 
-        const InputState input{m_window->inputState()};
+        if (m_exclusiveKeyboardInputTarget != nullptr) {
+            m_exclusiveKeyboardInputTarget->update(deltaTime, m_window->inputState(), m_GuiCamera);
+        }
+
+        const InputState input{m_exclusiveKeyboardInputTarget == nullptr
+                                   ? m_window->inputState()
+                                   : m_window->inputState().withoutKeyboardInput()};
         m_camera.update(deltaTime, input);
 
         if (m_tileMap != nullptr) {
@@ -132,6 +138,10 @@ namespace EconSimPlusPlus::Editor {
             screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_GuiCamera)};
 
         for (const auto& object : m_guiObjects) {
+            if (m_exclusiveKeyboardInputTarget != nullptr and object.get() != m_exclusiveKeyboardInputTarget) {
+                continue; // Avoid a double update.
+            }
+
             object->update(deltaTime, input, m_GuiCamera);
         }
 
@@ -273,7 +283,11 @@ namespace EconSimPlusPlus::Editor {
         });
         m_guiObjects.push_back(saveFileButton);
 
-        m_guiObjects.push_back(std::make_shared<TextField>(m_font.get()));
+        auto textField = std::make_shared<TextField>(m_font.get());
+        textField->setTransition(TextField::State::active,
+                                 [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
+        textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
+        m_guiObjects.push_back(textField);
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};

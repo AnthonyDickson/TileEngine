@@ -22,6 +22,8 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELD_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELD_HPP
 
+#include <functional>
+
 #include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
@@ -32,21 +34,33 @@ namespace EconSimPlusPlus {
     /// A box where the user can type in text.
     class TextField final : public Object {
     public:
+        /// The possible states of a text field.
+        enum class State { inactive, active };
+
         /// Create a text field for user text entry.
         /// @param font The font to render text with.
         explicit TextField(const Font* font);
+
+        /// Register a function to be called when the text field changes to a given state.
+        /// @param state The target state in which to call the specified function.
+        /// @param function The function to call when changing to the specified state.
+        void setTransition(State state, const std::function<void()>& function);
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 
     private:
-        /// The possible states of a text field.
-        enum class TextFieldState { inactive, active };
+
+        /// Chnage the text field to another state.
+        /// @param state The next state.
+        void transitionTo(State state);
 
         /// The text that is displayed and edited in the text field.
         Text m_text;
         /// The current state of the text field.
-        TextFieldState m_state{TextFieldState::inactive};
+        State m_state{State::inactive};
+        /// A mapping between states and their transitions.
+        std::map<State, std::function<void()>> m_transitions{};
 
         /// The geometry used to draw the background.
         Quad m_quad{};

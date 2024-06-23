@@ -76,6 +76,8 @@ namespace EconSimPlusPlus::Editor {
         /// The font for rendering text on screen.
         std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
 
+        /// The exclusive receiver of keyboard input, if any.
+        Object* m_exclusiveKeyboardInputTarget{nullptr};
         /// The tile to paint onto the tile map.
         int m_selectedTileID{0};
         /// The tile map that is currently being edited.

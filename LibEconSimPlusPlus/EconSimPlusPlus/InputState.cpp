@@ -192,6 +192,15 @@ namespace EconSimPlusPlus {
         m_scrollDelta = 0.0f;
     }
 
+    InputState InputState::withoutKeyboardInput() const {
+        auto copy{InputState(*this)};
+
+        copy.m_currentKeyState.fill(false);
+        copy.m_previousKeyState.fill(false);
+
+        return copy;
+    }
+
     void InputState::updateScroll(const double, const double scrollY) {
         m_scrollDelta += static_cast<float>(scrollY);
     }

@@ -47,22 +47,26 @@ namespace EconSimPlusPlus {
         m_text.setLayer(layer());
     }
 
+    void TextField::setTransition(const State state, const std::function<void()>& function) {
+        m_transitions[state] = function;
+    }
+
     void TextField::update(float, const InputState& inputState, const Camera& camera) {
         switch (m_state) {
-        case TextFieldState::inactive:
+        case State::inactive:
             if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
                 contains(screenToWorldCoordinates(inputState.mousePosition(), camera))) {
-                m_state = TextFieldState::active;
+                transitionTo(State::active);
             }
             break;
-        case TextFieldState::active:
+        case State::active:
+            // TODO: Also transition to inactive state if escape key is pressed. The escape key press should not
+            // propagate to other parts of the program.
             if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
                 not contains(screenToWorldCoordinates(inputState.mousePosition(), camera))) {
-                m_state = TextFieldState::inactive;
+                transitionTo(State::inactive);
             }
 
-            // TODO: Key strokes entered while in the active state should 'consume' those key strokes and prevent them
-            // from being propagated to other objects.
             for (const int& key : numeric) {
                 if (inputState.keyDown(key)) {
                     m_text.setText(m_text.text() + static_cast<char>(key));
@@ -80,6 +84,8 @@ namespace EconSimPlusPlus {
                 m_text.setText(m_text.text().substr(0, m_text.text().length() - 1));
             }
 
+            // TODO: Add a `submit` action when the enter key is pressed.
+
             break;
         }
     }
@@ -92,5 +98,17 @@ namespace EconSimPlusPlus {
 
         m_quad.render(GL_TRIANGLE_STRIP);
         m_text.render(camera);
+    }
+
+    void TextField::transitionTo(const State state) {
+        if (state == m_state) {
+            return;
+        }
+
+        if (m_transitions.contains(state)) {
+            m_transitions.at(state)();
+        }
+
+        m_state = state;
     }
 } // namespace EconSimPlusPlus
