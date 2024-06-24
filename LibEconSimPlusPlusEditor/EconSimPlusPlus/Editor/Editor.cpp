@@ -125,10 +125,6 @@ namespace EconSimPlusPlus::Editor {
                                    : m_window->inputState().withoutKeyboardInput()};
         m_camera.update(deltaTime, input);
 
-        if (m_tileMap != nullptr) {
-            m_tileMap->update(deltaTime, input, m_camera);
-        }
-
         const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), m_GuiCamera)};
         const glm::vec2 previousCursorPos{
             screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_GuiCamera)};
@@ -138,11 +134,15 @@ namespace EconSimPlusPlus::Editor {
                 continue; // Avoid a double update.
             }
 
-            object->update(deltaTime, input, m_GuiCamera);
+            // TODO: Create a more general way to determine whether an object should be sent regular or GUI camera.
+            if (object != m_tileMap) {
+                object->update(deltaTime, input, m_GuiCamera);
+            }
+            else {
+                object->update(deltaTime, input, m_camera);
+            }
         }
 
-        // TODO: Make sure tile map is in objects list to ensure it receives event notifications.
-        // Detect and notify objects about mouse events.
         std::ranges::sort(m_objects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
             return a->layer() > b->layer();
         });
@@ -187,12 +187,13 @@ namespace EconSimPlusPlus::Editor {
 
         glEnable(GL_CULL_FACE);
 
-        if (m_tileMap != nullptr) {
-            m_tileMap->render(m_camera);
-        }
-
         for (const auto& object : m_objects) {
-            object->render(m_GuiCamera);
+            if (object != m_tileMap) {
+                object->render(m_GuiCamera);
+            }
+            else {
+                object->render(m_camera);
+            }
         }
     }
 
@@ -325,26 +326,25 @@ namespace EconSimPlusPlus::Editor {
 
         m_selectedTileID = 0;
         std::erase(m_objects, m_tileSheetPanel);
+        std::erase(m_objects, m_tileMap);
 
         // Tile map display
         auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
-        auto tileMap{std::make_unique<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles)};
-        tileMap->setAnchor(Anchor::bottomLeft);
-        tileMap->setLayer(1.0f);
-        tileMap->enableGridLines();
-
-        m_tileMap = std::move(tileMap);
+        m_tileMap = std::make_shared<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles);
+        m_tileMap->setAnchor(Anchor::bottomLeft);
+        m_tileMap->setLayer(1.0f);
+        m_tileMap->enableGridLines();
         m_tileMap->addClickListener(
             [&](const glm::ivec2 gridCoordinates, int) { m_tileMap->setTileID(gridCoordinates, m_selectedTileID); });
+        m_objects.push_back(m_tileMap);
 
         // Side panel
         // TODO: Add padding to panel.
-        m_tileSheetPanel = std::make_shared<Panel>(
-            topRight(*m_window),
-            PanelSettings{.fillColor = glm::vec3{0.3f},
-                          .outlineColor = glm::vec3{0.6f},
-                          .outlineThickness = 1.0f,
-                          .anchor = Anchor::topRight});
+        m_tileSheetPanel = std::make_shared<Panel>(topRight(*m_window),
+                                                   PanelSettings{.fillColor = glm::vec3{0.3f},
+                                                                 .outlineColor = glm::vec3{0.6f},
+                                                                 .outlineThickness = 1.0f,
+                                                                 .anchor = Anchor::topRight});
         m_tileSheetPanel->setLayer(10.0f);
         m_tileSheetPanel->addEventHandler([&](const Event event, const Window& window) {
             if (event == Event::windowResize) {
@@ -370,7 +370,7 @@ namespace EconSimPlusPlus::Editor {
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);
-        tileMap = std::make_unique<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles);
+        auto tileMap{std::make_unique<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
         tileMap->enableGridLines();
         tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).

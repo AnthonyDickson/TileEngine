@@ -81,7 +81,7 @@ namespace EconSimPlusPlus::Editor {
         /// The tile to paint onto the tile map.
         int m_selectedTileID{0};
         /// The tile map that is currently being edited.
-        std::unique_ptr<TileMap> m_tileMap{};
+        std::shared_ptr<TileMap> m_tileMap{};
         /// The GUI panel that will hold the tile sheet and related GUI.
         std::shared_ptr<Panel> m_tileSheetPanel{};
         /// A list of all objects.
