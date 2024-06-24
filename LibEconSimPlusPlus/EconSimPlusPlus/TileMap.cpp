@@ -59,6 +59,16 @@ namespace EconSimPlusPlus {
         setPosition(tileSize() * -static_cast<glm::vec2>(mapSize) / 2.0f);
         setScale(tileSize());
         Object::setSize(tileSize() * static_cast<glm::vec2>(mapSize));
+
+        addEventHandler([&](const Event event, const EventData& eventData) {
+            if (event == Event::mouseClick) {
+                const glm::vec2 gridPos{(eventData.mousePosition.value() - bottomLeft(*this)) / m_tileSheet->tileSize()};
+
+                for (const auto& callback : m_clickListeners) {
+                    callback(gridPos, tileID(gridPos));
+                }
+            }
+        });
     }
 
     glm::ivec2 TileMap::mapSize() const {
@@ -121,18 +131,6 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
-        // TODO: Move code handling mouse click to default event handler.
-        // ReSharper disable once CppTooWideScopeInitStatement
-        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.mousePosition(), camera)};
-
-        if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
-            const glm::vec2 gridPos{(cursorPos - bottomLeft(*this)) / m_tileSheet->tileSize()};
-
-            for (const auto& callback : m_clickListeners) {
-                callback(gridPos, tileID(gridPos));
-            }
-        }
-
         if (m_gridLines.has_value()) {
             m_gridLines->update(deltaTime, inputState, camera);
         }

@@ -67,6 +67,14 @@ namespace EconSimPlusPlus {
         }
     }
 
+    void Panel::notify(const Event event, const EventData eventData) {
+        Object::notify(event, eventData);
+
+        for (const auto& object : m_objects) {
+            object->notify(event, eventData);
+        }
+    }
+
     void Panel::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         for (const auto& object : m_objects) {
             object->update(deltaTime, inputState, camera);

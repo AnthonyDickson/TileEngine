@@ -77,14 +77,14 @@ namespace EconSimPlusPlus {
         m_anchor = anchor;
     }
 
-    void Object::addEventHandler(const std::function<void(Event event, Window& window)>& eventHandler) {
+    void Object::addEventHandler(const EventHandler& eventHandler) {
         m_eventHandlers.push_back(eventHandler);
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst
-    void Object::notify(const Event event, Window& window) {
+    void Object::notify(const Event event, const EventData eventData) {
         for (auto& handler : m_eventHandlers) {
-            handler(event, window);
+            handler(event, eventData);
         }
     }
 

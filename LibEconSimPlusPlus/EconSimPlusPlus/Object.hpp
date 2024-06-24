@@ -31,7 +31,6 @@
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
-#include <EconSimPlusPlus/Window.hpp>
 
 namespace EconSimPlusPlus {
 
@@ -86,11 +85,12 @@ namespace EconSimPlusPlus {
 
         /// Register an event handler for this object.
         /// @param eventHandler A function that responds to events.
-        void addEventHandler(const std::function<void(Event event, Window& window)>& eventHandler);
+        void addEventHandler(const EventHandler& eventHandler);
 
         /// Tell the object that an event has occured.
         /// @param event The event that has occured.
-        void notify(Event event, Window& window);
+        /// @param eventData Information about the event.
+        virtual void notify(Event event, EventData eventData);
 
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
@@ -119,7 +119,7 @@ namespace EconSimPlusPlus {
         /// The point on the object that is used as the origin for its position.
         Anchor m_anchor{Anchor::topLeft};
         /// The registered event handlers.
-        std::vector<std::function<void(Event event, Window& window)>> m_eventHandlers{};
+        std::vector<EventHandler> m_eventHandlers{};
     };
 
     /// Get the coordinates of the top left corner of the object.

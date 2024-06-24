@@ -50,6 +50,7 @@ namespace EconSimPlusPlus {
         void setSize(glm::vec2 size) override;
         void setLayer(float layer) override;
 
+        void notify(Event event, EventData eventData) override;
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 

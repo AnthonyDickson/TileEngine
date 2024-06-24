@@ -50,7 +50,7 @@ namespace EconSimPlusPlus {
         setAnchor(anchor);
         setState(State::normal);
 
-        addEventHandler([&](const Event event, Window& window) { handleEvents(event, window); });
+        addEventHandler([&](const Event event, const EventData& eventData) { handleEvents(event, eventData.window); });
     }
 
     void Button::setEnabled(const bool enabled) {

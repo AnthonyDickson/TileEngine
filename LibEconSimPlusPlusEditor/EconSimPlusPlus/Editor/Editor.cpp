@@ -125,10 +125,6 @@ namespace EconSimPlusPlus::Editor {
                                    : m_window->inputState().withoutKeyboardInput()};
         m_camera.update(deltaTime, input);
 
-        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), m_GuiCamera)};
-        const glm::vec2 previousCursorPos{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_GuiCamera)};
-
         for (const auto& object : m_objects) {
             if (m_exclusiveKeyboardInputTarget != nullptr and object.get() != m_exclusiveKeyboardInputTarget) {
                 continue; // Avoid a double update.
@@ -147,30 +143,63 @@ namespace EconSimPlusPlus::Editor {
             return a->layer() > b->layer();
         });
 
+        // TODO: Find more elegant way to determine which set of cursor positions to send to objects.
+        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), m_GuiCamera)};
+        const glm::vec2 previousCursorPos{
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_GuiCamera)};
+
+        const glm::vec2 cursorPosTileMap{screenToWorldCoordinates(input.mousePosition(), m_camera)};
+        const glm::vec2 previousCursorPosTileMap{
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
+
         for (const auto& object : m_objects) {
+            if (object == m_tileMap and object->contains(cursorPosTileMap) and
+                not object->contains(previousCursorPosTileMap)) {
+                object->notify(Event::mouseEnter, {*m_window, cursorPosTileMap});
+                break;
+            }
+
             if (object->contains(cursorPos) and not object->contains(previousCursorPos)) {
-                object->notify(Event::mouseEnter, *m_window);
+                object->notify(Event::mouseEnter, {*m_window, cursorPos});
                 break;
             }
         }
 
         for (const auto& object : m_objects) {
+            if (object == m_tileMap and not object->contains(cursorPosTileMap) and
+                object->contains(previousCursorPosTileMap)) {
+                object->notify(Event::mouseLeave, {*m_window, cursorPosTileMap});
+                break;
+            }
+
             if (not object->contains(cursorPos) and object->contains(previousCursorPos)) {
-                object->notify(Event::mouseLeave, *m_window);
+                object->notify(Event::mouseLeave, {*m_window, cursorPos});
                 break;
             }
         }
 
         for (const auto& object : m_objects) {
+            if (object == m_tileMap and not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                object->contains(cursorPosTileMap)) {
+                object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
+                break;
+            }
+
             if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
-                object->notify(Event::mouseHover, *m_window);
+                object->notify(Event::mouseHover, {*m_window, cursorPos});
                 break;
             }
         }
 
         for (const auto& object : m_objects) {
+            if (object == m_tileMap and input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                object->contains(cursorPosTileMap)) {
+                object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
+                break;
+            }
+
             if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
-                object->notify(Event::mouseClick, *m_window);
+                object->notify(Event::mouseClick, {*m_window, cursorPos});
                 break;
             }
         }
@@ -246,9 +275,9 @@ namespace EconSimPlusPlus::Editor {
                                                      openFileButtonCallback, buttonStyle, buttonActiveStyle,
                                                      buttonDisabledStyle)};
         openFileButton->setLayer(98.0f);
-        openFileButton->addEventHandler([&](const Event event, const Window& window) {
+        openFileButton->addEventHandler([&](const Event event, const EventData& eventData) {
             if (event == Event::windowResize) {
-                openFileButton->setPosition(topLeft(window));
+                openFileButton->setPosition(topLeft(eventData.window));
             }
         });
 
@@ -264,13 +293,14 @@ namespace EconSimPlusPlus::Editor {
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         saveFileButton->setLayer(98.0f);
         saveFileButton->setEnabled(false);
-        saveFileButton->addEventHandler([&](const Event event, const Window& window) {
+        saveFileButton->addEventHandler([&](const Event event, const EventData& eventData) {
             switch (event) {
             case Event::tileMapLoaded:
                 saveFileButton->setEnabled(true);
                 break;
             case Event::windowResize:
-                saveFileButton->setPosition(topLeft(window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f});
+                saveFileButton->setPosition(topLeft(eventData.window) +
+                                            glm::vec2{openFileButton->size().x + 8.0f, 0.0f});
             default:
                 break;
             }
@@ -346,12 +376,12 @@ namespace EconSimPlusPlus::Editor {
                                                                  .outlineThickness = 1.0f,
                                                                  .anchor = Anchor::topRight});
         m_tileSheetPanel->setLayer(10.0f);
-        m_tileSheetPanel->addEventHandler([&](const Event event, const Window& window) {
+        m_tileSheetPanel->addEventHandler([&](const Event event, const EventData& eventData) {
             if (event == Event::windowResize) {
-                m_tileSheetPanel->setPosition(topRight(window));
+                m_tileSheetPanel->setPosition(topRight(eventData.window));
                 // TODO: Set width to widest object instead of proportion of window width.
-                m_tileSheetPanel->setSize(
-                    {0.2f * static_cast<float>(window.width()), static_cast<float>(window.height())});
+                m_tileSheetPanel->setSize({0.2f * static_cast<float>(eventData.window.width()),
+                                           static_cast<float>(eventData.window.height())});
             }
         });
 
@@ -400,11 +430,11 @@ namespace EconSimPlusPlus::Editor {
     // ReSharper disable once CppMemberFunctionMayBeConst
     void Editor::notify(const Event event) {
         for (const auto& object : m_objects) {
-            object->notify(event, *m_window);
+            object->notify(event, {*m_window, std::nullopt});
         }
 
         if (m_tileSheetPanel != nullptr) {
-            m_tileSheetPanel->notify(event, *m_window);
+            m_tileSheetPanel->notify(event, {*m_window, std::nullopt});
         }
     }
 

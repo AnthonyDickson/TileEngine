@@ -22,9 +22,25 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_EVENT_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_EVENT_HPP
 
+#include <functional>
+
+#include "glm/vec2.hpp"
+
+#include <EconSimPlusPlus/Window.hpp>
+
 namespace EconSimPlusPlus {
+    /// Global event types.
     enum class Event { tileMapLoaded, windowResize, mouseEnter, mouseLeave, mouseHover, mouseClick };
-    // Add event listener interface to button or Object
+
+    /// The data to accompany an event notification.
+    struct EventData {
+        /// The window the event happened in.
+        Window& window;
+        /// Where the event happened (only applicaple to events that involve mouse input).
+        std::optional<glm::vec2> mousePosition;
+    };
+
+    using EventHandler = std::function<void(Event event, EventData eventData)>;
 } // namespace EconSimPlusPlus
 
 #endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_EVENT_HPP
