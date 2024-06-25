@@ -25,38 +25,62 @@
 
 
 namespace EconSimPlusPlus {
-    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const glm::vec3 outlineColor,
-                     const float outlineThickness) {
-        if (outlineThickness < 1.0f) {
+    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const glm::vec3 color,
+                     const float thickness, const OutlinePlacement placement) {
+        if (thickness < 1.0f) {
             return;
         }
 
-        const glm::vec2 anchorOffset{calculateAnchorOffset(object.size(), object.anchor(), object.size().y)};
-        glm::vec2 offsetPosition{object.position() + anchorOffset};
+        glm::vec2 origin{bottomLeft(object)};
 
         const auto renderBorder = [&](const glm::vec2& bottomLeftCorner, const glm::vec2& topRightCorner) {
             glm::mat4 transform = glm::translate(glm::mat4{1.0f}, {bottomLeftCorner, object.layer()});
             transform = glm::scale(transform, {topRightCorner - bottomLeftCorner, 1.0f});
             shader.setUniform("transform", transform);
-            shader.setUniform("color", outlineColor);
+            shader.setUniform("color", color);
             quad.render();
         };
 
-        // Left side
-        glm::vec2 bottomLeft{offsetPosition};
-        glm::vec2 topRight{bottomLeft.x + outlineThickness, bottomLeft.y + object.size().y};
-        renderBorder(bottomLeft, topRight);
-        // Right side
-        bottomLeft = {offsetPosition.x + object.size().x - outlineThickness, offsetPosition.y};
-        topRight = {bottomLeft.x + outlineThickness, bottomLeft.y + object.size().y};
-        renderBorder(bottomLeft, topRight);
-        // Bottom side
-        bottomLeft = offsetPosition;
-        topRight = {bottomLeft.x + object.size().x, bottomLeft.y + outlineThickness};
-        renderBorder(bottomLeft, topRight);
-        // Top side
-        bottomLeft = {offsetPosition.x, offsetPosition.y + object.size().y - outlineThickness};
-        topRight = {bottomLeft.x + object.size().x, bottomLeft.y + outlineThickness};
-        renderBorder(bottomLeft, topRight);
+        glm::vec2 bottomLeft;
+        glm::vec2 topRight;
+
+        switch (placement) {
+        case OutlinePlacement::inset:
+            // Left side
+            bottomLeft = origin;
+            topRight = {origin.x + thickness, origin.y + object.size().y};
+            renderBorder(bottomLeft, topRight);
+            // Right side
+            bottomLeft = {origin.x + object.size().x - thickness, origin.y};
+            topRight = {origin.x + object.size().x, origin.y + object.size().y};
+            renderBorder(bottomLeft, topRight);
+            // Bottom side
+            bottomLeft = origin;
+            topRight = {origin.x + object.size().x, origin.y + thickness};
+            renderBorder(bottomLeft, topRight);
+            // Top side
+            bottomLeft = {origin.x, origin.y + object.size().y - thickness};
+            topRight = {origin.x + object.size().x, origin.y + object.size().y};
+            renderBorder(bottomLeft, topRight);
+            break;
+        case OutlinePlacement::outset:
+            // Left side
+            bottomLeft = {origin.x - thickness, origin.y - thickness};
+            topRight = {origin.x, bottomLeft.y + object.size().y + thickness};
+            renderBorder(bottomLeft, topRight);
+            // Right side
+            bottomLeft = {origin.x + object.size().x, origin.y - thickness};
+            topRight = {origin.x + object.size().x + thickness, bottomLeft.y + object.size().y + thickness};
+            renderBorder(bottomLeft, topRight);
+            // Bottom side
+            bottomLeft = {origin.x - thickness, origin.y - thickness};
+            topRight = {origin.x + object.size().x + thickness, origin.y};
+            renderBorder(bottomLeft, topRight);
+            // Top side
+            bottomLeft = {origin.x - thickness, origin.y + object.size().y};
+            topRight = {origin.x + object.size().x + thickness, origin.y + object.size().y + thickness};
+            renderBorder(bottomLeft, topRight);
+            break;
+        }
     }
 } // namespace EconSimPlusPlus

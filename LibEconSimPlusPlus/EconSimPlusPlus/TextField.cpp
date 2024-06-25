@@ -23,6 +23,7 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
+#include <EconSimPlusPlus/Outline.hpp>
 #include <EconSimPlusPlus/TextField.hpp>
 
 namespace EconSimPlusPlus {
@@ -124,6 +125,12 @@ namespace EconSimPlusPlus {
         m_shader.setUniform("color", glm::vec3{0.9f});
 
         m_quad.render();
+
+        if (m_state == State::active) {
+            // TODO: Put this in configuration struct.
+            drawOutline(*this, m_shader, m_quad, glm::vec3{0.0f, 0.5f, 1.0f}, 1.0f, OutlinePlacement::outset);
+        }
+
         m_text.render(camera);
         m_caret.render(camera);
     }
