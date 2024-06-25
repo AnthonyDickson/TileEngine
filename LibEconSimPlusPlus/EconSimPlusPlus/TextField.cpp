@@ -24,7 +24,6 @@
 #include <EconSimPlusPlus/TextField.hpp>
 
 // TODO: Add blinking text cursor while text field is active.
-// TODO: Switch to text edit cursor while mouse is hovering over text field.
 namespace EconSimPlusPlus {
     namespace {
         /// GLFW keycodes for number keys.
@@ -45,6 +44,19 @@ namespace EconSimPlusPlus {
         Object::setScale(m_text.size());
         Object::setLayer(99.0f);
         m_text.setLayer(layer());
+
+        addEventHandler([&](const Event event, const EventData& eventData) {
+            switch (event) {
+            case Event::mouseEnter:
+                eventData.window.setCursor(GLFW_IBEAM_CURSOR);
+                break;
+            case Event::mouseLeave:
+                eventData.window.setCursor(GLFW_CURSOR_NORMAL);
+                break;
+            default:
+                break;
+            }
+        });
     }
 
     void TextField::setTransition(const State state, const std::function<void()>& function) {
