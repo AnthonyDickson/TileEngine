@@ -99,7 +99,7 @@ namespace EconSimPlusPlus {
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
         m_shader.setUniform("color", m_currentStyle.fillColor);
-        m_quad.render(GL_TRIANGLE_STRIP);
+        m_quad.render();
 
         drawOutline(*this, m_shader, m_quad, m_currentStyle.outlineColor, m_currentStyle.outlineThickness);
 

@@ -39,7 +39,7 @@ namespace EconSimPlusPlus {
             transform = glm::scale(transform, {topRightCorner - bottomLeftCorner, 1.0f});
             shader.setUniform("transform", transform);
             shader.setUniform("color", outlineColor);
-            quad.render(GL_TRIANGLE_STRIP);
+            quad.render();
         };
 
         // Left side

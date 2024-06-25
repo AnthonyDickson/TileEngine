@@ -116,4 +116,10 @@ namespace EconSimPlusPlus {
 
         return topLeft - glm::vec2{0.0f, object.size().y};
     }
+
+    glm::vec2 bottomRight(const Object& object) {
+        const glm::vec2 topLeft{EconSimPlusPlus::topLeft(object)};
+
+        return topLeft + glm::vec2{object.size().x, -object.size().y};
+    }
 } // namespace EconSimPlusPlus

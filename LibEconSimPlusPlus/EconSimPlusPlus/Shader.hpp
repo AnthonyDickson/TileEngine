@@ -78,6 +78,11 @@ namespace EconSimPlusPlus {
         /// @param value The value to set the uniform to.
         void setUniform(const std::string& name, float value) const;
 
+        /// Set a float 4-vector uniform value.
+        /// @param name The name of the uniform.
+        /// @param value The value to set the uniform to.
+        void setUniform(const std::string& name, const glm::vec4& value) const;
+
         /// Set a float 3-vector uniform value.
         /// @param name The name of the uniform.
         /// @param value The value to set the uniform to.

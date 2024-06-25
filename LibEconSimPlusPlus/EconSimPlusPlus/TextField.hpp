@@ -28,6 +28,7 @@
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/Text.hpp>
+#include <EconSimPlusPlus/TextCaret.hpp>
 
 namespace EconSimPlusPlus {
 
@@ -50,7 +51,6 @@ namespace EconSimPlusPlus {
         void render(const Camera& camera) const override;
 
     private:
-
         /// Chnage the text field to another state.
         /// @param state The next state.
         void transitionTo(State state);
@@ -61,6 +61,10 @@ namespace EconSimPlusPlus {
         State m_state{State::inactive};
         /// A mapping between states and their transitions.
         std::map<State, std::function<void()>> m_transitions{};
+        /// Shows a blinking line to indicate where the text will be inserted.
+        TextCaret m_caret{};
+        /// Padding around internal GUI objects.
+        glm::vec2 m_padding{};
 
         /// The geometry used to draw the background.
         Quad m_quad{};

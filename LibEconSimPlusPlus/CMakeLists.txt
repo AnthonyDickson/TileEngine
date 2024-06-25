@@ -15,6 +15,7 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Shader.cpp
         EconSimPlusPlus/SignedDistanceField.cpp
         EconSimPlusPlus/Text.cpp
+        EconSimPlusPlus/TextCaret.cpp
         EconSimPlusPlus/TextField.cpp
         EconSimPlusPlus/Texture.cpp
         EconSimPlusPlus/TextureArray.cpp

@@ -132,6 +132,11 @@ namespace EconSimPlusPlus {
     /// @return The object's 2D coordinate in world space.
     [[nodiscard]] glm::vec2 bottomLeft(const Object& object);
 
+    /// Get the coordinates of the bottom right corner of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] glm::vec2 bottomRight(const Object& object);
+
 } // namespace EconSimPlusPlus
 
 #endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_OBJECT_HPP
