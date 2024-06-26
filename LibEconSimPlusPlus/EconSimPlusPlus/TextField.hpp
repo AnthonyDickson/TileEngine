@@ -29,6 +29,7 @@
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/Text.hpp>
 #include <EconSimPlusPlus/TextCaret.hpp>
+#include <EconSimPlusPlus/TextFieldSettings.hpp>
 
 namespace EconSimPlusPlus {
 
@@ -40,7 +41,8 @@ namespace EconSimPlusPlus {
 
         /// Create a text field for user text entry.
         /// @param font The font to render text with.
-        explicit TextField(const Font* font);
+        /// @param settings The configuration for the text field appearence.
+        explicit TextField(const Font* font, const TextFieldSettings& settings);
 
         /// Register a function to be called when the text field changes to a given state.
         /// @param state The target state in which to call the specified function.
@@ -57,14 +59,14 @@ namespace EconSimPlusPlus {
 
         /// The text that is displayed and edited in the text field.
         Text m_text;
+        /// The configuration for the text field appearence.
+        const TextFieldSettings m_settings;
         /// The current state of the text field.
         State m_state{State::inactive};
         /// A mapping between states and their transitions.
         std::map<State, std::function<void()>> m_transitions{};
         /// Shows a blinking line to indicate where the text will be inserted.
         TextCaret m_caret{};
-        /// Padding around internal GUI objects.
-        glm::vec2 m_padding{};
 
         /// The geometry used to draw the background.
         Quad m_quad{};
