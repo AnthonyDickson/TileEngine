@@ -29,9 +29,19 @@
 
 
 namespace EconSimPlusPlus {
+    /// Where to draw the outline.
     enum class OutlinePlacement { inset, outset };
 
-    // TODO: Draw outline should put color, thickness and placement into an struct.
+    /// The configuration for the appearance of an outline.
+    struct OutlineStyle {
+        /// The color of the outline.
+        glm::vec3 color;
+        /// The thickness of the outline in pixels.
+        float thickness;
+        /// Where to draw the outline.
+        OutlinePlacement placement;
+    };
+
     /// Draw an outline around a GUI object.
     /// @note Assumes the shader has the uniform variables "transform" (glm::mat4) and "color" (glm::vec3).
     /// @note Assumes that the perspective/view matrices have already been set in the shader.
@@ -39,11 +49,8 @@ namespace EconSimPlusPlus {
     /// @param object The GUI object to draw the outline around.
     /// @param shader The shader to draw the outline with.
     /// @param quad The quad geometry to use for drawing the outline.
-    /// @param color The outline color RGB.
-    /// @param thickness The thickness of the outline in pixels.
-    /// @param placement How the outline should be positioned.
-    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, glm::vec3 color,
-                     float thickness, OutlinePlacement placement);
+    /// @param outline The configuration for the outline appearance.
+    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const OutlineStyle& outline);
 
 } // namespace EconSimPlusPlus
 

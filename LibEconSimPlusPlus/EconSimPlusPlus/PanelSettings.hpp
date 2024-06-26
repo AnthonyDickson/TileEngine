@@ -25,6 +25,7 @@
 #include "glm/vec3.hpp"
 
 #include <EconSimPlusPlus/Anchor.hpp>
+#include <EconSimPlusPlus/Outline.hpp>
 
 namespace EconSimPlusPlus {
 
@@ -32,10 +33,12 @@ namespace EconSimPlusPlus {
     struct PanelSettings {
         /// The color to fill the background of the panel with.
         glm::vec3 fillColor{1.0f};
-        /// The color to use for the border.
-        glm::vec3 outlineColor{0.0f};
-        /// The thickness of the border in pixels.
-        float outlineThickness{1.0f};
+        /// The configuration for the appearance of the outline.
+        OutlineStyle outline{
+            .color = glm::vec3{0.0f},
+            .thickness = 1.0f,
+            .placement = OutlinePlacement::inset
+        };
         /// The point on the panel that the position refers to.
         Anchor anchor{Anchor::topLeft};
     };

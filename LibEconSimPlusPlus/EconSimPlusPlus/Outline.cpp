@@ -25,9 +25,8 @@
 
 
 namespace EconSimPlusPlus {
-    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const glm::vec3 color,
-                     const float thickness, const OutlinePlacement placement) {
-        if (thickness < 1.0f) {
+    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const OutlineStyle& outline) {
+        if (outline.thickness < 1.0f) {
             return;
         }
 
@@ -37,14 +36,17 @@ namespace EconSimPlusPlus {
             glm::mat4 transform = glm::translate(glm::mat4{1.0f}, {bottomLeftCorner, object.layer()});
             transform = glm::scale(transform, {topRightCorner - bottomLeftCorner, 1.0f});
             shader.setUniform("transform", transform);
-            shader.setUniform("color", color);
+            shader.setUniform("color", outline.color);
             quad.render();
         };
 
         glm::vec2 bottomLeft;
         glm::vec2 topRight;
+        const float thickness{outline.thickness};
 
-        switch (placement) {
+        // TODO: Simplify the below code.
+
+        switch (outline.placement) {
         case OutlinePlacement::inset:
             // Left side
             bottomLeft = origin;

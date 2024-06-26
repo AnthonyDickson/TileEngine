@@ -22,6 +22,8 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSETTINGS_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSETTINGS_HPP
 
+#include <EconSimPlusPlus/Outline.hpp>
+
 namespace EconSimPlusPlus {
 
     // TODO: Settings struct should contain structs for groups of settings (e.g., caret settings, outline settings) that
@@ -38,12 +40,12 @@ namespace EconSimPlusPlus {
         float caretWidth{2.0f};
         /// The color of the blinking text cursor.
         glm::vec3 caretColor{0.0f};
-        /// The color of the text field outline when the text field is active.
-        glm::vec3 outlineColor{0.0f, 0.5f, 1.0f};
-        /// The thickness of the text field outline when the text field is active in pixels.
-        float outlineThickness{1.0f};
-        /// The placement of the text field outline.
-        OutlinePlacement outlinePlacement{OutlinePlacement::outset};
+        /// The configuration for the appearance of the outline.
+        OutlineStyle outline{
+            .color = glm::vec3{0.0f, 0.5f, 1.0f},
+            .thickness = 1.0f,
+            .placement = OutlinePlacement::outset
+        };
     };
 
 } // namespace EconSimPlusPlus

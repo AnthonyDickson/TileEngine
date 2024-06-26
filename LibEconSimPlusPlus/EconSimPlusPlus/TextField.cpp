@@ -126,7 +126,7 @@ namespace EconSimPlusPlus {
         m_quad.render();
 
         if (m_state == State::active) {
-            drawOutline(*this, m_shader, m_quad, m_settings.outlineColor, m_settings.outlineThickness, m_settings.outlinePlacement);
+            drawOutline(*this, m_shader, m_quad, m_settings.outline);
         }
 
         m_text.render(camera);

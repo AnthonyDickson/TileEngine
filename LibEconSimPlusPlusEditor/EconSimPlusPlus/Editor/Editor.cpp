@@ -370,11 +370,11 @@ namespace EconSimPlusPlus::Editor {
 
         // Side panel
         // TODO: Add padding to panel.
-        m_tileSheetPanel = std::make_shared<Panel>(topRight(*m_window),
-                                                   PanelSettings{.fillColor = glm::vec3{0.3f},
-                                                                 .outlineColor = glm::vec3{0.6f},
-                                                                 .outlineThickness = 1.0f,
-                                                                 .anchor = Anchor::topRight});
+        m_tileSheetPanel = std::make_shared<Panel>(
+            topRight(*m_window),
+            PanelSettings{.fillColor = glm::vec3{0.3f},
+                          {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = OutlinePlacement::inset},
+                          .anchor = Anchor::topRight});
         m_tileSheetPanel->setLayer(10.0f);
         m_tileSheetPanel->addEventHandler([&](const Event event, const EventData& eventData) {
             if (event == Event::windowResize) {
