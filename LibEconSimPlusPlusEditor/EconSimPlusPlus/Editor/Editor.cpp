@@ -374,7 +374,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileSheetPanel = std::make_shared<Panel>(
             topRight(*m_window),
             Panel::Style{.fillColor = glm::vec3{0.3f},
-                       {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = OutlinePlacement::inset}});
+                       {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = Outline::Placement::inset}});
         m_tileSheetPanel->setAnchor(Anchor::topRight);
         m_tileSheetPanel->setLayer(10.0f);
         m_tileSheetPanel->addEventHandler([&](const Event event, const EventData& eventData) {

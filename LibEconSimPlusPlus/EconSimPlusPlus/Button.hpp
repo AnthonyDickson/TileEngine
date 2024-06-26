@@ -40,7 +40,7 @@ namespace EconSimPlusPlus {
             /// The color to fill the background of the button with.
             glm::vec3 fillColor = glm::vec3{1.0f};
             /// The configuration for the appearance of the outline.
-            OutlineStyle outline{.color = glm::vec3{0.0f}, .thickness = 0.0f, .placement = OutlinePlacement::inset};
+            Outline::Style outline{.color = glm::vec3{0.0f}, .thickness = 0.0f, .placement = Outline::Placement::inset};
         };
 
         /// Create a button.

@@ -49,8 +49,8 @@ namespace EconSimPlusPlus {
             /// The style of the blinking text cursor.
             TextCaret::Style caret{.width = 2.0f, .color = glm::vec3{0.0f}};
             /// The configuration for the appearance of the outline.
-            OutlineStyle outline{
-                .color = glm::vec3{0.0f, 0.5f, 1.0f}, .thickness = 1.0f, .placement = OutlinePlacement::outset};
+            Outline::Style outline{
+                .color = glm::vec3{0.0f, 0.5f, 1.0f}, .thickness = 1.0f, .placement = Outline::Placement::outset};
         };
 
         /// Create a text field for user text entry.

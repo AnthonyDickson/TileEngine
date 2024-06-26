@@ -28,18 +28,18 @@
 #include <EconSimPlusPlus/Shader.hpp>
 
 
-namespace EconSimPlusPlus {
+namespace EconSimPlusPlus::Outline {
     /// Where to draw the outline.
-    enum class OutlinePlacement { inset, outset };
+    enum class Placement { inset, outset };
 
     /// The configuration for the appearance of an outline.
-    struct OutlineStyle {
+    struct Style {
         /// The color of the outline.
         glm::vec3 color;
         /// The thickness of the outline in pixels.
         float thickness;
         /// Where to draw the outline.
-        OutlinePlacement placement;
+        Placement placement;
     };
 
     /// Draw an outline around a GUI object.
@@ -50,7 +50,7 @@ namespace EconSimPlusPlus {
     /// @param shader The shader to draw the outline with.
     /// @param quad The quad geometry to use for drawing the outline.
     /// @param outline The configuration for the outline appearance.
-    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const OutlineStyle& outline);
+    void draw(const Object& object, const Shader& shader, const Quad& quad, const Style& outline);
 
 } // namespace EconSimPlusPlus
 

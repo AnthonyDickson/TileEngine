@@ -42,11 +42,9 @@ namespace EconSimPlusPlus {
             /// The color to fill the background of the panel with.
             glm::vec3 fillColor{1.0f};
             /// The configuration for the appearance of the outline.
-            OutlineStyle outline{
-                .color = glm::vec3{0.0f},
+            Outline::Style outline{.color = glm::vec3{0.0f},
                 .thickness = 1.0f,
-                .placement = OutlinePlacement::inset
-            };
+                .placement = Outline::Placement::inset};
         };
 
         /// Create an empty panel.

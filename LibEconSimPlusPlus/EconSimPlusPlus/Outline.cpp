@@ -24,8 +24,8 @@
 #include <EconSimPlusPlus/Outline.hpp>
 
 
-namespace EconSimPlusPlus {
-    void drawOutline(const Object& object, const Shader& shader, const Quad& quad, const OutlineStyle& outline) {
+namespace EconSimPlusPlus::Outline {
+    void draw(const Object& object, const Shader& shader, const Quad& quad, const Style& outline) {
         if (outline.thickness < 1.0f) {
             return;
         }
@@ -47,7 +47,7 @@ namespace EconSimPlusPlus {
         // TODO: Simplify the below code.
 
         switch (outline.placement) {
-        case OutlinePlacement::inset:
+        case Placement::inset:
             // Left side
             bottomLeft = origin;
             topRight = {origin.x + thickness, origin.y + object.size().y};
@@ -65,7 +65,7 @@ namespace EconSimPlusPlus {
             topRight = {origin.x + object.size().x, origin.y + object.size().y};
             renderBorder(bottomLeft, topRight);
             break;
-        case OutlinePlacement::outset:
+        case Placement::outset:
             // Left side
             bottomLeft = {origin.x - thickness, origin.y - thickness};
             topRight = {origin.x, bottomLeft.y + object.size().y + thickness};

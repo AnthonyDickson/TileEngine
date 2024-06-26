@@ -96,7 +96,7 @@ namespace EconSimPlusPlus {
         m_shader.setUniform("color", m_style.fillColor);
         m_quad.render();
 
-        drawOutline(*this, m_shader, m_quad, m_style.outline);
+        Outline::draw(*this, m_shader, m_quad, m_style.outline);
 
         for (const auto& object : m_objects) {
             object->render(camera);
