@@ -23,11 +23,10 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSTYLE_HPP
 
 #include <EconSimPlusPlus/Outline.hpp>
+#include <EconSimPlusPlus/TextCaretStyle.hpp>
 
 namespace EconSimPlusPlus {
 
-    // TODO: Settings struct should contain structs for groups of settings (e.g., caret settings, outline settings) that
-    // are passed to object components.
     /// The configuration for the appearance of a text field.
     struct TextFieldStyle {
         /// The color of the text inside the text field.
@@ -36,16 +35,11 @@ namespace EconSimPlusPlus {
         glm::vec3 fillColor{1.0f};
         /// Padding around internal GUI objects in pixels.
         glm::vec2 padding{8.0f, 8.0f};
-        /// The width of the blinking text cursor in pixels.
-        float caretWidth{2.0f};
-        /// The color of the blinking text cursor.
-        glm::vec3 caretColor{0.0f};
+        /// The style of the blinking text cursor.
+        TextCaretStyle caret{.width = 2.0f, .color = glm::vec3{0.0f}};
         /// The configuration for the appearance of the outline.
         OutlineStyle outline{
-            .color = glm::vec3{0.0f, 0.5f, 1.0f},
-            .thickness = 1.0f,
-            .placement = OutlinePlacement::outset
-        };
+            .color = glm::vec3{0.0f, 0.5f, 1.0f}, .thickness = 1.0f, .placement = OutlinePlacement::outset};
     };
 
 } // namespace EconSimPlusPlus

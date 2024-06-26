@@ -43,7 +43,7 @@ namespace EconSimPlusPlus {
     } // namespace
 
     TextField::TextField(const Font* font, const TextFieldStyle& style) :
-        m_text("Foo", font, {.color = style.textColor}), m_style(style) {
+        m_text("Foo", font, {.color = style.textColor}), m_style(style), m_caret(style.caret) {
         Object::setSize(m_text.size() + m_style.padding);
         Object::setScale(m_text.size() + m_style.padding);
         Object::setLayer(50.0f);
@@ -53,7 +53,7 @@ namespace EconSimPlusPlus {
         m_text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_style.padding.x, -m_style.padding.y});
         m_text.setLayer(layer());
         m_caret.setLayer(layer());
-        m_caret.setSize(glm::vec2{m_style.caretWidth, m_text.size().y});
+        m_caret.setSize(glm::vec2{m_caret.size().x, m_text.size().y});
         m_caret.hide();
 
         addEventHandler([&](const Event event, const EventData& eventData) {

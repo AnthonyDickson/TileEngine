@@ -25,12 +25,14 @@
 #include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
+#include <EconSimPlusPlus/TextCaretStyle.hpp>
 
 namespace EconSimPlusPlus {
-
     /// Shows a blinking line to indicate where the text will be inserted.
     class TextCaret final : public Object {
     public:
+        explicit TextCaret(TextCaretStyle style);
+
         /// Stop rendering the caret.
         void hide();
         /// Start rendering the caret.
@@ -43,6 +45,7 @@ namespace EconSimPlusPlus {
         /// The possible states of a text caret.
         enum class State { visible, hidden };
 
+        const TextCaretStyle m_style;
         /// The current state of the text caret.
         State m_state{State::visible};
         /// The time since the caret was shown. The transparency (alpha) is calculated as a function of time to create a

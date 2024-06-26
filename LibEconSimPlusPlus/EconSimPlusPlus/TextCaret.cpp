@@ -24,6 +24,12 @@
 #include <EconSimPlusPlus/TextCaret.hpp>
 
 namespace EconSimPlusPlus {
+    // TODO: Ensure that the width defined in the style is always used, and that it cannot be overriden by external
+    // objects.
+    TextCaret::TextCaret(const TextCaretStyle style) : m_style(style) {
+        Object::setSize({m_style.width, 0.0f});
+    }
+
     void TextCaret::hide() {
         m_state = State::hidden;
     }
@@ -48,7 +54,7 @@ namespace EconSimPlusPlus {
             "transform",
             glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{position(), layer()}), glm::vec3{size(), 1.0f}));
         const float alpha{0.5f * (sin(m_time) + 1.0f)};
-        m_shader.setUniform("color", glm::vec4{0.0f, 0.0f, 0.0f, alpha});
+        m_shader.setUniform("color", glm::vec4{m_style.color, alpha});
         m_quad.render();
     }
 } // namespace EconSimPlusPlus

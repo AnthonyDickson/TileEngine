@@ -61,12 +61,12 @@ namespace EconSimPlusPlus {
         Text m_text;
         /// The configuration for the text field appearence.
         const TextFieldStyle m_style;
+        /// Shows a blinking line to indicate where the text will be inserted.
+        TextCaret m_caret;
         /// The current state of the text field.
         State m_state{State::inactive};
         /// A mapping between states and their transitions.
         std::map<State, std::function<void()>> m_transitions{};
-        /// Shows a blinking line to indicate where the text will be inserted.
-        TextCaret m_caret{};
 
         /// The geometry used to draw the background.
         Quad m_quad{};
