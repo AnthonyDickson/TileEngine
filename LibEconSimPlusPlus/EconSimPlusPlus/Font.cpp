@@ -138,13 +138,10 @@ namespace EconSimPlusPlus {
 
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
                       const Style& style) const {
-        // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
-        const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
-
         m_shader.bind();
         m_shader.setUniform("text", 0);
         m_shader.setUniform("textColor", style.color);
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
+        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
         m_shader.setUniform("sdfThreshold", style.sdfThreshold);
         m_shader.setUniform("edgeSmoothness", style.edgeSmoothness);
         m_shader.setUniform("outlineSize", style.outlineSize);

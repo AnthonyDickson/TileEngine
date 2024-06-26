@@ -129,14 +129,21 @@ namespace EconSimPlusPlus {
         m_position.y = 0.0f;
     }
 
-    void Camera::onWindowResize(const glm::vec2 viewport_) {
-        m_viewport = viewport_;
-        m_projection = createProjectionMatrix(viewport_);
+    void Camera::onWindowResize(const glm::vec2 viewport) {
+        m_viewport = viewport;
+        m_projection = createProjectionMatrix(viewport);
     }
 
     glm::vec2 screenToWorldCoordinates(const glm::vec2 screenCoordinates, const Camera& camera) {
         const auto [bottomLeft, topRight]{camera.viewport()};
         return {screenCoordinates.x + bottomLeft.x, -screenCoordinates.y + topRight.y};
+    }
+
+    Camera atOrigin(const Camera& camera) {
+        Camera copy(camera);
+        copy.resetPosition();
+
+        return copy;
     }
 
 } // namespace EconSimPlusPlus

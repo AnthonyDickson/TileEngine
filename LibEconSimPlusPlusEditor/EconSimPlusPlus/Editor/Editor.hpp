@@ -71,8 +71,6 @@ namespace EconSimPlusPlus::Editor {
         std::unique_ptr<Window> m_window;
         /// The render camera.
         Camera m_camera;
-        /// The camera for rendering GUI elements (doesn't move).
-        Camera m_GuiCamera;
         /// The font for rendering text on screen.
         std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
 

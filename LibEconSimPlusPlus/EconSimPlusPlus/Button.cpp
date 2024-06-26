@@ -88,10 +88,7 @@ namespace EconSimPlusPlus {
 
     void Button::render(const Camera& camera) const {
         m_shader.bind();
-
-        // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
-        const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
+        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
 
         // Draw the button fill color.
         const glm::vec2 anchorOffset{calculateAnchorOffset(size(), anchor(), size().y)};

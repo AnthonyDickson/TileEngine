@@ -136,7 +136,7 @@ namespace EconSimPlusPlus {
                                      static_cast<float>(m_window->height()) / 2.0f};
             frameTimeText.setText(frameTimeSummary);
             frameTimeText.setPosition(position);
-            frameTimeText.render(m_camera);
+            frameTimeText.render(atOrigin(m_camera));
 
             m_window->postUpdate();
         }

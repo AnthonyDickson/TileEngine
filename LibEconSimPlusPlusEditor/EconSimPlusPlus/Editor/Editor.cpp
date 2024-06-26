@@ -112,12 +112,13 @@ namespace EconSimPlusPlus::Editor {
 
         if (m_window->hasWindowSizeChanged()) {
             m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
-            m_GuiCamera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
             notify(Event::windowResize);
         }
 
+        const Camera guiCamera{atOrigin(m_camera)};
+
         if (m_exclusiveKeyboardInputTarget != nullptr) {
-            m_exclusiveKeyboardInputTarget->update(deltaTime, m_window->inputState(), m_GuiCamera);
+            m_exclusiveKeyboardInputTarget->update(deltaTime, m_window->inputState(), guiCamera);
         }
 
         const InputState input{m_exclusiveKeyboardInputTarget == nullptr
@@ -132,7 +133,7 @@ namespace EconSimPlusPlus::Editor {
 
             // TODO: Create a more general way to determine whether an object should be sent regular or GUI camera.
             if (object != m_tileMap) {
-                object->update(deltaTime, input, m_GuiCamera);
+                object->update(deltaTime, input, guiCamera);
             }
             else {
                 object->update(deltaTime, input, m_camera);
@@ -144,9 +145,9 @@ namespace EconSimPlusPlus::Editor {
         });
 
         // TODO: Find more elegant way to determine which set of cursor positions to send to objects.
-        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), m_GuiCamera)};
+        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), guiCamera)};
         const glm::vec2 previousCursorPos{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_GuiCamera)};
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), guiCamera)};
 
         const glm::vec2 cursorPosTileMap{screenToWorldCoordinates(input.mousePosition(), m_camera)};
         const glm::vec2 previousCursorPosTileMap{
@@ -216,9 +217,11 @@ namespace EconSimPlusPlus::Editor {
 
         glEnable(GL_CULL_FACE);
 
+        const Camera guiCamera{atOrigin(m_camera)};
+
         for (const auto& object : m_objects) {
             if (object != m_tileMap) {
-                object->render(m_GuiCamera);
+                object->render(guiCamera);
             }
             else {
                 object->render(m_camera);
@@ -345,7 +348,7 @@ namespace EconSimPlusPlus::Editor {
                                                            updateTimer.average(), renderTimer.average())};
             frameTimeText.setText(frameTimeSummary);
             frameTimeText.setPosition(topRight(*m_window));
-            frameTimeText.render(m_camera);
+            frameTimeText.render(atOrigin(m_camera));
 
             m_window->postUpdate();
         }
@@ -427,9 +430,8 @@ namespace EconSimPlusPlus::Editor {
 
     Editor::Editor(std::unique_ptr<Window> window) :
         m_window(std::move(window)),
-        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())}, {0.0f, 0.0f, 100.0f}},
-        m_GuiCamera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
-                    {0.0f, 0.0f, 100.0f}} {
+        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                 {0.0f, 0.0f, 100.0f}} {
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst

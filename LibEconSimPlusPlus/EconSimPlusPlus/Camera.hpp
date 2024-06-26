@@ -71,14 +71,14 @@ namespace EconSimPlusPlus {
         void resetPosition();
 
         /// Update the camera to match the window size when the user resizes the window.
-        /// @param viewport_ The new window size.
-        void onWindowResize(glm::vec2 viewport_);
+        /// @param viewport The new window size.
+        void onWindowResize(glm::vec2 viewport);
 
     private:
         /// The dimensions (width, height in pixels) of the window viewport and therefore the camera viewport.
         glm::vec2 m_viewport;
         /// The position of the camera in world space.
-        glm::vec3 m_position{};
+        glm::vec3 m_position;
         /// The projection matrix (e.g., perspective or orthographic).
         glm::mat4 m_projection;
     };
@@ -90,6 +90,11 @@ namespace EconSimPlusPlus {
     /// @note The centre of the viewport is mapped to the origin for the world space coordinates and a
     /// right-handed coordinate system is used.
     glm::vec2 screenToWorldCoordinates(glm::vec2 screenCoordinates, const Camera& camera);
+
+    /// Get a copy of the camera positioned at the world origin.
+    /// @param camera The camera to copy.
+    /// @return A camera at the world origin.
+    [[nodiscard]] Camera atOrigin(const Camera& camera);
 } // namespace EconSimPlusPlus
 
 
