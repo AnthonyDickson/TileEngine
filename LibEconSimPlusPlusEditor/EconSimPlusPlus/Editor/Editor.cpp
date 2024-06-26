@@ -237,10 +237,10 @@ namespace EconSimPlusPlus::Editor {
         FrameTimer renderTimer{};
         Text frameTimeText{"", m_font.get(),
                            Font::Style{.color = {1.0f, 1.0f, 0.0f},
-                                        .size = 32.0f,
-                                        .anchor = Anchor::topRight,
-                                        .outlineSize = 0.3f,
-                                        .outlineColor = {0.0f, 0.0f, 0.0f}}};
+                                       .size = 32.0f,
+                                       .anchor = Anchor::topRight,
+                                       .outlineSize = 0.3f,
+                                       .outlineColor = {0.0f, 0.0f, 0.0f}}};
         frameTimeText.setLayer(99.0f);
 
         Button::Style buttonStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.9f}};
@@ -271,9 +271,10 @@ namespace EconSimPlusPlus::Editor {
         };
 
         Text buttonText{"Open...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
-        auto openFileButton{std::make_shared<Button>(buttonText, topLeft(*m_window), Anchor::topLeft,
-                                                     openFileButtonCallback, buttonStyle, buttonActiveStyle,
+        auto openFileButton{std::make_shared<Button>(buttonText, openFileButtonCallback, buttonStyle, buttonActiveStyle,
                                                      buttonDisabledStyle)};
+        openFileButton->setAnchor(Anchor::topLeft);
+        openFileButton->setPosition(topLeft(*m_window));
         openFileButton->setLayer(98.0f);
         openFileButton->addEventHandler([&](const Event event, const EventData& eventData) {
             if (event == Event::windowResize) {
@@ -285,18 +286,20 @@ namespace EconSimPlusPlus::Editor {
 
         Text saveButtonText{"Save...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
         auto saveFileButton{std::make_shared<Button>(
-            saveButtonText, topLeft(*m_window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f}, Anchor::topLeft,
+            saveButtonText,
             [&] {
                 m_saveFileDialog.open(pfd::save_file("Select a file", "", {"YAML Files", "*.yaml"}),
                                       [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
             },
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
+        saveFileButton->setAnchor(Anchor::topLeft);
+        saveFileButton->setPosition(topLeft(*m_window) + glm::vec2{openFileButton->size().x + 8.0f, 0.0f});
         saveFileButton->setLayer(98.0f);
-        saveFileButton->setEnabled(false);
+        saveFileButton->disable();
         saveFileButton->addEventHandler([&](const Event event, const EventData& eventData) {
             switch (event) {
             case Event::tileMapLoaded:
-                saveFileButton->setEnabled(true);
+                saveFileButton->enable();
                 break;
             case Event::windowResize:
                 saveFileButton->setPosition(topLeft(eventData.window) +
@@ -374,7 +377,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileSheetPanel = std::make_shared<Panel>(
             topRight(*m_window),
             Panel::Style{.fillColor = glm::vec3{0.3f},
-                       {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = Outline::Placement::inset}});
+                         {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = Outline::Placement::inset}});
         m_tileSheetPanel->setAnchor(Anchor::topRight);
         m_tileSheetPanel->setLayer(10.0f);
         m_tileSheetPanel->addEventHandler([&](const Event event, const EventData& eventData) {

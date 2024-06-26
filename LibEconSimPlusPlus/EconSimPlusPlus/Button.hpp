@@ -46,19 +46,18 @@ namespace EconSimPlusPlus {
         /// Create a button.
         /// @param text The text to display in the button. Note that the text color will be overriden by the color in
         /// the button style(s).
-        /// @param position Where to position the button in screen space. Uses the bottom left as the origin.
-        /// @param anchor The point on the button that the position refers to.
         /// @param callback The function to call when the button is clicked.
         /// @param style Configuration for button apperance.
         /// @param activeStyle Configuration for button apperance when the button is pressed/clicked.
         /// @param disabledStyle Configuration for button apperance when the button is disabled.
-        Button(const Text& text, glm::vec2 position, Anchor anchor, std::function<void()> callback, const Style& style,
-               const Style& activeStyle, const Style& disabledStyle);
+        Button(const Text& text, std::function<void()> callback, const Style& style, const Style& activeStyle,
+               const Style& disabledStyle);
 
-        /// Enable or disable the button.
-        /// @note When the button is disabled, the button's callback will not be called.
-        /// @param enabled Whether the button should be enabled (`true`) or disabled (`false`).
-        void setEnabled(bool enabled);
+        /// Activate the button and allow the user to interact with it.
+        void enable();
+
+        /// Deactivate the button stop the user from interacting with it.
+        void disable();
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
