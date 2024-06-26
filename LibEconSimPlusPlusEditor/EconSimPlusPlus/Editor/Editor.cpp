@@ -154,26 +154,26 @@ namespace EconSimPlusPlus::Editor {
             screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
 
         for (const auto& object : m_objects) {
-            if (object == m_tileMap and object->contains(cursorPosTileMap) and
-                not object->contains(previousCursorPosTileMap)) {
+            if (object == m_tileMap and contains(*object, cursorPosTileMap) and
+                not contains(*object, previousCursorPosTileMap)) {
                 object->notify(Event::mouseEnter, {*m_window, cursorPosTileMap});
                 break;
             }
 
-            if (object->contains(cursorPos) and not object->contains(previousCursorPos)) {
+            if (contains(*object, cursorPos) and not contains(*object, previousCursorPos)) {
                 object->notify(Event::mouseEnter, {*m_window, cursorPos});
                 break;
             }
         }
 
         for (const auto& object : m_objects) {
-            if (object == m_tileMap and not object->contains(cursorPosTileMap) and
-                object->contains(previousCursorPosTileMap)) {
+            if (object == m_tileMap and not contains(*object, cursorPosTileMap) and
+                contains(*object, previousCursorPosTileMap)) {
                 object->notify(Event::mouseLeave, {*m_window, cursorPosTileMap});
                 break;
             }
 
-            if (not object->contains(cursorPos) and object->contains(previousCursorPos)) {
+            if (not contains(*object, cursorPos) and contains(*object, previousCursorPos)) {
                 object->notify(Event::mouseLeave, {*m_window, cursorPos});
                 break;
             }
@@ -181,12 +181,12 @@ namespace EconSimPlusPlus::Editor {
 
         for (const auto& object : m_objects) {
             if (object == m_tileMap and not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                object->contains(cursorPosTileMap)) {
+                contains(*object, cursorPosTileMap)) {
                 object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
                 break;
             }
 
-            if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
+            if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
                 object->notify(Event::mouseHover, {*m_window, cursorPos});
                 break;
             }
@@ -194,12 +194,12 @@ namespace EconSimPlusPlus::Editor {
 
         for (const auto& object : m_objects) {
             if (object == m_tileMap and input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                object->contains(cursorPosTileMap)) {
+                contains(*object, cursorPosTileMap)) {
                 object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
                 break;
             }
 
-            if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object->contains(cursorPos)) {
+            if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
                 object->notify(Event::mouseClick, {*m_window, cursorPos});
                 break;
             }

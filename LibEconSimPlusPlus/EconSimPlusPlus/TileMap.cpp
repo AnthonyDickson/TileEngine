@@ -62,7 +62,8 @@ namespace EconSimPlusPlus {
 
         addEventHandler([&](const Event event, const EventData& eventData) {
             if (event == Event::mouseClick) {
-                const glm::vec2 gridPos{(eventData.mousePosition.value() - bottomLeft(*this)) / m_tileSheet->tileSize()};
+                const glm::vec2 gridPos{(eventData.mousePosition.value() - bottomLeft(*this)) /
+                                        m_tileSheet->tileSize()};
 
                 for (const auto& callback : m_clickListeners) {
                     callback(gridPos, tileID(gridPos));
@@ -168,7 +169,7 @@ namespace EconSimPlusPlus {
                 }
 
                 transforms[tileIndex] =
-                    glm::translate(transform(), glm::vec3{static_cast<float>(col), static_cast<float>(row), 0.0f});
+                    glm::translate(transform(*this), glm::vec3{static_cast<float>(col), static_cast<float>(row), 0.0f});
                 textureCoordinatesInstanced[tileIndex] = m_tileSheet->textureCoordinates(tileID);
 
                 ++tileIndex;

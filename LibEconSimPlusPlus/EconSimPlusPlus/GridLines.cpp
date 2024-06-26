@@ -67,7 +67,7 @@ namespace EconSimPlusPlus {
         // ReSharper disable once CppTooWideScopeInitStatement
         const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.mousePosition(), camera)};
 
-        if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(cursorPos)) {
+        if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*this, cursorPos)) {
             const glm::ivec2 gridPos{((cursorPos - bottomLeft(*this)) / m_cellSize)};
 
             std::cout << std::format(
@@ -80,7 +80,7 @@ namespace EconSimPlusPlus {
         m_shader.bind();
         m_shader.setUniform("color", glm::vec3{1.0f});
         m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
-        m_shader.setUniform("transform", transform());
+        m_shader.setUniform("transform", transform(*this));
         m_vao.bind();
         m_vbo.drawArrays(GL_LINES);
     }

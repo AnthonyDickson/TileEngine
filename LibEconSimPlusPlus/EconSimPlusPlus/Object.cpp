@@ -64,11 +64,6 @@ namespace EconSimPlusPlus {
         m_size = size;
     }
 
-    glm::mat4 Object::transform() const {
-        return glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(*this), layer()}),
-                          glm::vec3{scale(), 1.0f});
-    }
-
     Anchor Object::anchor() const {
         return m_anchor;
     }
@@ -88,14 +83,13 @@ namespace EconSimPlusPlus {
         }
     }
 
-    bool Object::contains(glm::vec2 point) const {
-        // Using `m_size.y` as the vertical baseline makes the top left corner the origin.
-        const glm::vec2 anchorOffset{calculateAnchorOffset(m_size, m_anchor, m_size.y)};
+    bool contains(const Object& object, glm::vec2 point) {
+        const glm::vec2 position{bottomLeft(object)};
 
         for (int axis = 0; axis < 2; ++axis) {
-            const bool exceedsMinExtent = point[axis] < anchorOffset[axis] + m_position[axis];
+            const bool exceedsMinExtent = point[axis] < position[axis];
             // ReSharper disable once CppTooWideScopeInitStatement
-            const bool exceedsMaxExtent = point[axis] > anchorOffset[axis] + m_position[axis] + m_size[axis];
+            const bool exceedsMaxExtent = point[axis] > position[axis] + object.size()[axis];
 
             if (exceedsMinExtent or exceedsMaxExtent) {
                 return false;
@@ -103,6 +97,11 @@ namespace EconSimPlusPlus {
         }
 
         return true;
+    }
+
+    glm::mat4 transform(const Object& object) {
+        return glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(object), object.layer()}),
+                          glm::vec3{object.scale(), 1.0f});
     }
 
     glm::vec2 topLeft(const Object& object) {

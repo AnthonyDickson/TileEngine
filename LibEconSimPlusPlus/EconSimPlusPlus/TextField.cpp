@@ -87,7 +87,7 @@ namespace EconSimPlusPlus {
             // TODO: Also transition to inactive state if escape key is pressed. The escape key press should not
             // propagate to other parts of the program.
             if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                not contains(screenToWorldCoordinates(inputState.mousePosition(), camera))) {
+                not contains(*this, screenToWorldCoordinates(inputState.mousePosition(), camera))) {
                 transitionTo(State::inactive);
                 break;
             }
@@ -122,7 +122,7 @@ namespace EconSimPlusPlus {
     void TextField::render(const Camera& camera) const {
         m_shader.bind();
         m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
-        m_shader.setUniform("transform", transform());
+        m_shader.setUniform("transform", transform(*this));
         m_shader.setUniform("color", m_style.fillColor);
 
         m_quad.render();

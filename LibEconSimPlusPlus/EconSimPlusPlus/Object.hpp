@@ -71,10 +71,6 @@ namespace EconSimPlusPlus {
         /// @param size The 2D dimensions of the object in pixels.
         virtual void setSize(glm::vec2 size);
 
-        /// Get the 4x4 homogeneous transform matrix of the object.
-        /// @note Assumes bottom left as position/origin.
-        [[nodiscard]] glm::mat4 transform() const;
-
         /// Get the point on the object that is used as the origin for its position.
         /// @return An anchor.
         [[nodiscard]] Anchor anchor() const;
@@ -102,11 +98,6 @@ namespace EconSimPlusPlus {
         /// @param camera The camera to render the tile map with.
         virtual void render(const Camera& camera) const = 0;
 
-        /// Check whether a point is contained in the object's axis-aligned bounding box.
-        /// @param point The 2D point to test.
-        /// @return Whether the point interects the object.
-        [[nodiscard]] bool contains(glm::vec2 point) const;
-
     private:
         /// The world space coordinates of the object along with the layer. Note this refers to the top left of the
         /// object.
@@ -121,6 +112,17 @@ namespace EconSimPlusPlus {
         /// The registered event handlers.
         std::vector<EventHandler> m_eventHandlers{};
     };
+
+    /// Check whether a point is contained in the object's axis-aligned bounding box.
+    /// @param object An object.
+    /// @param point The 2D point to test.
+    /// @return Whether the point interects the object.
+    [[nodiscard]] bool contains(const Object& object, glm::vec2 point);
+
+    /// Get the 4x4 homogeneous transform matrix of the object.
+    /// @param object An object.
+    /// @note Assumes bottom left as position/origin.
+    [[nodiscard]] glm::mat4 transform(const Object& object);
 
     /// Get the coordinates of the top left corner of the object.
     /// @param object An object.
