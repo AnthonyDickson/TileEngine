@@ -47,7 +47,7 @@ namespace EconSimPlusPlus {
             /// Padding around internal GUI objects in pixels.
             glm::vec2 padding{8.0f, 8.0f};
             /// The style of the blinking text cursor.
-            TextCaret::Style caret{.width = 2.0f, .color = glm::vec3{0.0f}};
+            TextCaret::Style caret{.color = glm::vec3{0.0f}, .width = 2.0f};
             /// The configuration for the appearance of the outline.
             Outline::Style outline{
                 .color = glm::vec3{0.0f, 0.5f, 1.0f}, .thickness = 1.0f, .placement = Outline::Placement::outset};

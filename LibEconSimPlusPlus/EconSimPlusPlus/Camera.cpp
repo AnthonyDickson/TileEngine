@@ -88,17 +88,17 @@ namespace EconSimPlusPlus {
 
         if (inputState.mouseButton(GLFW_MOUSE_BUTTON_MIDDLE) or inputState.key(GLFW_KEY_LEFT_ALT)) {
             if (mouseMovement.x < 0.0f) {
-                move(Direction::Left, abs(mouseMovement.x));
+                move(Direction::Left, std::abs(mouseMovement.x));
             }
             else {
-                move(Direction::Right, abs(mouseMovement.x));
+                move(Direction::Right, std::abs(mouseMovement.x));
             }
 
             if (mouseMovement.y < 0.0f) {
-                move(Direction::Up, abs(mouseMovement.y));
+                move(Direction::Up, std::abs(mouseMovement.y));
             }
             else {
-                move(Direction::Down, abs(mouseMovement.y));
+                move(Direction::Down, std::abs(mouseMovement.y));
             }
         }
 

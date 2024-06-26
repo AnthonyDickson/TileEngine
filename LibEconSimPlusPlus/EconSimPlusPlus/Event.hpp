@@ -23,6 +23,7 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_EVENT_HPP
 
 #include <functional>
+#include <optional>
 
 #include "glm/vec2.hpp"
 

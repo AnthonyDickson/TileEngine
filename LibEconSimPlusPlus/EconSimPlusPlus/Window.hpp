@@ -22,8 +22,9 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_WINDOW_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_WINDOW_HPP
 
-#define GLFW_INCLUDE_NONE
+#include <string>
 
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 #include <EconSimPlusPlus/InputState.hpp>

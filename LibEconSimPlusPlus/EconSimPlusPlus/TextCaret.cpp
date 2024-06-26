@@ -19,6 +19,8 @@
 // Created by Anthony Dickson on 25/06/2024.
 //
 
+#include <cmath>
+
 #include "glm/ext/matrix_transform.hpp"
 
 #include <EconSimPlusPlus/TextCaret.hpp>
@@ -53,7 +55,7 @@ namespace EconSimPlusPlus {
         m_shader.setUniform(
             "transform",
             glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{position(), layer()}), glm::vec3{size(), 1.0f}));
-        const float alpha{0.5f * (sin(m_time) + 1.0f)};
+        const float alpha{0.5f * (std::sin(m_time) + 1.0f)};
         m_shader.setUniform("color", glm::vec4{m_style.color, alpha});
         m_quad.render();
     }
