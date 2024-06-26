@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 27/05/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_FONTSETTINGS_HPP
-#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_FONTSETTINGS_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_FONTSTYLE_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_FONTSTYLE_HPP
 
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -29,7 +29,7 @@
 
 namespace EconSimPlusPlus {
     /// The collection of settings for drawing text on screen.
-    struct FontSettings {
+    struct FontStyle {
         /// The colour to render the text.
         glm::vec3 color{1.0f};
         /// The height, in pixels, at which to draw the text. Note that the width will be scaled proportionately to
@@ -53,4 +53,4 @@ namespace EconSimPlusPlus {
 
 } // namespace EconSimPlusPlus
 
-#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_FONTSETTINGS_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_FONTSTYLE_HPP

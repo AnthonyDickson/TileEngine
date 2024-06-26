@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 26/06/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSETTINGS_HPP
-#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSETTINGS_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSTYLE_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSTYLE_HPP
 
 #include <EconSimPlusPlus/Outline.hpp>
 
@@ -29,7 +29,7 @@ namespace EconSimPlusPlus {
     // TODO: Settings struct should contain structs for groups of settings (e.g., caret settings, outline settings) that
     // are passed to object components.
     /// The configuration for the appearance of a text field.
-    struct TextFieldSettings {
+    struct TextFieldStyle {
         /// The color of the text inside the text field.
         glm::vec3 textColor{0.0f};
         /// The color with which to fill the text field background.
@@ -50,4 +50,4 @@ namespace EconSimPlusPlus {
 
 } // namespace EconSimPlusPlus
 
-#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSETTINGS_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTFIELDSTYLE_HPP

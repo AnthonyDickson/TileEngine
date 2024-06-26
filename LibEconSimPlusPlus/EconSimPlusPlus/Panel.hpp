@@ -28,7 +28,7 @@
 #include "glm/vec2.hpp"
 
 #include <EconSimPlusPlus/Object.hpp>
-#include <EconSimPlusPlus/PanelSettings.hpp>
+#include <EconSimPlusPlus/PanelStyle.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
 
@@ -39,8 +39,8 @@ namespace EconSimPlusPlus {
     public:
         /// Create an empty panel.
         /// @param position The x and y coordinates of the panel in world space.
-        /// @param settings Configuration for panel apperance.
-        Panel(glm::vec2 position, const PanelSettings& settings);
+        /// @param style Configuration for panel apperance.
+        Panel(glm::vec2 position, const PanelStyle& style);
 
         /// Add an object to the panel.
         /// @param object An object.
@@ -61,7 +61,7 @@ namespace EconSimPlusPlus {
         void recalculateObjectPositions();
 
         /// Configuration for panel apperance.
-        PanelSettings m_settings;
+        PanelStyle m_style;
         /// The quad geometry for drawing the panel background and outlines.
         Quad m_quad{};
         /// The shader for coloring the quad with a solid color.

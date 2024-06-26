@@ -34,8 +34,8 @@ namespace EconSimPlusPlus {
         /// Create a text label.
         /// @param text The text to display.
         /// @param font The font to use to display the text.
-        /// @param settings The configuration (e.g., color, anchor, outlines) to use for displaying the text.
-        Text(const std::string& text, const Font* font, const FontSettings& settings);
+        /// @param style The configuration (e.g., color, anchor, outlines) to use for displaying the text.
+        Text(const std::string& text, const Font* font, const FontStyle& style);
 
         /// Get the label's text.
         /// @return a string.
@@ -58,7 +58,7 @@ namespace EconSimPlusPlus {
         /// The font to use to display the text.
         const Font* m_font;
         /// The configuration (e.g., color, anchor, outlines) to use for displaying the text.
-        FontSettings m_settings;
+        FontStyle m_style;
     };
 
 } // namespace EconSimPlusPlus

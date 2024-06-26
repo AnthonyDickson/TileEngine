@@ -19,18 +19,17 @@
 // Created by Anthony Dickson on 05/06/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANELSETTINGS_HPP
-#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANELSETTINGS_HPP
+#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANELSTYLE_HPP
+#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANELSTYLE_HPP
 
 #include "glm/vec3.hpp"
 
-#include <EconSimPlusPlus/Anchor.hpp>
 #include <EconSimPlusPlus/Outline.hpp>
 
 namespace EconSimPlusPlus {
 
     /// Configuration for panel appearance.
-    struct PanelSettings {
+    struct PanelStyle {
         /// The color to fill the background of the panel with.
         glm::vec3 fillColor{1.0f};
         /// The configuration for the appearance of the outline.
@@ -39,10 +38,8 @@ namespace EconSimPlusPlus {
             .thickness = 1.0f,
             .placement = OutlinePlacement::inset
         };
-        /// The point on the panel that the position refers to.
-        Anchor anchor{Anchor::topLeft};
     };
 
 } // namespace EconSimPlusPlus
 
-#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANELSETTINGS_HPP
+#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_PANELSTYLE_HPP

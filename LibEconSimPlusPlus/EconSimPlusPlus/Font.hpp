@@ -26,7 +26,7 @@
 
 #include <EconSimPlusPlus/Anchor.hpp>
 #include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/FontSettings.hpp>
+#include <EconSimPlusPlus/FontStyle.hpp>
 #include <EconSimPlusPlus/Glyph.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
@@ -59,9 +59,9 @@ namespace EconSimPlusPlus {
         Font(Font&) = delete; // Prevent issues with OpenGL stuff.
 
         /// Get the scale factor relative to the underlying bitmap size.
-        /// @param settings The font settings to be used for rendering.
+        /// @param style The font settings to be used for rendering.
         /// @return The scale factor.
-        [[nodiscard]] float calculateScaleFactor(const FontSettings& settings) const;
+        [[nodiscard]] float calculateScaleFactor(const FontStyle& style) const;
 
         /// Calculate the width and height of the text if it were rendered on screen.
         /// @note The size is for unscaled text.
@@ -74,9 +74,8 @@ namespace EconSimPlusPlus {
         /// @param position Where to render the text in screen coordinates (pixels). Note that this corresponds to the
         /// bottom left corner of the text. The z-coordinate indicates the 'layer' to draw the text on.
         /// @param camera The camera to render the text with.
-        /// @param settings The various settings that control the appearance of the rendered text.
-        void render(std::string_view text, glm::vec3 position, const Camera& camera,
-                    const FontSettings& settings) const;
+        /// @param style The various settings that control the appearance of the rendered text.
+        void render(std::string_view text, glm::vec3 position, const Camera& camera, const FontStyle& style) const;
 
     private:
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.

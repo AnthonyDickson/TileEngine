@@ -109,8 +109,8 @@ namespace EconSimPlusPlus {
         m_textureArray(std::move(textureArray)) {
     }
 
-    float Font::calculateScaleFactor(const FontSettings& settings) const {
-        return settings.size / (abs(m_verticalExtents.x) + m_verticalExtents.y);
+    float Font::calculateScaleFactor(const FontStyle& style) const {
+        return style.size / (abs(m_verticalExtents.x) + m_verticalExtents.y);
     }
 
     glm::vec2 Font::calculateTextSize(const std::string_view text) const {
@@ -137,27 +137,27 @@ namespace EconSimPlusPlus {
     }
 
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
-                      const FontSettings& settings) const {
+                      const FontStyle& style) const {
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
         const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
 
         m_shader.bind();
         m_shader.setUniform("text", 0);
-        m_shader.setUniform("textColor", settings.color);
+        m_shader.setUniform("textColor", style.color);
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * cameraViewZ);
-        m_shader.setUniform("sdfThreshold", settings.sdfThreshold);
-        m_shader.setUniform("edgeSmoothness", settings.edgeSmoothness);
-        m_shader.setUniform("outlineSize", settings.outlineSize);
-        m_shader.setUniform("outlineColor", settings.outlineColor);
+        m_shader.setUniform("sdfThreshold", style.sdfThreshold);
+        m_shader.setUniform("edgeSmoothness", style.edgeSmoothness);
+        m_shader.setUniform("outlineSize", style.outlineSize);
+        m_shader.setUniform("outlineColor", style.outlineColor);
 
         m_textureArray->bind();
 
-        glm::vec3 drawPosition{position + glm::vec3{settings.padding.x / 2.0f, -settings.padding.y / 2.0f, 0.0f}};
+        glm::vec3 drawPosition{position + glm::vec3{style.padding.x / 2.0f, -style.padding.y / 2.0f, 0.0f}};
 
-        const float scale{calculateScaleFactor(settings)};
-        const glm::vec2 textSize{calculateTextSize(text) + settings.padding};
+        const float scale{calculateScaleFactor(style)};
+        const glm::vec2 textSize{calculateTextSize(text) + style.padding};
         // The `m_fontSize.y` puts the text origin at the top left corner of the first character.
-        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, settings.anchor, m_fontSize.y) * scale};
+        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, style.anchor, m_fontSize.y) * scale};
         int workingIndex{0};
         std::vector transforms(m_shader.maxInstances(), glm::mat4());
         std::vector letterMap(m_shader.maxInstances(), 0);
@@ -177,7 +177,7 @@ namespace EconSimPlusPlus {
                 continue;
             case '\n':
                 drawPosition.y -= m_verticalExtents.y * scale;
-                drawPosition.x = position.x + settings.padding.x / 2.0f;
+                drawPosition.x = position.x + style.padding.x / 2.0f;
                 continue;
             default:
                 break;

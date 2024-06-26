@@ -25,9 +25,8 @@
 #include <EconSimPlusPlus/Panel.hpp>
 
 namespace EconSimPlusPlus {
-    Panel::Panel(const glm::vec2 position, const PanelSettings& settings) : m_settings(settings) {
+    Panel::Panel(const glm::vec2 position, const PanelStyle& style) : m_style(style) {
         Object::setPosition(position);
-        Object::setAnchor(m_settings.anchor);
 
         m_nextObjectPosition = topLeft(*this);
     }
@@ -94,10 +93,10 @@ namespace EconSimPlusPlus {
         glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {offsetPosition, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
         m_shader.setUniform("transform", transform);
-        m_shader.setUniform("color", m_settings.fillColor);
+        m_shader.setUniform("color", m_style.fillColor);
         m_quad.render();
 
-        drawOutline(*this, m_shader, m_quad, m_settings.outline);
+        drawOutline(*this, m_shader, m_quad, m_style.outline);
 
         for (const auto& object : m_objects) {
             object->render(camera);

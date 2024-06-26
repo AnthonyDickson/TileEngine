@@ -42,18 +42,18 @@ namespace EconSimPlusPlus {
 
     } // namespace
 
-    TextField::TextField(const Font* font, const TextFieldSettings& settings) :
-        m_text("Foo", font, {.color = settings.textColor}), m_settings(settings) {
-        Object::setSize(m_text.size() + m_settings.padding);
-        Object::setScale(m_text.size() + m_settings.padding);
+    TextField::TextField(const Font* font, const TextFieldStyle& style) :
+        m_text("Foo", font, {.color = style.textColor}), m_style(style) {
+        Object::setSize(m_text.size() + m_style.padding);
+        Object::setScale(m_text.size() + m_style.padding);
         Object::setLayer(50.0f);
 
         // TODO: Hook into setters to sync settings of child objects.
         m_text.setAnchor(Anchor::topLeft);
-        m_text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_settings.padding.x, -m_settings.padding.y});
+        m_text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_style.padding.x, -m_style.padding.y});
         m_text.setLayer(layer());
         m_caret.setLayer(layer());
-        m_caret.setSize(glm::vec2{m_settings.caretWidth, m_text.size().y});
+        m_caret.setSize(glm::vec2{m_style.caretWidth, m_text.size().y});
         m_caret.hide();
 
         addEventHandler([&](const Event event, const EventData& eventData) {
@@ -121,12 +121,12 @@ namespace EconSimPlusPlus {
         m_shader.bind();
         m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
         m_shader.setUniform("transform", transform());
-        m_shader.setUniform("color", m_settings.fillColor);
+        m_shader.setUniform("color", m_style.fillColor);
 
         m_quad.render();
 
         if (m_state == State::active) {
-            drawOutline(*this, m_shader, m_quad, m_settings.outline);
+            drawOutline(*this, m_shader, m_quad, m_style.outline);
         }
 
         m_text.render(camera);

@@ -236,7 +236,7 @@ namespace EconSimPlusPlus::Editor {
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
         Text frameTimeText{"", m_font.get(),
-                           FontSettings{.color = {1.0f, 1.0f, 0.0f},
+                           FontStyle{.color = {1.0f, 1.0f, 0.0f},
                                         .size = 32.0f,
                                         .anchor = Anchor::topRight,
                                         .outlineSize = 0.3f,
@@ -307,7 +307,7 @@ namespace EconSimPlusPlus::Editor {
         });
         m_objects.push_back(saveFileButton);
 
-        auto textField = std::make_shared<TextField>(m_font.get(), TextFieldSettings{});
+        auto textField = std::make_shared<TextField>(m_font.get(), TextFieldStyle{});
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
@@ -372,9 +372,9 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add padding to panel.
         m_tileSheetPanel = std::make_shared<Panel>(
             topRight(*m_window),
-            PanelSettings{.fillColor = glm::vec3{0.3f},
-                          {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = OutlinePlacement::inset},
-                          .anchor = Anchor::topRight});
+            PanelStyle{.fillColor = glm::vec3{0.3f},
+                       {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = OutlinePlacement::inset}});
+        m_tileSheetPanel->setAnchor(Anchor::topRight);
         m_tileSheetPanel->setLayer(10.0f);
         m_tileSheetPanel->addEventHandler([&](const Event event, const EventData& eventData) {
             if (event == Event::windowResize) {
@@ -385,16 +385,16 @@ namespace EconSimPlusPlus::Editor {
             }
         });
 
-        FontSettings labelSettings{.anchor = Anchor::topLeft};
-        auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelSettings)};
+        FontStyle labelStyle{.anchor = Anchor::topLeft};
+        auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelStyle)};
         // TODO: Create GUI object that contains: Text label and editable text box
         // TODO: Create editable text field. Should consist of: background Quad, Text. Clicking on text field should
         // then allow the user to enter text. Clicking on anything else, or pressing the escape button should defocus
         // the text field and not longer allow text entry.
         auto mapWidthLabel{
-            std::make_unique<Text>(std::format("Width: {:d}", defaultMapSize.x), m_font.get(), labelSettings)};
+            std::make_unique<Text>(std::format("Width: {:d}", defaultMapSize.x), m_font.get(), labelStyle)};
         auto mapHeightLabel{
-            std::make_unique<Text>(std::format("Height: {:d}", defaultMapSize.y), m_font.get(), labelSettings)};
+            std::make_unique<Text>(std::format("Height: {:d}", defaultMapSize.y), m_font.get(), labelStyle)};
 
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);

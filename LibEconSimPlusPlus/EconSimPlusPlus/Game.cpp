@@ -94,7 +94,7 @@ namespace EconSimPlusPlus {
         FrameTimer renderTimer{};
 
         Text frameTimeText{"", m_font.get(),
-                           FontSettings{.color = {1.0f, 1.0f, 0.0f},
+                           FontStyle{.color = {1.0f, 1.0f, 0.0f},
                                         .size = 32.0f,
                                         .anchor = Anchor::topLeft,
                                         .outlineSize = 0.3f,
