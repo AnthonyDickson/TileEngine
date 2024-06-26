@@ -46,13 +46,9 @@ namespace EconSimPlusPlus {
         m_text("Foo", font, {.color = style.textColor}), m_style(style), m_caret(style.caret) {
         Object::setSize(m_text.size() + m_style.padding);
         Object::setScale(m_text.size() + m_style.padding);
-        Object::setLayer(50.0f);
 
-        // TODO: Hook into setters to sync settings of child objects.
         m_text.setAnchor(Anchor::topLeft);
         m_text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_style.padding.x, -m_style.padding.y});
-        m_text.setLayer(layer());
-        m_caret.setLayer(layer());
         m_caret.setSize(glm::vec2{m_caret.size().x, m_text.size().y});
         m_caret.hide();
 
@@ -75,6 +71,12 @@ namespace EconSimPlusPlus {
 
     void TextField::setTransition(const State state, const std::function<void()>& function) {
         m_transitions[state] = function;
+    }
+
+    void TextField::setLayer(const float layer) {
+        Object::setLayer(layer);
+        m_text.setLayer(layer);
+        m_caret.setLayer(layer);
     }
 
     void TextField::update(const float deltaTime, const InputState& inputState, const Camera& camera) {

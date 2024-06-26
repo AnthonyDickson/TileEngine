@@ -311,6 +311,7 @@ namespace EconSimPlusPlus::Editor {
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
+        textField->setLayer(50.0f);
         m_objects.push_back(textField);
 
         while (true) {
