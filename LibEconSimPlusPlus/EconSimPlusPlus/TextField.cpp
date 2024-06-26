@@ -121,7 +121,7 @@ namespace EconSimPlusPlus {
 
     void TextField::render(const Camera& camera) const {
         m_shader.bind();
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
+        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
         m_shader.setUniform("transform", transform());
         m_shader.setUniform("color", m_style.fillColor);
 

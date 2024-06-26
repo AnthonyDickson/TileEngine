@@ -146,4 +146,8 @@ namespace EconSimPlusPlus {
         return copy;
     }
 
+    glm::mat4 projectionViewMatrix(const Camera& camera) {
+        return camera.perspectiveMatrix() * camera.viewMatrix();
+    }
+
 } // namespace EconSimPlusPlus

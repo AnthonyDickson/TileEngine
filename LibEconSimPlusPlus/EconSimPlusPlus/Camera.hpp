@@ -95,6 +95,13 @@ namespace EconSimPlusPlus {
     /// @param camera The camera to copy.
     /// @return A camera at the world origin.
     [[nodiscard]] Camera atOrigin(const Camera& camera);
+
+    /// Calculate the product of a camera's projection and view matrices.
+    /// @param camera A camera.
+    /// @return A homogeneous 4x4 transformation matrix.
+    /// @note The product of this matrix and an object's model matrix projects the object onto the image plane of the
+    /// camera.
+    [[nodiscard]] glm::mat4 projectionViewMatrix(const Camera& camera);
 } // namespace EconSimPlusPlus
 
 

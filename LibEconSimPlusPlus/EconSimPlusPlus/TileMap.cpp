@@ -140,7 +140,7 @@ namespace EconSimPlusPlus {
         const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
 
         m_shader.bind();
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
+        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
         m_shader.setUniform("tileSize", m_tileSheet->textureCoordinateStride());
         m_tileSheet->bind();
 

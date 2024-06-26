@@ -51,7 +51,7 @@ namespace EconSimPlusPlus {
         }
 
         m_shader.bind();
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
+        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
         m_shader.setUniform(
             "transform",
             glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{position(), layer()}), glm::vec3{size(), 1.0f}));

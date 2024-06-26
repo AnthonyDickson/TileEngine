@@ -82,7 +82,7 @@ namespace EconSimPlusPlus {
 
     void Panel::render(const Camera& camera) const {
         m_shader.bind();
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
+        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
 
         // Draw the button fill color.
         const glm::vec2 anchorOffset{calculateAnchorOffset(size(), anchor(), size().y)};

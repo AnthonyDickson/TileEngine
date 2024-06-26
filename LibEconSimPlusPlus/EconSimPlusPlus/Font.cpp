@@ -141,7 +141,7 @@ namespace EconSimPlusPlus {
         m_shader.bind();
         m_shader.setUniform("text", 0);
         m_shader.setUniform("textColor", style.color);
-        m_shader.setUniform("projectionViewMatrix", camera.perspectiveMatrix() * camera.viewMatrix());
+        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
         m_shader.setUniform("sdfThreshold", style.sdfThreshold);
         m_shader.setUniform("edgeSmoothness", style.edgeSmoothness);
         m_shader.setUniform("outlineSize", style.outlineSize);
