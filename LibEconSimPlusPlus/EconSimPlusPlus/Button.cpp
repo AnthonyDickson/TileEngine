@@ -40,7 +40,7 @@ namespace EconSimPlusPlus {
     } // namespace
 
     Button::Button(const Text& text, const glm::vec2 position, const Anchor anchor, std::function<void()> callback,
-                   const ButtonStyle& style, const ButtonStyle& activeStyle, const ButtonStyle& disabledStyle) :
+                   const Style& style, const Style& activeStyle, const Style& disabledStyle) :
         m_text(text), m_callback(std::move(callback)), m_normalStyle(style), m_activeStyle(activeStyle),
         m_disabledStyle(disabledStyle), m_currentStyle(style) {
         assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");

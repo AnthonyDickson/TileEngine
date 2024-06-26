@@ -236,16 +236,16 @@ namespace EconSimPlusPlus::Editor {
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
         Text frameTimeText{"", m_font.get(),
-                           FontStyle{.color = {1.0f, 1.0f, 0.0f},
+                           Font::Style{.color = {1.0f, 1.0f, 0.0f},
                                         .size = 32.0f,
                                         .anchor = Anchor::topRight,
                                         .outlineSize = 0.3f,
                                         .outlineColor = {0.0f, 0.0f, 0.0f}}};
         frameTimeText.setLayer(99.0f);
 
-        ButtonStyle buttonStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.9f}};
-        ButtonStyle buttonActiveStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.8f}};
-        ButtonStyle buttonDisabledStyle{.textColor = glm::vec3{0.4f}, .fillColor = glm::vec3{0.5f}};
+        Button::Style buttonStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.9f}};
+        Button::Style buttonActiveStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.8f}};
+        Button::Style buttonDisabledStyle{.textColor = glm::vec3{0.4f}, .fillColor = glm::vec3{0.5f}};
 
         auto openFile = [&] {
             m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
@@ -307,7 +307,7 @@ namespace EconSimPlusPlus::Editor {
         });
         m_objects.push_back(saveFileButton);
 
-        auto textField = std::make_shared<TextField>(m_font.get(), TextFieldStyle{});
+        auto textField = std::make_shared<TextField>(m_font.get(), TextField::Style{});
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
@@ -373,7 +373,7 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add padding to panel.
         m_tileSheetPanel = std::make_shared<Panel>(
             topRight(*m_window),
-            PanelStyle{.fillColor = glm::vec3{0.3f},
+            Panel::Style{.fillColor = glm::vec3{0.3f},
                        {.color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = OutlinePlacement::inset}});
         m_tileSheetPanel->setAnchor(Anchor::topRight);
         m_tileSheetPanel->setLayer(10.0f);
@@ -386,7 +386,7 @@ namespace EconSimPlusPlus::Editor {
             }
         });
 
-        FontStyle labelStyle{.anchor = Anchor::topLeft};
+        Font::Style labelStyle{.anchor = Anchor::topLeft};
         auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelStyle)};
         // TODO: Create GUI object that contains: Text label and editable text box
         // TODO: Create editable text field. Should consist of: background Quad, Text. Clicking on text field should

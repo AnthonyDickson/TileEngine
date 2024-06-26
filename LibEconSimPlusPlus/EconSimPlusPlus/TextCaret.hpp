@@ -25,13 +25,20 @@
 #include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
-#include <EconSimPlusPlus/TextCaretStyle.hpp>
 
 namespace EconSimPlusPlus {
     /// Shows a blinking line to indicate where the text will be inserted.
     class TextCaret final : public Object {
     public:
-        explicit TextCaret(TextCaretStyle style);
+        /// The configuration for the appearance of a text cursor.
+        struct Style {
+            /// The color of the blinking text cursor.
+            glm::vec3 color{0.0f};
+            /// The width of the blinking text cursor in pixels.
+            float width{2.0f};
+        };
+
+        explicit TextCaret(Style style);
 
         /// Stop rendering the caret.
         void hide();
@@ -45,7 +52,7 @@ namespace EconSimPlusPlus {
         /// The possible states of a text caret.
         enum class State { visible, hidden };
 
-        const TextCaretStyle m_style;
+        const Style m_style;
         /// The current state of the text caret.
         State m_state{State::visible};
         /// The time since the caret was shown. The transparency (alpha) is calculated as a function of time to create a

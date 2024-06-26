@@ -29,7 +29,6 @@
 #include <EconSimPlusPlus/Shader.hpp>
 #include <EconSimPlusPlus/Text.hpp>
 #include <EconSimPlusPlus/TextCaret.hpp>
-#include <EconSimPlusPlus/TextFieldStyle.hpp>
 
 namespace EconSimPlusPlus {
 
@@ -39,10 +38,25 @@ namespace EconSimPlusPlus {
         /// The possible states of a text field.
         enum class State { inactive, active };
 
+        /// The configuration for the appearance of a text field.
+        struct Style {
+            /// The color of the text inside the text field.
+            glm::vec3 textColor{0.0f};
+            /// The color with which to fill the text field background.
+            glm::vec3 fillColor{1.0f};
+            /// Padding around internal GUI objects in pixels.
+            glm::vec2 padding{8.0f, 8.0f};
+            /// The style of the blinking text cursor.
+            TextCaret::Style caret{.width = 2.0f, .color = glm::vec3{0.0f}};
+            /// The configuration for the appearance of the outline.
+            OutlineStyle outline{
+                .color = glm::vec3{0.0f, 0.5f, 1.0f}, .thickness = 1.0f, .placement = OutlinePlacement::outset};
+        };
+
         /// Create a text field for user text entry.
         /// @param font The font to render text with.
         /// @param style The configuration for the text field appearence.
-        explicit TextField(const Font* font, const TextFieldStyle& style);
+        explicit TextField(const Font* font, const Style& style);
 
         /// Register a function to be called when the text field changes to a given state.
         /// @param state The target state in which to call the specified function.
@@ -62,7 +76,7 @@ namespace EconSimPlusPlus {
         /// The text that is displayed and edited in the text field.
         Text m_text;
         /// The configuration for the text field appearence.
-        const TextFieldStyle m_style;
+        const Style m_style;
         /// Shows a blinking line to indicate where the text will be inserted.
         TextCaret m_caret;
         /// The current state of the text field.

@@ -42,7 +42,7 @@ namespace EconSimPlusPlus {
 
     } // namespace
 
-    TextField::TextField(const Font* font, const TextFieldStyle& style) :
+    TextField::TextField(const Font* font, const Style& style) :
         m_text("Foo", font, {.color = style.textColor}), m_style(style), m_caret(style.caret) {
         Object::setSize(m_text.size() + m_style.padding);
         Object::setScale(m_text.size() + m_style.padding);

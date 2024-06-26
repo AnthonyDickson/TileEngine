@@ -26,7 +26,7 @@
 namespace EconSimPlusPlus {
     // TODO: Ensure that the width defined in the style is always used, and that it cannot be overriden by external
     // objects.
-    TextCaret::TextCaret(const TextCaretStyle style) : m_style(style) {
+    TextCaret::TextCaret(const Style style) : m_style(style) {
         Object::setSize({m_style.width, 0.0f});
     }
 

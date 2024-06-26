@@ -25,7 +25,7 @@
 #include <EconSimPlusPlus/Panel.hpp>
 
 namespace EconSimPlusPlus {
-    Panel::Panel(const glm::vec2 position, const PanelStyle& style) : m_style(style) {
+    Panel::Panel(const glm::vec2 position, const Style& style) : m_style(style) {
         Object::setPosition(position);
 
         m_nextObjectPosition = topLeft(*this);

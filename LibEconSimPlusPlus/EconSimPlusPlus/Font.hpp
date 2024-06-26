@@ -26,7 +26,6 @@
 
 #include <EconSimPlusPlus/Anchor.hpp>
 #include <EconSimPlusPlus/Camera.hpp>
-#include <EconSimPlusPlus/FontStyle.hpp>
 #include <EconSimPlusPlus/Glyph.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Shader.hpp>
@@ -35,8 +34,30 @@
 namespace EconSimPlusPlus {
     /// Handles the loading and rendering of TrueType fonts.
     class Font {
-
     public:
+        /// The collection of settings for drawing text on screen.
+        struct Style {
+            /// The colour to render the text.
+            glm::vec3 color{1.0f};
+            /// The height, in pixels, at which to draw the text. Note that the width will be scaled proportionately to
+            /// maintain the aspect ratio.
+            float size{32.0f};
+            /// The amount of horizontal and vertical space to add around the text measured in pixels.
+            glm::vec2 padding{0.0f};
+            /// The point on the text that the position refers to.
+            Anchor anchor{Anchor::topLeft};
+            /// The value between zero and one in the font SDF that indicates an edge.
+            /// Increasing this value will shrink the font and increasing it will expand the font.
+            float sdfThreshold{0.5f};
+            /// The amount to smooth the edges as a ratio of the SDF range.
+            float edgeSmoothness{0.01f};
+            /// The size of the outline to draw around the edge of the text as a ratio of the SDF range. Set to zero to
+            /// disable outlines.
+            float outlineSize{0.0f};
+            /// The colour of the text outline.
+            glm::vec3 outlineColor{0.0f};
+        };
+
         /// Create a Signed Distance Field (SDF) font object from a TrueType font.
         /// @param fontPath The path to the TrueType font file on disk.
         /// @param sdfFontSize The width and height in pixels of the fonts to use for generating the SDFs.
@@ -61,7 +82,7 @@ namespace EconSimPlusPlus {
         /// Get the scale factor relative to the underlying bitmap size.
         /// @param style The font settings to be used for rendering.
         /// @return The scale factor.
-        [[nodiscard]] float calculateScaleFactor(const FontStyle& style) const;
+        [[nodiscard]] float calculateScaleFactor(const Style& style) const;
 
         /// Calculate the width and height of the text if it were rendered on screen.
         /// @note The size is for unscaled text.
@@ -75,7 +96,7 @@ namespace EconSimPlusPlus {
         /// bottom left corner of the text. The z-coordinate indicates the 'layer' to draw the text on.
         /// @param camera The camera to render the text with.
         /// @param style The various settings that control the appearance of the rendered text.
-        void render(std::string_view text, glm::vec3 position, const Camera& camera, const FontStyle& style) const;
+        void render(std::string_view text, glm::vec3 position, const Camera& camera, const Style& style) const;
 
     private:
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.

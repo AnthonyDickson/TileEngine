@@ -109,7 +109,7 @@ namespace EconSimPlusPlus {
         m_textureArray(std::move(textureArray)) {
     }
 
-    float Font::calculateScaleFactor(const FontStyle& style) const {
+    float Font::calculateScaleFactor(const Style& style) const {
         return style.size / (abs(m_verticalExtents.x) + m_verticalExtents.y);
     }
 
@@ -137,7 +137,7 @@ namespace EconSimPlusPlus {
     }
 
     void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
-                      const FontStyle& style) const {
+                      const Style& style) const {
         // Need to add this to camera projection-view matrix otherwise z sorting order will not match other objects.
         const glm::mat4 cameraViewZ = glm::translate(glm::mat4{1.0f}, {0.0f, 0.0f, -camera.position().z});
 

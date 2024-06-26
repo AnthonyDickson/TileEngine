@@ -24,9 +24,8 @@
 
 #include <functional>
 
-#include <EconSimPlusPlus/ButtonStyle.hpp>
-#include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/Object.hpp>
+#include <EconSimPlusPlus/Outline.hpp>
 #include <EconSimPlusPlus/Quad.hpp>
 #include <EconSimPlusPlus/Text.hpp>
 
@@ -34,6 +33,16 @@ namespace EconSimPlusPlus {
 
     class Button final : public Object {
     public:
+        /// Configuration for button appearance.
+        struct Style {
+            /// The color of the button's text.
+            glm::vec3 textColor = glm::vec3{0.0f};
+            /// The color to fill the background of the button with.
+            glm::vec3 fillColor = glm::vec3{1.0f};
+            /// The configuration for the appearance of the outline.
+            OutlineStyle outline{.color = glm::vec3{0.0f}, .thickness = 0.0f, .placement = OutlinePlacement::inset};
+        };
+
         /// Create a button.
         /// @param text The text to display in the button. Note that the text color will be overriden by the color in
         /// the button style(s).
@@ -43,8 +52,8 @@ namespace EconSimPlusPlus {
         /// @param style Configuration for button apperance.
         /// @param activeStyle Configuration for button apperance when the button is pressed/clicked.
         /// @param disabledStyle Configuration for button apperance when the button is disabled.
-        Button(const Text& text, glm::vec2 position, Anchor anchor, std::function<void()> callback,
-               const ButtonStyle& style, const ButtonStyle& activeStyle = {}, const ButtonStyle& disabledStyle = {});
+        Button(const Text& text, glm::vec2 position, Anchor anchor, std::function<void()> callback, const Style& style,
+               const Style& activeStyle, const Style& disabledStyle);
 
         /// Enable or disable the button.
         /// @note When the button is disabled, the button's callback will not be called.
@@ -79,13 +88,13 @@ namespace EconSimPlusPlus {
         /// The function to call when the button is clicked.
         const std::function<void()> m_callback;
         /// Configuration for button apperance.
-        const ButtonStyle m_normalStyle;
+        const Style m_normalStyle;
         /// Configuration for button apperance when the button is pressed/clicked.
-        const ButtonStyle m_activeStyle;
+        const Style m_activeStyle;
         /// Configuration for button apperance when the button is disabled.
-        const ButtonStyle m_disabledStyle;
+        const Style m_disabledStyle;
         /// The style currently being used.
-        ButtonStyle m_currentStyle;
+        Style m_currentStyle;
         /// The current state of the button.
         State m_state{State::normal};
 

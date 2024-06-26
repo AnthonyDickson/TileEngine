@@ -22,7 +22,7 @@
 #include <EconSimPlusPlus/Text.hpp>
 
 namespace EconSimPlusPlus {
-    Text::Text(const std::string& text, const Font* font, const FontStyle& style) :
+    Text::Text(const std::string& text, const Font* font, const Font::Style& style) :
         m_font(font), m_style(style) {
         setText(text);
     }
