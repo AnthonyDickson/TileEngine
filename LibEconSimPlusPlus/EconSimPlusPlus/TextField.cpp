@@ -40,12 +40,76 @@ namespace EconSimPlusPlus {
             GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_M, GLFW_KEY_N, GLFW_KEY_O, GLFW_KEY_P, GLFW_KEY_Q, GLFW_KEY_R,
             GLFW_KEY_S, GLFW_KEY_T, GLFW_KEY_U, GLFW_KEY_V, GLFW_KEY_W, GLFW_KEY_X, GLFW_KEY_Y, GLFW_KEY_Z};
 
+        /// Perform the bit-wise and of two bit-wise flags.
+        /// @param a The first text field mode bit flag.
+        /// @param b The second text field mode bit flag.
+        /// @return The bit-wise and of the two flags.
+        TextField::Mode operator&(TextField::Mode a, TextField::Mode b) {
+            return static_cast<TextField::Mode>(static_cast<int>(a) & static_cast<int>(b));
+        }
+
+        /// Check whether a bit-flag contains a target bit-flag.
+        /// @param flag A bit-flag.
+        /// @param target The bit-flag to test for.
+        /// @return Whether the bit-flag contains the target bit-flag.
+        bool contains(const TextField::Mode flag, const TextField::Mode target) {
+            return (flag & target) == target;
+        }
+
+        /// Update a string based on keyboard and mouse input.
+        /// @param text The text to modify.
+        /// @param input Keyboard and mouse input.
+        /// @param config The text field settings.
+        /// @return The input text with added or removed characters.
+        std::string getTextFromInput(const std::string& text, const InputState& input,
+                                     const TextField::Config& config) {
+            if (input.keyDown(GLFW_KEY_BACKSPACE)) {
+                return text.substr(0, text.length() - 1);
+            }
+
+            if (text.length() >= static_cast<std::string::size_type>(config.maxLength)) {
+                return text;
+            }
+
+            if (contains(config.mode, TextField::Mode::numeric)) {
+                for (const int& key : numeric) {
+                    if (not input.keyDown(key)) {
+                        continue;
+                    }
+
+                    return text + static_cast<char>(key);
+                }
+            }
+
+            if (contains(config.mode, TextField::Mode::alpha)) {
+                for (const int& key : alpha) {
+                    if (not input.keyDown(key)) {
+                        continue;
+                    }
+
+                    const char character{static_cast<char>(input.key(GLFW_KEY_LEFT_SHIFT) ? key : key + 32)};
+                    return text + character;
+                }
+            }
+
+            return text;
+        }
+
     } // namespace
 
-    TextField::TextField(const std::string& placeholder, const Font* font, const Style& style) :
-        m_text("", font, style.text), m_placeholder(placeholder, font, style.text), m_style(style),
+    TextField::TextField(const std::string& placeholder, const Font* font, const Config& config, const Style& style) :
+        m_text("", font, style.text), m_placeholder(placeholder, font, style.text), m_config(config), m_style(style),
         m_caret(style.caret) {
-        Object::setSize(m_placeholder.size() + m_style.padding);
+        assert(placeholder.length() <= m_config.maxLength &&
+               "Placeholder text length is longer than the text field max length.");
+        assert(m_config.maxLength < 1 && "A text field's length must be at least one.");
+
+        // '4' and 'M' are chosen because that are roughly the widest characters for numbers and letters, respectively.
+        // This ensures that the text field is initialised with a size that should be able to fit the full length
+        // string.
+        m_text.setText(std::string(m_config.maxLength, m_config.mode == Mode::numeric ? '4' : 'M'));
+        Object::setSize(m_text.size() + m_style.padding);
+        m_text.setText("");
 
         auto initText = [&](Text& text) {
             text.setAnchor(Anchor::topLeft);
@@ -99,24 +163,7 @@ namespace EconSimPlusPlus {
                 break;
             }
 
-            // TODO: Move keyboard input logic into event handler(s)?
-            for (const int& key : numeric) {
-                if (inputState.keyDown(key)) {
-                    m_text.setText(m_text.text() + static_cast<char>(key));
-                }
-            }
-
-            for (const int& key : alpha) {
-                if (inputState.keyDown(key)) {
-                    const char character{static_cast<char>(inputState.key(GLFW_KEY_LEFT_SHIFT) ? key : key + 32)};
-                    m_text.setText(m_text.text() + character);
-                }
-            }
-
-            if (inputState.keyDown(GLFW_KEY_BACKSPACE)) {
-                m_text.setText(m_text.text().substr(0, m_text.text().length() - 1));
-            }
-
+            m_text.setText(getTextFromInput(m_text.text(), inputState, m_config));
             m_caret.setPosition(bottomRight(m_text));
             m_caret.update(deltaTime, inputState, camera);
 
@@ -142,7 +189,6 @@ namespace EconSimPlusPlus {
         }
 
         m_text.text().empty() ? m_placeholder.render(camera) : m_text.render(camera);
-
         m_caret.render(camera);
     }
 

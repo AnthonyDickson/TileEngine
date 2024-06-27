@@ -38,6 +38,24 @@ namespace EconSimPlusPlus {
         /// The possible states of a text field.
         enum class State { inactive, active };
 
+        /// What inputs the text field should accept.
+        enum class Mode {
+            /// Alphabet a-z
+            alpha = 1 << 0,
+            /// Digits 0-9
+            numeric = 1 << 1,
+            /// Alphabet and digits (a-z, 0-9)
+            alphanumeric = alpha | numeric
+        };
+
+        /// The configuration for the text field behavior.
+        struct Config {
+            /// The maximum number of characters. Zero or less indicates infinite length.
+            int maxLength{32};
+            /// What inputs the text field should accept.
+            Mode mode{Mode::alphanumeric};
+        };
+
         /// The configuration for the appearance of a text field.
         struct Style {
             /// The color with which to fill the text field background.
@@ -58,8 +76,9 @@ namespace EconSimPlusPlus {
         /// Create a text field for user text entry.
         /// @param placeholder The text to display initially.
         /// @param font The font to render text with.
+        /// @param config The configuration for the text field behavior.
         /// @param style The configuration for the text field appearence.
-        explicit TextField(const std::string& placeholder, const Font* font, const Style& style);
+        explicit TextField(const std::string& placeholder, const Font* font, const Config& config, const Style& style);
 
         /// Register a function to be called when the text field changes to a given state.
         /// @param state The target state in which to call the specified function.
@@ -72,7 +91,7 @@ namespace EconSimPlusPlus {
         void render(const Camera& camera) const override;
 
     private:
-        /// Chnage the text field to another state.
+        /// Change the text field to another state.
         /// @param state The next state.
         void transitionTo(State state);
 
@@ -80,6 +99,8 @@ namespace EconSimPlusPlus {
         Text m_text;
         /// The placeholder text to show when the text field is empty.
         Text m_placeholder;
+        /// The configuration for the text field behavior.
+        const Config m_config;
         /// The configuration for the text field appearence.
         const Style m_style;
         /// Shows a blinking line to indicate where the text will be inserted.
