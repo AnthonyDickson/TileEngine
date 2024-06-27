@@ -329,9 +329,10 @@ namespace EconSimPlusPlus::Editor {
                 std::this_thread::sleep_for(targetFrameTime - deltaTime);
             }
 
-            if (m_window->inputState().key(GLFW_KEY_ESCAPE) or m_window->shouldClose()) {
+            if (m_window->shouldClose()) {
                 m_openFileDialog.kill();
                 m_saveFileDialog.kill();
+                m_messageDialog.kill();
                 return;
             }
 

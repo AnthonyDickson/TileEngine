@@ -83,10 +83,9 @@ namespace EconSimPlusPlus {
         case State::inactive:
             break;
         case State::active:
-            // TODO: Also transition to inactive state if escape key is pressed. The escape key press should not
-            // propagate to other parts of the program.
-            if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                not contains(*this, screenToWorldCoordinates(inputState.mousePosition(), camera))) {
+            if (inputState.keyDown(GLFW_KEY_ESCAPE) or
+                (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                 not contains(*this, screenToWorldCoordinates(inputState.mousePosition(), camera)))) {
                 transitionTo(State::inactive);
                 break;
             }
