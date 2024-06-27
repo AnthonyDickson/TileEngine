@@ -44,16 +44,6 @@ namespace EconSimPlusPlus {
         m_position.z = layer;
     }
 
-    glm::vec2 Object::scale() const {
-        return m_scale;
-    }
-
-    void Object::setScale(const glm::vec2 scale) {
-        assert(glm::all(glm::greaterThanEqual(scale, glm::vec2{0.0f})) &&
-               "All components of scale must be greater than or equal to 0.0.");
-        m_scale = scale;
-    }
-
     glm::vec2 Object::size() const {
         return m_size;
     }
@@ -97,11 +87,6 @@ namespace EconSimPlusPlus {
         }
 
         return true;
-    }
-
-    glm::mat4 transform(const Object& object) {
-        return glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(object), object.layer()}),
-                          glm::vec3{object.scale(), 1.0f});
     }
 
     glm::vec2 topLeft(const Object& object) {

@@ -45,7 +45,6 @@ namespace EconSimPlusPlus {
     TextField::TextField(const Font* font, const Style& style) :
         m_text("Foo", font, {.color = style.textColor}), m_style(style), m_caret(style.caret) {
         Object::setSize(m_text.size() + m_style.padding);
-        Object::setScale(m_text.size() + m_style.padding);
 
         m_text.setAnchor(Anchor::topLeft);
         m_text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_style.padding.x, -m_style.padding.y});
@@ -120,9 +119,12 @@ namespace EconSimPlusPlus {
     }
 
     void TextField::render(const Camera& camera) const {
+        const glm::mat4 transform{glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(*this), layer()}),
+                                             glm::vec3{size(), 1.0f})};
+
         m_shader.bind();
         m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
-        m_shader.setUniform("transform", transform(*this));
+        m_shader.setUniform("transform", transform);
         m_shader.setUniform("color", m_style.fillColor);
 
         m_quad.render();

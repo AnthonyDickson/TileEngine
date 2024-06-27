@@ -57,7 +57,6 @@ namespace EconSimPlusPlus {
         m_tileSheet(std::move(tileSheet)), m_mapSize(mapSize), m_tiles(tiles) {
 
         setPosition(tileSize() * -static_cast<glm::vec2>(mapSize) / 2.0f);
-        setScale(tileSize());
         Object::setSize(tileSize() * static_cast<glm::vec2>(mapSize));
 
         addEventHandler([&](const Event event, const EventData& eventData) {
@@ -148,6 +147,8 @@ namespace EconSimPlusPlus {
         std::vector<glm::mat4> transforms(m_shader.maxInstances());
         std::vector<glm::vec2> textureCoordinatesInstanced(m_shader.maxInstances());
         int tileIndex{0};
+        const glm::mat4 tileTransform{glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(*this), layer()}),
+                                                 glm::vec3{tileSize(), 1.0f})};
 
         auto renderFn = [&] {
             if (tileIndex == 0) {
@@ -169,7 +170,7 @@ namespace EconSimPlusPlus {
                 }
 
                 transforms[tileIndex] =
-                    glm::translate(transform(*this), glm::vec3{static_cast<float>(col), static_cast<float>(row), 0.0f});
+                    glm::translate(tileTransform, glm::vec3{static_cast<float>(col), static_cast<float>(row), 0.0f});
                 textureCoordinatesInstanced[tileIndex] = m_tileSheet->textureCoordinates(tileID);
 
                 ++tileIndex;

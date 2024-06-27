@@ -55,14 +55,6 @@ namespace EconSimPlusPlus {
         /// @param layer The layer the object exists on. Higher values put the object closer to the camera.
         virtual void setLayer(float layer);
 
-        /// Get the scale of the object.
-        /// @return The non-negative scale factor of the object along the x and y axis.
-        [[nodiscard]] glm::vec2 scale() const;
-
-        /// Set the scale of the object.
-        /// @param scale The non-negative scale factor of the object along the x and y axis.
-        void setScale(glm::vec2 scale);
-
         /// Get the object's dimensions.
         /// @return A 2-vector.
         [[nodiscard]] glm::vec2 size() const;
@@ -102,9 +94,6 @@ namespace EconSimPlusPlus {
         /// The world space coordinates of the object along with the layer. Note this refers to the top left of the
         /// object.
         glm::vec3 m_position{0.0f};
-        // TODO: Merge scale and size. It is confusing to have two very similar variables.
-        /// The non-negative scale factor of the object along the x and y axis.
-        glm::vec2 m_scale{1.0f};
         /// The width and height of the object in world space coordinates.
         glm::vec2 m_size{1.0f};
         /// The point on the object that is used as the origin for its position.
@@ -118,11 +107,6 @@ namespace EconSimPlusPlus {
     /// @param point The 2D point to test.
     /// @return Whether the point interects the object.
     [[nodiscard]] bool contains(const Object& object, glm::vec2 point);
-
-    /// Get the 4x4 homogeneous transform matrix of the object.
-    /// @param object An object.
-    /// @note Assumes bottom left as position/origin.
-    [[nodiscard]] glm::mat4 transform(const Object& object);
 
     /// Get the coordinates of the top left corner of the object.
     /// @param object An object.
