@@ -313,7 +313,7 @@ namespace EconSimPlusPlus::Editor {
         });
         m_objects.push_back(saveFileButton);
 
-        auto textField = std::make_shared<TextField>(m_font.get(), TextField::Style{});
+        auto textField = std::make_shared<TextField>("Foo", m_font.get(), TextField::Style{});
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });

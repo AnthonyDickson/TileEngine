@@ -38,7 +38,7 @@ namespace EconSimPlusPlus {
         /// The collection of settings for drawing text on screen.
         struct Style {
             /// The colour to render the text.
-            glm::vec3 color{1.0f};
+            glm::vec3 color{0.0f};
             /// The height, in pixels, at which to draw the text. Note that the width will be scaled proportionately to
             /// maintain the aspect ratio.
             float size{32.0f};

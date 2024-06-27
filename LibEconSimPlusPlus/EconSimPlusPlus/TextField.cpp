@@ -42,12 +42,20 @@ namespace EconSimPlusPlus {
 
     } // namespace
 
-    TextField::TextField(const Font* font, const Style& style) :
-        m_text("Foo", font, {.color = style.textColor}), m_style(style), m_caret(style.caret) {
-        Object::setSize(m_text.size() + m_style.padding);
+    TextField::TextField(const std::string& placeholder, const Font* font, const Style& style) :
+        m_text("", font, style.text), m_placeholder(placeholder, font, style.text), m_style(style),
+        m_caret(style.caret) {
+        Object::setSize(m_placeholder.size() + m_style.padding);
 
-        m_text.setAnchor(Anchor::topLeft);
-        m_text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_style.padding.x, -m_style.padding.y});
+        auto initText = [&](Text& text) {
+            text.setAnchor(Anchor::topLeft);
+            text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_style.padding.x, -m_style.padding.y});
+        };
+
+        initText(m_text);
+        initText(m_placeholder);
+        m_placeholder.setColor(m_style.placeholderTextColor);
+
         m_caret.setSize(glm::vec2{m_caret.size().x, m_text.size().y});
         m_caret.hide();
 
@@ -75,6 +83,7 @@ namespace EconSimPlusPlus {
     void TextField::setLayer(const float layer) {
         Object::setLayer(layer);
         m_text.setLayer(layer);
+        m_placeholder.setLayer(layer);
         m_caret.setLayer(layer);
     }
 
@@ -132,7 +141,8 @@ namespace EconSimPlusPlus {
             Outline::draw(*this, m_shader, m_quad, m_style.outline);
         }
 
-        m_text.render(camera);
+        m_text.text().empty() ? m_placeholder.render(camera) : m_text.render(camera);
+
         m_caret.render(camera);
     }
 

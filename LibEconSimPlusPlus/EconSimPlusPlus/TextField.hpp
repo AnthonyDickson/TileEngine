@@ -40,12 +40,14 @@ namespace EconSimPlusPlus {
 
         /// The configuration for the appearance of a text field.
         struct Style {
-            /// The color of the text inside the text field.
-            glm::vec3 textColor{0.0f};
             /// The color with which to fill the text field background.
             glm::vec3 fillColor{1.0f};
             /// Padding around internal GUI objects in pixels.
-            glm::vec2 padding{8.0f, 8.0f};
+            glm::vec2 padding{8.0f};
+            /// The color of the text inside the text field.
+            Font::Style text{};
+            /// The color the placeholder text when no text has been entered.
+            glm::vec3 placeholderTextColor{0.5f};
             /// The style of the blinking text cursor.
             TextCaret::Style caret{.color = glm::vec3{0.0f}, .width = 2.0f};
             /// The configuration for the appearance of the outline.
@@ -54,9 +56,10 @@ namespace EconSimPlusPlus {
         };
 
         /// Create a text field for user text entry.
+        /// @param placeholder The text to display initially.
         /// @param font The font to render text with.
         /// @param style The configuration for the text field appearence.
-        explicit TextField(const Font* font, const Style& style);
+        explicit TextField(const std::string& placeholder, const Font* font, const Style& style);
 
         /// Register a function to be called when the text field changes to a given state.
         /// @param state The target state in which to call the specified function.
@@ -75,6 +78,8 @@ namespace EconSimPlusPlus {
 
         /// The text that is displayed and edited in the text field.
         Text m_text;
+        /// The placeholder text to show when the text field is empty.
+        Text m_placeholder;
         /// The configuration for the text field appearence.
         const Style m_style;
         /// Shows a blinking line to indicate where the text will be inserted.
