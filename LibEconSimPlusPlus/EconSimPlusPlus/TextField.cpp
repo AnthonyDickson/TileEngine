@@ -63,6 +63,10 @@ namespace EconSimPlusPlus {
         /// @return The input text with added or removed characters.
         std::string getTextFromInput(const std::string& text, const InputState& input,
                                      const TextField::Config& config) {
+            if (input.key(GLFW_KEY_LEFT_CONTROL) and input.keyDown(GLFW_KEY_BACKSPACE)) {
+                return "";
+            }
+
             if (input.keyDown(GLFW_KEY_BACKSPACE)) {
                 return text.substr(0, text.length() - 1);
             }
