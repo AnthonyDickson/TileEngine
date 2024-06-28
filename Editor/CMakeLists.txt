@@ -1,0 +1,2 @@
+add_executable(EconSimPlusPlusEditor main.cpp editor.cpp)
+target_link_libraries(EconSimPlusPlusEditor LibEconSimPlusPlusEditor)

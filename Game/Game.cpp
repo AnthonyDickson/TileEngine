@@ -24,8 +24,8 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
+#include "Game.hpp"
 #include <EconSimPlusPlus/FrameTimer.hpp>
-#include <EconSimPlusPlus/Game.hpp>
 #include <EconSimPlusPlus/Text.hpp>
 
 namespace EconSimPlusPlus {

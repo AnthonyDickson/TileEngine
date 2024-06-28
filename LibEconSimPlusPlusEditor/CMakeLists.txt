@@ -1,5 +1,4 @@
 add_library(LibEconSimPlusPlusEditor
-        EconSimPlusPlus/Editor/Editor.cpp
         EconSimPlusPlus/Editor/MessageDialog.cpp
         EconSimPlusPlus/Editor/OpenFileDialog.cpp
         EconSimPlusPlus/Editor/SaveFileDialog.cpp

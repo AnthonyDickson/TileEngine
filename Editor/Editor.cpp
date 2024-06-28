@@ -29,7 +29,6 @@
 #include "yaml-cpp/yaml.h"
 
 #include <EconSimPlusPlus/Button.hpp>
-#include <EconSimPlusPlus/Editor/Editor.hpp>
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
 #include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
@@ -38,6 +37,7 @@
 #include <EconSimPlusPlus/TextField.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
+#include "Editor.hpp"
 
 namespace EconSimPlusPlus::Editor {
 
@@ -398,7 +398,8 @@ namespace EconSimPlusPlus::Editor {
 
         Font::Style labelStyle{.anchor = Anchor::topLeft};
         auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelStyle)};
-        // TODO: Create GUI object that contains: Text label and editable text box
+        // TODO: Create `LayoutGroup` class whose sole purpose is to automatically layout objects (e.g., horizontally).
+        // TODO: Create GUI object that contains a text label and editable text box. Use a LayoutGroup
         // TODO: Create editable text field. Should consist of: background Quad, Text. Clicking on text field should
         // then allow the user to enter text. Clicking on anything else, or pressing the escape button should defocus
         // the text field and not longer allow text entry.

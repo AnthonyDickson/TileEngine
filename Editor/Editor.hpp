@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 18/05/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
-#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
+#ifndef EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
+#define EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 
 #include <EconSimPlusPlus/Editor/MessageDialog.hpp>
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
@@ -93,4 +93,4 @@ namespace EconSimPlusPlus::Editor {
     };
 } // namespace EconSimPlusPlus::Editor
 
-#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
+#endif // EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP

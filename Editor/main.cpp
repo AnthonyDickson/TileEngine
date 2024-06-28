@@ -20,7 +20,7 @@
 //
 #include <iostream>
 
-#include <EconSimPlusPlus/Editor/Editor.hpp>
+#include "Editor.hpp"
 
 int main() {
     try {

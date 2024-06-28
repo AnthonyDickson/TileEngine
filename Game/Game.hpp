@@ -19,8 +19,8 @@
 // Created by Anthony Dickson on 13/04/2024.
 //
 
-#ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GAME_HPP
-#define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GAME_HPP
+#ifndef GAME_ECONSIMPLUSPLUS_GAME_HPP
+#define GAME_ECONSIMPLUSPLUS_GAME_HPP
 
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
@@ -77,4 +77,4 @@ namespace EconSimPlusPlus {
     };
 } // namespace EconSimPlusPlus
 
-#endif // LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GAME_HPP
+#endif // GAME_ECONSIMPLUSPLUS_GAME_HPP

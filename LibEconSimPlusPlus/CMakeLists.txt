@@ -4,7 +4,6 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Camera.cpp
         EconSimPlusPlus/Font.cpp
         EconSimPlusPlus/FrameTimer.cpp
-        EconSimPlusPlus/Game.cpp
         EconSimPlusPlus/Glyph.cpp
         EconSimPlusPlus/GridLines.cpp
         EconSimPlusPlus/InputState.cpp
