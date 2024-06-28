@@ -399,6 +399,19 @@ namespace EconSimPlusPlus::Editor {
 
         mapWidthGroup->addChild(std::make_shared<Text>("Width: ", m_font.get(), Font::Style{}));
 
+        const auto textFieldValidator = [&](const std::string& text) {
+            try {
+                const int number{std::stoi(text)};
+                return not text.empty() and number > 0;
+            }
+            catch (std::invalid_argument&) {
+                return false;
+            }
+            catch (std::out_of_range&) {
+                return false;
+            }
+        };
+
         auto textField{std::make_shared<TextField>("0", m_font.get(),
                                                    TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                    TextField::Style{})};
@@ -406,6 +419,7 @@ namespace EconSimPlusPlus::Editor {
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         textField->setText(std::to_string(m_tileMap->mapSize().x));
+        textField->setInputValidator(textFieldValidator);
         textField->setSubmitAction([&](const std::string& text) {
             /// TODO: Set width of tile map on text field submission.
             std::cout << std::format("User entered a map width of {:d}.\n", std::stoi(text));
@@ -424,6 +438,7 @@ namespace EconSimPlusPlus::Editor {
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         textField->setText(std::to_string(m_tileMap->mapSize().y));
+        textField->setInputValidator(textFieldValidator);
         textField->setSubmitAction([&](const std::string& text) {
             /// TODO: Set height of tile map on text field submission.
             std::cout << std::format("User entered a map height of {:d}.\n", std::stoi(text));

@@ -75,6 +75,7 @@ namespace EconSimPlusPlus {
         };
 
         using SubmitAction = std::function<void(const std::string& text)>;
+        using InputValidator = std::function<bool(const std::string& text)>;
 
         /// Create a text field for user text entry.
         /// @param placeholder The text to display initially.
@@ -83,8 +84,11 @@ namespace EconSimPlusPlus {
         /// @param style The configuration for the text field appearence.
         explicit TextField(const std::string& placeholder, const Font* font, const Config& config, const Style& style);
 
+        /// Set the function to call to check whether the input text is valid.
+        /// @param function A function that takes a string and returns a bool.
+        void setInputValidator(const InputValidator& function);
 
-        /// Set function to call when the text field is submitted (user presses enter key while the text field is
+        /// Set the function to call when the text field is submitted (user presses enter key while the text field is
         /// active).
         /// @param function A function that takes a string.
         void setSubmitAction(const SubmitAction& function);
@@ -126,6 +130,8 @@ namespace EconSimPlusPlus {
         State m_state{State::inactive};
         /// A mapping between states and their transitions.
         std::map<State, std::function<void()>> m_transitions{};
+        /// The function to call to check whether the input text is valid.
+        InputValidator m_inputValidator{};
         /// The function to call when the text field is submitted (user presses enter key while the text field is
         /// active).
         SubmitAction m_submitAction{};
