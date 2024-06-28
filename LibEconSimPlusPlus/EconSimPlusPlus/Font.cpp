@@ -23,16 +23,14 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <ft2build.h>
+#include "ft2build.h"
 
-#include <freetype/freetype.h>
-#include <glm/ext/matrix_transform.hpp>
+#include "freetype/freetype.h"
+#include "glm/ext/matrix_transform.hpp"
 
 #include <EconSimPlusPlus/Camera.hpp>
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/SignedDistanceField.hpp>
-
-#include "Button.hpp"
 
 namespace EconSimPlusPlus {
     namespace {
@@ -138,7 +136,7 @@ namespace EconSimPlusPlus {
         return textSize;
     }
 
-    void Font::render(const std::string_view text, const glm::vec3 position, Anchor anchor, const Style& style,
+    void Font::render(const std::string_view text, const glm::vec3 position, const Anchor anchor, const Style& style,
                       const Camera& camera) const {
         m_shader.bind();
         m_shader.setUniform("text", 0);

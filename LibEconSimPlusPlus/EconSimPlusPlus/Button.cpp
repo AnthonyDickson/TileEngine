@@ -34,7 +34,7 @@ namespace EconSimPlusPlus {
         /// @param text The text label to modify.
         /// @param padding The horizontal and vertical space between the inner borders of the button and its child
         /// objects in pixels.
-        void syncSettings(const Button& button, Text& text, glm::vec2 padding) {
+        void syncSettings(const Button& button, Text& text, const glm::vec2 padding) {
             text.setAnchor(Anchor::bottomLeft);
             text.setPosition(bottomLeft(button) + 0.5f * padding);
             text.setLayer(button.layer());
