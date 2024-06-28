@@ -313,15 +313,6 @@ namespace EconSimPlusPlus::Editor {
         });
         m_objects.push_back(saveFileButton);
 
-        auto textField = std::make_shared<TextField>(
-            "Foo", m_font.get(), TextField::Config{.maxLength = 8, .mode = TextField::Mode::alphanumeric},
-            TextField::Style{});
-        textField->setTransition(TextField::State::active,
-                                 [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
-        textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
-        textField->setLayer(50.0f);
-        m_objects.push_back(textField);
-
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
             const std::chrono::duration deltaTime{currentTime - lastFrameTime};
@@ -380,6 +371,7 @@ namespace EconSimPlusPlus::Editor {
 
         // Side panel
         // TODO: Add back in group background/outline.
+        // TODO: Tidy up layout so that text fields line up horizontally.
         m_tileSheetPanel = std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical, .padding = glm::vec2{8.0f}, .spacing = 4.0f});
         m_tileSheetPanel->setAnchor(Anchor::topRight);
