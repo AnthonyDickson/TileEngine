@@ -48,14 +48,10 @@ namespace EconSimPlusPlus {
         /// @param layout Configuration for group layout.
         explicit Group(Layout layout);
 
-        /// Add an object to the group.
-        /// @param object An object.
-        void addObject(const std::shared_ptr<Object>& object);
-
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
+        void addChild(const std::shared_ptr<Object>& object) override;
 
-        void notify(Event event, EventData eventData) override;
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 
@@ -67,8 +63,6 @@ namespace EconSimPlusPlus {
 
         /// Configuration for group layout.
         const Layout m_layout;
-        /// Objects contained by this panel.
-        std::vector<std::shared_ptr<Object>> m_objects{};
     };
 
 } // namespace EconSimPlusPlus

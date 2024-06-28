@@ -62,15 +62,35 @@ namespace EconSimPlusPlus {
         m_anchor = anchor;
     }
 
+    const std::vector<std::shared_ptr<Object>>& Object::children() const {
+        return m_children;
+    }
+
+    void Object::addChild(const std::shared_ptr<Object>& object) {
+        m_children.push_back(object);
+    }
+
     void Object::addEventHandler(const EventHandler& eventHandler) {
         m_eventHandlers.push_back(eventHandler);
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst
-    void Object::notify(const Event event, const EventData eventData) {
+    void Object::notify(const Event event, const EventData& eventData) {
         for (auto& handler : m_eventHandlers) {
             handler(event, eventData);
         }
+    }
+
+    std::vector<std::shared_ptr<Object>> traverse(const std::vector<std::shared_ptr<Object>>& objects) { // NOLINT(*-no-recursion)
+        std::vector<std::shared_ptr<Object>> traversalOrder{};
+
+        for (const auto& object : objects) {
+            std::vector childTraversalOrder{traverse(object->children())};
+            traversalOrder.insert(traversalOrder.end(), childTraversalOrder.begin(), childTraversalOrder.end());
+            traversalOrder.push_back(object);
+        }
+
+        return traversalOrder;
     }
 
     bool contains(const Object& object, glm::vec2 point) {

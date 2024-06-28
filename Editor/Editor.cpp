@@ -153,33 +153,34 @@ namespace EconSimPlusPlus::Editor {
         const glm::vec2 previousCursorPosTileMap{
             screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
 
-        for (const auto& object : m_objects) {
+        // TODO: Testing for events should happen by traversing all objects in `m_objects` and their child objects.
+        for (const auto& object : traverse(m_objects)) {
             if (object == m_tileMap and contains(*object, cursorPosTileMap) and
                 not contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseEnter, {*m_window, cursorPosTileMap});
+                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
                 break;
             }
 
             if (contains(*object, cursorPos) and not contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseEnter, {*m_window, cursorPos});
+                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
                 break;
             }
         }
 
-        for (const auto& object : m_objects) {
+        for (const auto& object : traverse(m_objects)) {
             if (object == m_tileMap and not contains(*object, cursorPosTileMap) and
                 contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseLeave, {*m_window, cursorPosTileMap});
+                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
                 break;
             }
 
             if (not contains(*object, cursorPos) and contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseLeave, {*m_window, cursorPos});
+                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
                 break;
             }
         }
 
-        for (const auto& object : m_objects) {
+        for (const auto& object : traverse(m_objects)) {
             if (object == m_tileMap and not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
                 contains(*object, cursorPosTileMap)) {
                 object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
@@ -192,7 +193,7 @@ namespace EconSimPlusPlus::Editor {
             }
         }
 
-        for (const auto& object : m_objects) {
+        for (const auto& object : traverse(m_objects)) {
             if (object == m_tileMap and input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
                 contains(*object, cursorPosTileMap)) {
                 object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
@@ -379,6 +380,7 @@ namespace EconSimPlusPlus::Editor {
         m_objects.push_back(m_tileMap);
 
         // Side panel
+        // TODO: Fix bug with text and cursor not appearing in text field inside group.
         // TODO: Add back in group background/outline.
         m_tileSheetPanel = std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical, .padding = glm::vec2{8.0f}, .spacing = 4.0f});
@@ -393,46 +395,46 @@ namespace EconSimPlusPlus::Editor {
         m_objects.push_back(m_tileSheetPanel);
 
         Font::Style labelStyle{.anchor = Anchor::topLeft};
-        m_tileSheetPanel->addObject(std::make_shared<Text>("Map Size", m_font.get(), labelStyle));
+        m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_font.get(), labelStyle));
 
-        auto mapWidthGroup{std::make_shared<Group>(Group::Layout{
+        const auto mapWidthGroup{std::make_shared<Group>(Group::Layout{
             .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
 
-        mapWidthGroup->addObject(std::make_shared<Text>("Width: ", m_font.get(), Font::Style{}));
+        mapWidthGroup->addChild(std::make_shared<Text>("Width: ", m_font.get(), Font::Style{}));
 
         auto textField{std::make_shared<TextField>("Width", m_font.get(),
-                                                   TextField::Config{.maxLength = 6, .mode = TextField::Mode::numeric},
+                                                   TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                    TextField::Style{})};
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         // TODO: Set initial value to tile map width.
-        mapWidthGroup->addObject(textField);
-        m_tileSheetPanel->addObject(mapWidthGroup);
+        mapWidthGroup->addChild(textField);
+        m_tileSheetPanel->addChild(mapWidthGroup);
 
-        auto mapHeightGroup{std::make_shared<Group>(Group::Layout{
+        const auto mapHeightGroup{std::make_shared<Group>(Group::Layout{
             .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
 
-        mapHeightGroup->addObject(std::make_shared<Text>("Height: ", m_font.get(), Font::Style{}));
+        mapHeightGroup->addChild(std::make_shared<Text>("Height: ", m_font.get(), Font::Style{}));
 
         textField = std::make_shared<TextField>("Height", m_font.get(),
-                                                TextField::Config{.maxLength = 6, .mode = TextField::Mode::numeric},
+                                                TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                 TextField::Style{});
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         // TODO: Set initial value to tile map height.
-        mapHeightGroup->addObject(textField);
-        m_tileSheetPanel->addObject(mapHeightGroup);
+        mapHeightGroup->addChild(textField);
+        m_tileSheetPanel->addChild(mapHeightGroup);
 
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);
-        auto tileMap{std::make_shared<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
+        const auto tileMap{std::make_shared<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
         tileMap->enableGridLines();
         tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
-        m_tileSheetPanel->addObject(tileMap);
+        m_tileSheetPanel->addChild(tileMap);
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 

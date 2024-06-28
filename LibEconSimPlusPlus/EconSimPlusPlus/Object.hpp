@@ -71,6 +71,14 @@ namespace EconSimPlusPlus {
         /// @param anchor The point on the object that is used as the origin for its position.
         virtual void setAnchor(Anchor anchor);
 
+        /// Get the objects contained by this object.
+        /// @return A list of object pointers.
+        [[nodiscard]] const std::vector<std::shared_ptr<Object>>& children() const;
+
+        /// Add an object.
+        /// @param object An object.
+        virtual void addChild(const std::shared_ptr<Object>& object);
+
         /// Register an event handler for this object.
         /// @param eventHandler A function that responds to events.
         void addEventHandler(const EventHandler& eventHandler);
@@ -78,7 +86,7 @@ namespace EconSimPlusPlus {
         /// Tell the object that an event has occured.
         /// @param event The event that has occured.
         /// @param eventData Information about the event.
-        virtual void notify(Event event, EventData eventData);
+        void notify(Event event, const EventData& eventData);
 
         /// Update the object.
         /// @param deltaTime The size of the step to take in terms of time (seconds).
@@ -100,7 +108,16 @@ namespace EconSimPlusPlus {
         Anchor m_anchor{Anchor::topLeft};
         /// The registered event handlers.
         std::vector<EventHandler> m_eventHandlers{};
+        /// The objects contained by this object.
+        std::vector<std::shared_ptr<Object>> m_children{};
     };
+
+    /// Traverse a list of objects recursively.
+    /// @param objects The list of objects to traverse.
+    /// @return The flattened list of the objects pointers in depth-first post-order.
+    /// @note Post-order traversal is used to avoid container objects (e.g., `Group`) from blocking mouse events from
+    /// reaching the child objects.
+    std::vector<std::shared_ptr<Object>> traverse(const std::vector<std::shared_ptr<Object>>& objects);
 
     /// Check whether a point is contained in the object's axis-aligned bounding box.
     /// @param object An object.

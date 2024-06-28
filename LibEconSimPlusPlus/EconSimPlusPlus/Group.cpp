@@ -65,11 +65,6 @@ namespace EconSimPlusPlus {
     Group::Group(const Layout layout) : m_layout(layout) {
     }
 
-    void Group::addObject(const std::shared_ptr<Object>& object) {
-        m_objects.push_back(object);
-        recalculateLayout();
-    }
-
     void Group::setPosition(const glm::vec2 position) {
         Object::setPosition(position);
         recalculateLayout();
@@ -78,38 +73,34 @@ namespace EconSimPlusPlus {
     void Group::setLayer(const float layer) {
         Object::setLayer(layer);
 
-        for (const auto& object : m_objects) {
+        for (const auto& object : children()) {
             object->setLayer(layer);
         }
     }
 
-    void Group::notify(const Event event, const EventData eventData) {
-        Object::notify(event, eventData);
-
-        // TODO: Only pass on valid event. E.g., if the mouse hover is not over the child object, do not send it.
-        for (const auto& object : m_objects) {
-            object->notify(event, eventData);
-        }
+    void Group::addChild(const std::shared_ptr<Object>& object) {
+        Object::addChild(object);
+        recalculateLayout();
     }
 
     void Group::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
-        for (const std::shared_ptr<Object>& object : m_objects) {
+        for (const std::shared_ptr<Object>& object : children()) {
             object->update(deltaTime, inputState, camera);
         }
     }
 
     void Group::render(const Camera& camera) const {
-        for (const std::shared_ptr<Object>& object : m_objects) {
+        for (const std::shared_ptr<Object>& object : children()) {
             object->render(camera);
         }
     }
 
     void Group::recalculateLayout() {
-        setSize(calculateSize(m_objects, m_layout));
+        setSize(calculateSize(children(), m_layout));
 
         glm::vec2 nextPosition{topLeft(*this) + 0.5f * glm::vec2{m_layout.padding.x, -m_layout.padding.y}};
 
-        for (auto& object : m_objects) {
+        for (auto& object : children()) {
             object->setAnchor(Anchor::topLeft);
             object->setPosition(nextPosition);
             object->setLayer(layer());
