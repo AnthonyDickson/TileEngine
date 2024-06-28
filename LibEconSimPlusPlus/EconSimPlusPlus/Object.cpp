@@ -95,6 +95,12 @@ namespace EconSimPlusPlus {
         return object.position() + anchorOffset;
     }
 
+    glm::vec2 topRight(const Object& object) {
+        const glm::vec2 topLeft{EconSimPlusPlus::topLeft(object)};
+
+        return topLeft + glm::vec2{object.size().x, 0.0f};
+    }
+
     glm::vec2 bottomLeft(const Object& object) {
         const glm::vec2 topLeft{EconSimPlusPlus::topLeft(object)};
 

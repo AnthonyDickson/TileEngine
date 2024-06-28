@@ -113,6 +113,11 @@ namespace EconSimPlusPlus {
     /// @return The object's 2D coordinate in world space.
     [[nodiscard]] glm::vec2 topLeft(const Object& object);
 
+    /// Get the coordinates of the top right corner of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] glm::vec2 topRight(const Object& object);
+
     /// Get the coordinates of the bottom left corner of the object.
     /// @param object An object.
     /// @return The object's 2D coordinate in world space.

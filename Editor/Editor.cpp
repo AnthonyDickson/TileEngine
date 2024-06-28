@@ -33,7 +33,7 @@
 #include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
-#include <EconSimPlusPlus/Panel.hpp>
+#include <EconSimPlusPlus/Group.hpp>
 #include <EconSimPlusPlus/TextField.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
@@ -379,50 +379,63 @@ namespace EconSimPlusPlus::Editor {
         m_objects.push_back(m_tileMap);
 
         // Side panel
-        // TODO: Add padding to panel.
-        m_tileSheetPanel = std::make_shared<Panel>(
-            topRight(*m_window),
-            Panel::Style{.fillColor = glm::vec3{0.3f},
-                         .outline = Outline::Style{
-                             .color = glm::vec3{0.6f}, .thickness = 1.0f, .placement = Outline::Placement::inset}});
+        // TODO: Add back in group background/outline.
+        m_tileSheetPanel = std::make_shared<Group>(
+            Group::Layout{.direction = Group::LayoutDirection::vertical, .padding = glm::vec2{8.0f}, .spacing = 4.0f});
         m_tileSheetPanel->setAnchor(Anchor::topRight);
+        m_tileSheetPanel->setPosition(topRight(*m_window));
         m_tileSheetPanel->setLayer(10.0f);
         m_tileSheetPanel->addEventHandler([&](const Event event, const EventData& eventData) {
             if (event == Event::windowResize) {
                 m_tileSheetPanel->setPosition(topRight(eventData.window));
-                // TODO: Set width to widest object instead of proportion of window width.
-                m_tileSheetPanel->setSize({0.2f * static_cast<float>(eventData.window.width()),
-                                           static_cast<float>(eventData.window.height())});
             }
         });
+        m_objects.push_back(m_tileSheetPanel);
 
         Font::Style labelStyle{.anchor = Anchor::topLeft};
-        auto mapSizeLabel{std::make_unique<Text>("Map Size", m_font.get(), labelStyle)};
-        // TODO: Create `LayoutGroup` class whose sole purpose is to automatically layout objects (e.g., horizontally).
-        // TODO: Create GUI object that contains a text label and editable text box. Use a LayoutGroup
-        // TODO: Create editable text field. Should consist of: background Quad, Text. Clicking on text field should
-        // then allow the user to enter text. Clicking on anything else, or pressing the escape button should defocus
-        // the text field and not longer allow text entry.
-        auto mapWidthLabel{
-            std::make_unique<Text>(std::format("Width: {:d}", defaultMapSize.x), m_font.get(), labelStyle)};
-        auto mapHeightLabel{
-            std::make_unique<Text>(std::format("Height: {:d}", defaultMapSize.y), m_font.get(), labelStyle)};
+        m_tileSheetPanel->addObject(std::make_shared<Text>("Map Size", m_font.get(), labelStyle));
+
+        auto mapWidthGroup{std::make_shared<Group>(Group::Layout{
+            .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
+
+        mapWidthGroup->addObject(std::make_shared<Text>("Width: ", m_font.get(), Font::Style{}));
+
+        auto textField{std::make_shared<TextField>("Width", m_font.get(),
+                                                   TextField::Config{.maxLength = 6, .mode = TextField::Mode::numeric},
+                                                   TextField::Style{})};
+        textField->setTransition(TextField::State::active,
+                                 [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
+        textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
+        // TODO: Set initial value to tile map width.
+        mapWidthGroup->addObject(textField);
+        m_tileSheetPanel->addObject(mapWidthGroup);
+
+        auto mapHeightGroup{std::make_shared<Group>(Group::Layout{
+            .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
+
+        mapHeightGroup->addObject(std::make_shared<Text>("Height: ", m_font.get(), Font::Style{}));
+
+        textField = std::make_shared<TextField>("Height", m_font.get(),
+                                                TextField::Config{.maxLength = 6, .mode = TextField::Mode::numeric},
+                                                TextField::Style{});
+        textField->setTransition(TextField::State::active,
+                                 [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
+        textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
+        // TODO: Set initial value to tile map height.
+        mapHeightGroup->addObject(textField);
+        m_tileSheetPanel->addObject(mapHeightGroup);
 
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);
-        auto tileMap{std::make_unique<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
+        auto tileMap{std::make_shared<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
         tileMap->enableGridLines();
         tileMap->addClickListener([&](glm::ivec2, const int tileID) { m_selectedTileID = tileID; });
+        m_tileSheetPanel->addObject(tileMap);
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 
-        m_tileSheetPanel->addObject(std::move(mapSizeLabel));
-        m_tileSheetPanel->addObject(std::move(mapWidthLabel));
-        m_tileSheetPanel->addObject(std::move(mapHeightLabel));
-        m_tileSheetPanel->addObject(std::move(tileMap));
-        m_objects.push_back(m_tileSheetPanel);
         // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.
@@ -442,10 +455,6 @@ namespace EconSimPlusPlus::Editor {
     void Editor::notify(const Event event) {
         for (const auto& object : m_objects) {
             object->notify(event, {*m_window, std::nullopt});
-        }
-
-        if (m_tileSheetPanel != nullptr) {
-            m_tileSheetPanel->notify(event, {*m_window, std::nullopt});
         }
     }
 

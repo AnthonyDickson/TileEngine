@@ -1,0 +1,129 @@
+//  EconSimPlusPlus
+//  A program that simulates the historical development of capitalist economies.
+//  Copyright (C) 2024.   Anthony Dickson anthony.dickson9656@gmail.com
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
+// Created by Anthony Dickson on 28/06/2024.
+//
+
+#include <EconSimPlusPlus/Group.hpp>
+
+namespace EconSimPlusPlus {
+    namespace {
+        /// Calculate the size of the group that would contain all objects plus padding and spacing.
+        /// @param objects A list of objects that the group contains.
+        /// @param style The group style containing the padding and spacing parameters.
+        /// @return The width and height in pixels.
+        glm::vec2 calculateSize(const std::vector<std::shared_ptr<Object>>& objects, const Group::Layout style) {
+            glm::vec2 containingSize{0.0f};
+
+            for (const std::shared_ptr<Object>& object : objects) {
+                switch (style.direction) {
+                case Group::LayoutDirection::horizontal:
+                    containingSize.x = std::max(containingSize.x, containingSize.x + object->size().x);
+                    containingSize.y = std::max(containingSize.y, object->size().y);
+                    break;
+                case Group::LayoutDirection::vertical:
+                    containingSize.x = std::max(containingSize.x, object->size().x);
+                    containingSize.y = std::max(containingSize.y, containingSize.y + object->size().y);
+                    break;
+                default:
+                    throw std::runtime_error("Unsupported layout.");
+                }
+            }
+
+            switch (style.direction) {
+            case Group::LayoutDirection::horizontal:
+                containingSize.x += style.spacing * (static_cast<float>(objects.size()) - 1.0f);
+                break;
+            case Group::LayoutDirection::vertical:
+                containingSize.y += style.spacing * (static_cast<float>(objects.size()) - 1.0f);
+                break;
+            default:
+                throw std::runtime_error("Unsupported layout.");
+            }
+
+            containingSize += style.padding;
+
+            return containingSize;
+        }
+    } // namespace
+
+    Group::Group(const Layout layout) : m_layout(layout) {
+    }
+
+    void Group::addObject(const std::shared_ptr<Object>& object) {
+        m_objects.push_back(object);
+        recalculateLayout();
+    }
+
+    void Group::setPosition(const glm::vec2 position) {
+        Object::setPosition(position);
+        recalculateLayout();
+    }
+
+    void Group::setLayer(const float layer) {
+        Object::setLayer(layer);
+
+        for (const auto& object : m_objects) {
+            object->setLayer(layer);
+        }
+    }
+
+    void Group::notify(const Event event, const EventData eventData) {
+        Object::notify(event, eventData);
+
+        // TODO: Only pass on valid event. E.g., if the mouse hover is not over the child object, do not send it.
+        for (const auto& object : m_objects) {
+            object->notify(event, eventData);
+        }
+    }
+
+    void Group::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
+        for (const std::shared_ptr<Object>& object : m_objects) {
+            object->update(deltaTime, inputState, camera);
+        }
+    }
+
+    void Group::render(const Camera& camera) const {
+        for (const std::shared_ptr<Object>& object : m_objects) {
+            object->render(camera);
+        }
+    }
+
+    void Group::recalculateLayout() {
+        setSize(calculateSize(m_objects, m_layout));
+
+        glm::vec2 nextPosition{topLeft(*this) + 0.5f * glm::vec2{m_layout.padding.x, -m_layout.padding.y}};
+
+        for (auto& object : m_objects) {
+            object->setAnchor(Anchor::topLeft);
+            object->setPosition(nextPosition);
+            object->setLayer(layer());
+
+            switch (m_layout.direction) {
+            case LayoutDirection::vertical:
+                nextPosition = bottomLeft(*object) + glm::vec2{0.0f, -m_layout.spacing};
+                break;
+            case LayoutDirection::horizontal:
+                nextPosition = topRight(*object) + glm::vec2(m_layout.spacing, 0.0f);
+                break;
+            default:
+                throw std::runtime_error("Unsupported layout.");
+            }
+        }
+    }
+} // namespace EconSimPlusPlus

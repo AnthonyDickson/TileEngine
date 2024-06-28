@@ -26,9 +26,8 @@
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
 #include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 #include <EconSimPlusPlus/Font.hpp>
-#include <EconSimPlusPlus/GridLines.hpp>
+#include <EconSimPlusPlus/Group.hpp>
 #include <EconSimPlusPlus/Object.hpp>
-#include <EconSimPlusPlus/Panel.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/Window.hpp>
 
@@ -81,7 +80,7 @@ namespace EconSimPlusPlus::Editor {
         /// The tile map that is currently being edited.
         std::shared_ptr<TileMap> m_tileMap{};
         /// The GUI panel that will hold the tile sheet and related GUI.
-        std::shared_ptr<Panel> m_tileSheetPanel{};
+        std::shared_ptr<Group> m_tileSheetPanel{};
         /// A list of all objects.
         std::vector<std::shared_ptr<Object>> m_objects{};
         /// Handles asynchronous open file dialogs.
