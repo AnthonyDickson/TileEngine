@@ -242,9 +242,9 @@ namespace EconSimPlusPlus::Editor {
         Text frameTimeText{"", m_font.get(),
                            Font::Style{.color = {1.0f, 1.0f, 0.0f},
                                        .size = 32.0f,
-                                       .anchor = Anchor::topRight,
                                        .outlineSize = 0.3f,
                                        .outlineColor = {0.0f, 0.0f, 0.0f}}};
+        frameTimeText.setAnchor(Anchor::topRight);
         frameTimeText.setLayer(99.0f);
 
         Button::Style buttonStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.9f}};
@@ -393,8 +393,7 @@ namespace EconSimPlusPlus::Editor {
         });
         m_objects.push_back(m_tileSheetPanel);
 
-        Font::Style labelStyle{.anchor = Anchor::topLeft};
-        m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_font.get(), labelStyle));
+        m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_font.get(), Font::Style{}));
 
         const auto mapWidthGroup{std::make_shared<Group>(Group::Layout{
             .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};

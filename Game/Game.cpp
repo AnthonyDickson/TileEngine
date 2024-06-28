@@ -96,9 +96,9 @@ namespace EconSimPlusPlus {
         Text frameTimeText{"", m_font.get(),
                            Font::Style{.color = {1.0f, 1.0f, 0.0f},
                                         .size = 32.0f,
-                                        .anchor = Anchor::topLeft,
                                         .outlineSize = 0.3f,
                                         .outlineColor = {0.0f, 0.0f, 0.0f}}};
+        frameTimeText.setAnchor(Anchor::topLeft);
         frameTimeText.setLayer(99.0f);
 
         // TODO: Move this to factory function?

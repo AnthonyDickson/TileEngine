@@ -44,8 +44,6 @@ namespace EconSimPlusPlus {
             float size{32.0f};
             /// The amount of horizontal and vertical space to add around the text measured in pixels.
             glm::vec2 padding{0.0f};
-            /// The point on the text that the position refers to.
-            Anchor anchor{Anchor::topLeft};
             /// The value between zero and one in the font SDF that indicates an edge.
             /// Increasing this value will shrink the font and increasing it will expand the font.
             float sdfThreshold{0.5f};
@@ -94,9 +92,11 @@ namespace EconSimPlusPlus {
         /// @param text The string to render.
         /// @param position Where to render the text in screen coordinates (pixels). Note that this corresponds to the
         /// bottom left corner of the text. The z-coordinate indicates the 'layer' to draw the text on.
-        /// @param camera The camera to render the text with.
+        /// @param anchor The point on the text that the position refers to.
         /// @param style The various settings that control the appearance of the rendered text.
-        void render(std::string_view text, glm::vec3 position, const Camera& camera, const Style& style) const;
+        /// @param camera The camera to render the text with.
+        void render(std::string_view text, glm::vec3 position, Anchor anchor, const Style& style,
+                    const Camera& camera) const;
 
     private:
         /// Mapping between ASCII chars (0-127) and the corresponding glyph data.

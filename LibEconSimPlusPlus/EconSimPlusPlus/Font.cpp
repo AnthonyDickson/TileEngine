@@ -32,6 +32,8 @@
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/SignedDistanceField.hpp>
 
+#include "Button.hpp"
+
 namespace EconSimPlusPlus {
     namespace {
         /// The range of ASCII characters to generate glyphs for.
@@ -136,8 +138,8 @@ namespace EconSimPlusPlus {
         return textSize;
     }
 
-    void Font::render(const std::string_view text, const glm::vec3 position, const Camera& camera,
-                      const Style& style) const {
+    void Font::render(const std::string_view text, const glm::vec3 position, Anchor anchor, const Style& style,
+                      const Camera& camera) const {
         m_shader.bind();
         m_shader.setUniform("text", 0);
         m_shader.setUniform("textColor", style.color);
@@ -154,7 +156,7 @@ namespace EconSimPlusPlus {
         const float scale{calculateScaleFactor(style)};
         const glm::vec2 textSize{calculateTextSize(text) + style.padding};
         // The `m_fontSize.y` puts the text origin at the top left corner of the first character.
-        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, style.anchor, m_fontSize.y) * scale};
+        const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, anchor, m_fontSize.y) * scale};
         int workingIndex{0};
         std::vector transforms(m_shader.maxInstances(), glm::mat4());
         std::vector letterMap(m_shader.maxInstances(), 0);
