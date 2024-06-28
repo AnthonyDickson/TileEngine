@@ -85,8 +85,8 @@ namespace EconSimPlusPlus {
         /// @param function The function to call when changing to the specified state.
         void setTransition(State state, const std::function<void()>& function);
 
+        void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
-
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Camera& camera) const override;
 

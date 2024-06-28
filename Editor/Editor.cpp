@@ -380,7 +380,6 @@ namespace EconSimPlusPlus::Editor {
         m_objects.push_back(m_tileMap);
 
         // Side panel
-        // TODO: Fix bug with text and cursor not appearing in text field inside group.
         // TODO: Add back in group background/outline.
         m_tileSheetPanel = std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical, .padding = glm::vec2{8.0f}, .spacing = 4.0f});
@@ -402,7 +401,7 @@ namespace EconSimPlusPlus::Editor {
 
         mapWidthGroup->addChild(std::make_shared<Text>("Width: ", m_font.get(), Font::Style{}));
 
-        auto textField{std::make_shared<TextField>("Width", m_font.get(),
+        auto textField{std::make_shared<TextField>("0", m_font.get(),
                                                    TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                    TextField::Style{})};
         textField->setTransition(TextField::State::active,
@@ -417,8 +416,8 @@ namespace EconSimPlusPlus::Editor {
 
         mapHeightGroup->addChild(std::make_shared<Text>("Height: ", m_font.get(), Font::Style{}));
 
-        textField = std::make_shared<TextField>("Height", m_font.get(),
-                                                TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
+        textField = std::make_shared<TextField>(
+            "0", m_font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                 TextField::Style{});
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });

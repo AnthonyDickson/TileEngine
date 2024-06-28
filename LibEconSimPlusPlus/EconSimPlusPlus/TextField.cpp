@@ -104,9 +104,9 @@ namespace EconSimPlusPlus {
     TextField::TextField(const std::string& placeholder, const Font* font, const Config& config, const Style& style) :
         m_text("", font, style.text), m_placeholder(placeholder, font, style.text), m_config(config), m_style(style),
         m_caret(style.caret) {
-        assert(placeholder.length() <= m_config.maxLength &&
+        assert(static_cast<int>(placeholder.length()) <= m_config.maxLength &&
                "Placeholder text length is longer than the text field max length.");
-        assert(m_config.maxLength < 1 && "A text field's length must be at least one.");
+        assert(m_config.maxLength > 0 && "A text field's length must be at least one.");
 
         // '4' and 'M' are chosen because that are roughly the widest characters for numbers and letters, respectively.
         // This ensures that the text field is initialised with a size that should be able to fit the full length
@@ -146,6 +146,13 @@ namespace EconSimPlusPlus {
 
     void TextField::setTransition(const State state, const std::function<void()>& function) {
         m_transitions[state] = function;
+    }
+
+    void TextField::setPosition(const glm::vec2 position) {
+        Object::setPosition(position);
+        m_text.setPosition(position);
+        m_placeholder.setPosition(position);
+        m_caret.setPosition(position);
     }
 
     void TextField::setLayer(const float layer) {
