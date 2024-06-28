@@ -239,11 +239,10 @@ namespace EconSimPlusPlus::Editor {
 
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
-        Text frameTimeText{"", m_font.get(),
-                           Font::Style{.color = {1.0f, 1.0f, 0.0f},
-                                       .size = 32.0f,
-                                       .outlineSize = 0.3f,
-                                       .outlineColor = {0.0f, 0.0f, 0.0f}}};
+        Text frameTimeText{
+            "", m_font.get(),
+            Font::Style{
+                .color = {1.0f, 1.0f, 0.0f}, .size = 32.0f, .outlineSize = 0.3f, .outlineColor = {0.0f, 0.0f, 0.0f}}};
         frameTimeText.setAnchor(Anchor::topRight);
         frameTimeText.setLayer(99.0f);
 
@@ -407,6 +406,10 @@ namespace EconSimPlusPlus::Editor {
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         textField->setText(std::to_string(m_tileMap->mapSize().x));
+        textField->setSubmitAction([&](const std::string& text) {
+            /// TODO: Set width of tile map on text field submission.
+            std::cout << std::format("User entered a map width of {:d}.\n", std::stoi(text));
+        });
         mapWidthGroup->addChild(textField);
         m_tileSheetPanel->addChild(mapWidthGroup);
 
@@ -416,12 +419,15 @@ namespace EconSimPlusPlus::Editor {
         mapHeightGroup->addChild(std::make_shared<Text>("Height: ", m_font.get(), Font::Style{}));
 
         textField = std::make_shared<TextField>(
-            "0", m_font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
-                                                TextField::Style{});
+            "0", m_font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric}, TextField::Style{});
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         textField->setText(std::to_string(m_tileMap->mapSize().y));
+        textField->setSubmitAction([&](const std::string& text) {
+            /// TODO: Set height of tile map on text field submission.
+            std::cout << std::format("User entered a map height of {:d}.\n", std::stoi(text));
+        });
         mapHeightGroup->addChild(textField);
         m_tileSheetPanel->addChild(mapHeightGroup);
 

@@ -152,6 +152,10 @@ namespace EconSimPlusPlus {
         });
     }
 
+    void TextField::setSubmitAction(const SubmitAction& function) {
+        m_submitAction = function;
+    }
+
     std::string TextField::text() const {
         return m_text.text();
     }
@@ -190,11 +194,18 @@ namespace EconSimPlusPlus {
                 break;
             }
 
+            if (inputState.keyDown(GLFW_KEY_ENTER)) {
+                if (m_submitAction) {
+                    m_submitAction(text());
+                }
+
+                transitionTo(State::inactive);
+                break;
+            }
+
             m_text.setText(getTextFromInput(m_text.text(), inputState, m_config));
             m_caret.setPosition(bottomRight(m_text));
             m_caret.update(deltaTime, inputState, camera);
-
-            // TODO: Add a `submit` action when the enter key is pressed.
 
             break;
         }

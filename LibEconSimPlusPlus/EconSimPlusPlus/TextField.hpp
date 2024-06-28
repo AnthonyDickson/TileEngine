@@ -60,7 +60,8 @@ namespace EconSimPlusPlus {
         struct Style {
             /// The color with which to fill the text field background.
             glm::vec3 fillColor{1.0f};
-            /// The horizontal and vertical space between the inner borders of the text field and its child objects in pixels.
+            /// The horizontal and vertical space between the inner borders of the text field and its child objects in
+            /// pixels.
             glm::vec2 padding{8.0f};
             /// The color of the text inside the text field.
             Font::Style text{};
@@ -73,6 +74,8 @@ namespace EconSimPlusPlus {
                 .color = glm::vec3{0.0f, 0.5f, 1.0f}, .thickness = 1.0f, .placement = Outline::Placement::outset};
         };
 
+        using SubmitAction = std::function<void(const std::string& text)>;
+
         /// Create a text field for user text entry.
         /// @param placeholder The text to display initially.
         /// @param font The font to render text with.
@@ -80,9 +83,15 @@ namespace EconSimPlusPlus {
         /// @param style The configuration for the text field appearence.
         explicit TextField(const std::string& placeholder, const Font* font, const Config& config, const Style& style);
 
-        /// Get the text field's text.
-        /// @return A string.
-        [[nodiscard]] std::string text() const;
+
+        /// Set function to call when the text field is submitted (user presses enter key while the text field is
+        /// active).
+        /// @param function A function that takes a string.
+        void setSubmitAction(const SubmitAction& function);
+
+            /// Get the text field's text.
+            /// @return A string.
+            [[nodiscard]] std::string text() const;
 
         /// Update the text.
         /// @param text The text to display.
@@ -117,6 +126,9 @@ namespace EconSimPlusPlus {
         State m_state{State::inactive};
         /// A mapping between states and their transitions.
         std::map<State, std::function<void()>> m_transitions{};
+        /// The function to call when the text field is submitted (user presses enter key while the text field is
+        /// active).
+        SubmitAction m_submitAction{};
 
         /// The geometry used to draw the background.
         Quad m_quad{};
