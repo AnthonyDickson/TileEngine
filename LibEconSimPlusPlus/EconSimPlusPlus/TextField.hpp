@@ -80,6 +80,14 @@ namespace EconSimPlusPlus {
         /// @param style The configuration for the text field appearence.
         explicit TextField(const std::string& placeholder, const Font* font, const Config& config, const Style& style);
 
+        /// Get the text field's text.
+        /// @return A string.
+        [[nodiscard]] std::string text() const;
+
+        /// Update the text.
+        /// @param text The text to display.
+        void setText(const std::string& text);
+
         /// Register a function to be called when the text field changes to a given state.
         /// @param state The target state in which to call the specified function.
         /// @param function The function to call when changing to the specified state.

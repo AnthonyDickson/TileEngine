@@ -26,6 +26,8 @@
 #include <EconSimPlusPlus/Outline.hpp>
 #include <EconSimPlusPlus/TextField.hpp>
 
+// TODO: Add input validation. If the 'submit' action is called on invalid input, the action should be cancelled and the
+// user shown a message dialog explaining the problem.
 namespace EconSimPlusPlus {
     namespace {
         /// GLFW keycodes for number keys.
@@ -142,6 +144,14 @@ namespace EconSimPlusPlus {
                 break;
             }
         });
+    }
+
+    std::string TextField::text() const {
+        return m_text.text();
+    }
+
+    void TextField::setText(const std::string& text) {
+        m_text.setText(text);
     }
 
     void TextField::setTransition(const State state, const std::function<void()>& function) {

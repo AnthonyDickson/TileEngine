@@ -407,7 +407,7 @@ namespace EconSimPlusPlus::Editor {
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
-        // TODO: Set initial value to tile map width.
+        textField->setText(std::to_string(m_tileMap->mapSize().x));
         mapWidthGroup->addChild(textField);
         m_tileSheetPanel->addChild(mapWidthGroup);
 
@@ -422,7 +422,7 @@ namespace EconSimPlusPlus::Editor {
         textField->setTransition(TextField::State::active,
                                  [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
         textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
-        // TODO: Set initial value to tile map height.
+        textField->setText(std::to_string(m_tileMap->mapSize().y));
         mapHeightGroup->addChild(textField);
         m_tileSheetPanel->addChild(mapHeightGroup);
 
