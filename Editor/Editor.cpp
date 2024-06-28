@@ -274,7 +274,7 @@ namespace EconSimPlusPlus::Editor {
                 openFile, [&] {});
         };
 
-        Text buttonText{"Open...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
+        Text buttonText{"Open...", m_font.get(), {.size = 32.0f}};
         auto openFileButton{std::make_shared<Button>(buttonText, openFileButtonCallback, buttonStyle, buttonActiveStyle,
                                                      buttonDisabledStyle)};
         openFileButton->setAnchor(Anchor::topLeft);
@@ -288,7 +288,7 @@ namespace EconSimPlusPlus::Editor {
 
         m_objects.push_back(openFileButton);
 
-        Text saveButtonText{"Save...", m_font.get(), {.size = 32.0f, .padding = glm::vec2{16.0f}}};
+        Text saveButtonText{"Save...", m_font.get(), {.size = 32.0f}};
         auto saveFileButton{std::make_shared<Button>(
             saveButtonText,
             [&] {

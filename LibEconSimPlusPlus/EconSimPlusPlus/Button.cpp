@@ -32,19 +32,24 @@ namespace EconSimPlusPlus {
         /// Update the text label settings (e.g. position, layer) to match changes to the button.
         /// @param button The button to use as a reference.
         /// @param text The text label to modify.
-        void syncSettings(const Button& button, Text& text) {
-            const glm::vec2 anchorOffset{calculateAnchorOffset(button.size(), button.anchor())};
-            text.setPosition(button.position() + anchorOffset);
+        /// @param padding The horizontal and vertical space between the inner borders of the button and its child
+        /// objects in pixels.
+        void syncSettings(const Button& button, Text& text, glm::vec2 padding) {
+            text.setAnchor(Anchor::bottomLeft);
+            text.setPosition(bottomLeft(button) + 0.5f * padding);
             text.setLayer(button.layer());
         }
     } // namespace
 
-    Button::Button(const Text& text, std::function<void()> callback, const Style& style, const Style& activeStyle, const Style& disabledStyle) :
+    Button::Button(const Text& text, std::function<void()> callback, const Style& style, const Style& activeStyle,
+                   const Style& disabledStyle) :
         m_text(text), m_callback(std::move(callback)), m_normalStyle(style), m_activeStyle(activeStyle),
         m_disabledStyle(disabledStyle), m_currentStyle(style) {
         assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");
+        assert(m_activeStyle.padding == m_normalStyle.padding == m_disabledStyle.padding &&
+               "All button styles must have the same padding.");
 
-        Object::setSize(glm::vec2{text.size()});
+        Object::setSize(glm::vec2{text.size() + m_currentStyle.padding});
         setState(State::normal);
 
         addEventHandler([&](const Event event, const EventData& eventData) { handleEvents(event, eventData.window); });
@@ -60,17 +65,17 @@ namespace EconSimPlusPlus {
 
     void Button::setPosition(const glm::vec2 position) {
         Object::setPosition(position);
-        syncSettings(*this, m_text);
+        syncSettings(*this, m_text, m_currentStyle.padding);
     }
 
     void Button::setLayer(const float layer) {
         Object::setLayer(layer);
-        syncSettings(*this, m_text);
+        syncSettings(*this, m_text, m_currentStyle.padding);
     }
 
     void Button::setAnchor(const Anchor anchor) {
         Object::setAnchor(anchor);
-        syncSettings(*this, m_text);
+        syncSettings(*this, m_text, m_currentStyle.padding);
     }
 
     void Button::update(float, const InputState& inputState, const Camera&) {

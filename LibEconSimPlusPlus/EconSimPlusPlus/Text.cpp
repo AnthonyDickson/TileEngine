@@ -35,7 +35,7 @@ namespace EconSimPlusPlus {
         m_text = text;
 
         const float scale{m_font->calculateScaleFactor(m_style)};
-        setSize(m_font->calculateTextSize(m_text) * scale + m_style.padding);
+        setSize(m_font->calculateTextSize(m_text) * scale);
     }
 
     void Text::setColor(const glm::vec3 color) {

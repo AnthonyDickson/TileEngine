@@ -151,10 +151,10 @@ namespace EconSimPlusPlus {
 
         m_textureArray->bind();
 
-        glm::vec3 drawPosition{position + glm::vec3{style.padding.x / 2.0f, -style.padding.y / 2.0f, 0.0f}};
+        glm::vec3 drawPosition{position};
 
         const float scale{calculateScaleFactor(style)};
-        const glm::vec2 textSize{calculateTextSize(text) + style.padding};
+        const glm::vec2 textSize{calculateTextSize(text)};
         // The `m_fontSize.y` puts the text origin at the top left corner of the first character.
         const glm::vec2 anchorOffset{calculateAnchorOffset(textSize, anchor, m_fontSize.y) * scale};
         int workingIndex{0};
@@ -176,7 +176,7 @@ namespace EconSimPlusPlus {
                 continue;
             case '\n':
                 drawPosition.y -= m_verticalExtents.y * scale;
-                drawPosition.x = position.x + style.padding.x / 2.0f;
+                drawPosition.x = position.x;
                 continue;
             default:
                 break;

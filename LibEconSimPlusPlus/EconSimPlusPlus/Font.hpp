@@ -42,8 +42,6 @@ namespace EconSimPlusPlus {
             /// The height, in pixels, at which to draw the text. Note that the width will be scaled proportionately to
             /// maintain the aspect ratio.
             float size{32.0f};
-            /// The amount of horizontal and vertical space to add around the text measured in pixels.
-            glm::vec2 padding{0.0f};
             /// The value between zero and one in the font SDF that indicates an edge.
             /// Increasing this value will shrink the font and increasing it will expand the font.
             float sdfThreshold{0.5f};
