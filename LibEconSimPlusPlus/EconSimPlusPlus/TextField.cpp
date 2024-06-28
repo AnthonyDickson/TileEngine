@@ -101,6 +101,17 @@ namespace EconSimPlusPlus {
             return text;
         }
 
+        /// Set the position of text label relative to a text field.
+        /// @note Modifies the text label's position and anchor.
+        /// @param textLabel The text to position.
+        /// @param textField The text field used as the reference point.
+        /// @param padding The horizontal and vertical space between the inner borders of the text field and its child
+        /// objects in pixels.
+        void setTextPosition(Text& textLabel, const TextField& textField, const glm::vec2 padding) {
+            textLabel.setAnchor(Anchor::bottomLeft);
+            textLabel.setPosition(bottomLeft(textField) + 0.5f * padding);
+        }
+
     } // namespace
 
     TextField::TextField(const std::string& placeholder, const Font* font, const Config& config, const Style& style) :
@@ -117,13 +128,8 @@ namespace EconSimPlusPlus {
         Object::setSize(m_text.size() + m_style.padding);
         m_text.setText("");
 
-        auto initText = [&](Text& text) {
-            text.setAnchor(Anchor::topLeft);
-            text.setPosition(topLeft(*this) + 0.5f * glm::vec2{m_style.padding.x, -m_style.padding.y});
-        };
-
-        initText(m_text);
-        initText(m_placeholder);
+        setTextPosition(m_text, *this, m_style.padding);
+        setTextPosition(m_placeholder, *this, m_style.padding);
         m_placeholder.setColor(m_style.placeholderTextColor);
 
         m_caret.setSize(glm::vec2{m_caret.size().x, m_text.size().y});
@@ -160,9 +166,9 @@ namespace EconSimPlusPlus {
 
     void TextField::setPosition(const glm::vec2 position) {
         Object::setPosition(position);
-        m_text.setPosition(position);
-        m_placeholder.setPosition(position);
-        m_caret.setPosition(position);
+        setTextPosition(m_text, *this, m_style.padding);
+        setTextPosition(m_placeholder, *this, m_style.padding);
+        m_caret.setPosition(bottomRight(m_text));
     }
 
     void TextField::setLayer(const float layer) {

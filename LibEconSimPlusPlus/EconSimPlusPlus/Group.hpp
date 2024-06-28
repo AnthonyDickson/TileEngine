@@ -38,7 +38,8 @@ namespace EconSimPlusPlus {
         struct Layout {
             /// How objects in the group should be positioned relative to each other.
             LayoutDirection direction{LayoutDirection::vertical};
-            /// Space between the boundaries of group and its child objects in pixels.
+            /// The horizontal and vertical space between the inner borders of the group and its child objects in
+            /// pixels.
             glm::vec2 padding{};
             /// The space between child objects in pixels.
             float spacing{};

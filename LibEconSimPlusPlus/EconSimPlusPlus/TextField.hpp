@@ -60,7 +60,7 @@ namespace EconSimPlusPlus {
         struct Style {
             /// The color with which to fill the text field background.
             glm::vec3 fillColor{1.0f};
-            /// Padding around internal GUI objects in pixels.
+            /// The horizontal and vertical space between the inner borders of the text field and its child objects in pixels.
             glm::vec2 padding{8.0f};
             /// The color of the text inside the text field.
             Font::Style text{};
