@@ -31,6 +31,30 @@
 
 
 namespace EconSimPlusPlus {
+    namespace {
+        /// Resize a tile map.
+        /// @param oldTiles The tiles in the old tile map.
+        /// @param oldSize The width and height of the old tile map in tiles.
+        /// @param newSize The width and height of the new tile map in tiles.
+        /// @return The tiles in the new tile map, with newly added tiles being set to zero (empty).
+        std::vector<int> resizeTileMap(const std::vector<int>& oldTiles, const glm::ivec2 oldSize,
+                                       const glm::ivec2 newSize) {
+            std::vector<int> newTiles(newSize.x * newSize.y);
+
+            const int colCount{std::min(oldSize.x, newSize.x)};
+            const int rowCount{std::min(oldSize.y, newSize.y)};
+
+            for (int row = 0; row < rowCount; ++row) {
+                for (int col = 0; col < colCount; ++col) {
+                    const int oldIndex{row * oldSize.x + col};
+                    const int newIndex{row * newSize.x + col};
+                    newTiles.at(newIndex) = oldTiles.at(oldIndex);
+                }
+            }
+
+            return newTiles;
+        }
+    }
 
     std::unique_ptr<TileMap> TileMap::create(const std::string& yamlPath) {
         const YAML::Node tileMapConfig{YAML::LoadFile(yamlPath)};
@@ -73,6 +97,22 @@ namespace EconSimPlusPlus {
 
     glm::ivec2 TileMap::mapSize() const {
         return m_mapSize;
+    }
+
+    void TileMap::setMapSize(const glm::ivec2 mapSize) {
+        assert(glm::all(glm::greaterThan(mapSize, glm::ivec3{0})) && "Map size must be positive.");
+
+        if (glm::all(glm::equal(mapSize, m_mapSize))) {
+            return;
+        }
+
+        m_tiles = resizeTileMap(m_tiles, m_mapSize, mapSize);
+        m_mapSize = mapSize;
+        setSize(tileSize() * static_cast<glm::vec2>(mapSize));
+
+        if (m_gridLines.has_value()) {
+            enableGridLines();
+        }
     }
 
     glm::vec2 TileMap::tileSize() const {

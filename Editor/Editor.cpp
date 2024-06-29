@@ -355,14 +355,14 @@ namespace EconSimPlusPlus::Editor {
             }
         };
 
+        // TODO: Fix bug with text fields where they cannot be selected again after submitting (pressing enter).
         auto textField{std::make_shared<TextField>("0", m_font.get(),
                                                    TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                    TextField::Style{})};
         textField->setText(std::to_string(m_tileMap->mapSize().x));
         textField->setInputValidator(textFieldValidator);
         textField->setSubmitAction([&](const std::string& text) {
-            /// TODO: Set width of tile map on text field submission.
-            std::cout << std::format("User entered a map width of {:d}.\n", std::stoi(text));
+            m_tileMap->setMapSize(glm::ivec2{std::stoi(text), m_tileMap->mapSize().y});
         });
         textField->setFocusable(true);
         mapWidthGroup->addChild(textField);
@@ -378,8 +378,7 @@ namespace EconSimPlusPlus::Editor {
         textField->setText(std::to_string(m_tileMap->mapSize().y));
         textField->setInputValidator(textFieldValidator);
         textField->setSubmitAction([&](const std::string& text) {
-            /// TODO: Set height of tile map on text field submission.
-            std::cout << std::format("User entered a map height of {:d}.\n", std::stoi(text));
+            m_tileMap->setMapSize(glm::ivec2{m_tileMap->mapSize().x, std::stoi(text)});
         });
         textField->setFocusable(true);
         mapHeightGroup->addChild(textField);
@@ -424,11 +423,11 @@ namespace EconSimPlusPlus::Editor {
             screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
 
         auto getCursorPos = [&](const std::shared_ptr<Object>& object) {
-          return object == m_tileMap ? cursorPosTileMap : cursorPos;
+            return object == m_tileMap ? cursorPosTileMap : cursorPos;
         };
 
         auto getPrevCursorPos = [&](const std::shared_ptr<Object>& object) {
-          return object == m_tileMap ? previousCursorPosTileMap : previousCursorPos;
+            return object == m_tileMap ? previousCursorPosTileMap : previousCursorPos;
         };
 
         auto allObjects = traverse(m_objects);
@@ -472,11 +471,8 @@ namespace EconSimPlusPlus::Editor {
             }
 
             for (const auto& object : allObjects) {
-                if (not object->focusable() or object.get() == m_focusedObject) {
-                    continue;
-                }
-
-                if (contains(*object, getCursorPos(object))) {
+                if (object.get() != m_focusedObject and object->focusable() and
+                    contains(*object, getCursorPos(object))) {
                     object->notify(Event::focus, {*m_window, std::nullopt});
                     m_focusedObject = object.get();
                     break;

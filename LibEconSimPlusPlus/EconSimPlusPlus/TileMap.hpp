@@ -48,6 +48,10 @@ namespace EconSimPlusPlus {
         /// The size (width, height) of the tile map in tiles.
         [[nodiscard]] glm::ivec2 mapSize() const;
 
+        /// Set the map size.
+        /// @param mapSize The new size (width, height) of the tile map in tiles.
+        void setMapSize(glm::ivec2 mapSize);
+
         /// The size (width and height) of a single tile in pixels.
         [[nodiscard]] glm::vec2 tileSize() const;
 
@@ -103,7 +107,7 @@ namespace EconSimPlusPlus {
         /// The tile sheet.
         const std::unique_ptr<TileSheet> m_tileSheet;
         /// The size (width, height) of the tile map in tiles.
-        const glm::ivec2 m_mapSize;
+        glm::ivec2 m_mapSize;
         /// The tiles of the tile map.
         std::vector<int> m_tiles;
 
