@@ -423,29 +423,25 @@ namespace EconSimPlusPlus::Editor {
         const glm::vec2 previousCursorPosTileMap{
             screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
 
+        auto getCursorPos = [&](const std::shared_ptr<Object>& object) {
+          return object == m_tileMap ? cursorPosTileMap : cursorPos;
+        };
+
+        auto getPrevCursorPos = [&](const std::shared_ptr<Object>& object) {
+          return object == m_tileMap ? previousCursorPosTileMap : previousCursorPos;
+        };
+
         auto allObjects = traverse(m_objects);
 
         for (const auto& object : allObjects) {
-            if (object == m_tileMap and contains(*object, cursorPosTileMap) and
-                not contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
-                break;
-            }
-
-            if (contains(*object, cursorPos) and not contains(*object, previousCursorPos)) {
+            if (contains(*object, getCursorPos(object)) and not contains(*object, getPrevCursorPos(object))) {
                 object->notify(Event::mouseEnter, {*m_window, std::nullopt});
                 break;
             }
         }
 
         for (const auto& object : allObjects) {
-            if (object == m_tileMap and not contains(*object, cursorPosTileMap) and
-                contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
-                break;
-            }
-
-            if (not contains(*object, cursorPos) and contains(*object, previousCursorPos)) {
+            if (not contains(*object, getCursorPos(object)) and contains(*object, getPrevCursorPos(object))) {
                 object->notify(Event::mouseLeave, {*m_window, std::nullopt});
                 break;
             }
@@ -453,13 +449,8 @@ namespace EconSimPlusPlus::Editor {
 
         if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             for (const auto& object : allObjects) {
-                if (object == m_tileMap and contains(*object, cursorPosTileMap)) {
-                    object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
-                    break;
-                }
-
-                if (contains(*object, cursorPos)) {
-                    object->notify(Event::mouseHover, {*m_window, cursorPos});
+                if (contains(*object, getCursorPos(object))) {
+                    object->notify(Event::mouseHover, {*m_window, getCursorPos(object)});
                     break;
                 }
             }
@@ -474,13 +465,8 @@ namespace EconSimPlusPlus::Editor {
 
         if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
             for (const auto& object : allObjects) {
-                if (object == m_tileMap and contains(*object, cursorPosTileMap)) {
-                    object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
-                    break;
-                }
-
-                if (contains(*object, cursorPos)) {
-                    object->notify(Event::mouseClick, {*m_window, cursorPos});
+                if (contains(*object, getCursorPos(object))) {
+                    object->notify(Event::mouseClick, {*m_window, getCursorPos(object)});
                     break;
                 }
             }
@@ -490,13 +476,7 @@ namespace EconSimPlusPlus::Editor {
                     continue;
                 }
 
-                if (contains(*object, cursorPos)) {
-                    object->notify(Event::focus, {*m_window, std::nullopt});
-                    m_focusedObject = object.get();
-                    break;
-                }
-
-                if (object == m_tileMap and contains(*object, cursorPosTileMap)) {
+                if (contains(*object, getCursorPos(object))) {
                     object->notify(Event::focus, {*m_window, std::nullopt});
                     m_focusedObject = object.get();
                     break;
