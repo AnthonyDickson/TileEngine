@@ -331,14 +331,26 @@ namespace EconSimPlusPlus::Editor {
         mapWidthGroup->addChild(std::make_shared<Text>("Width: ", m_font.get(), Font::Style{}));
 
         const auto textFieldValidator = [&](const std::string& text) {
+            auto showDialog = [&](const std::string& message) {
+                m_dialog = {std::make_unique<MessageDialog>(
+                    pfd::message("Invalid Input", message, pfd::choice::ok, pfd::icon::warning), [] {}, [] {})};
+            };
+
             try {
-                const int number{std::stoi(text)};
-                return not text.empty() and number > 0;
+                if (const int number{std::stoi(text)}; number < 1) {
+                    showDialog(std::format("Please enter a positive number (you entered {:d}).", number));
+                    return false;
+                }
+
+                return true;
             }
             catch (std::invalid_argument&) {
+                showDialog(
+                    std::format("Please enter a number ({:s} is not a number).", text.empty() ? "empty string" : text));
                 return false;
             }
             catch (std::out_of_range&) {
+                showDialog(std::format("Please enter a smaller number, the number {:s} is too big.", text));
                 return false;
             }
         };

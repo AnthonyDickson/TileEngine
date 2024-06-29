@@ -190,8 +190,7 @@ namespace EconSimPlusPlus {
         case State::active:
             if (inputState.keyDown(GLFW_KEY_ENTER)) {
                 if (m_inputValidator and not m_inputValidator(text())) {
-                    // TODO: Show message dialog explaining what is wrong with the input.
-                    // TODO: Rollback input to text before text field became active?
+                    setText(m_stringBackup);
                     break;
                 }
 
@@ -235,10 +234,10 @@ namespace EconSimPlusPlus {
             return;
         }
 
-        // Default state transitions.
         switch (state) {
         case State::active:
             m_caret.show();
+            m_stringBackup = text();
             break;
         case State::inactive:
             m_caret.hide();
