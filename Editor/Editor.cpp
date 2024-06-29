@@ -219,74 +219,6 @@ namespace EconSimPlusPlus::Editor {
                  {0.0f, 0.0f, 100.0f}} {
     }
 
-    void Editor::update(const float deltaTime) {
-        if (m_dialog != nullptr and m_dialog->active()) {
-            m_dialog->update();
-            return;
-        }
-
-        if (m_window->hasWindowSizeChanged()) {
-            m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
-            notify(Event::windowResize);
-        }
-
-        const Camera guiCamera{atOrigin(m_camera)};
-
-        if (m_focusedObject != nullptr) {
-            m_focusedObject->update(deltaTime, m_window->inputState(), guiCamera);
-        }
-
-        const InputState input{m_focusedObject == nullptr ? m_window->inputState()
-                                                          : m_window->inputState().withoutKeyboardInput()};
-        m_camera.update(deltaTime, input);
-
-        for (const auto& object : m_objects) {
-            if (m_focusedObject != nullptr and object.get() != m_focusedObject) {
-                continue; // Avoid a double update.
-            }
-
-            // TODO: Create a more general way to determine whether an object should be sent regular or GUI camera.
-            if (object != m_tileMap) {
-                object->update(deltaTime, input, guiCamera);
-            }
-            else {
-                object->update(deltaTime, input, m_camera);
-            }
-        }
-
-        handleEvents();
-    }
-
-    void Editor::render() const {
-        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glEnable(GL_CULL_FACE);
-
-        const Camera guiCamera{atOrigin(m_camera)};
-
-        for (const auto& object : m_objects) {
-            if (object != m_tileMap) {
-                object->render(guiCamera);
-            }
-            else {
-                object->render(m_camera);
-            }
-        }
-    }
-
-    // ReSharper disable once CppMemberFunctionMayBeConst
-    void Editor::notify(const Event event) {
-        for (const auto& object : m_objects) {
-            object->notify(event, {*m_window, std::nullopt});
-        }
-    }
-
     void Editor::loadTileSheet(const std::string& filepath) {
         // TODO: Show dialog that asks user whether save current tile map, discard any changes or cancel the open
         // operation.
@@ -410,7 +342,52 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Paint tiles by holding down mouse button and moving over grid cells in addition to single clicks.
         // TODO: 'Color picking' tool where right clicking on a tile will select that tile for painting.
 
-        notify(Event::tileMapLoaded);
+        notifyAll(Event::tileMapLoaded);
+    }
+
+    void Editor::update(const float deltaTime) {
+        if (m_dialog != nullptr and m_dialog->active()) {
+            m_dialog->update();
+            return;
+        }
+
+        if (m_window->hasWindowSizeChanged()) {
+            m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+            notifyAll(Event::windowResize);
+        }
+
+        const Camera guiCamera{atOrigin(m_camera)};
+
+        if (m_focusedObject != nullptr) {
+            m_focusedObject->update(deltaTime, m_window->inputState(), guiCamera);
+        }
+
+        const InputState input{m_focusedObject == nullptr ? m_window->inputState()
+                                                          : m_window->inputState().withoutKeyboardInput()};
+        m_camera.update(deltaTime, input);
+
+        for (const auto& object : m_objects) {
+            if (m_focusedObject != nullptr and object.get() != m_focusedObject) {
+                continue; // Avoid a double update.
+            }
+
+            // TODO: Create a more general way to determine whether an object should be sent regular or GUI camera.
+            if (object != m_tileMap) {
+                object->update(deltaTime, input, guiCamera);
+            }
+            else {
+                object->update(deltaTime, input, m_camera);
+            }
+        }
+
+        handleEvents();
+    }
+
+    // ReSharper disable once CppMemberFunctionMayBeConst
+    void Editor::notifyAll(const Event event) {
+        for (const auto& object : m_objects) {
+            object->notify(event, {*m_window, std::nullopt});
+        }
     }
 
     void Editor::handleEvents() {
@@ -490,4 +467,26 @@ namespace EconSimPlusPlus::Editor {
         }
     }
 
+    void Editor::render() const {
+        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_CULL_FACE);
+
+        const Camera guiCamera{atOrigin(m_camera)};
+
+        for (const auto& object : m_objects) {
+            if (object != m_tileMap) {
+                object->render(guiCamera);
+            }
+            else {
+                object->render(m_camera);
+            }
+        }
+    }
 } // namespace EconSimPlusPlus::Editor

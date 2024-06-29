@@ -22,6 +22,7 @@
 #ifndef LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_WINDOW_HPP
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_WINDOW_HPP
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include <string>
 
 #define GLFW_INCLUDE_NONE
