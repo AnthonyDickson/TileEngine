@@ -26,6 +26,14 @@
 namespace EconSimPlusPlus {
     Object::~Object() = default;
 
+    bool Object::focusable() const {
+        return m_focusable;
+    }
+
+    void Object::setFocusable(bool value) {
+        m_focusable = value;
+    }
+
     glm::vec2 Object::position() const {
         return {m_position.x, m_position.y};
     }

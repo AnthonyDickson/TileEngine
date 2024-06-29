@@ -93,18 +93,13 @@ namespace EconSimPlusPlus {
         /// @param function A function that takes a string.
         void setSubmitAction(const SubmitAction& function);
 
-            /// Get the text field's text.
-            /// @return A string.
-            [[nodiscard]] std::string text() const;
+        /// Get the text field's text.
+        /// @return A string.
+        [[nodiscard]] std::string text() const;
 
         /// Update the text.
         /// @param text The text to display.
         void setText(const std::string& text);
-
-        /// Register a function to be called when the text field changes to a given state.
-        /// @param state The target state in which to call the specified function.
-        /// @param function The function to call when changing to the specified state.
-        void setTransition(State state, const std::function<void()>& function);
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
@@ -128,8 +123,6 @@ namespace EconSimPlusPlus {
         TextCaret m_caret;
         /// The current state of the text field.
         State m_state{State::inactive};
-        /// A mapping between states and their transitions.
-        std::map<State, std::function<void()>> m_transitions{};
         /// The function to call to check whether the input text is valid.
         InputValidator m_inputValidator{};
         /// The function to call when the text field is submitted (user presses enter key while the text field is

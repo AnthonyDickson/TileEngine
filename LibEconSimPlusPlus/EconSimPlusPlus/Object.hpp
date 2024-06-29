@@ -38,6 +38,14 @@ namespace EconSimPlusPlus {
     public:
         virtual ~Object();
 
+        /// Get whether the object should be able to receive 'focus'.
+        /// @return `true` if this object can receive focus.
+        [[nodiscard]] bool focusable() const;
+
+        /// Set whether the object should be able to receive 'focus'.
+        /// @param value `true` if the object should receive focus, otherwise `false`.
+        void setFocusable(bool value);
+
         /// Get the object's 2D coordinate in world space.
         /// @return A 2-vector.
         [[nodiscard]] glm::vec2 position() const;
@@ -106,6 +114,9 @@ namespace EconSimPlusPlus {
         glm::vec2 m_size{1.0f};
         /// The point on the object that is used as the origin for its position.
         Anchor m_anchor{Anchor::topLeft};
+        /// Whether the object should be able to receive 'focus' (e.g., by being clicked on) and become the sole
+        /// receiver of keyboard input. This is primarily useful for text fields.
+        bool m_focusable{false};
         /// The registered event handlers.
         std::vector<EventHandler> m_eventHandlers{};
         /// The objects contained by this object.

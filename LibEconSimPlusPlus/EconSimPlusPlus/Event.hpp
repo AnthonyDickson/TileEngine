@@ -31,7 +31,7 @@
 
 namespace EconSimPlusPlus {
     /// Global event types.
-    enum class Event { tileMapLoaded, windowResize, mouseEnter, mouseLeave, mouseHover, mouseClick };
+    enum class Event { tileMapLoaded, windowResize, mouseEnter, mouseLeave, mouseHover, mouseClick, focus, defocus };
 
     /// The data to accompany an event notification.
     struct EventData {

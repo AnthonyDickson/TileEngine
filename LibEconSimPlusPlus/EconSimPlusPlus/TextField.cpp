@@ -141,8 +141,11 @@ namespace EconSimPlusPlus {
             case Event::mouseLeave:
                 eventData.window.setCursor(GLFW_CURSOR_NORMAL);
                 break;
-            case Event::mouseClick:
+            case Event::focus:
                 transitionTo(State::active);
+                break;
+            case Event::defocus:
+                transitionTo(State::inactive);
                 break;
             default:
                 break;
@@ -166,10 +169,6 @@ namespace EconSimPlusPlus {
         m_text.setText(text);
     }
 
-    void TextField::setTransition(const State state, const std::function<void()>& function) {
-        m_transitions[state] = function;
-    }
-
     void TextField::setPosition(const glm::vec2 position) {
         Object::setPosition(position);
         setTextPosition(m_text, *this, m_style.padding);
@@ -189,17 +188,6 @@ namespace EconSimPlusPlus {
         case State::inactive:
             break;
         case State::active:
-            // TODO: Instead of polling for whether the mouse was clicked outside the text field, the Editor/Game Engine
-            // could keep track of the focused GUI element, and when an object is clicked the focused element is set and
-            // the previously focused object is sent a 'defocus' event. This focus could be used for directing keyboard
-            // input too.
-            if (inputState.keyDown(GLFW_KEY_ESCAPE) or
-                (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                 not contains(*this, screenToWorldCoordinates(inputState.mousePosition(), camera)))) {
-                transitionTo(State::inactive);
-                break;
-            }
-
             if (inputState.keyDown(GLFW_KEY_ENTER)) {
                 if (m_inputValidator and not m_inputValidator(text())) {
                     // TODO: Show message dialog explaining what is wrong with the input.
@@ -245,11 +233,6 @@ namespace EconSimPlusPlus {
     void TextField::transitionTo(const State state) {
         if (state == m_state) {
             return;
-        }
-
-        // User-defined state transition.
-        if (m_transitions.contains(state)) {
-            m_transitions.at(state)();
         }
 
         // Default state transitions.

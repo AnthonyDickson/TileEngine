@@ -263,71 +263,7 @@ namespace EconSimPlusPlus::Editor {
             }
         }
 
-        std::ranges::sort(m_objects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
-            return a->layer() > b->layer();
-        });
-
-        // TODO: Find more elegant way to determine which set of cursor positions to send to objects.
-        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), guiCamera)};
-        const glm::vec2 previousCursorPos{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), guiCamera)};
-
-        const glm::vec2 cursorPosTileMap{screenToWorldCoordinates(input.mousePosition(), m_camera)};
-        const glm::vec2 previousCursorPosTileMap{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
-
-        // TODO: Testing for events should happen by traversing all objects in `m_objects` and their child objects.
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and contains(*object, cursorPosTileMap) and
-                not contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
-                break;
-            }
-
-            if (contains(*object, cursorPos) and not contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
-                break;
-            }
-        }
-
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and not contains(*object, cursorPosTileMap) and
-                contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
-                break;
-            }
-
-            if (not contains(*object, cursorPos) and contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
-                break;
-            }
-        }
-
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                contains(*object, cursorPosTileMap)) {
-                object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
-                break;
-            }
-
-            if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
-                object->notify(Event::mouseHover, {*m_window, cursorPos});
-                break;
-            }
-        }
-
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                contains(*object, cursorPosTileMap)) {
-                object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
-                break;
-            }
-
-            if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
-                object->notify(Event::mouseClick, {*m_window, cursorPos});
-                break;
-            }
-        }
+        handleEvents();
     }
 
     void Editor::render() const {
@@ -419,15 +355,13 @@ namespace EconSimPlusPlus::Editor {
         auto textField{std::make_shared<TextField>("0", m_font.get(),
                                                    TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                    TextField::Style{})};
-        textField->setTransition(TextField::State::active,
-                                 [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
-        textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         textField->setText(std::to_string(m_tileMap->mapSize().x));
         textField->setInputValidator(textFieldValidator);
         textField->setSubmitAction([&](const std::string& text) {
             /// TODO: Set width of tile map on text field submission.
             std::cout << std::format("User entered a map width of {:d}.\n", std::stoi(text));
         });
+        textField->setFocusable(true);
         mapWidthGroup->addChild(textField);
         m_tileSheetPanel->addChild(mapWidthGroup);
 
@@ -438,15 +372,13 @@ namespace EconSimPlusPlus::Editor {
 
         textField = std::make_shared<TextField>(
             "0", m_font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric}, TextField::Style{});
-        textField->setTransition(TextField::State::active,
-                                 [&, textField] { m_exclusiveKeyboardInputTarget = textField.get(); });
-        textField->setTransition(TextField::State::inactive, [&] { m_exclusiveKeyboardInputTarget = nullptr; });
         textField->setText(std::to_string(m_tileMap->mapSize().y));
         textField->setInputValidator(textFieldValidator);
         textField->setSubmitAction([&](const std::string& text) {
             /// TODO: Set height of tile map on text field submission.
             std::cout << std::format("User entered a map height of {:d}.\n", std::stoi(text));
         });
+        textField->setFocusable(true);
         mapHeightGroup->addChild(textField);
         m_tileSheetPanel->addChild(mapHeightGroup);
 
@@ -468,6 +400,106 @@ namespace EconSimPlusPlus::Editor {
         // TODO: 'Color picking' tool where right clicking on a tile will select that tile for painting.
 
         notify(Event::tileMapLoaded);
+    }
+
+    void Editor::handleEvents() {
+        std::ranges::sort(m_objects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+            return a->layer() > b->layer();
+        });
+
+        // TODO: Find more elegant way to determine which set of cursor positions to send to objects.
+        const Camera guiCamera{atOrigin(m_camera)};
+        const InputState input{m_focusedObject == nullptr ? m_window->inputState()
+                                                          : m_window->inputState().withoutKeyboardInput()};
+
+        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), guiCamera)};
+        const glm::vec2 previousCursorPos{
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), guiCamera)};
+
+        const glm::vec2 cursorPosTileMap{screenToWorldCoordinates(input.mousePosition(), m_camera)};
+        const glm::vec2 previousCursorPosTileMap{
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
+
+        auto allObjects = traverse(m_objects);
+
+        for (const auto& object : allObjects) {
+            if (object == m_tileMap and contains(*object, cursorPosTileMap) and
+                not contains(*object, previousCursorPosTileMap)) {
+                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
+                break;
+            }
+
+            if (contains(*object, cursorPos) and not contains(*object, previousCursorPos)) {
+                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
+                break;
+            }
+        }
+
+        for (const auto& object : allObjects) {
+            if (object == m_tileMap and not contains(*object, cursorPosTileMap) and
+                contains(*object, previousCursorPosTileMap)) {
+                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
+                break;
+            }
+
+            if (not contains(*object, cursorPos) and contains(*object, previousCursorPos)) {
+                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
+                break;
+            }
+        }
+
+        if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            for (const auto& object : allObjects) {
+                if (object == m_tileMap and contains(*object, cursorPosTileMap)) {
+                    object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
+                    break;
+                }
+
+                if (contains(*object, cursorPos)) {
+                    object->notify(Event::mouseHover, {*m_window, cursorPos});
+                    break;
+                }
+            }
+        }
+
+        if (m_focusedObject != nullptr and
+            (m_window->inputState().keyDown(GLFW_KEY_ESCAPE) or
+             input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and not contains(*m_focusedObject, cursorPos))) {
+            m_focusedObject->notify(Event::defocus, {*m_window, std::nullopt});
+            m_focusedObject = nullptr;
+        }
+
+        if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            for (const auto& object : allObjects) {
+                if (object == m_tileMap and contains(*object, cursorPosTileMap)) {
+                    object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
+                    break;
+                }
+
+                if (contains(*object, cursorPos)) {
+                    object->notify(Event::mouseClick, {*m_window, cursorPos});
+                    break;
+                }
+            }
+
+            for (const auto& object : allObjects) {
+                if (not object->focusable() or object.get() == m_focusedObject) {
+                    continue;
+                }
+
+                if (contains(*object, cursorPos)) {
+                    object->notify(Event::focus, {*m_window, std::nullopt});
+                    m_focusedObject = object.get();
+                    break;
+                }
+
+                if (object == m_tileMap and contains(*object, cursorPosTileMap)) {
+                    object->notify(Event::focus, {*m_window, std::nullopt});
+                    m_focusedObject = object.get();
+                    break;
+                }
+            }
+        }
     }
 
 } // namespace EconSimPlusPlus::Editor

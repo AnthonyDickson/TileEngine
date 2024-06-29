@@ -66,6 +66,9 @@ namespace EconSimPlusPlus::Editor {
         /// @param filepath The path to the tile sheet image.
         void loadTileSheet(const std::string& filepath);
 
+        /// Check for events and notify the relevant objects.
+        void handleEvents();
+
         /// The window we use to display the editor.
         std::unique_ptr<Window> m_window;
         /// The render camera.
@@ -74,7 +77,7 @@ namespace EconSimPlusPlus::Editor {
         std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
 
         /// The exclusive receiver of keyboard input, if any.
-        Object* m_exclusiveKeyboardInputTarget{nullptr};
+        Object* m_focusedObject{nullptr};
         /// The tile to paint onto the tile map.
         int m_selectedTileID{0};
         /// The tile map that is currently being edited.
