@@ -355,14 +355,18 @@ namespace EconSimPlusPlus::Editor {
             }
         };
 
-        // TODO: Fix bug with text fields where they cannot be selected again after submitting (pressing enter).
         auto textField{std::make_shared<TextField>("0", m_font.get(),
                                                    TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                    TextField::Style{})};
         textField->setText(std::to_string(m_tileMap->mapSize().x));
         textField->setInputValidator(textFieldValidator);
-        textField->setSubmitAction([&](const std::string& text) {
+        textField->setSubmitAction([&, textField](const std::string& text) {
             m_tileMap->setMapSize(glm::ivec2{std::stoi(text), m_tileMap->mapSize().y});
+
+            if (textField.get() == m_focusedObject) {
+                textField->notify(Event::defocus, {*m_window, std::nullopt});
+                m_focusedObject = nullptr;
+            }
         });
         textField->setFocusable(true);
         mapWidthGroup->addChild(textField);
@@ -377,8 +381,13 @@ namespace EconSimPlusPlus::Editor {
             "0", m_font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric}, TextField::Style{});
         textField->setText(std::to_string(m_tileMap->mapSize().y));
         textField->setInputValidator(textFieldValidator);
-        textField->setSubmitAction([&](const std::string& text) {
+        textField->setSubmitAction([&, textField](const std::string& text) {
             m_tileMap->setMapSize(glm::ivec2{m_tileMap->mapSize().x, std::stoi(text)});
+
+            if (textField.get() == m_focusedObject) {
+                textField->notify(Event::defocus, {*m_window, std::nullopt});
+                m_focusedObject = nullptr;
+            }
         });
         textField->setFocusable(true);
         mapHeightGroup->addChild(textField);
