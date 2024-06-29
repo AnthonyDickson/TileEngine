@@ -80,7 +80,6 @@ namespace EconSimPlusPlus {
     TileMap::TileMap(std::unique_ptr<TileSheet> tileSheet, const glm::ivec2 mapSize, const std::vector<int>& tiles) :
         m_tileSheet(std::move(tileSheet)), m_mapSize(mapSize), m_tiles(tiles) {
 
-        setPosition(tileSize() * -static_cast<glm::vec2>(mapSize) / 2.0f);
         Object::setSize(tileSize() * static_cast<glm::vec2>(mapSize));
 
         addEventHandler([&](const Event event, const EventData& eventData) {

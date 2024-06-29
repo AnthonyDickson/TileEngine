@@ -301,7 +301,7 @@ namespace EconSimPlusPlus::Editor {
         // Tile map display
         auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
         m_tileMap = std::make_shared<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles);
-        m_tileMap->setAnchor(Anchor::bottomLeft);
+        m_tileMap->setAnchor(Anchor::center);
         m_tileMap->setLayer(1.0f);
         m_tileMap->enableGridLines();
         m_tileMap->addClickListener(

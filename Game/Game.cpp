@@ -103,7 +103,7 @@ namespace EconSimPlusPlus {
 
         // TODO: Move this to factory function?
         m_tileMap->setLayer(1.0f);
-        m_tileMap->setAnchor(Anchor::bottomLeft);
+        m_tileMap->setAnchor(Anchor::center);
         m_tileMap->enableGridLines();
         objects.push_back(m_tileMap.get());
 
