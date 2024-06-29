@@ -29,7 +29,9 @@
 #include "yaml-cpp/yaml.h"
 
 #include <EconSimPlusPlus/Button.hpp>
+#include <EconSimPlusPlus/Editor/MessageDialog.hpp>
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
+#include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 #include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
@@ -115,8 +117,9 @@ namespace EconSimPlusPlus::Editor {
         Button::Style buttonDisabledStyle{.textColor = glm::vec3{0.4f}, .fillColor = glm::vec3{0.5f}};
 
         auto openFile = [&] {
-            m_openFileDialog.open(pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
-                                  [this](const std::string& selection) { loadTileSheet(selection); });
+            m_dialog = std::make_unique<OpenFileDialog>(
+                pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
+                [this](const std::string& selection) { loadTileSheet(selection); });
             // This ensures the cursor is restored even if the mouseLeave event is not triggered for the button that
             // opened the file dialog.
             m_window->setCursor(GLFW_CURSOR_NORMAL);
@@ -130,11 +133,11 @@ namespace EconSimPlusPlus::Editor {
 
             // TODO: Check whether there are unsaved changes (dirty flag?)
 
-            m_messageDialog.open(
+            m_dialog = {std::make_unique<MessageDialog>(
                 pfd::message("Unsaved Changes",
                              "Any unsaved changes will be lost if you open a new file. Do you want to continue?",
                              pfd::choice::yes_no, pfd::icon::warning),
-                openFile, [&] {});
+                openFile, [&] {})};
         };
 
         Text buttonText{"Open...", m_font.get(), {.size = 32.0f}};
@@ -155,8 +158,9 @@ namespace EconSimPlusPlus::Editor {
         auto saveFileButton{std::make_shared<Button>(
             saveButtonText,
             [&] {
-                m_saveFileDialog.open(pfd::save_file("Select a file", "", {"YAML Files", "*.yaml"}),
-                                      [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
+                m_dialog = std::make_unique<SaveFileDialog>(
+                    pfd::save_file("Select a file", "", {"YAML Files", "*.yaml"}),
+                    [this](const std::string& filepath) { save(m_tileMap.get(), filepath); });
             },
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         saveFileButton->setAnchor(Anchor::topLeft);
@@ -187,9 +191,6 @@ namespace EconSimPlusPlus::Editor {
             }
 
             if (m_window->shouldClose()) {
-                m_openFileDialog.kill();
-                m_saveFileDialog.kill();
-                m_messageDialog.kill();
                 return;
             }
 
@@ -219,18 +220,8 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::update(const float deltaTime) {
-        if (m_openFileDialog.active()) {
-            m_openFileDialog.update();
-            return;
-        }
-
-        if (m_saveFileDialog.active()) {
-            m_saveFileDialog.update();
-            return;
-        }
-
-        if (m_messageDialog.active()) {
-            m_messageDialog.update();
+        if (m_dialog != nullptr and m_dialog->active()) {
+            m_dialog->update();
             return;
         }
 

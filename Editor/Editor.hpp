@@ -22,9 +22,7 @@
 #ifndef EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 #define EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 
-#include <EconSimPlusPlus/Editor/MessageDialog.hpp>
-#include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
-#include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
+#include <EconSimPlusPlus/Editor/Dialog.hpp>
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/Group.hpp>
 #include <EconSimPlusPlus/Object.hpp>
@@ -86,12 +84,9 @@ namespace EconSimPlusPlus::Editor {
         std::shared_ptr<Group> m_tileSheetPanel{};
         /// A list of all objects.
         std::vector<std::shared_ptr<Object>> m_objects{};
-        /// Handles asynchronous open file dialogs.
-        OpenFileDialog m_openFileDialog{};
-        /// Handles asynchronous save file dialogs.
-        SaveFileDialog m_saveFileDialog{};
-        /// Handles asynchronous message dialogs.
-        MessageDialog m_messageDialog{};
+        /// Handles asynchronous dialogs.
+        /// @note Possibly nullptr.
+        std::unique_ptr<Dialog> m_dialog{};
     };
 } // namespace EconSimPlusPlus::Editor
 

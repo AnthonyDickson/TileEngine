@@ -24,10 +24,13 @@
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
 
 namespace EconSimPlusPlus::Editor {
-    void OpenFileDialog::open(const pfd::open_file& fileDialog, const std::function<void(std::string)>& callback) {
+    OpenFileDialog::OpenFileDialog(const pfd::open_file& fileDialog, const std::function<void(std::string)>& callback) :
+        m_fileDialog(fileDialog), m_callback(callback) {
         assert(not active() && "Cannot open a new dialog when one is already open.");
-        m_fileDialog = fileDialog;
-        m_callback = callback;
+    }
+
+    OpenFileDialog::~OpenFileDialog() {
+        kill();
     }
 
     bool OpenFileDialog::active() const {

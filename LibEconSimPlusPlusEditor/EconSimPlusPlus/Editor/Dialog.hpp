@@ -16,42 +16,31 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by Anthony Dickson on 02/06/2024.
+// Created by Anthony Dickson on 29/06/2024.
 //
 
-#include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
+#ifndef LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_DIALOG_HPP
+#define LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_DIALOG_HPP
+
 
 namespace EconSimPlusPlus::Editor {
-    SaveFileDialog::SaveFileDialog(const pfd::save_file& fileDialog, const std::function<void(std::string)>& callback) :
-        m_fileDialog(fileDialog), m_callback(callback) {
-    }
 
-    SaveFileDialog::~SaveFileDialog() {
-        kill();
-    }
+    /// Manages asynchronous dialog windows.
+    class Dialog {
+    public:
+        virtual ~Dialog() = default;
 
-    bool SaveFileDialog::active() const {
-        return m_fileDialog.has_value();
-    }
+        /// Check whether the dialog is currently open.
+        /// @return `true` if the dialog is currently open, `false` otherwise.
+        [[nodiscard]] virtual bool active() const = 0;
 
-    void SaveFileDialog::update() {
-        if (not active() or not m_fileDialog->ready(0)) {
-            return;
-        }
+        /// Poll for the user's selection.
+        virtual void update() = 0;
 
-        if (const std::string filePath = m_fileDialog->result(); not filePath.empty()) {
-            m_callback(filePath);
-        }
+        /// Close the active file dialog, if one exists, without waiting for user input.
+        virtual void kill() = 0;
+    };
 
-        m_fileDialog.reset();
-    }
-
-    void SaveFileDialog::kill() {
-        if (not active()) {
-            return;
-        }
-
-        m_fileDialog->kill();
-        m_fileDialog.reset();
-    }
 } // namespace EconSimPlusPlus::Editor
+
+#endif // LIBECONSIMPLUSPLUSEDITOR_ECONSIMPLUSPLUS_DIALOG_HPP
