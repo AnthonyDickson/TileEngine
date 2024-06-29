@@ -94,142 +94,6 @@ namespace EconSimPlusPlus::Editor {
         return Editor{std::move(window)};
     }
 
-    void Editor::update(const float deltaTime) {
-        if (m_openFileDialog.active()) {
-            m_openFileDialog.update();
-            return;
-        }
-
-        if (m_saveFileDialog.active()) {
-            m_saveFileDialog.update();
-            return;
-        }
-
-        if (m_messageDialog.active()) {
-            m_messageDialog.update();
-            return;
-        }
-
-        if (m_window->hasWindowSizeChanged()) {
-            m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
-            notify(Event::windowResize);
-        }
-
-        const Camera guiCamera{atOrigin(m_camera)};
-
-        if (m_exclusiveKeyboardInputTarget != nullptr) {
-            m_exclusiveKeyboardInputTarget->update(deltaTime, m_window->inputState(), guiCamera);
-        }
-
-        const InputState input{m_exclusiveKeyboardInputTarget == nullptr
-                                   ? m_window->inputState()
-                                   : m_window->inputState().withoutKeyboardInput()};
-        m_camera.update(deltaTime, input);
-
-        for (const auto& object : m_objects) {
-            if (m_exclusiveKeyboardInputTarget != nullptr and object.get() != m_exclusiveKeyboardInputTarget) {
-                continue; // Avoid a double update.
-            }
-
-            // TODO: Create a more general way to determine whether an object should be sent regular or GUI camera.
-            if (object != m_tileMap) {
-                object->update(deltaTime, input, guiCamera);
-            }
-            else {
-                object->update(deltaTime, input, m_camera);
-            }
-        }
-
-        std::ranges::sort(m_objects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
-            return a->layer() > b->layer();
-        });
-
-        // TODO: Find more elegant way to determine which set of cursor positions to send to objects.
-        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), guiCamera)};
-        const glm::vec2 previousCursorPos{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), guiCamera)};
-
-        const glm::vec2 cursorPosTileMap{screenToWorldCoordinates(input.mousePosition(), m_camera)};
-        const glm::vec2 previousCursorPosTileMap{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
-
-        // TODO: Testing for events should happen by traversing all objects in `m_objects` and their child objects.
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and contains(*object, cursorPosTileMap) and
-                not contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
-                break;
-            }
-
-            if (contains(*object, cursorPos) and not contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
-                break;
-            }
-        }
-
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and not contains(*object, cursorPosTileMap) and
-                contains(*object, previousCursorPosTileMap)) {
-                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
-                break;
-            }
-
-            if (not contains(*object, cursorPos) and contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
-                break;
-            }
-        }
-
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                contains(*object, cursorPosTileMap)) {
-                object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
-                break;
-            }
-
-            if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
-                object->notify(Event::mouseHover, {*m_window, cursorPos});
-                break;
-            }
-        }
-
-        for (const auto& object : traverse(m_objects)) {
-            if (object == m_tileMap and input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
-                contains(*object, cursorPosTileMap)) {
-                object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
-                break;
-            }
-
-            if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
-                object->notify(Event::mouseClick, {*m_window, cursorPos});
-                break;
-            }
-        }
-    }
-
-    void Editor::render() const {
-        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glEnable(GL_CULL_FACE);
-
-        const Camera guiCamera{atOrigin(m_camera)};
-
-        for (const auto& object : m_objects) {
-            if (object != m_tileMap) {
-                object->render(guiCamera);
-            }
-            else {
-                object->render(m_camera);
-            }
-        }
-    }
-
     void Editor::run() {
         constexpr int targetFramesPerSecond{60};
         constexpr std::chrono::milliseconds targetFrameTime{1000 / targetFramesPerSecond};
@@ -348,6 +212,154 @@ namespace EconSimPlusPlus::Editor {
         }
     }
 
+    Editor::Editor(std::unique_ptr<Window> window) :
+        m_window(std::move(window)),
+        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                 {0.0f, 0.0f, 100.0f}} {
+    }
+
+    void Editor::update(const float deltaTime) {
+        if (m_openFileDialog.active()) {
+            m_openFileDialog.update();
+            return;
+        }
+
+        if (m_saveFileDialog.active()) {
+            m_saveFileDialog.update();
+            return;
+        }
+
+        if (m_messageDialog.active()) {
+            m_messageDialog.update();
+            return;
+        }
+
+        if (m_window->hasWindowSizeChanged()) {
+            m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+            notify(Event::windowResize);
+        }
+
+        const Camera guiCamera{atOrigin(m_camera)};
+
+        if (m_focusedObject != nullptr) {
+            m_focusedObject->update(deltaTime, m_window->inputState(), guiCamera);
+        }
+
+        const InputState input{m_focusedObject == nullptr ? m_window->inputState()
+                                                          : m_window->inputState().withoutKeyboardInput()};
+        m_camera.update(deltaTime, input);
+
+        for (const auto& object : m_objects) {
+            if (m_focusedObject != nullptr and object.get() != m_focusedObject) {
+                continue; // Avoid a double update.
+            }
+
+            // TODO: Create a more general way to determine whether an object should be sent regular or GUI camera.
+            if (object != m_tileMap) {
+                object->update(deltaTime, input, guiCamera);
+            }
+            else {
+                object->update(deltaTime, input, m_camera);
+            }
+        }
+
+        std::ranges::sort(m_objects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+            return a->layer() > b->layer();
+        });
+
+        // TODO: Find more elegant way to determine which set of cursor positions to send to objects.
+        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), guiCamera)};
+        const glm::vec2 previousCursorPos{
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), guiCamera)};
+
+        const glm::vec2 cursorPosTileMap{screenToWorldCoordinates(input.mousePosition(), m_camera)};
+        const glm::vec2 previousCursorPosTileMap{
+            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
+
+        // TODO: Testing for events should happen by traversing all objects in `m_objects` and their child objects.
+        for (const auto& object : traverse(m_objects)) {
+            if (object == m_tileMap and contains(*object, cursorPosTileMap) and
+                not contains(*object, previousCursorPosTileMap)) {
+                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
+                break;
+            }
+
+            if (contains(*object, cursorPos) and not contains(*object, previousCursorPos)) {
+                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
+                break;
+            }
+        }
+
+        for (const auto& object : traverse(m_objects)) {
+            if (object == m_tileMap and not contains(*object, cursorPosTileMap) and
+                contains(*object, previousCursorPosTileMap)) {
+                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
+                break;
+            }
+
+            if (not contains(*object, cursorPos) and contains(*object, previousCursorPos)) {
+                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
+                break;
+            }
+        }
+
+        for (const auto& object : traverse(m_objects)) {
+            if (object == m_tileMap and not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                contains(*object, cursorPosTileMap)) {
+                object->notify(Event::mouseHover, {*m_window, cursorPosTileMap});
+                break;
+            }
+
+            if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
+                object->notify(Event::mouseHover, {*m_window, cursorPos});
+                break;
+            }
+        }
+
+        for (const auto& object : traverse(m_objects)) {
+            if (object == m_tileMap and input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
+                contains(*object, cursorPosTileMap)) {
+                object->notify(Event::mouseClick, {*m_window, cursorPosTileMap});
+                break;
+            }
+
+            if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
+                object->notify(Event::mouseClick, {*m_window, cursorPos});
+                break;
+            }
+        }
+    }
+
+    void Editor::render() const {
+        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_CULL_FACE);
+
+        const Camera guiCamera{atOrigin(m_camera)};
+
+        for (const auto& object : m_objects) {
+            if (object != m_tileMap) {
+                object->render(guiCamera);
+            }
+            else {
+                object->render(m_camera);
+            }
+        }
+    }
+
+    // ReSharper disable once CppMemberFunctionMayBeConst
+    void Editor::notify(const Event event) {
+        for (const auto& object : m_objects) {
+            object->notify(event, {*m_window, std::nullopt});
+        }
+    }
+
     void Editor::loadTileSheet(const std::string& filepath) {
         // TODO: Show dialog that asks user whether save current tile map, discard any changes or cancel the open
         // operation.
@@ -456,19 +468,6 @@ namespace EconSimPlusPlus::Editor {
         // TODO: 'Color picking' tool where right clicking on a tile will select that tile for painting.
 
         notify(Event::tileMapLoaded);
-    }
-
-    Editor::Editor(std::unique_ptr<Window> window) :
-        m_window(std::move(window)),
-        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
-                 {0.0f, 0.0f, 100.0f}} {
-    }
-
-    // ReSharper disable once CppMemberFunctionMayBeConst
-    void Editor::notify(const Event event) {
-        for (const auto& object : m_objects) {
-            object->notify(event, {*m_window, std::nullopt});
-        }
     }
 
 } // namespace EconSimPlusPlus::Editor

@@ -43,6 +43,14 @@ namespace EconSimPlusPlus::Editor {
         Editor(Editor&) = delete;
         Editor(Editor&&) = delete;
 
+        /// Run the main application loop (this call blocks).
+        void run();
+
+    private:
+        /// Create a new editor instance.
+        /// @param window The window to display the editor.
+        explicit Editor(std::unique_ptr<Window> window);
+
         /// Update the editor by one step.
         /// @param deltaTime the size of the step to take in term of time (seconds).
         void update(float deltaTime);
@@ -50,21 +58,13 @@ namespace EconSimPlusPlus::Editor {
         /// Render the editor to the screen.
         void render() const;
 
-        /// Run the main application loop (this call blocks).
-        void run();
+        /// Notify all objects of an event.
+        /// @param event What happened.
+        void notify(Event event);
 
         /// Load a tile sheet image from disk and create an empty tilemap.
         /// @param filepath The path to the tile sheet image.
         void loadTileSheet(const std::string& filepath);
-
-    private:
-        /// Create a new editor instance.
-        /// @param window The window to display the editor.
-        explicit Editor(std::unique_ptr<Window> window);
-
-        /// Notify all objects of an event.
-        /// @param event What happened.
-        void notify(Event event);
 
         /// The window we use to display the editor.
         std::unique_ptr<Window> m_window;

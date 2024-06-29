@@ -189,6 +189,10 @@ namespace EconSimPlusPlus {
         case State::inactive:
             break;
         case State::active:
+            // TODO: Instead of polling for whether the mouse was clicked outside the text field, the Editor/Game Engine
+            // could keep track of the focused GUI element, and when an object is clicked the focused element is set and
+            // the previously focused object is sent a 'defocus' event. This focus could be used for directing keyboard
+            // input too.
             if (inputState.keyDown(GLFW_KEY_ESCAPE) or
                 (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and
                  not contains(*this, screenToWorldCoordinates(inputState.mousePosition(), camera)))) {
