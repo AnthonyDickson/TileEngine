@@ -22,6 +22,8 @@
 #ifndef EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 #define EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
 
+#include <unordered_set>
+
 #include <EconSimPlusPlus/Editor/Dialog.hpp>
 #include <EconSimPlusPlus/Font.hpp>
 #include <EconSimPlusPlus/Group.hpp>
@@ -62,7 +64,9 @@ namespace EconSimPlusPlus::Editor {
         void notifyAll(Event event);
 
         /// Check for events and notify the relevant objects.
-        void handleEvents();
+        std::unordered_set<Event> handleEvents(const std::vector<std::shared_ptr<Object>>& objects,
+                                               const Camera& camera, const InputState& inputState,
+                                               const std::unordered_set<Event>& triggeredEvents);
 
         /// Render the editor to the screen.
         void render() const;
@@ -82,8 +86,10 @@ namespace EconSimPlusPlus::Editor {
         std::shared_ptr<TileMap> m_tileMap{};
         /// The GUI panel that will hold the tile sheet and related GUI.
         std::shared_ptr<Group> m_tileSheetPanel{};
-        /// A list of all objects.
-        std::vector<std::shared_ptr<Object>> m_objects{};
+        /// A list of objects that 'move' with the camera.
+        std::vector<std::shared_ptr<Object>> m_gameObjects{};
+        /// A list of objects that do not 'move' with the camera.
+        std::vector<std::shared_ptr<Object>> m_guiObjects{};
         /// Handles asynchronous dialogs.
         /// @note Possibly nullptr.
         std::unique_ptr<Dialog> m_dialog{};

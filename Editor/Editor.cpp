@@ -152,7 +152,7 @@ namespace EconSimPlusPlus::Editor {
             }
         });
 
-        m_objects.push_back(openFileButton);
+        m_guiObjects.push_back(openFileButton);
 
         Text saveButtonText{"Save...", m_font.get(), {.size = 32.0f}};
         auto saveFileButton{std::make_shared<Button>(
@@ -179,7 +179,7 @@ namespace EconSimPlusPlus::Editor {
                 break;
             }
         });
-        m_objects.push_back(saveFileButton);
+        m_guiObjects.push_back(saveFileButton);
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -227,8 +227,8 @@ namespace EconSimPlusPlus::Editor {
         const std::vector defaultTiles(defaultMapSize.x * defaultMapSize.y, 0);
 
         m_selectedTileID = 0;
-        std::erase(m_objects, m_tileSheetPanel);
-        std::erase(m_objects, m_tileMap);
+        std::erase(m_gameObjects, m_tileMap);
+        std::erase(m_guiObjects, m_tileSheetPanel);
 
         // Tile map display
         auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
@@ -238,7 +238,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileMap->enableGridLines();
         m_tileMap->addClickListener(
             [&](const glm::ivec2 gridCoordinates, int) { m_tileMap->setTileID(gridCoordinates, m_selectedTileID); });
-        m_objects.push_back(m_tileMap);
+        m_gameObjects.push_back(m_tileMap);
 
         // Side panel
         // TODO: Add back in group background/outline.
@@ -253,7 +253,7 @@ namespace EconSimPlusPlus::Editor {
                 m_tileSheetPanel->setPosition(topRight(eventData.window));
             }
         });
-        m_objects.push_back(m_tileSheetPanel);
+        m_guiObjects.push_back(m_tileSheetPanel);
 
         m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_font.get(), Font::Style{}));
 
@@ -356,115 +356,121 @@ namespace EconSimPlusPlus::Editor {
             notifyAll(Event::windowResize);
         }
 
-        const Camera guiCamera{atOrigin(m_camera)};
-
-        if (m_focusedObject != nullptr) {
-            m_focusedObject->update(deltaTime, m_window->inputState(), guiCamera);
-        }
-
         const InputState input{m_focusedObject == nullptr ? m_window->inputState()
                                                           : m_window->inputState().withoutKeyboardInput()};
         m_camera.update(deltaTime, input);
 
-        for (const auto& object : m_objects) {
-            if (m_focusedObject != nullptr and object.get() != m_focusedObject) {
-                continue; // Avoid a double update.
-            }
+        std::ranges::sort(m_gameObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+            return a->layer() > b->layer();
+        });
 
-            // TODO: Create a more general way to determine whether an object should be sent regular or GUI camera.
-            if (object != m_tileMap) {
+        for (const auto& object : m_gameObjects) {
+            object->update(deltaTime, input, m_camera);
+        }
+
+        const Camera guiCamera{atOrigin(m_camera)};
+
+        // We update the focused object separately because it may be a child object and not directly contained in the
+        // Editor's object list. This may lead to a double update.
+        // TODO: For GUI objects, use events system for key events instead of directly polling input.
+        if (m_focusedObject != nullptr) {
+            m_focusedObject->update(deltaTime, m_window->inputState(), guiCamera);
+        }
+
+        std::ranges::sort(m_guiObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+            return a->layer() > b->layer();
+        });
+
+        for (const auto& object : m_guiObjects) {
+            if (object.get() != m_focusedObject) {
                 object->update(deltaTime, input, guiCamera);
-            }
-            else {
-                object->update(deltaTime, input, m_camera);
             }
         }
 
-        handleEvents();
+        const std::unordered_set handledEvents{handleEvents(m_guiObjects, guiCamera, input, {})};
+        handleEvents(m_gameObjects, m_camera, input, handledEvents);
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst
     void Editor::notifyAll(const Event event) {
-        for (const auto& object : m_objects) {
+        for (const auto& object : m_gameObjects) {
+            object->notify(event, {*m_window, std::nullopt});
+        }
+
+        for (const auto& object : m_guiObjects) {
             object->notify(event, {*m_window, std::nullopt});
         }
     }
 
-    void Editor::handleEvents() {
-        std::ranges::sort(m_objects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+    std::unordered_set<Event> Editor::handleEvents(const std::vector<std::shared_ptr<Object>>& objects,
+                                                   const Camera& camera, const InputState& inputState,
+                                                   const std::unordered_set<Event>& triggeredEvents) {
+        std::vector sortedObjects{objects};
+
+        std::ranges::sort(sortedObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
             return a->layer() > b->layer();
         });
 
-        // TODO: Find more elegant way to determine which set of cursor positions to send to objects.
-        const Camera guiCamera{atOrigin(m_camera)};
-        const InputState input{m_focusedObject == nullptr ? m_window->inputState()
-                                                          : m_window->inputState().withoutKeyboardInput()};
-
-        const glm::vec2 cursorPos{screenToWorldCoordinates(input.mousePosition(), guiCamera)};
+        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.mousePosition(), camera)};
         const glm::vec2 previousCursorPos{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), guiCamera)};
+            screenToWorldCoordinates(inputState.mousePosition() + inputState.mouseMovement(), camera)};
 
-        const glm::vec2 cursorPosTileMap{screenToWorldCoordinates(input.mousePosition(), m_camera)};
-        const glm::vec2 previousCursorPosTileMap{
-            screenToWorldCoordinates(input.mousePosition() + input.mouseMovement(), m_camera)};
+        std::unordered_set updatedTriggeredEvents{triggeredEvents};
 
-        auto getCursorPos = [&](const std::shared_ptr<Object>& object) {
-            return object == m_tileMap ? cursorPosTileMap : cursorPos;
-        };
-
-        auto getPrevCursorPos = [&](const std::shared_ptr<Object>& object) {
-            return object == m_tileMap ? previousCursorPosTileMap : previousCursorPos;
-        };
-
-        auto allObjects = traverse(m_objects);
-
-        for (const auto& object : allObjects) {
-            if (contains(*object, getCursorPos(object)) and not contains(*object, getPrevCursorPos(object))) {
+        for (const auto& object : traverse(sortedObjects)) {
+            if (not updatedTriggeredEvents.contains(Event::mouseEnter) and contains(*object, cursorPos) and
+                not contains(*object, previousCursorPos)) {
                 object->notify(Event::mouseEnter, {*m_window, std::nullopt});
-                break;
+                updatedTriggeredEvents.insert(Event::mouseEnter);
             }
-        }
 
-        for (const auto& object : allObjects) {
-            if (not contains(*object, getCursorPos(object)) and contains(*object, getPrevCursorPos(object))) {
+            if (not updatedTriggeredEvents.contains(Event::mouseLeave) and not contains(*object, cursorPos) and
+                contains(*object, previousCursorPos)) {
                 object->notify(Event::mouseLeave, {*m_window, std::nullopt});
-                break;
+                updatedTriggeredEvents.insert(Event::mouseLeave);
             }
-        }
 
-        if (not input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            for (const auto& object : allObjects) {
-                if (contains(*object, getCursorPos(object))) {
-                    object->notify(Event::mouseHover, {*m_window, getCursorPos(object)});
-                    break;
+            if (not updatedTriggeredEvents.contains(Event::mouseHover) and
+                not inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
+                object->notify(Event::mouseHover, {*m_window, cursorPos});
+                updatedTriggeredEvents.insert(Event::mouseHover);
+            }
+
+            if (not updatedTriggeredEvents.contains(Event::mouseClick) and
+                inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*object, cursorPos)) {
+                object->notify(Event::mouseClick, {*m_window, cursorPos});
+                updatedTriggeredEvents.insert(Event::mouseClick);
+            }
+
+            if (not updatedTriggeredEvents.contains(Event::focus) and
+                inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object.get() != m_focusedObject and
+                object->focusable() and contains(*object, cursorPos)) {
+                object->notify(Event::focus, {*m_window, std::nullopt});
+
+                // The focused object pointer is overwritten in this event handler. So if the previously focused object
+                // appears later in the objects list, the defocus event will not be triggered correctly for the
+                // previously focused object. Therefore we check here before changing the pointer to ensure the defocus
+                // event is triggered correctly.
+                if (m_focusedObject != nullptr) {
+                    m_focusedObject->notify(Event::defocus, {*m_window, std::nullopt});
+                    updatedTriggeredEvents.insert(Event::defocus);
                 }
+
+                m_focusedObject = object.get();
+                updatedTriggeredEvents.insert(Event::focus);
+            }
+
+            if (not updatedTriggeredEvents.contains(Event::defocus) and m_focusedObject != nullptr and
+                object.get() == m_focusedObject and
+                (m_window->inputState().keyDown(GLFW_KEY_ESCAPE) or
+                 inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and not contains(*m_focusedObject, cursorPos))) {
+                m_focusedObject->notify(Event::defocus, {*m_window, std::nullopt});
+                m_focusedObject = nullptr;
+                updatedTriggeredEvents.insert(Event::defocus);
             }
         }
 
-        if (m_focusedObject != nullptr and
-            (m_window->inputState().keyDown(GLFW_KEY_ESCAPE) or
-             input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and not contains(*m_focusedObject, cursorPos))) {
-            m_focusedObject->notify(Event::defocus, {*m_window, std::nullopt});
-            m_focusedObject = nullptr;
-        }
-
-        if (input.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-            for (const auto& object : allObjects) {
-                if (contains(*object, getCursorPos(object))) {
-                    object->notify(Event::mouseClick, {*m_window, getCursorPos(object)});
-                    break;
-                }
-            }
-
-            for (const auto& object : allObjects) {
-                if (object.get() != m_focusedObject and object->focusable() and
-                    contains(*object, getCursorPos(object))) {
-                    object->notify(Event::focus, {*m_window, std::nullopt});
-                    m_focusedObject = object.get();
-                    break;
-                }
-            }
-        }
+        return updatedTriggeredEvents;
     }
 
     void Editor::render() const {
@@ -480,13 +486,12 @@ namespace EconSimPlusPlus::Editor {
 
         const Camera guiCamera{atOrigin(m_camera)};
 
-        for (const auto& object : m_objects) {
-            if (object != m_tileMap) {
-                object->render(guiCamera);
-            }
-            else {
-                object->render(m_camera);
-            }
+        for (const auto& object : m_gameObjects) {
+            object->render(m_camera);
+        }
+
+        for (const auto& object : m_guiObjects) {
+            object->render(guiCamera);
         }
     }
 } // namespace EconSimPlusPlus::Editor
