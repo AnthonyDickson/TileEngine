@@ -167,6 +167,7 @@ namespace EconSimPlusPlus {
 
     void TextField::setText(const std::string& text) {
         m_text.setText(text);
+        m_rollbackString = text;
     }
 
     void TextField::setPosition(const glm::vec2 position) {
@@ -190,9 +191,13 @@ namespace EconSimPlusPlus {
         case State::active:
             if (inputState.keyDown(GLFW_KEY_ENTER)) {
                 if (m_inputValidator and not m_inputValidator(text())) {
-                    setText(m_stringBackup);
+                    setText(m_rollbackString);
                     break;
                 }
+
+                // The text is set to the rollback text when changing to the inactive state. Setting the value here
+                // ensures that the submitted value is not discarded.
+                m_rollbackString = text();
 
                 if (m_submitAction) {
                     m_submitAction(text());
@@ -237,10 +242,11 @@ namespace EconSimPlusPlus {
         switch (state) {
         case State::active:
             m_caret.show();
-            m_stringBackup = text();
+            m_rollbackString = text();
             break;
         case State::inactive:
             m_caret.hide();
+            setText(m_rollbackString);
             break;
         }
 

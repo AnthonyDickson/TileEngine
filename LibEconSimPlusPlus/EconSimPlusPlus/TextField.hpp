@@ -130,7 +130,7 @@ namespace EconSimPlusPlus {
         SubmitAction m_submitAction{};
         /// A backup of the text field's text before it entered the active state.
         /// The text is reverted to this value if the user tries to submit an invalid value.
-        std::string m_stringBackup{};
+        std::string m_rollbackString{};
 
         /// The geometry used to draw the background.
         Quad m_quad{};
