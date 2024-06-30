@@ -64,6 +64,11 @@ namespace EconSimPlusPlus::Editor {
         void notifyAll(Event event);
 
         /// Check for events and notify the relevant objects.
+        /// @param objects The objects to process events for.
+        /// @param camera The camera to use for calculating mouse posititions relative to the objects.
+        /// @param inputState The keyboard and mouse input state.
+        /// @param triggeredEvents The events that have already been processed during this update step.
+        /// @return The events that were processed inside the function plus those listed in the function arguments.
         std::unordered_set<Event> handleEvents(const std::vector<std::shared_ptr<Object>>& objects,
                                                const Camera& camera, const InputState& inputState,
                                                const std::unordered_set<Event>& triggeredEvents);
