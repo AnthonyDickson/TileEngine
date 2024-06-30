@@ -28,18 +28,6 @@
 
 namespace EconSimPlusPlus {
     namespace {
-        /// GLFW keycodes for number keys.
-        constexpr std::array numeric = {
-            GLFW_KEY_0, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4,
-            GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9,
-        };
-
-        /// GLFW keycodes for alphabet keys.
-        constexpr std::array alpha = {
-            GLFW_KEY_A, GLFW_KEY_B, GLFW_KEY_C, GLFW_KEY_D, GLFW_KEY_E, GLFW_KEY_F, GLFW_KEY_G, GLFW_KEY_H, GLFW_KEY_I,
-            GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_M, GLFW_KEY_N, GLFW_KEY_O, GLFW_KEY_P, GLFW_KEY_Q, GLFW_KEY_R,
-            GLFW_KEY_S, GLFW_KEY_T, GLFW_KEY_U, GLFW_KEY_V, GLFW_KEY_W, GLFW_KEY_X, GLFW_KEY_Y, GLFW_KEY_Z};
-
         /// Perform the bit-wise and of two bit-wise flags.
         /// @param a The first text field mode bit flag.
         /// @param b The second text field mode bit flag.
@@ -58,16 +46,17 @@ namespace EconSimPlusPlus {
 
         /// Update a string based on keyboard and mouse input.
         /// @param text The text to modify.
-        /// @param input Keyboard and mouse input.
+        /// @param keyCode The code of the key that was pressed.
+        /// @param keyModifiers Which key modifiers (control, shift, alt, super) are pressed.
         /// @param config The text field settings.
         /// @return The input text with added or removed characters.
-        std::string getTextFromInput(const std::string& text, const InputState& input,
-                                     const TextField::Config& config) {
-            if (input.key(GLFW_KEY_LEFT_CONTROL) and input.keyDown(GLFW_KEY_BACKSPACE)) {
+        std::string getTextFromInput(const std::string& text, const int keyCode,
+                                     const KeyModifier::KeyModifier keyModifiers, const TextField::Config& config) {
+            if (keyCode == GLFW_KEY_BACKSPACE and contains(keyModifiers, GLFW_MOD_CONTROL)) {
                 return "";
             }
 
-            if (input.keyDown(GLFW_KEY_BACKSPACE)) {
+            if (keyCode == GLFW_KEY_BACKSPACE) {
                 return text.substr(0, text.length() - 1);
             }
 
@@ -75,25 +64,14 @@ namespace EconSimPlusPlus {
                 return text;
             }
 
-            if (contains(config.mode, TextField::Mode::numeric)) {
-                for (const int& key : numeric) {
-                    if (not input.keyDown(key)) {
-                        continue;
-                    }
-
-                    return text + static_cast<char>(key);
-                }
+            if (contains(config.mode, TextField::Mode::numeric) and GLFW_KEY_0 <= keyCode and keyCode <= GLFW_KEY_9) {
+                return text + static_cast<char>(keyCode);
             }
 
-            if (contains(config.mode, TextField::Mode::alpha)) {
-                for (const int& key : alpha) {
-                    if (not input.keyDown(key)) {
-                        continue;
-                    }
-
-                    const char character{static_cast<char>(input.key(GLFW_KEY_LEFT_SHIFT) ? key : key + 32)};
-                    return text + character;
-                }
+            if (contains(config.mode, TextField::Mode::alpha) and GLFW_KEY_A <= keyCode and keyCode <= GLFW_KEY_Z) {
+                const char character{
+                    static_cast<char>(contains(keyModifiers, GLFW_MOD_SHIFT) ? keyCode : keyCode + 32)};
+                return text + character;
             }
 
             return text;
@@ -147,6 +125,32 @@ namespace EconSimPlusPlus {
             case Event::defocus:
                 transitionTo(State::inactive);
                 break;
+            case Event::keyDown:
+                assert(
+                    eventData.keyCode.has_value() && eventData.keyModifiers.has_value() &&
+                    "Received keyDown event but either the key code or key modifiers were not set in the event data.");
+
+                switch (*eventData.keyCode) {
+                case GLFW_KEY_ENTER:
+                    if (m_inputValidator and not m_inputValidator(text())) {
+                        setText(m_rollbackString);
+                        break;
+                    }
+
+                    // The text is set to the rollback text when changing to the inactive state. Setting the value
+                    // here ensures that the submitted value is not discarded.
+                    m_rollbackString = text();
+
+                    if (m_submitAction) {
+                        m_submitAction(text());
+                    }
+
+                    transitionTo(State::inactive);
+                    break;
+                default:
+                    setText(getTextFromInput(text(), *eventData.keyCode, *eventData.keyModifiers, m_config));
+                    break;
+                }
             default:
                 break;
             }
@@ -167,7 +171,7 @@ namespace EconSimPlusPlus {
 
     void TextField::setText(const std::string& text) {
         m_text.setText(text);
-        m_rollbackString = text;
+        m_caret.setPosition(bottomRight(m_text));
     }
 
     void TextField::setPosition(const glm::vec2 position) {
@@ -189,28 +193,7 @@ namespace EconSimPlusPlus {
         case State::inactive:
             break;
         case State::active:
-            if (inputState.keyDown(GLFW_KEY_ENTER)) {
-                if (m_inputValidator and not m_inputValidator(text())) {
-                    setText(m_rollbackString);
-                    break;
-                }
-
-                // The text is set to the rollback text when changing to the inactive state. Setting the value here
-                // ensures that the submitted value is not discarded.
-                m_rollbackString = text();
-
-                if (m_submitAction) {
-                    m_submitAction(text());
-                }
-
-                transitionTo(State::inactive);
-                break;
-            }
-
-            m_text.setText(getTextFromInput(m_text.text(), inputState, m_config));
-            m_caret.setPosition(bottomRight(m_text));
             m_caret.update(deltaTime, inputState, camera);
-
             break;
         }
     }
@@ -230,7 +213,7 @@ namespace EconSimPlusPlus {
             Outline::draw(*this, m_shader, m_quad, m_style.outline);
         }
 
-        m_text.text().empty() ? m_placeholder.render(camera) : m_text.render(camera);
+        text().empty() ? m_placeholder.render(camera) : m_text.render(camera);
         m_caret.render(camera);
     }
 
@@ -239,7 +222,9 @@ namespace EconSimPlusPlus {
             return;
         }
 
-        switch (state) {
+        m_state = state;
+
+        switch (m_state) {
         case State::active:
             m_caret.show();
             m_rollbackString = text();
@@ -249,7 +234,5 @@ namespace EconSimPlusPlus {
             setText(m_rollbackString);
             break;
         }
-
-        m_state = state;
     }
 } // namespace EconSimPlusPlus

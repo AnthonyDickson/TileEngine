@@ -287,16 +287,15 @@ namespace EconSimPlusPlus::Editor {
             }
         };
 
-        auto textField{std::make_shared<TextField>("0", m_font.get(),
-                                                   TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
-                                                   TextField::Style{})};
+        auto textField{std::make_shared<TextField>("0", m_font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::alphanumeric},
+            TextField::Style{})};
         textField->setText(std::to_string(m_tileMap->mapSize().x));
         textField->setInputValidator(textFieldValidator);
         textField->setSubmitAction([&, textField](const std::string& text) {
             m_tileMap->setMapSize(glm::ivec2{std::stoi(text), m_tileMap->mapSize().y});
 
             if (textField.get() == m_focusedObject) {
-                textField->notify(Event::defocus, {*m_window, std::nullopt});
+                textField->notify(Event::defocus, {*m_window});
                 m_focusedObject = nullptr;
             }
         });
@@ -317,7 +316,7 @@ namespace EconSimPlusPlus::Editor {
             m_tileMap->setMapSize(glm::ivec2{m_tileMap->mapSize().x, std::stoi(text)});
 
             if (textField.get() == m_focusedObject) {
-                textField->notify(Event::defocus, {*m_window, std::nullopt});
+                textField->notify(Event::defocus, {*m_window});
                 m_focusedObject = nullptr;
             }
         });
@@ -370,13 +369,6 @@ namespace EconSimPlusPlus::Editor {
 
         const Camera guiCamera{atOrigin(m_camera)};
 
-        // We update the focused object separately because it may be a child object and not directly contained in the
-        // Editor's object list. This may lead to a double update.
-        // TODO: For GUI objects, use events system for key events instead of directly polling input.
-        if (m_focusedObject != nullptr) {
-            m_focusedObject->update(deltaTime, m_window->inputState(), guiCamera);
-        }
-
         std::ranges::sort(m_guiObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
             return a->layer() > b->layer();
         });
@@ -387,18 +379,18 @@ namespace EconSimPlusPlus::Editor {
             }
         }
 
-        const std::unordered_set handledEvents{handleEvents(m_guiObjects, guiCamera, input, {})};
-        handleEvents(m_gameObjects, m_camera, input, handledEvents);
+        const std::unordered_set handledEvents{handleEvents(m_guiObjects, guiCamera, m_window->inputState(), {})};
+        handleEvents(m_gameObjects, m_camera, m_window->inputState(), handledEvents);
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst
     void Editor::notifyAll(const Event event) {
         for (const auto& object : m_gameObjects) {
-            object->notify(event, {*m_window, std::nullopt});
+            object->notify(event, {*m_window});
         }
 
         for (const auto& object : m_guiObjects) {
-            object->notify(event, {*m_window, std::nullopt});
+            object->notify(event, {*m_window});
         }
     }
 
@@ -417,16 +409,25 @@ namespace EconSimPlusPlus::Editor {
 
         std::unordered_set updatedTriggeredEvents{triggeredEvents};
 
+        std::optional<int> keyDownCode{std::nullopt};
+
+        for (int key = GLFW_KEY_SPACE; key < GLFW_KEY_LAST; ++key) {
+            if (inputState.keyDown(key)) {
+                keyDownCode = key;
+                break;
+            }
+        }
+
         for (const auto& object : traverse(sortedObjects)) {
             if (not updatedTriggeredEvents.contains(Event::mouseEnter) and contains(*object, cursorPos) and
                 not contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseEnter, {*m_window, std::nullopt});
+                object->notify(Event::mouseEnter, {*m_window});
                 updatedTriggeredEvents.insert(Event::mouseEnter);
             }
 
             if (not updatedTriggeredEvents.contains(Event::mouseLeave) and not contains(*object, cursorPos) and
                 contains(*object, previousCursorPos)) {
-                object->notify(Event::mouseLeave, {*m_window, std::nullopt});
+                object->notify(Event::mouseLeave, {*m_window});
                 updatedTriggeredEvents.insert(Event::mouseLeave);
             }
 
@@ -445,14 +446,14 @@ namespace EconSimPlusPlus::Editor {
             if (not updatedTriggeredEvents.contains(Event::focus) and
                 inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and object.get() != m_focusedObject and
                 object->focusable() and contains(*object, cursorPos)) {
-                object->notify(Event::focus, {*m_window, std::nullopt});
+                object->notify(Event::focus, {*m_window});
 
                 // The focused object pointer is overwritten in this event handler. So if the previously focused object
                 // appears later in the objects list, the defocus event will not be triggered correctly for the
                 // previously focused object. Therefore we check here before changing the pointer to ensure the defocus
                 // event is triggered correctly.
                 if (m_focusedObject != nullptr) {
-                    m_focusedObject->notify(Event::defocus, {*m_window, std::nullopt});
+                    m_focusedObject->notify(Event::defocus, {*m_window});
                     updatedTriggeredEvents.insert(Event::defocus);
                 }
 
@@ -464,9 +465,15 @@ namespace EconSimPlusPlus::Editor {
                 object.get() == m_focusedObject and
                 (m_window->inputState().keyDown(GLFW_KEY_ESCAPE) or
                  inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and not contains(*m_focusedObject, cursorPos))) {
-                m_focusedObject->notify(Event::defocus, {*m_window, std::nullopt});
+                m_focusedObject->notify(Event::defocus, {*m_window});
                 m_focusedObject = nullptr;
                 updatedTriggeredEvents.insert(Event::defocus);
+            }
+
+            if (not updatedTriggeredEvents.contains(Event::keyDown) and keyDownCode.has_value() and
+                (m_focusedObject == nullptr or object.get() == m_focusedObject)) {
+                object->notify(Event::keyDown, {*m_window, std::nullopt, *keyDownCode, inputState.keyModifiers()});
+                updatedTriggeredEvents.insert(Event::keyDown);
             }
         }
 

@@ -29,7 +29,7 @@
 
 
 namespace EconSimPlusPlus {
-    GridLines::GridLines(const glm::ivec2 size, const glm::vec2 cellSize) : m_cellSize(cellSize) {
+    GridLines::GridLines(const glm::ivec2 size, const glm::vec2 cellSize) {
         std::vector<float> vertices{};
         const auto scaledSize{static_cast<glm::vec2>(size) * cellSize};
 
@@ -63,17 +63,7 @@ namespace EconSimPlusPlus {
         Object::setSize(scaledSize);
     }
 
-    void GridLines::update(float, const InputState& inputState, const Camera& camera) {
-        // ReSharper disable once CppTooWideScopeInitStatement
-        const glm::vec2 cursorPos{screenToWorldCoordinates(inputState.mousePosition(), camera)};
-
-        if (inputState.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) and contains(*this, cursorPos)) {
-            const glm::ivec2 gridPos{((cursorPos - bottomLeft(*this)) / m_cellSize)};
-
-            std::cout << std::format(
-                "Mouse clicked over grid lines at ({:.2f}, {:.2f}) at grid coordinates ({:d}, {:d}).\n", cursorPos.x,
-                cursorPos.y, gridPos.x, gridPos.y);
-        }
+    void GridLines::update(float, const InputState&, const Camera&) {
     }
 
     void GridLines::render(const Camera& camera) const {

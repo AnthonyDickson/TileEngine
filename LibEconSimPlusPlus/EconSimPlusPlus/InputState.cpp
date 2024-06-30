@@ -225,6 +225,28 @@ namespace EconSimPlusPlus {
         return not this->key(key) and m_previousKeyState[key];
     }
 
+    KeyModifier::KeyModifier InputState::keyModifiers() const {
+        auto modifiers = KeyModifier::none;
+
+        if (key(GLFW_KEY_LEFT_CONTROL) or key(GLFW_KEY_RIGHT_CONTROL)) {
+            modifiers |= KeyModifier::control;
+        }
+
+        if (key(GLFW_KEY_LEFT_SHIFT) or key(GLFW_KEY_RIGHT_SHIFT)) {
+            modifiers |= KeyModifier::shift;
+        }
+
+        if (key(GLFW_KEY_LEFT_ALT) or key(GLFW_KEY_RIGHT_ALT)) {
+            modifiers |= KeyModifier::alt;
+        }
+
+        if (key(GLFW_KEY_LEFT_SUPER) or key(GLFW_KEY_RIGHT_SUPER)) {
+            modifiers |= KeyModifier::super;
+        }
+
+        return modifiers;
+    }
+
     bool InputState::mouseButton(const int button) const {
         return m_currentMouseButtonState[button];
     }

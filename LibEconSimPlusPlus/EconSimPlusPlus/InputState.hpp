@@ -28,6 +28,8 @@
 #include "GLFW/glfw3.h"
 #include "glm/vec2.hpp"
 
+#include <EconSimPlusPlus/KeyModifier.hpp>
+
 namespace EconSimPlusPlus {
     /// Keeps track of keyboard and mouse input.
     class InputState {
@@ -58,6 +60,10 @@ namespace EconSimPlusPlus {
         /// @return `true` if the key was released during this frame, otherwise `false`.
         [[nodiscard]] bool keyUp(int key) const;
 
+        /// Get the active key modifiers (control, shift, alt and super) during this frame.
+        /// @return The active key modifiers.
+        [[nodiscard]] KeyModifier::KeyModifier keyModifiers() const;
+
         /// Get the position of the mouse cursor.
         /// @return the screen coordinates of the mouse cursor in pixels.
         [[nodiscard]] const glm::vec2& mousePosition() const;
@@ -71,19 +77,19 @@ namespace EconSimPlusPlus {
         /// @param scrollY The amount of vertical scroll input.
         void updateScroll(double scrollX, double scrollY);
 
-         /// Check whether a mouse button is pressed down.
-         /// @param button A GLFW mouse button code.
-         /// @return `true` if the mouse button is pressed down, otherwise `false`.
+        /// Check whether a mouse button is pressed down.
+        /// @param button A GLFW mouse button code.
+        /// @return `true` if the mouse button is pressed down, otherwise `false`.
         [[nodiscard]] bool mouseButton(int button) const;
 
-         /// Check whether a mouse button was pressed during this frame.
-         /// @param button A GLFW mouse button code.
-         /// @return `true` if the mouse button was pressed down during this frame, otherwise `false`.
+        /// Check whether a mouse button was pressed during this frame.
+        /// @param button A GLFW mouse button code.
+        /// @return `true` if the mouse button was pressed down during this frame, otherwise `false`.
         [[nodiscard]] bool mouseButtonDown(int button) const;
 
-         /// Check whether a mouse button was released during this frame.
-         /// @param button A GLFW mouse button code.
-         /// @return `true` if the mouse button was released during this frame, otherwise `false`.
+        /// Check whether a mouse button was released during this frame.
+        /// @param button A GLFW mouse button code.
+        /// @return `true` if the mouse button was released during this frame, otherwise `false`.
         [[nodiscard]] bool mouseButtonUp(int button) const;
 
     private:

@@ -8,6 +8,7 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/GridLines.cpp
         EconSimPlusPlus/Group.cpp
         EconSimPlusPlus/InputState.cpp
+        EconSimPlusPlus/KeyModifier.cpp
         EconSimPlusPlus/Object.cpp
         EconSimPlusPlus/Outline.cpp
         EconSimPlusPlus/Quad.cpp
