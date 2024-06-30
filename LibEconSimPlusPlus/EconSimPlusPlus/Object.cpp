@@ -30,7 +30,7 @@ namespace EconSimPlusPlus {
         return m_focusable;
     }
 
-    void Object::setFocusable(bool value) {
+    void Object::setFocusable(const bool value) {
         m_focusable = value;
     }
 
