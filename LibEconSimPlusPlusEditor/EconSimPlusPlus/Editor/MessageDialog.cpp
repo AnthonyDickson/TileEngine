@@ -27,7 +27,6 @@ namespace EconSimPlusPlus::Editor {
     MessageDialog::MessageDialog(const pfd::message& messageDialog, const std::function<void()>& yesCallback,
                                  const std::function<void()>& noCallback) :
         m_messageDialog(messageDialog), m_yesCallback(yesCallback), m_noCallback(noCallback) {
-        assert(not active() && "Cannot open a new dialog when one is already open.");
     }
 
     MessageDialog::~MessageDialog() {
