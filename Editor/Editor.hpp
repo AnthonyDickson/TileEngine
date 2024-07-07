@@ -25,7 +25,7 @@
 #include <unordered_set>
 
 #include <EconSimPlusPlus/Editor/Dialog.hpp>
-#include <EconSimPlusPlus/Font.hpp>
+#include <EconSimPlusPlus/Graphics.hpp>
 #include <EconSimPlusPlus/Group.hpp>
 #include <EconSimPlusPlus/Object.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
@@ -78,10 +78,7 @@ namespace EconSimPlusPlus::Editor {
 
         /// The window we use to display the editor.
         std::unique_ptr<Window> m_window;
-        /// The render camera.
-        Camera m_camera;
-        /// The font for rendering text on screen.
-        std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
+        Graphics m_graphics;
 
         /// The exclusive receiver of keyboard input, if any.
         Object* m_focusedObject{nullptr};
