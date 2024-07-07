@@ -26,10 +26,16 @@
 #include <EconSimPlusPlus/TextCaret.hpp>
 
 namespace EconSimPlusPlus {
-    // TODO: Ensure that the width defined in the style is always used, and that it cannot be overriden by external
-    // objects.
     TextCaret::TextCaret(const Style style) : m_style(style) {
         Object::setSize({m_style.width, 0.0f});
+    }
+
+    void TextCaret::setHeight(float height) {
+        Object::setSize({m_style.width, height});
+    }
+
+    void TextCaret::setSize(glm::vec2) {
+        assert(false && "Should not set size on text caret directly. Use the setter for height instead.");
     }
 
     void TextCaret::hide() {

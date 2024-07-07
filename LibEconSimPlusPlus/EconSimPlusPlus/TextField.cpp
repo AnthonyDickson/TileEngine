@@ -108,7 +108,7 @@ namespace EconSimPlusPlus {
         setTextPosition(m_placeholder, *this, m_style.padding);
         m_placeholder.setColor(m_style.placeholderTextColor);
 
-        m_caret.setSize(glm::vec2{m_caret.size().x, m_text.size().y});
+        m_caret.setHeight(m_text.size().y);
         m_caret.hide();
 
         addEventHandler([&](const Event event, const EventData& eventData) {

@@ -40,6 +40,13 @@ namespace EconSimPlusPlus {
 
         explicit TextCaret(Style style);
 
+
+        /// Set the height of the caret in pixels.
+        /// @note The width is set through the style that is passed into the constructor.
+        void setHeight(float height);
+
+        void setSize(glm::vec2 size) override;
+
         /// Stop rendering the caret.
         void hide();
         /// Start rendering the caret.
