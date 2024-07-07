@@ -92,22 +92,22 @@ namespace EconSimPlusPlus {
         }
     }
 
-    void Button::render(const Camera& camera) const {
-        m_shader.bind();
-        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
+    void Button::render(const Graphics& graphics) const {
+        graphics.quadShader.bind();
+        graphics.quadShader.setUniform("projectionViewMatrix", projectionViewMatrix(graphics.camera));
 
         // Draw the button fill color.
         const glm::vec2 anchorOffset{calculateAnchorOffset(size(), anchor(), size().y)};
         glm::vec2 offsetPosition{position() + anchorOffset};
         glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {offsetPosition, layer()})};
         transform = glm::scale(transform, {size(), 1.0f});
-        m_shader.setUniform("transform", transform);
-        m_shader.setUniform("color", m_currentStyle.fillColor);
-        m_quad.render();
+        graphics.quadShader.setUniform("transform", transform);
+        graphics.quadShader.setUniform("color", glm::vec4{m_currentStyle.fillColor, 1.0f});
+        graphics.quad.render();
 
-        Outline::draw(*this, m_shader, m_quad, m_currentStyle.outline);
+        Outline::draw(*this, graphics.quadShader, graphics.quad, m_currentStyle.outline);
 
-        m_text.render(camera);
+        m_text.render(graphics);
     }
 
     void Button::setState(const State state) {

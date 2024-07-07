@@ -79,6 +79,7 @@ namespace EconSimPlusPlus::Editor {
         /// The window we use to display the editor.
         std::unique_ptr<Window> m_window;
         Graphics m_graphics;
+        Graphics m_guiGraphics;
 
         /// The exclusive receiver of keyboard input, if any.
         Object* m_focusedObject{nullptr};

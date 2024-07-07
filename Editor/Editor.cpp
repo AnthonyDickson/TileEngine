@@ -106,7 +106,7 @@ namespace EconSimPlusPlus::Editor {
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
         Text frameTimeText{
-            "", m_graphics.font.get(),
+            "", m_guiGraphics.font.get(),
             Font::Style{
                 .color = {1.0f, 1.0f, 0.0f}, .size = 32.0f, .outlineSize = 0.3f, .outlineColor = {0.0f, 0.0f, 0.0f}}};
         frameTimeText.setAnchor(Anchor::topRight);
@@ -140,7 +140,7 @@ namespace EconSimPlusPlus::Editor {
                 openFile, [&] {})};
         };
 
-        Text buttonText{"Open...", m_graphics.font.get(), {.size = 32.0f}};
+        Text buttonText{"Open...", m_guiGraphics.font.get(), {.size = 32.0f}};
         auto openFileButton{std::make_shared<Button>(buttonText, openFileButtonCallback, buttonStyle, buttonActiveStyle,
                                                      buttonDisabledStyle)};
         openFileButton->setAnchor(Anchor::topLeft);
@@ -154,7 +154,7 @@ namespace EconSimPlusPlus::Editor {
 
         m_guiObjects.push_back(openFileButton);
 
-        Text saveButtonText{"Save...", m_graphics.font.get(), {.size = 32.0f}};
+        Text saveButtonText{"Save...", m_guiGraphics.font.get(), {.size = 32.0f}};
         auto saveFileButton{std::make_shared<Button>(
             saveButtonText,
             [&] {
@@ -207,7 +207,7 @@ namespace EconSimPlusPlus::Editor {
                                                            updateTimer.average(), renderTimer.average())};
             frameTimeText.setText(frameTimeSummary);
             frameTimeText.setPosition(topRight(*m_window));
-            frameTimeText.render(atOrigin(m_graphics.camera));
+            frameTimeText.render(m_guiGraphics);
 
             m_window->postUpdate();
         }
@@ -216,6 +216,10 @@ namespace EconSimPlusPlus::Editor {
     Editor::Editor(std::unique_ptr<Window> window) :
         m_window(std::move(window)),
         m_graphics(Graphics{
+            .camera = Camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                             {0.0f, 0.0f, 100.0f}},
+        }),
+        m_guiGraphics(Graphics{
             .camera = Camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
                              {0.0f, 0.0f, 100.0f}},
         }) {
@@ -257,12 +261,12 @@ namespace EconSimPlusPlus::Editor {
         });
         m_guiObjects.push_back(m_tileSheetPanel);
 
-        m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_graphics.font.get(), Font::Style{}));
+        m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_guiGraphics.font.get(), Font::Style{}));
 
         const auto mapWidthGroup{std::make_shared<Group>(Group::Layout{
             .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
 
-        mapWidthGroup->addChild(std::make_shared<Text>("Width: ", m_graphics.font.get(), Font::Style{}));
+        mapWidthGroup->addChild(std::make_shared<Text>("Width: ", m_guiGraphics.font.get(), Font::Style{}));
 
         const auto textFieldValidator = [&](const std::string& text) {
             auto showDialog = [&](const std::string& message) {
@@ -290,7 +294,7 @@ namespace EconSimPlusPlus::Editor {
         };
 
         auto textField{std::make_shared<TextField>(
-            "0", m_graphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::alphanumeric},
+            "0", m_guiGraphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::alphanumeric},
             TextField::Style{})};
         textField->setText(std::to_string(m_tileMap->mapSize().x));
         textField->setInputValidator(textFieldValidator);
@@ -309,9 +313,9 @@ namespace EconSimPlusPlus::Editor {
         const auto mapHeightGroup{std::make_shared<Group>(Group::Layout{
             .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
 
-        mapHeightGroup->addChild(std::make_shared<Text>("Height: ", m_graphics.font.get(), Font::Style{}));
+        mapHeightGroup->addChild(std::make_shared<Text>("Height: ", m_guiGraphics.font.get(), Font::Style{}));
 
-        textField = std::make_shared<TextField>("0", m_graphics.font.get(),
+        textField = std::make_shared<TextField>("0", m_guiGraphics.font.get(),
                                                 TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
                                                 TextField::Style{});
         textField->setText(std::to_string(m_tileMap->mapSize().y));
@@ -356,6 +360,9 @@ namespace EconSimPlusPlus::Editor {
 
         if (m_window->hasWindowSizeChanged()) {
             m_graphics.camera.onWindowResize(
+                {static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+            notifyAll(Event::windowResize);
+            m_guiGraphics.camera.onWindowResize(
                 {static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
             notifyAll(Event::windowResize);
         }
@@ -496,14 +503,12 @@ namespace EconSimPlusPlus::Editor {
 
         glEnable(GL_CULL_FACE);
 
-        const Camera guiCamera{atOrigin(m_graphics.camera)};
-
         for (const auto& object : m_gameObjects) {
-            object->render(m_graphics.camera);
+            object->render(m_graphics);
         }
 
         for (const auto& object : m_guiObjects) {
-            object->render(guiCamera);
+            object->render(m_guiGraphics);
         }
     }
 } // namespace EconSimPlusPlus::Editor

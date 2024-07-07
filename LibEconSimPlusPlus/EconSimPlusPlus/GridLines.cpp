@@ -66,13 +66,13 @@ namespace EconSimPlusPlus {
     void GridLines::update(float, const InputState&, const Camera&) {
     }
 
-    void GridLines::render(const Camera& camera) const {
+    void GridLines::render(const Graphics& graphics) const {
         const glm::mat4 transform{
             glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(*this), layer()}), glm::vec3{1.0f})};
 
         m_shader.bind();
         m_shader.setUniform("color", glm::vec3{1.0f});
-        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
+        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(graphics.camera));
         m_shader.setUniform("transform", transform);
         m_vao.bind();
         m_vbo.drawArrays(GL_LINES);

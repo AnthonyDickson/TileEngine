@@ -53,7 +53,7 @@ namespace EconSimPlusPlus {
         void show();
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
-        void render(const Camera& camera) const override;
+        void render(const Graphics& graphics) const override;
 
     private:
         /// The possible states of a text caret.
@@ -65,9 +65,6 @@ namespace EconSimPlusPlus {
         /// The time since the caret was shown. The transparency (alpha) is calculated as a function of time to create a
         /// blinking effect.
         float m_time{0.0f};
-
-        Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/rgba.frag")};
-        Quad m_quad{};
     };
 
 } // namespace EconSimPlusPlus

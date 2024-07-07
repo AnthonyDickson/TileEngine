@@ -54,7 +54,7 @@ namespace EconSimPlusPlus {
         void addChild(const std::shared_ptr<Object>& object) override;
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
-        void render(const Camera& camera) const override;
+        void render(const Graphics& graphics) const override;
 
     private:
         /// Recalculate the group layout from scratch.

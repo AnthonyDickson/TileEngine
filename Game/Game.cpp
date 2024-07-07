@@ -24,9 +24,9 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
-#include "Game.hpp"
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/Text.hpp>
+#include "Game.hpp"
 
 namespace EconSimPlusPlus {
 
@@ -34,8 +34,14 @@ namespace EconSimPlusPlus {
 
     Game::Game(std::unique_ptr<Window> window, std::unique_ptr<TileMap> tileMap) :
         m_window(std::move(window)), m_tileMap(std::move(tileMap)),
-        m_camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
-                 {0.0f, 0.0f, 100.0f}} {
+        m_graphics(Graphics{
+            .camera = Camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                             {0.0f, 0.0f, 100.0f}},
+        }),
+        m_guiGraphics(Graphics{
+            .camera = Camera{{static_cast<float>(m_window->width()), static_cast<float>(m_window->height())},
+                             {0.0f, 0.0f, 100.0f}},
+        }) {
         assert(!m_isInitialised && "Cannot have more than one instance of `Game`.");
         m_isInitialised = true;
     }
@@ -53,14 +59,15 @@ namespace EconSimPlusPlus {
 
     void Game::update(const float deltaTime) {
         if (m_window->hasWindowSizeChanged()) {
-            m_camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+            m_graphics.camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
+            m_guiGraphics.camera.onWindowResize({static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
         }
 
         const InputState input{m_window->inputState()};
-        m_camera.update(deltaTime, input);
+        m_graphics.camera.update(deltaTime, input);
 
         for (const auto& object : objects) {
-            object->update(deltaTime, input, m_camera);
+            object->update(deltaTime, input, m_graphics.camera);
         }
         // TODO: Get tile map and grid lines to react to mouse over and mouse click
         // TODO: Propogate mouse click event to objects. Only send event to upper most layer object? Send cursor
@@ -79,7 +86,7 @@ namespace EconSimPlusPlus {
         glEnable(GL_CULL_FACE);
 
         for (const auto& object : objects) {
-            object->render(m_camera);
+            object->render(m_graphics);
         }
     }
 
@@ -93,11 +100,10 @@ namespace EconSimPlusPlus {
         FrameTimer updateTimer{};
         FrameTimer renderTimer{};
 
-        Text frameTimeText{"", m_font.get(),
-                           Font::Style{.color = {1.0f, 1.0f, 0.0f},
-                                        .size = 32.0f,
-                                        .outlineSize = 0.3f,
-                                        .outlineColor = {0.0f, 0.0f, 0.0f}}};
+        Text frameTimeText{
+            "", m_guiGraphics.font.get(),
+            Font::Style{
+                .color = {1.0f, 1.0f, 0.0f}, .size = 32.0f, .outlineSize = 0.3f, .outlineColor = {0.0f, 0.0f, 0.0f}}};
         frameTimeText.setAnchor(Anchor::topLeft);
         frameTimeText.setLayer(99.0f);
 
@@ -136,7 +142,7 @@ namespace EconSimPlusPlus {
                                      static_cast<float>(m_window->height()) / 2.0f};
             frameTimeText.setText(frameTimeSummary);
             frameTimeText.setPosition(position);
-            frameTimeText.render(atOrigin(m_camera));
+            frameTimeText.render(m_guiGraphics);
 
             m_window->postUpdate();
         }

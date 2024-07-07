@@ -66,7 +66,7 @@ namespace EconSimPlusPlus {
         void setAnchor(Anchor anchor) override;
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
-        void render(const Camera& camera) const override;
+        void render(const Graphics& graphics) const override;
 
     private:
         /// The state of a button.
@@ -98,10 +98,6 @@ namespace EconSimPlusPlus {
         Style m_currentStyle;
         /// The current state of the button.
         State m_state{State::normal};
-
-        /// The button geometry.
-        Quad m_quad{};
-        Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 
 } // namespace EconSimPlusPlus

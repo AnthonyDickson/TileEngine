@@ -104,7 +104,7 @@ namespace EconSimPlusPlus {
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
-        void render(const Camera& camera) const override;
+        void render(const Graphics& graphics) const override;
 
     private:
         /// Change the text field to another state.
@@ -131,10 +131,6 @@ namespace EconSimPlusPlus {
         /// A backup of the text field's text before it entered the active state.
         /// The text is reverted to this value if the user tries to submit an invalid value.
         std::string m_rollbackString{};
-
-        /// The geometry used to draw the background.
-        Quad m_quad{};
-        Shader m_shader{Shader::create("resource/shader/grid.vert", "resource/shader/grid.frag")};
     };
 
 } // namespace EconSimPlusPlus

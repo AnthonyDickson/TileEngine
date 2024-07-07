@@ -45,7 +45,7 @@ namespace EconSimPlusPlus {
     void Text::update(float, const InputState&, const Camera&) {
     }
 
-    void Text::render(const Camera& camera) const {
-        m_font->render(m_text, {position(), layer()}, anchor(), m_style, camera);
+    void Text::render(const Graphics& graphics) const {
+        m_font->render(m_text, {position(), layer()}, anchor(), m_style, graphics.camera);
     }
 } // namespace EconSimPlusPlus

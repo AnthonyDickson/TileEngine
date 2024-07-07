@@ -198,23 +198,23 @@ namespace EconSimPlusPlus {
         }
     }
 
-    void TextField::render(const Camera& camera) const {
+    void TextField::render(const Graphics& graphics) const {
         const glm::mat4 transform{glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{bottomLeft(*this), layer()}),
                                              glm::vec3{size(), 1.0f})};
 
-        m_shader.bind();
-        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
-        m_shader.setUniform("transform", transform);
-        m_shader.setUniform("color", m_style.fillColor);
+        graphics.quadShader.bind();
+        graphics.quadShader.setUniform("projectionViewMatrix", projectionViewMatrix(graphics.camera));
+        graphics.quadShader.setUniform("transform", transform);
+        graphics.quadShader.setUniform("color", glm::vec4{m_style.fillColor, 1.0f});
 
-        m_quad.render();
+        graphics.quad.render();
 
         if (m_state == State::active) {
-            Outline::draw(*this, m_shader, m_quad, m_style.outline);
+            Outline::draw(*this,  graphics.quadShader, graphics.quad, m_style.outline);
         }
 
-        text().empty() ? m_placeholder.render(camera) : m_text.render(camera);
-        m_caret.render(camera);
+        text().empty() ? m_placeholder.render(graphics) : m_text.render(graphics);
+        m_caret.render(graphics);
     }
 
     void TextField::transitionTo(const State state) {

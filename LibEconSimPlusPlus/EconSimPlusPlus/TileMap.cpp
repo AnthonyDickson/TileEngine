@@ -175,11 +175,11 @@ namespace EconSimPlusPlus {
         }
     }
 
-    void TileMap::render(const Camera& camera) const {
-        const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(camera)};
+    void TileMap::render(const Graphics& graphics) const {
+        const auto [rowStart, rowEnd, colStart, colEnd]{calculateVisibleGridBounds(graphics.camera)};
 
         m_shader.bind();
-        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(camera));
+        m_shader.setUniform("projectionViewMatrix", projectionViewMatrix(graphics.camera));
         m_shader.setUniform("tileSize", m_tileSheet->textureCoordinateStride());
         m_tileSheet->bind();
 
@@ -224,7 +224,7 @@ namespace EconSimPlusPlus {
         renderFn();
 
         if (m_gridLines.has_value()) {
-            m_gridLines->render(camera);
+            m_gridLines->render(graphics);
         }
     }
 

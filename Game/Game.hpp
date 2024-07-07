@@ -70,10 +70,8 @@ namespace EconSimPlusPlus {
         std::unique_ptr<TileMap> m_tileMap;
         /// A list of all game objects.
         std::vector<Object*> objects{};
-        /// The render camera.
-        Camera m_camera;
-        /// The font for rendering text on screen.
-        std::unique_ptr<Font> m_font{Font::create("resource/font/Roboto-Regular.ttf", {288, 288}, {64, 64}, 32.0f)};
+        Graphics m_graphics;
+        Graphics m_guiGraphics;
     };
 } // namespace EconSimPlusPlus
 

@@ -28,7 +28,7 @@
 #include "glm/vec2.hpp"
 
 #include <EconSimPlusPlus/Anchor.hpp>
-#include <EconSimPlusPlus/Camera.hpp>
+#include <EconSimPlusPlus/Graphics.hpp>
 #include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/InputState.hpp>
 
@@ -103,8 +103,8 @@ namespace EconSimPlusPlus {
         virtual void update(float deltaTime, const InputState& inputState, const Camera& camera) = 0;
 
         /// Draw the object on screen.
-        /// @param camera The camera to render the tile map with.
-        virtual void render(const Camera& camera) const = 0;
+        /// @param graphics The graphics object to render the tile map with.
+        virtual void render(const Graphics& graphics) const = 0;
 
     private:
         /// The world space coordinates of the object along with the layer. Note this refers to the top left of the

@@ -85,10 +85,7 @@ namespace EconSimPlusPlus {
         void setAnchor(Anchor anchor) override;
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
-
-        /// Draw the tile map on screen.
-        /// @param camera The camera to render the tile map with.
-        void render(const Camera& camera) const override;
+        void render(const Graphics& graphics) const override;
 
     private:
         /// Bounds of a tile grid.

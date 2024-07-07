@@ -89,9 +89,9 @@ namespace EconSimPlusPlus {
         }
     }
 
-    void Group::render(const Camera& camera) const {
+    void Group::render(const Graphics& graphics) const {
         for (const std::shared_ptr<Object>& object : children()) {
-            object->render(camera);
+            object->render(graphics);
         }
     }
 

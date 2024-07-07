@@ -50,7 +50,7 @@ namespace EconSimPlusPlus {
         void setColor(glm::vec3 color);
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
-        void render(const Camera& camera) const override;
+        void render(const Graphics& graphics) const override;
 
     private:
         /// The text to display.
