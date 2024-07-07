@@ -209,8 +209,15 @@ namespace EconSimPlusPlus {
 
         graphics.quad.render();
 
-        if (m_state == State::active) {
-            Outline::draw(*this,  graphics.quadShader, graphics.quad, m_style.outline);
+        switch (m_state) {
+        case State::active:
+            Outline::draw(*this, graphics.quadShader, graphics.quad, m_style.outlineActive);
+            break;
+        case State::inactive:
+            Outline::draw(*this, graphics.quadShader, graphics.quad, m_style.outlineInactive);
+            break;
+        default:
+            break;
         }
 
         text().empty() ? m_placeholder.render(graphics) : m_text.render(graphics);

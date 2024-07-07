@@ -67,9 +67,11 @@ namespace EconSimPlusPlus {
             glm::vec3 placeholderTextColor{0.5f};
             /// The style of the blinking text cursor.
             TextCaret::Style caret{.color = glm::vec3{0.0f}, .width = 2.0f};
-            // TODO: Add outline for inactive state. This will be helpful for text fields with a white fill on a white background.
-            /// The configuration for the appearance of the outline.
-            Outline::Style outline{
+            /// The configuration for the appearance of the outline during the inactive state.
+            Outline::Style outlineInactive{
+                .color = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f}, .thickness = 1.0f, .placement = Outline::Placement::outset};
+            /// The configuration for the appearance of the outline during the active state.
+            Outline::Style outlineActive{
                 .color = glm::vec4{0.0f, 0.5f, 1.0f, 1.0f}, .thickness = 1.0f, .placement = Outline::Placement::outset};
         };
 
