@@ -46,7 +46,8 @@ namespace EconSimPlusPlus {
         m_text(text), m_callback(std::move(callback)), m_normalStyle(style), m_activeStyle(activeStyle),
         m_disabledStyle(disabledStyle), m_currentStyle(style) {
         assert(m_text.anchor() == Anchor::topLeft && "Text anchor within a button must be `topLeft`.");
-        assert(m_activeStyle.padding == m_normalStyle.padding == m_disabledStyle.padding &&
+        assert(glm::all(glm::equal(m_activeStyle.padding, m_normalStyle.padding)) and
+               glm::all(glm::equal(m_normalStyle.padding, m_disabledStyle.padding)) and
                "All button styles must have the same padding.");
 
         Object::setSize(glm::vec2{text.size() + m_currentStyle.padding});

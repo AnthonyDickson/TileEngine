@@ -99,7 +99,7 @@ namespace EconSimPlusPlus {
     }
 
     void TileMap::setMapSize(const glm::ivec2 mapSize) {
-        assert(glm::all(glm::greaterThan(mapSize, glm::ivec3{0})) && "Map size must be positive.");
+        assert(glm::all(glm::greaterThan(mapSize, glm::ivec2{0})) && "Map size must be positive.");
 
         if (glm::all(glm::equal(mapSize, m_mapSize))) {
             return;
