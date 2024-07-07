@@ -35,14 +35,16 @@ namespace EconSimPlusPlus {
     public:
         /// Configuration for button appearance.
         struct Style {
-            /// The horizontal and vertical space between the inner borders of the button and its child objects in pixels.
+            /// The horizontal and vertical space between the inner borders of the button and its child objects in
+            /// pixels.
             glm::vec2 padding{16.0f};
             /// The color of the button's text.
             glm::vec3 textColor = glm::vec3{0.0f};
             /// The color to fill the background of the button with.
             glm::vec3 fillColor = glm::vec3{1.0f};
             /// The configuration for the appearance of the outline.
-            Outline::Style outline{.color = glm::vec3{0.0f}, .thickness = 0.0f, .placement = Outline::Placement::inset};
+            Outline::Style outline{
+                .color = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f}, .thickness = 0.0f, .placement = Outline::Placement::inset};
         };
 
         /// Create a button.

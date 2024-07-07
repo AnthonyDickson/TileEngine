@@ -247,10 +247,13 @@ namespace EconSimPlusPlus::Editor {
         m_gameObjects.push_back(m_tileMap);
 
         // Side panel
-        // TODO: Add back in group background/outline.
         // TODO: Tidy up layout so that text fields line up horizontally.
         m_tileSheetPanel = std::make_shared<Group>(
-            Group::Layout{.direction = Group::LayoutDirection::vertical, .padding = glm::vec2{8.0f}, .spacing = 4.0f});
+            Group::Layout{.direction = Group::LayoutDirection::vertical, .padding = glm::vec2{8.0f}, .spacing = 4.0f},
+            Group::Style{.fillColor = glm::vec4{1.0f},
+                         .outline = Outline::Style{.color = glm::vec4{0.5f, 0.5f, 0.5f, 1.0f},
+                                                   .thickness = 1.0f,
+                                                   Outline::Placement::outset}});
         m_tileSheetPanel->setAnchor(Anchor::topRight);
         m_tileSheetPanel->setPosition(topRight(*m_window));
         m_tileSheetPanel->setLayer(10.0f);

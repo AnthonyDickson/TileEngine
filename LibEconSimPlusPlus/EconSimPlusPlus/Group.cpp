@@ -19,6 +19,8 @@
 // Created by Anthony Dickson on 28/06/2024.
 //
 
+#include "glm/ext/matrix_transform.hpp"
+
 #include <EconSimPlusPlus/Group.hpp>
 
 namespace EconSimPlusPlus {
@@ -62,7 +64,7 @@ namespace EconSimPlusPlus {
         }
     } // namespace
 
-    Group::Group(const Layout layout) : m_layout(layout) {
+    Group::Group(const Layout layout, const Style style) : m_layout(layout), m_style(style) {
     }
 
     void Group::setPosition(const glm::vec2 position) {
@@ -90,6 +92,20 @@ namespace EconSimPlusPlus {
     }
 
     void Group::render(const Graphics& graphics) const {
+        if (m_style.fillColor.has_value()) {
+            graphics.quadShader.bind();
+            graphics.quadShader.setUniform("projectionViewMatrix", projectionViewMatrix(graphics.camera));
+            glm::mat4 transform{glm::translate(glm::mat4{1.0f}, {bottomLeft(*this), layer()})};
+            transform = glm::scale(transform, {size(), 1.0f});
+            graphics.quadShader.setUniform("transform", transform);
+            graphics.quadShader.setUniform("color", *m_style.fillColor);
+            graphics.quad.render();
+        }
+
+        if (m_style.outline.has_value()) {
+            Outline::draw(*this, graphics.quadShader, graphics.quad, *m_style.outline);
+        }
+
         for (const std::shared_ptr<Object>& object : children()) {
             object->render(graphics);
         }

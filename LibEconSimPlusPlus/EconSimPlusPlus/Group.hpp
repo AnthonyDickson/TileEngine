@@ -23,11 +23,10 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_GROUP_HPP
 
 #include <EconSimPlusPlus/Object.hpp>
+#include <EconSimPlusPlus/Outline.hpp>
 
 namespace EconSimPlusPlus {
 
-    // TODO: Add option to draw outline/background. Create `Graphics` object that contains generic quad to use for
-    // rendering?
     /// Automatically manages the layout of objects.
     class Group final : public Object {
     public:
@@ -45,9 +44,19 @@ namespace EconSimPlusPlus {
             float spacing{};
         };
 
+        /// The configuration for the appearance of a group.
+        /// @note By default, the group itself does not render anything, only its child objects.
+        struct Style {
+            /// The color to fill the area of the group with.
+            std::optional<glm::vec4> fillColor;
+            /// The outline to draw around the group.
+            std::optional<Outline::Style> outline;
+        };
+
         /// Create an empty group.
         /// @param layout Configuration for group layout.
-        explicit Group(Layout layout);
+        /// @param style Configuration for group appearance.
+        explicit Group(Layout layout, Style style = Style{});
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
@@ -64,6 +73,8 @@ namespace EconSimPlusPlus {
 
         /// Configuration for group layout.
         const Layout m_layout;
+        /// Configuration for group appearance.
+        const Style m_style;
     };
 
 } // namespace EconSimPlusPlus

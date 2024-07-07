@@ -35,7 +35,7 @@ namespace EconSimPlusPlus::Outline {
     /// The configuration for the appearance of an outline.
     struct Style {
         /// The color of the outline.
-        glm::vec3 color;
+        glm::vec4 color;
         /// The thickness of the outline in pixels.
         float thickness;
         /// Where to draw the outline.
