@@ -63,6 +63,8 @@ namespace EconSimPlusPlus {
         }
 
         if (m_style.outline.has_value()) {
+            graphics.quadShader.bind();
+            graphics.quadShader.setUniform("projectionViewMatrix", projectionViewMatrix(graphics.camera));
             Outline::draw(*this, graphics.quadShader, graphics.quad, *m_style.outline);
         }
 
