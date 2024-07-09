@@ -39,7 +39,9 @@
 #include <EconSimPlusPlus/TextField.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
+#include <EconSimPlusPlus/TwoColumnLayout.hpp>
 #include "Editor.hpp"
+
 
 namespace EconSimPlusPlus::Editor {
 
@@ -266,10 +268,8 @@ namespace EconSimPlusPlus::Editor {
 
         m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_guiGraphics.font.get(), Font::Style{}));
 
-        const auto mapWidthGroup{std::make_shared<Group>(Group::Layout{
-            .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
-
-        mapWidthGroup->addChild(std::make_shared<Text>("Width: ", m_guiGraphics.font.get(), Font::Style{}));
+        const auto mapSizeGroup{std::make_shared<TwoColumnLayout>(
+            TwoColumnLayout::Layout{.padding = glm::vec2{0.0f}, .spacing = glm::vec2{4.0f}})};
 
         const auto textFieldValidator = [&](const std::string& text) {
             auto showDialog = [&](const std::string& message) {
@@ -296,44 +296,42 @@ namespace EconSimPlusPlus::Editor {
             }
         };
 
-        auto textField{std::make_shared<TextField>(
+
+        const auto mapWidthLabel{std::make_shared<Text>("Width: ", m_guiGraphics.font.get(), Font::Style{})};
+        auto mapWidthTextField{std::make_shared<TextField>(
             "0", m_guiGraphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
             TextField::Style{})};
-        textField->setText(std::to_string(m_tileMap->mapSize().x));
-        textField->setInputValidator(textFieldValidator);
-        textField->setSubmitAction([&, textField](const std::string& text) {
+        mapWidthTextField->setText(std::to_string(m_tileMap->mapSize().x));
+        mapWidthTextField->setInputValidator(textFieldValidator);
+        mapWidthTextField->setSubmitAction([&, mapWidthTextField](const std::string& text) {
             m_tileMap->setMapSize(glm::ivec2{std::stoi(text), m_tileMap->mapSize().y});
 
-            if (textField.get() == m_focusedObject) {
-                textField->notify(Event::defocus, {*m_window});
+            if (mapWidthTextField.get() == m_focusedObject) {
+                mapWidthTextField->notify(Event::defocus, {*m_window});
                 m_focusedObject = nullptr;
             }
         });
-        textField->setFocusable(true);
-        mapWidthGroup->addChild(textField);
-        m_tileSheetPanel->addChild(mapWidthGroup);
+        mapWidthTextField->setFocusable(true);
+        mapSizeGroup->addRow(mapWidthLabel, mapWidthTextField);
 
-        const auto mapHeightGroup{std::make_shared<Group>(Group::Layout{
-            .direction = Group::LayoutDirection::horizontal, .padding = glm::vec2{0.0f}, .spacing = 4.0f})};
+        const auto mapHeightLabel{std::make_shared<Text>("Height: ", m_guiGraphics.font.get(), Font::Style{})};
 
-        mapHeightGroup->addChild(std::make_shared<Text>("Height: ", m_guiGraphics.font.get(), Font::Style{}));
-
-        textField = std::make_shared<TextField>("0", m_guiGraphics.font.get(),
-                                                TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
-                                                TextField::Style{});
-        textField->setText(std::to_string(m_tileMap->mapSize().y));
-        textField->setInputValidator(textFieldValidator);
-        textField->setSubmitAction([&, textField](const std::string& text) {
+        auto mapHeightTextField = std::make_shared<TextField>(
+            "0", m_guiGraphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
+            TextField::Style{});
+        mapHeightTextField->setText(std::to_string(m_tileMap->mapSize().y));
+        mapHeightTextField->setInputValidator(textFieldValidator);
+        mapHeightTextField->setSubmitAction([&, mapHeightTextField](const std::string& text) {
             m_tileMap->setMapSize(glm::ivec2{m_tileMap->mapSize().x, std::stoi(text)});
 
-            if (textField.get() == m_focusedObject) {
-                textField->notify(Event::defocus, {*m_window});
+            if (mapHeightTextField.get() == m_focusedObject) {
+                mapHeightTextField->notify(Event::defocus, {*m_window});
                 m_focusedObject = nullptr;
             }
         });
-        textField->setFocusable(true);
-        mapHeightGroup->addChild(textField);
-        m_tileSheetPanel->addChild(mapHeightGroup);
+        mapHeightTextField->setFocusable(true);
+        mapSizeGroup->addRow(mapHeightLabel, mapHeightTextField);
+        m_tileSheetPanel->addChild(mapSizeGroup);
 
         // Tile sheet display
         tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);

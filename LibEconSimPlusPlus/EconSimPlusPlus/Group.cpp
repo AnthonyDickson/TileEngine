@@ -24,47 +24,7 @@
 #include <EconSimPlusPlus/Group.hpp>
 
 namespace EconSimPlusPlus {
-    namespace {
-        /// Calculate the size of the group that would contain all objects plus padding and spacing.
-        /// @param objects A list of objects that the group contains.
-        /// @param style The group style containing the padding and spacing parameters.
-        /// @return The width and height in pixels.
-        glm::vec2 calculateSize(const std::vector<std::shared_ptr<Object>>& objects, const Group::Layout style) {
-            glm::vec2 containingSize{0.0f};
-
-            for (const std::shared_ptr<Object>& object : objects) {
-                switch (style.direction) {
-                case Group::LayoutDirection::horizontal:
-                    containingSize.x = std::max(containingSize.x, containingSize.x + object->size().x);
-                    containingSize.y = std::max(containingSize.y, object->size().y);
-                    break;
-                case Group::LayoutDirection::vertical:
-                    containingSize.x = std::max(containingSize.x, object->size().x);
-                    containingSize.y = std::max(containingSize.y, containingSize.y + object->size().y);
-                    break;
-                default:
-                    throw std::runtime_error("Unsupported layout.");
-                }
-            }
-
-            switch (style.direction) {
-            case Group::LayoutDirection::horizontal:
-                containingSize.x += style.spacing * (static_cast<float>(objects.size()) - 1.0f);
-                break;
-            case Group::LayoutDirection::vertical:
-                containingSize.y += style.spacing * (static_cast<float>(objects.size()) - 1.0f);
-                break;
-            default:
-                throw std::runtime_error("Unsupported layout.");
-            }
-
-            containingSize += style.padding;
-
-            return containingSize;
-        }
-    } // namespace
-
-    Group::Group(const Layout layout, const Style style) : m_layout(layout), m_style(style) {
+    Group::Group(const Layout layout, const Style& style) : m_layout(layout), m_style(style) {
     }
 
     void Group::setPosition(const glm::vec2 position) {
@@ -132,5 +92,39 @@ namespace EconSimPlusPlus {
                 throw std::runtime_error("Unsupported layout.");
             }
         }
+    }
+
+    glm::vec2 calculateSize(const std::vector<std::shared_ptr<Object>>& objects, const Group::Layout style) {
+        glm::vec2 containingSize{0.0f};
+
+        for (const std::shared_ptr<Object>& object : objects) {
+            switch (style.direction) {
+            case Group::LayoutDirection::horizontal:
+                containingSize.x = std::max(containingSize.x, containingSize.x + object->size().x);
+                containingSize.y = std::max(containingSize.y, object->size().y);
+                break;
+            case Group::LayoutDirection::vertical:
+                containingSize.x = std::max(containingSize.x, object->size().x);
+                containingSize.y = std::max(containingSize.y, containingSize.y + object->size().y);
+                break;
+            default:
+                throw std::runtime_error("Unsupported layout.");
+            }
+        }
+
+        switch (style.direction) {
+        case Group::LayoutDirection::horizontal:
+            containingSize.x += style.spacing * (static_cast<float>(objects.size()) - 1.0f);
+            break;
+        case Group::LayoutDirection::vertical:
+            containingSize.y += style.spacing * (static_cast<float>(objects.size()) - 1.0f);
+            break;
+        default:
+            throw std::runtime_error("Unsupported layout.");
+        }
+
+        containingSize += style.padding;
+
+        return containingSize;
     }
 } // namespace EconSimPlusPlus
