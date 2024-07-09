@@ -297,7 +297,7 @@ namespace EconSimPlusPlus::Editor {
         };
 
         auto textField{std::make_shared<TextField>(
-            "0", m_guiGraphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::alphanumeric},
+            "0", m_guiGraphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
             TextField::Style{})};
         textField->setText(std::to_string(m_tileMap->mapSize().x));
         textField->setInputValidator(textFieldValidator);
