@@ -23,8 +23,6 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_TEXTCARET_HPP
 
 #include <EconSimPlusPlus/Object.hpp>
-#include <EconSimPlusPlus/Quad.hpp>
-#include <EconSimPlusPlus/Shader.hpp>
 
 namespace EconSimPlusPlus {
     /// Shows a blinking line to indicate where the text will be inserted.
