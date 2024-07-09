@@ -61,7 +61,7 @@ namespace EconSimPlusPlus {
         graphics.quadShader.setUniform(
             "transform",
             glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{position(), layer()}), glm::vec3{size(), 1.0f}));
-        const float alpha{0.5f * (std::sin(m_time) + 1.0f)};
+        const float alpha{0.5f * (std::sin(2.0f * m_time) + 1.0f)};
         graphics.quadShader.setUniform("color", glm::vec4{m_style.color, alpha});
         graphics.quad.render();
     }
