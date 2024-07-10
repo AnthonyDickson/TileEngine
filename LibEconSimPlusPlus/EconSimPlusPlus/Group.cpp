@@ -23,6 +23,135 @@
 #include <EconSimPlusPlus/Group.hpp>
 
 namespace EconSimPlusPlus {
+    namespace {
+        /// Calculate where to place the first object of a group based on the group's layout.
+        /// @param group The group to calculate the position relative to.
+        /// @param layout The group layout config.
+        /// @param innerSize The size (width, height) of the group minus padding in pixels.
+        /// @param contentSize The size (width, height) of the group's child objects plus spacing in pixels.
+        /// @return The position (x, y) of the first object in pixels.
+        glm::vec2 calculateInitialPosition(const Group& group, const Group::Layout& layout, const glm::vec2 innerSize,
+                                           const glm::vec2 contentSize) {
+            glm::vec2 initialPosition{0.0f};
+
+            switch (layout.horizontalAlignment) {
+            case Group::HorizontalAlignment::left:
+            case Group::HorizontalAlignment::justified:
+                initialPosition.x = left(group) + 0.5f * layout.padding.x;
+                break;
+            case Group::HorizontalAlignment::right:
+                initialPosition.x = left(group) + 0.5f * layout.padding.x + (innerSize.x - contentSize.x);
+                break;
+            case Group::HorizontalAlignment::center:
+                initialPosition.x = left(group) + 0.5f * layout.padding.x + 0.5f * (innerSize.x - contentSize.x);
+                break;
+            }
+
+            switch (layout.verticalAlignment) {
+            case Group::VerticalAlignment::top:
+            case Group::VerticalAlignment::justified:
+                initialPosition.y = top(group) - 0.5f * layout.padding.y;
+                break;
+            case Group::VerticalAlignment::bottom:
+                initialPosition.y = top(group) - 0.5f * layout.padding.y - (innerSize.y - contentSize.y);
+                break;
+            case Group::VerticalAlignment::center:
+                initialPosition.y = top(group) - 0.5f * layout.padding.y + 0.5f * (innerSize.y - contentSize.y);
+                break;
+            }
+
+            return initialPosition;
+        }
+
+        /// Calculate the offset position for an object.
+        ///
+        /// In groups with objects of different sizes, we need to calculate an offset to ensure that all objects are
+        /// aligned correctly, irregardless of width/height.
+        /// @param object The object to calculate the position for.
+        /// @param basePosition The position for the standard
+        /// @param layout The group layout config.
+        /// @param innerSize The size (width, height) of the group minus padding in pixels.
+        /// @return The position (x, y) of the object in pixels.
+        glm::vec2 calculatePosition(const std::shared_ptr<Object>& object, const glm::vec2 basePosition,
+                                    const Group::Layout& layout, const glm::vec2 innerSize) {
+            glm::vec2 centeringOffset{0.0f};
+
+            if (layout.direction == Group::LayoutDirection::horizontal) {
+                switch (layout.verticalAlignment) {
+                case Group::VerticalAlignment::center:
+                    centeringOffset.y -= 0.5f * (innerSize.y - object->size().y);
+                    break;
+                case Group::VerticalAlignment::bottom:
+                    centeringOffset.y -= innerSize.y - object->size().y;
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            if (layout.direction == Group::LayoutDirection::vertical) {
+                switch (layout.horizontalAlignment) {
+                case Group::HorizontalAlignment::center:
+                    centeringOffset.x += 0.5f * (innerSize.x - object->size().x);
+                    break;
+                case Group::HorizontalAlignment::right:
+                    centeringOffset.x += innerSize.x - object->size().x;
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            return glm::vec2{basePosition + centeringOffset};
+        }
+
+        /// Calculate where to place the next object in a group.
+        /// @param object The object most recently positioned.
+        /// @param currentPosition The position of the most recently positioned object.
+        /// @param layout The group layout config.
+        /// @param innerSize The size (width, height) of the group minus padding in pixels.
+        /// @param contentSize The size (width, height) of the group's child objects plus spacing in pixels.
+        /// @param itemCount The number of objects in the group.
+        /// @return The position (x, y) of the next object in pixels.
+        glm::vec2 calculateNextPosition(const std::shared_ptr<Object>& object, const glm::vec2 currentPosition,
+                                        const Group::Layout& layout, const glm::vec2 innerSize,
+                                        const glm::vec2 contentSize, const int itemCount) {
+            glm::vec2 nextPosition{currentPosition};
+
+            switch (layout.direction) {
+            case Group::LayoutDirection::horizontal:
+                switch (layout.horizontalAlignment) {
+                case Group::HorizontalAlignment::left:
+                case Group::HorizontalAlignment::center:
+                case Group::HorizontalAlignment::right:
+                    nextPosition.x = currentPosition.x + object->size().x + layout.spacing;
+                    break;
+                case Group::HorizontalAlignment::justified:
+                    nextPosition.x = currentPosition.x + object->size().x + layout.spacing +
+                        (innerSize.x - contentSize.x) / (static_cast<float>(itemCount) - 1.0f);
+                    break;
+                }
+                break;
+            case Group::LayoutDirection::vertical:
+                switch (layout.verticalAlignment) {
+                case Group::VerticalAlignment::top:
+                case Group::VerticalAlignment::center:
+                case Group::VerticalAlignment::bottom:
+                    nextPosition.y = currentPosition.y - object->size().y - layout.spacing;
+                    break;
+                case Group::VerticalAlignment::justified:
+                    nextPosition.y = currentPosition.y - object->size().y - layout.spacing -
+                        (innerSize.y - contentSize.y) / (static_cast<float>(itemCount) - 1.0f);
+                    break;
+                }
+                break;
+            default:
+                throw std::runtime_error("Unsupported layout.");
+            }
+
+            return nextPosition;
+        }
+    } // namespace
     Group::Group(const Layout& layout, const Style& style) : m_layout(layout), m_style(style) {
     }
 
@@ -102,105 +231,16 @@ namespace EconSimPlusPlus {
         // The group size excluding padding.
         const glm::vec2 innerSize{outerSize - m_layout.padding};
 
-        glm::vec2 nextPosition{};
-
-        switch (m_layout.horizontalAlignment) {
-        case HorizontalAlignment::left:
-        case HorizontalAlignment::justified:
-            nextPosition.x = left(*this) + 0.5f * m_layout.padding.x;
-            break;
-        case HorizontalAlignment::right:
-            nextPosition.x = left(*this) + 0.5f * m_layout.padding.x + (innerSize.x - contentSize.x);
-            break;
-        case HorizontalAlignment::center:
-            nextPosition.x = left(*this) + 0.5f * m_layout.padding.x + 0.5f * (innerSize.x - contentSize.x);
-            break;
-        }
-
-        switch (m_layout.verticalAlignment) {
-        case VerticalAlignment::top:
-        case VerticalAlignment::justified:
-            nextPosition.y = top(*this) - 0.5f * m_layout.padding.y;
-            break;
-        case VerticalAlignment::bottom:
-            nextPosition.y = top(*this) - 0.5f * m_layout.padding.y - (innerSize.y - contentSize.y);
-            break;
-        case VerticalAlignment::center:
-            nextPosition.y = top(*this) - 0.5f * m_layout.padding.y + 0.5f * (innerSize.y - contentSize.y);
-            break;
-        }
-
-        std::vector<glm::vec2> positions{};
-
-        for (auto& object : childObjects) {
-            glm::vec2 centeringOffset{0.0f};
-
-            if (m_layout.direction == LayoutDirection::horizontal) {
-                switch (m_layout.verticalAlignment) {
-                case VerticalAlignment::center:
-                    centeringOffset.y -= 0.5f * (innerSize.y - object->size().y);
-                    break;
-                case VerticalAlignment::bottom:
-                    centeringOffset.y -= innerSize.y - object->size().y;
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            if (m_layout.direction == LayoutDirection::vertical) {
-                switch (m_layout.horizontalAlignment) {
-                case HorizontalAlignment::center:
-                    centeringOffset.x += 0.5f * (innerSize.x - object->size().x);
-                    break;
-                case HorizontalAlignment::right:
-                    centeringOffset.x += innerSize.x - object->size().x;
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            const glm::vec2 objectTopLeft{nextPosition + centeringOffset};
-            positions.push_back(objectTopLeft);
-
-            switch (m_layout.direction) {
-            case LayoutDirection::horizontal:
-                switch (m_layout.horizontalAlignment) {
-                case HorizontalAlignment::left:
-                case HorizontalAlignment::center:
-                case HorizontalAlignment::right:
-                    nextPosition.x = objectTopLeft.x + object->size().x + m_layout.spacing;
-                    break;
-                case HorizontalAlignment::justified:
-                    nextPosition.x = objectTopLeft.x + object->size().x + m_layout.spacing +
-                        (innerSize.x - contentSize.x) / (static_cast<float>(childObjects.size()) - 1.0f);
-                    break;
-                }
-                break;
-            case LayoutDirection::vertical:
-                switch (m_layout.verticalAlignment) {
-                case VerticalAlignment::top:
-                case VerticalAlignment::center:
-                case VerticalAlignment::bottom:
-                    nextPosition.y = objectTopLeft.y - object->size().y - m_layout.spacing;
-                    break;
-                case VerticalAlignment::justified:
-                    nextPosition.y = objectTopLeft.y - object->size().y - m_layout.spacing -
-                        (innerSize.y - contentSize.y) / (static_cast<float>(childObjects.size()) - 1.0f);
-                    break;
-                }
-                break;
-            default:
-                throw std::runtime_error("Unsupported layout.");
-            }
-        }
+        glm::vec2 nextPosition{calculateInitialPosition(*this, m_layout, innerSize, contentSize)};
 
         for (std::size_t i = 0; i < childObjects.size(); ++i) {
             const auto& object{childObjects.at(i)};
             object->setAnchor(Anchor::topLeft);
-            object->setPosition(positions.at(i));
+            object->setPosition(calculatePosition(object, nextPosition, m_layout, innerSize));
             object->setLayer(layer());
+
+            nextPosition = calculateNextPosition(object, nextPosition, m_layout, innerSize, contentSize,
+                                                 static_cast<int>(childObjects.size()));
         }
     }
 
