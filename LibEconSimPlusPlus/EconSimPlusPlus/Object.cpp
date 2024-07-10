@@ -117,6 +117,26 @@ namespace EconSimPlusPlus {
         return true;
     }
 
+    float top(const Object& object) {
+        const glm::vec2 anchorOffset{calculateAnchorOffset(object.size(), object.anchor())};
+
+        return object.position().y + anchorOffset.y;
+    }
+
+    float bottom(const Object& object) {
+        return top(object) - object.size().y;
+    }
+
+    float left(const Object& object) {
+        const glm::vec2 anchorOffset{calculateAnchorOffset(object.size(), object.anchor())};
+
+        return object.position().x + anchorOffset.x;
+    }
+
+    float right(const Object& object) {
+        return left(object) + object.size().x;
+    }
+
     glm::vec2 topLeft(const Object& object) {
         const glm::vec2 anchorOffset{calculateAnchorOffset(object.size(), object.anchor())};
 

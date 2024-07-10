@@ -26,13 +26,16 @@
 #include <EconSimPlusPlus/Outline.hpp>
 
 namespace EconSimPlusPlus {
-    // TODO: For horizontal layouts, center the child objects vertically, default to left horizontal alignment.
     // TODO: For horizontal layouts, add option to push objects to closest edge.
     /// Automatically manages the layout of objects.
     class Group final : public Object {
     public:
         /// How objects in the group should be positioned relative to each other.
         enum class LayoutDirection { vertical, horizontal };
+        /// How objects in the group should be horizontally positioned relative to the group.
+        enum class HorizontalAlignment { left, center, right, justified };
+        /// How objects in the group should be vertically positioned relative to the group.
+        enum class VerticalAlignment { top, center, bottom, justified };
 
         /// Configuration for group layout.
         struct Layout {
@@ -43,6 +46,12 @@ namespace EconSimPlusPlus {
             glm::vec2 padding{};
             /// The space between child objects in pixels.
             float spacing{};
+            /// How objects in the group should be horizontally positioned relative to the group.
+            /// @note Only has an effect if the group size is set to something larger than the minimal containing size.
+            HorizontalAlignment horizontalAlignment{HorizontalAlignment::left};
+            /// How objects in the group should be vertically positioned relative to the group.
+            /// @note Only has an effect if the group size is set to something larger than the minimal containing size.
+            VerticalAlignment verticalAlignment{VerticalAlignment::top};
         };
 
         /// The configuration for the appearance of a group.
@@ -57,10 +66,11 @@ namespace EconSimPlusPlus {
         /// Create an empty group.
         /// @param layout Configuration for group layout.
         /// @param style Configuration for group appearance.
-        explicit Group(Layout layout, const Style& style = Style{});
+        explicit Group(const Layout& layout, const Style& style = Style{});
 
         void setPosition(glm::vec2 position) override;
         void setLayer(float layer) override;
+        void setSize(glm::vec2 size) override;
         void addChild(const std::shared_ptr<Object>& object) override;
 
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
@@ -77,6 +87,12 @@ namespace EconSimPlusPlus {
         /// Configuration for group appearance.
         const Style m_style;
     };
+
+    /// Calculate the size of the group that would contain all objects plus padding and spacing.
+    /// @param objects A list of objects that the group contains.
+    /// @param style The group style containing the padding and spacing parameters.
+    /// @return The width and height in pixels.
+    glm::vec2 calculateContainingSize(const std::vector<std::shared_ptr<Object>>& objects, const Group::Layout& style);
 
 } // namespace EconSimPlusPlus
 

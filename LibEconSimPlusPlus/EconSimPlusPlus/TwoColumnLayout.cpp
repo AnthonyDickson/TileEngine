@@ -25,20 +25,26 @@ namespace EconSimPlusPlus {
     TwoColumnLayout::TwoColumnLayout(const Layout layout) :
         m_layout(layout), m_groupLayout{.direction = Group::LayoutDirection::horizontal,
                                         .padding = glm::vec2{0.0f},
-                                        .spacing = m_layout.spacing.x} {
+                                        .spacing = m_layout.spacing.x,
+                                        .horizontalAlignment = Group::HorizontalAlignment::justified,
+                                        .verticalAlignment = Group::VerticalAlignment::center} {
     }
 
     void TwoColumnLayout::addRow(const std::shared_ptr<Object>& left, const std::shared_ptr<Object>& right) {
         const auto group = std::make_shared<Group>(m_groupLayout);
         group->addChild(left);
         group->addChild(right);
-
-        addChild(group);
+        Object::addChild(group);
+        recalculateLayout();
     }
 
     void TwoColumnLayout::setPosition(const glm::vec2 position) {
+        const glm::vec2 delta{position - this->position()};
         Object::setPosition(position);
-        recalculateLayout();
+
+        for (const auto& object : children()) {
+            object->setPosition(object->position() + delta);
+        }
     }
 
     void TwoColumnLayout::setLayer(const float layer) {
@@ -57,7 +63,7 @@ namespace EconSimPlusPlus {
         recalculateLayout();
     }
 
-    void TwoColumnLayout::update(float deltaTime, const InputState& inputState, const Camera& camera) {
+    void TwoColumnLayout::update(const float deltaTime, const InputState& inputState, const Camera& camera) {
         for (const std::shared_ptr<Object>& object : children()) {
             object->update(deltaTime, inputState, camera);
         }
@@ -70,33 +76,17 @@ namespace EconSimPlusPlus {
     }
 
     void TwoColumnLayout::recalculateLayout() {
-        auto childObjects = children();
+        // ReSharper disable once CppTemplateArgumentsCanBeDeduced
+        const std::vector<std::shared_ptr<Object>> childObjects{children()};
 
         // Calculate the row dimensions that can fully contain all rows.
         glm::vec2 maxRowDimensions{0.0f};
 
         for (const auto& group : childObjects) {
-            const glm::vec2 rowSize = calculateSize(group->children(), m_groupLayout);
+            const glm::vec2 rowSize = group->size();
 
-            if (rowSize.x > maxRowDimensions.x) {
-                maxRowDimensions.x = rowSize.x;
-            }
-
-            if (rowSize.y > maxRowDimensions.y) {
-                maxRowDimensions.y = rowSize.y;
-            }
-        }
-
-        // Update rows
-        glm::vec2 nextPosition{topLeft(*this) + 0.5f * glm::vec2{m_layout.padding.x, -m_layout.padding.y}};
-
-        for (auto& group : childObjects) {
-            group->setAnchor(Anchor::topLeft);
-            group->setPosition(nextPosition);
-            group->setSize(maxRowDimensions);
-            group->setLayer(layer());
-
-            nextPosition = bottomLeft(*group) + glm::vec2{0.0f, -m_layout.spacing.y};
+            maxRowDimensions.x = std::max(maxRowDimensions.x, rowSize.x);
+            maxRowDimensions.y = std::max(maxRowDimensions.y, rowSize.y);
         }
 
         // Update own size.
@@ -104,5 +94,17 @@ namespace EconSimPlusPlus {
         const glm::vec2 containingSize{maxRowDimensions * rowCount + m_layout.padding +
                                        glm::vec2{0.0f, m_layout.spacing.y * (rowCount - 1.0f)}};
         setSize(containingSize);
+
+        // Update rows
+        glm::vec2 nextPosition{topLeft(*this) + 0.5f * glm::vec2{m_layout.padding.x, -m_layout.padding.y}};
+
+        for (auto& group : childObjects) {
+            group->setAnchor(Anchor::topLeft);
+            group->setSize(maxRowDimensions);
+            group->setPosition(nextPosition);
+            group->setLayer(layer());
+
+            nextPosition = bottomLeft(*group) - glm::vec2{0.0f, m_layout.spacing.y};
+        }
     }
 } // namespace EconSimPlusPlus

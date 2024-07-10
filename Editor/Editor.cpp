@@ -183,6 +183,9 @@ namespace EconSimPlusPlus::Editor {
         });
         m_guiObjects.push_back(saveFileButton);
 
+        // Code for testing.
+        loadTileSheet("resource/basic_tileset_and_assets_standard/terrain_tiles_v2.png");
+
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
             const std::chrono::duration deltaTime{currentTime - lastFrameTime};
@@ -249,7 +252,6 @@ namespace EconSimPlusPlus::Editor {
         m_gameObjects.push_back(m_tileMap);
 
         // Side panel
-        // TODO: Tidy up layout so that text fields line up horizontally.
         m_tileSheetPanel = std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical, .padding = glm::vec2{8.0f}, .spacing = 4.0f},
             Group::Style{.fillColor = glm::vec4{1.0f},

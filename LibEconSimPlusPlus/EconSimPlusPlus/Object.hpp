@@ -136,6 +136,26 @@ namespace EconSimPlusPlus {
     /// @return Whether the point interects the object.
     [[nodiscard]] bool contains(const Object& object, glm::vec2 point);
 
+    /// Get the coordinates of the top edge of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] float top(const Object& object);
+
+    /// Get the coordinates of the bottom edge of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] float bottom(const Object& object);
+
+    /// Get the coordinates of the left edge of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] float left(const Object& object);
+
+    /// Get the coordinates of the right edge of the object.
+    /// @param object An object.
+    /// @return The object's 2D coordinate in world space.
+    [[nodiscard]] float right(const Object& object);
+
     /// Get the coordinates of the top left corner of the object.
     /// @param object An object.
     /// @return The object's 2D coordinate in world space.
