@@ -23,6 +23,7 @@
 #define LIBECONSIMPLUSPLUS_ECONSIMPLUSPLUS_OBJECT_HPP
 
 #include <functional>
+#include <memory>
 
 #include "glm/ext/matrix_common.hpp"
 #include "glm/vec2.hpp"
