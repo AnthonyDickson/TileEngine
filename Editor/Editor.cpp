@@ -231,6 +231,9 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::loadTileSheet(const std::string& filepath) {
+        // TODO: After the user chooses a tile map in the open file dialog, show a prompt that asks for tile size and
+        // shows a preview of the tile sheet. When the user clicks confirm, the tile map and editor GUI should be then
+        // constructed. If the user clicks cancel, the whole operation should be aborted.
         // TODO: Show dialog that asks user whether save current tile map, discard any changes or cancel the open
         // operation.
         constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
@@ -268,11 +271,6 @@ namespace EconSimPlusPlus::Editor {
         });
         m_guiObjects.push_back(m_tileSheetPanel);
 
-        m_tileSheetPanel->addChild(std::make_shared<Text>("Map Size", m_guiGraphics.font.get(), Font::Style{}));
-
-        const auto mapSizeGroup{std::make_shared<TwoColumnLayout>(
-            TwoColumnLayout::Layout{.padding = glm::vec2{0.0f}, .spacing = glm::vec2{4.0f}})};
-
         const auto textFieldValidator = [&](const std::string& text) {
             auto showDialog = [&](const std::string& message) {
                 m_dialog = {std::make_unique<MessageDialog>(
@@ -298,6 +296,10 @@ namespace EconSimPlusPlus::Editor {
             }
         };
 
+        const auto mapSizeGroup{std::make_shared<TwoColumnLayout>(
+            TwoColumnLayout::Layout{.padding = glm::vec2{0.0f}, .spacing = glm::vec2{4.0f}})};
+
+        mapSizeGroup->addChild(std::make_shared<Text>("Map Size", m_guiGraphics.font.get(), Font::Style{}));
 
         const auto mapWidthLabel{std::make_shared<Text>("Width: ", m_guiGraphics.font.get(), Font::Style{})};
         auto mapWidthTextField{std::make_shared<TextField>(
@@ -317,7 +319,6 @@ namespace EconSimPlusPlus::Editor {
         mapSizeGroup->addRow(mapWidthLabel, mapWidthTextField);
 
         const auto mapHeightLabel{std::make_shared<Text>("Height: ", m_guiGraphics.font.get(), Font::Style{})};
-
         auto mapHeightTextField = std::make_shared<TextField>(
             "0", m_guiGraphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
             TextField::Style{});
@@ -346,7 +347,6 @@ namespace EconSimPlusPlus::Editor {
         // TODO: Add callback to tile map for when a tile is: 1) hovered over (e.g., highlight the square outline).
         // TODO: When a tile is hovered over in the tile map, that tile should be highlighted with an outline.
 
-        // TODO: Add GUI elements to adjust tile size, map size etc.
         // TODO: Add GUI element that shows currently selected tile.
         // TODO: Add undo/redo functionality.
         // TODO: Paint tiles by holding down mouse button and moving over grid cells in addition to single clicks.
