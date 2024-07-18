@@ -7,6 +7,7 @@ add_library(LibEconSimPlusPlus
         EconSimPlusPlus/Glyph.cpp
         EconSimPlusPlus/GridLines.cpp
         EconSimPlusPlus/Group.cpp
+        EconSimPlusPlus/Image.cpp
         EconSimPlusPlus/InputState.cpp
         EconSimPlusPlus/KeyModifier.cpp
         EconSimPlusPlus/Object.cpp

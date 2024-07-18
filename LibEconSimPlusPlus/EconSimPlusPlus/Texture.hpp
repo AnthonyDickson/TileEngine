@@ -26,23 +26,21 @@
 
 #include "glad/glad.h"
 
+#include <EconSimPlusPlus/Image.hpp>
+
 namespace EconSimPlusPlus {
     /// Handles the creation and setup of an OpenGL texture from a image on disk.
     class Texture {
     public:
         /// Create a texture from an image file path.
         /// @param imagePath The path to an image.
-        /// @param textureUnit (optional) Which texture unit to bind. Defaults to GL_TEXTURE0.
+        /// @param textureUnit Which texture unit to bind. Defaults to GL_TEXTURE0.
         static std::unique_ptr<Texture> create(const std::string& imagePath, int textureUnit = GL_TEXTURE0);
 
         /// Create a texture from an image.
         /// @param image The image data.
-        /// @param resolution The width and height of the image data in pixels.
-        /// @param channelCount The number of channels in the image data.
         /// @param textureUnit Which texture unit to bind. Defaults to GL_TEXTURE0.
-        /// @param path Where the texture was loaded from.
-        static std::unique_ptr<Texture> create(const unsigned char* image, glm::ivec2 resolution, int channelCount,
-                                               int textureUnit = GL_TEXTURE0, const std::string& path = "");
+        static std::unique_ptr<Texture> create(const Image::Image& image, int textureUnit = GL_TEXTURE0);
 
         /// @param textureID The OpenGL ID for the texture.
         /// @param textureUnit The texture unit to bind the texture to.
@@ -52,8 +50,6 @@ namespace EconSimPlusPlus {
 
         /// Delete copy constructor to avoid OpenGL issues.
         Texture(Texture&) = delete;
-        /// Delete move constructor to avoid OpenGL issues.
-        Texture(Texture&&) = delete;
 
         /// Clean up OpenGL related stuff.
         ~Texture();
@@ -69,6 +65,7 @@ namespace EconSimPlusPlus {
         void bind() const;
 
         [[nodiscard]] int getUniformTextureUnit() const;
+
     private:
         /// The OpenGL ID for the texture.
         const unsigned int m_textureID;
@@ -78,7 +75,6 @@ namespace EconSimPlusPlus {
         const glm::ivec2 m_resolution;
         /// Where the texture was loaded from.
         const std::string m_path;
-
     };
 } // namespace EconSimPlusPlus
 

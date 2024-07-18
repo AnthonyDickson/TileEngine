@@ -22,36 +22,19 @@
 #include <format>
 
 #include <glm/vec2.hpp>
-#include "stb_image.h"
 
 #include <EconSimPlusPlus/Texture.hpp>
 
 namespace EconSimPlusPlus {
 
     std::unique_ptr<Texture> Texture::create(const std::string& imagePath, const int textureUnit) {
-        int width{};
-        int height{};
-        int channelCount{};
-        stbi_set_flip_vertically_on_load(true);
-        const auto imageData{stbi_load(imagePath.c_str(), &width, &height, &channelCount, 0)};
-
-        if (imageData == nullptr) {
-            throw std::runtime_error(
-                std::format("Texture failed to load image from {0}: {1}", imagePath, stbi_failure_reason()));
-        }
-
-        std::unique_ptr texture{create(imageData, {width, height}, channelCount, textureUnit, imagePath)};
-
-        stbi_image_free(imageData);
-
-        return texture;
+        return std::unique_ptr{create(Image::create(imagePath), textureUnit)};
     }
 
-    std::unique_ptr<Texture> Texture::create(const unsigned char* image, const glm::ivec2 resolution,
-                                             const int channelCount, const int textureUnit, const std::string& path) {
+    std::unique_ptr<Texture> Texture::create(const Image::Image& image, const int textureUnit) {
         GLenum imageFormat;
 
-        switch (channelCount) {
+        switch (image.channels) {
         case 1:
             imageFormat = GL_RED;
             break;
@@ -62,14 +45,14 @@ namespace EconSimPlusPlus {
             imageFormat = GL_RGBA;
             break;
         default:
-            throw std::runtime_error(std::format("Texture does not support image with {0} channels.", channelCount));
+            throw std::runtime_error(std::format("Texture does not support image with {0} channels.", image.channels));
         }
 
         GLuint textureID{};
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), resolution.x, resolution.y, 0, imageFormat,
-                     GL_UNSIGNED_BYTE, image);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(imageFormat), image.resolution.x, image.resolution.y, 0,
+                     imageFormat, GL_UNSIGNED_BYTE, image.bytes.data());
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -77,7 +60,7 @@ namespace EconSimPlusPlus {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        return std::make_unique<Texture>(textureID, textureUnit, resolution, path);
+        return std::make_unique<Texture>(textureID, textureUnit, image.resolution, image.path);
     }
 
     Texture::Texture(const unsigned int textureID, const int textureUnit, const glm::ivec2 resolution,
