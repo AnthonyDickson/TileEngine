@@ -25,6 +25,7 @@
 #include <functional>
 
 #include <EconSimPlusPlus/Object.hpp>
+#include <EconSimPlusPlus/Outline.hpp>
 #include <EconSimPlusPlus/Text.hpp>
 #include <EconSimPlusPlus/TextCaret.hpp>
 

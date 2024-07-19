@@ -51,9 +51,14 @@ namespace EconSimPlusPlus::Editor {
         /// @param window The window to display the editor.
         explicit Editor(std::unique_ptr<Window> window);
 
-        /// Load a tile sheet image from disk and create an empty tilemap.
+        /// Get the tile size from the user for a tile sheet.
         /// @param filepath The path to the tile sheet image.
-        void loadTileSheet(const std::string& filepath);
+        void getTileSize(const std::string& filepath);
+
+        /// Create an empty tilemap from a tile sheet and create the editor GUI.
+        /// @param image The tile sheet image to use.
+        /// @param tileSize The size (width and height) of the tiles in the tile sheet in pixels.
+        void loadTileSheet(const Image::Image& image, glm::vec2 tileSize);
 
         /// Update the editor by one step.
         /// @param deltaTime the size of the step to take in term of time (seconds).

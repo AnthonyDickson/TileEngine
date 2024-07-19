@@ -1,8 +1,8 @@
 add_library(LibEconSimPlusPlusEditor
         EconSimPlusPlus/Editor/MessageDialog.cpp
         EconSimPlusPlus/Editor/OpenFileDialog.cpp
+        EconSimPlusPlus/Editor/OpenTileMapForm.cpp
         EconSimPlusPlus/Editor/SaveFileDialog.cpp
-        EconSimPlusPlus/Editor/OpenTileMapForm.hpp
 )
 target_include_directories(LibEconSimPlusPlusEditor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(LibEconSimPlusPlusEditor PRIVATE -Werror -Wall -Wextra -Wpedantic -Wshadow)

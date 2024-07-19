@@ -22,7 +22,9 @@
 #ifndef OPENTILEMAPFORM_HPP
 #define OPENTILEMAPFORM_HPP
 
+#include <EconSimPlusPlus/Image.hpp>
 #include <EconSimPlusPlus/Object.hpp>
+#include <EconSimPlusPlus/Texture.hpp>
 
 
 namespace EconSimPlusPlus::Editor {
@@ -37,8 +39,32 @@ namespace EconSimPlusPlus::Editor {
     /// @note This form is intended to be displayed after the user has chosen a tile map texture via the GUI.
     class OpenTileMapForm final : public Object {
     public:
+        static std::unique_ptr<OpenTileMapForm> create(const Image::Image& image, glm::vec2 initialTileSize, const Font* font,
+                                                       const std::function<void(glm::vec2 tileSize)>& onConfirm,
+                                                       const std::function<void()>& onCancel);
+
+        /// Create a new form for configuring a tile map.
+        /// @param texture The tile sheet texture.
+        /// @param initialTileSize The tile size (width and height, in pixels) to start with.
+        /// @param onConfirm The function to call if the user clicks the confirm button. This function will be passed
+        /// the tile size that the user has entered.
+        /// @param onCancel The function to call if the user clicks the cancel button.
+        OpenTileMapForm(std::unique_ptr<Texture> texture, glm::vec2 initialTileSize,
+                        const std::function<void(glm::vec2 tileSize)>& onConfirm,
+                        const std::function<void()>& onCancel);
+
         void update(float deltaTime, const InputState& inputState, const Camera& camera) override;
         void render(const Graphics& graphics) const override;
+
+    private:
+        /// The tile sheet texture.
+        const std::unique_ptr<Texture> m_texture;
+        /// The width and height of a tile in the til map.
+        glm::vec2 m_tileSize;
+        /// The function to call if the user clicks the confirm button.
+        const std::function<void(glm::vec2 tileSize)> m_onConfirm;
+        /// The function to call if the user clicks the cancel button.
+        const std::function<void()> m_onCancel;
     };
 
 } // namespace EconSimPlusPlus::Editor

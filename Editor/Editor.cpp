@@ -31,15 +31,18 @@
 #include <EconSimPlusPlus/Button.hpp>
 #include <EconSimPlusPlus/Editor/MessageDialog.hpp>
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
+#include <EconSimPlusPlus/Editor/OpenTileMapForm.hpp>
 #include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 #include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
 #include <EconSimPlusPlus/GridLines.hpp>
 #include <EconSimPlusPlus/Group.hpp>
+#include <EconSimPlusPlus/Image.hpp>
 #include <EconSimPlusPlus/TextField.hpp>
 #include <EconSimPlusPlus/TileMap.hpp>
 #include <EconSimPlusPlus/TileSheet.hpp>
 #include <EconSimPlusPlus/TwoColumnLayout.hpp>
+
 #include "Editor.hpp"
 
 
@@ -121,7 +124,7 @@ namespace EconSimPlusPlus::Editor {
         auto openFile = [&] {
             m_dialog = std::make_unique<OpenFileDialog>(
                 pfd::open_file("Select a file", ".", {"Image Files", "*.png *.jpg *.jpeg"}),
-                [this](const std::string& selection) { loadTileSheet(selection); });
+                [this](const std::string& selection) { getTileSize(selection); });
             // This ensures the cursor is restored even if the mouseLeave event is not triggered for the button that
             // opened the file dialog.
             m_window->setCursor(GLFW_CURSOR_NORMAL);
@@ -184,7 +187,8 @@ namespace EconSimPlusPlus::Editor {
         m_guiObjects.push_back(saveFileButton);
 
         // Code for testing.
-        loadTileSheet("resource/basic_tileset_and_assets_standard/terrain_tiles_v2.png");
+        getTileSize("resource/basic_tileset_and_assets_standard/terrain_tiles_v2.png");
+        // loadTileSheet(Image::create("resource/basic_tileset_and_assets_standard/terrain_tiles_v2.png"), glm::vec2{32.0f, 32.0f});
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -230,7 +234,18 @@ namespace EconSimPlusPlus::Editor {
         }) {
     }
 
-    void Editor::loadTileSheet(const std::string& filepath) {
+    void Editor::getTileSize(const std::string& filepath) {
+        constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
+        const Image::Image image{Image::create(filepath)};
+
+        // TODO: Create data member.
+        auto m_openTileMapForm = OpenTileMapForm::create(
+            image, defaultTileSize, m_graphics.font.get(),
+            [&](const glm::vec2 tileSize) { loadTileSheet(image, tileSize); }, [&] {});
+        m_guiObjects.push_back(std::move(m_openTileMapForm));
+    }
+
+    void Editor::loadTileSheet(const Image::Image& image, glm::vec2 tileSize) {
         // TODO: After the user chooses a tile map in the open file dialog, show a prompt that asks for tile size and
         // shows a preview of the tile sheet. When the user clicks confirm, the tile map and editor GUI should be then
         // constructed. If the user clicks cancel, the whole operation should be aborted.
@@ -245,7 +260,7 @@ namespace EconSimPlusPlus::Editor {
         std::erase(m_guiObjects, m_tileSheetPanel);
 
         // Tile map display
-        auto tileSheet{std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize)};
+        auto tileSheet{std::make_unique<TileSheet>(Texture::create(image), defaultTileSize)};
         m_tileMap = std::make_shared<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles);
         m_tileMap->setAnchor(Anchor::center);
         m_tileMap->setLayer(1.0f);
@@ -337,7 +352,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileSheetPanel->addChild(mapSizeGroup);
 
         // Tile sheet display
-        tileSheet = std::make_unique<TileSheet>(Texture::create(filepath), defaultTileSize);
+        tileSheet = std::make_unique<TileSheet>(Texture::create(image), defaultTileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);
         const auto tileMap{std::make_shared<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
