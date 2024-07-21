@@ -31,7 +31,6 @@
 #include <EconSimPlusPlus/Button.hpp>
 #include <EconSimPlusPlus/Editor/MessageDialog.hpp>
 #include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
-#include <EconSimPlusPlus/Editor/OpenTileMapForm.hpp>
 #include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
 #include <EconSimPlusPlus/Event.hpp>
 #include <EconSimPlusPlus/FrameTimer.hpp>
@@ -188,7 +187,8 @@ namespace EconSimPlusPlus::Editor {
 
         // Code for testing.
         getTileSize("resource/basic_tileset_and_assets_standard/terrain_tiles_v2.png");
-        // loadTileSheet(Image::create("resource/basic_tileset_and_assets_standard/terrain_tiles_v2.png"), glm::vec2{32.0f, 32.0f});
+        // loadTileSheet(Image::create("resource/basic_tileset_and_assets_standard/terrain_tiles_v2.png"),
+        // glm::vec2{32.0f, 32.0f});
 
         while (true) {
             const std::chrono::time_point currentTime{std::chrono::steady_clock::now()};
@@ -238,11 +238,136 @@ namespace EconSimPlusPlus::Editor {
         constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
         const Image::Image image{Image::create(filepath)};
 
-        // TODO: Create data member.
-        auto m_openTileMapForm = OpenTileMapForm::create(
-            image, defaultTileSize, m_graphics.font.get(),
-            [&](const glm::vec2 tileSize) { loadTileSheet(image, tileSize); }, [&] {});
-        m_guiObjects.push_back(std::move(m_openTileMapForm));
+        const auto formContainer{std::make_shared<Group>(
+            Group::Layout{.direction = Group::LayoutDirection::vertical,
+                          .padding = glm::vec2{8.0f},
+                          .spacing = 8.0f,
+                          .horizontalAlignment = Group::HorizontalAlignment::justified,
+                          .verticalAlignment = Group::VerticalAlignment::justified},
+            Group::Style{.outline = Outline::Style{.color = glm::vec4{0.5f, 0.5f, 0.5f, 1.0f}, .thickness = 2.0f},
+                         .fillColor = glm::vec4{glm::vec3{1.0f}, 1.0f}})};
+
+        const auto tileSheetContainer{
+            std::make_shared<Group>(Group::Layout{.direction = Group::LayoutDirection::horizontal,
+                                                  .horizontalAlignment = Group::HorizontalAlignment::justified,
+                                                  .verticalAlignment = Group::VerticalAlignment::justified})};
+
+        const auto textFieldValidator = [&](const std::string& text) {
+            auto showDialog = [&](const std::string& message) {
+                m_dialog = {std::make_unique<MessageDialog>(
+                    pfd::message("Invalid Input", message, pfd::choice::ok, pfd::icon::warning), [] {}, [] {})};
+            };
+
+            try {
+                if (const int number{std::stoi(text)}; number < 1) {
+                    showDialog(std::format("Please enter a positive number (you entered {:d}).", number));
+                    return false;
+                }
+
+                return true;
+            }
+            catch (std::invalid_argument&) {
+                showDialog(
+                    std::format("Please enter a number ({:s} is not a number).", text.empty() ? "empty string" : text));
+                return false;
+            }
+            catch (std::out_of_range&) {
+                showDialog(std::format("Please enter a smaller number, the number {:s} is too big.", text));
+                return false;
+            }
+        };
+
+        // Tile Sheet Display
+        const auto createTileSheetDisplay = [&](glm::vec2 tileSize) {
+            auto tileSheet = std::make_unique<TileSheet>(Texture::create(image), tileSize);
+            std::vector<int> tiles(tileSheet->tileCount());
+            std::iota(tiles.begin(), tiles.end(), 1);
+            const auto tileMap{std::make_shared<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
+            tileMap->enableGridLines();
+
+            return tileMap;
+        };
+
+        auto tileMap{createTileSheetDisplay(defaultTileSize)};
+
+        const auto tileSizeGroup{std::make_shared<TwoColumnLayout>(
+            TwoColumnLayout::Layout{.padding = glm::vec2{0.0f}, .spacing = glm::vec2{4.0f}})};
+
+        tileSizeGroup->addChild(std::make_shared<Text>("Tile Size", m_graphics.font.get(), Font::Style{}));
+
+        const auto tileWidthLabel{std::make_shared<Text>("Width: ", m_graphics.font.get(), Font::Style{})};
+        auto tileWidthTextField{std::make_shared<TextField>(
+            "0", m_graphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
+            TextField::Style{})};
+        tileWidthTextField->setText(std::to_string(static_cast<int>(defaultTileSize.x)));
+        tileWidthTextField->setInputValidator(textFieldValidator);
+        tileWidthTextField->setSubmitAction([&, tileWidthTextField, tileMap](const std::string& text) {
+            const int tileWidth{std::stoi(tileWidthTextField->text())};
+            // TODO: Create new tile sheet display with user defined tile size.
+            // tileMap = createTileSheetDisplay(glm::vec2{tileWidth, tileMap->tileSize().y});
+            tileWidthTextField->notify(Event::defocus, EventData{*m_window});
+            m_focusedObject = nullptr;
+        });
+        tileWidthTextField->setFocusable(true);
+        tileSizeGroup->addRow(tileWidthLabel, tileWidthTextField);
+
+        const auto tileHeightLabel{std::make_shared<Text>("Height: ", m_graphics.font.get(), Font::Style{})};
+        auto tileHeightTextField = std::make_shared<TextField>(
+            "0", m_graphics.font.get(), TextField::Config{.maxLength = 3, .mode = TextField::Mode::numeric},
+            TextField::Style{});
+        tileHeightTextField->setText(std::to_string(static_cast<int>(defaultTileSize.y)));
+        tileHeightTextField->setInputValidator(textFieldValidator);
+        tileHeightTextField->setSubmitAction([&, tileHeightTextField, tileMap](const std::string& text) {
+            const int tileHeight{std::stoi(tileHeightTextField->text())};
+            // TODO: Create new tile sheet display with user defined tile size.
+            // tileMap = createTileSheetDisplay(glm::vec2{tileMap->tileSize().x, tileHeight});
+            tileHeightTextField->notify(Event::defocus, EventData{*m_window});
+            m_focusedObject = nullptr;
+        });
+        tileHeightTextField->setFocusable(true);
+        tileSizeGroup->addRow(tileHeightLabel, tileHeightTextField);
+        tileSheetContainer->addChild(tileSizeGroup);
+
+        // Tile sheet display
+        tileSheetContainer->addChild(tileMap);
+
+        formContainer->addChild(tileSheetContainer);
+
+        const auto buttonContainer{
+            std::make_shared<Group>(Group::Layout{.direction = Group::LayoutDirection::horizontal,
+                                                  .spacing = 8.0f,
+                                                  .horizontalAlignment = Group::HorizontalAlignment::right,
+                                                  .verticalAlignment = Group::VerticalAlignment::justified})};
+
+        Button::Style buttonStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.9f}};
+        Button::Style buttonActiveStyle{.textColor = glm::vec3{0.0f}, .fillColor = glm::vec3{0.8f}};
+        Button::Style buttonDisabledStyle{.textColor = glm::vec3{0.4f}, .fillColor = glm::vec3{0.5f}};
+
+        Text buttonText{"Confirm", m_graphics.font.get(), {.size = 32.0f}};
+        auto confirmButton{std::make_shared<Button>(
+            buttonText,
+            [&, image, tileMap, formContainer] {
+                loadTileSheet(image, tileMap->tileSize());
+                std::erase(m_guiObjects, formContainer);
+            },
+            buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
+        buttonContainer->addChild(confirmButton);
+
+        buttonText = {"Cancel", m_graphics.font.get(), {.size = 32.0f}};
+        auto cancelFileButton{std::make_shared<Button>(
+            buttonText, [&, formContainer] { std::erase(m_guiObjects, formContainer); }, buttonStyle, buttonActiveStyle,
+            buttonDisabledStyle)};
+        buttonContainer->addChild(cancelFileButton);
+
+        buttonContainer->setSize(glm::vec2{formContainer->size().x, buttonContainer->size().y});
+        formContainer->addChild(buttonContainer);
+
+        formContainer->setPosition(formContainer->position() +
+                                   0.5f * glm::vec2{-formContainer->size().x, formContainer->size().y});
+
+        // TODO: Block interaction with other objects.
+        // TODO: Dim other objects to focus user on the form. Could use rect spanning viewport w/ transparency.
+        m_guiObjects.push_back(formContainer);
     }
 
     void Editor::loadTileSheet(const Image::Image& image, glm::vec2 tileSize) {
