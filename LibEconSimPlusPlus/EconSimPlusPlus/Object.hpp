@@ -87,6 +87,10 @@ namespace EconSimPlusPlus {
         /// @param object An object.
         virtual void addChild(const std::shared_ptr<Object>& object);
 
+        /// Remove an object.
+        /// @param object An object.
+        virtual void removeChild(const std::shared_ptr<Object>& object);
+
         /// Register an event handler for this object.
         /// @param eventHandler A function that responds to events.
         void addEventHandler(const EventHandler& eventHandler);

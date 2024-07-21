@@ -78,6 +78,10 @@ namespace EconSimPlusPlus {
         m_children.push_back(object);
     }
 
+    void Object::removeChild(const std::shared_ptr<Object>& object) {
+        std::erase(m_children, object);
+    }
+
     void Object::addEventHandler(const EventHandler& eventHandler) {
         m_eventHandlers.push_back(eventHandler);
     }
