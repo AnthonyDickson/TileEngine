@@ -238,6 +238,8 @@ namespace EconSimPlusPlus::Editor {
         constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
         const Image::Image image{Image::create(filepath)};
 
+        // TODO: Add text that describes what they need to do and perhaps also why?
+
         const auto formContainer{std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical,
                           .padding = glm::vec2{8.0f},
@@ -278,7 +280,7 @@ namespace EconSimPlusPlus::Editor {
         };
 
         // Tile Sheet Display
-        const auto createTileSheetDisplay = [&](glm::vec2 tileSize) {
+        const auto createTileSheetDisplay = [=](glm::vec2 tileSize) {
             auto tileSheet = std::make_unique<TileSheet>(Texture::create(image), tileSize);
             std::vector<int> tiles(tileSheet->tileCount());
             std::iota(tiles.begin(), tiles.end(), 1);
@@ -301,10 +303,12 @@ namespace EconSimPlusPlus::Editor {
             TextField::Style{})};
         tileWidthTextField->setText(std::to_string(static_cast<int>(defaultTileSize.x)));
         tileWidthTextField->setInputValidator(textFieldValidator);
-        tileWidthTextField->setSubmitAction([&, tileWidthTextField, tileMap](const std::string& text) {
-            const int tileWidth{std::stoi(tileWidthTextField->text())};
-            // TODO: Create new tile sheet display with user defined tile size.
-            // tileMap = createTileSheetDisplay(glm::vec2{tileWidth, tileMap->tileSize().y});
+        tileWidthTextField->setSubmitAction([=](const std::string& text) {
+            const int tileWidth{std::stoi(text)};
+            // TODO: Fix this not removing the tile map after the first time. The pointer has likely changed, so the
+            // tile map passed into `removeChild` will not match any child objects.
+            tileSheetContainer->removeChild(tileMap);
+            tileSheetContainer->addChild(createTileSheetDisplay(glm::vec2{tileWidth, tileMap->tileSize().y}));
             tileWidthTextField->notify(Event::defocus, EventData{*m_window});
             m_focusedObject = nullptr;
         });
@@ -317,10 +321,12 @@ namespace EconSimPlusPlus::Editor {
             TextField::Style{});
         tileHeightTextField->setText(std::to_string(static_cast<int>(defaultTileSize.y)));
         tileHeightTextField->setInputValidator(textFieldValidator);
-        tileHeightTextField->setSubmitAction([&, tileHeightTextField, tileMap](const std::string& text) {
-            const int tileHeight{std::stoi(tileHeightTextField->text())};
-            // TODO: Create new tile sheet display with user defined tile size.
-            // tileMap = createTileSheetDisplay(glm::vec2{tileMap->tileSize().x, tileHeight});
+        tileHeightTextField->setSubmitAction([=](const std::string& text) {
+            const int tileHeight{std::stoi(text)};
+            // TODO: Fix this not removing the tile map after the first time. The pointer has likely changed, so the
+            // tile map passed into `removeChild` will not match any child objects.
+            tileSheetContainer->removeChild(tileMap);
+            tileSheetContainer->addChild(createTileSheetDisplay(glm::vec2{tileMap->tileSize().x, tileHeight}));
             tileHeightTextField->notify(Event::defocus, EventData{*m_window});
             m_focusedObject = nullptr;
         });
@@ -346,8 +352,9 @@ namespace EconSimPlusPlus::Editor {
         Text buttonText{"Confirm", m_graphics.font.get(), {.size = 32.0f}};
         auto confirmButton{std::make_shared<Button>(
             buttonText,
-            [&, image, tileMap, formContainer] {
-                loadTileSheet(image, tileMap->tileSize());
+            [=] {
+                loadTileSheet(image,
+                              glm::vec2{std::stof(tileWidthTextField->text()), std::stof(tileHeightTextField->text())});
                 std::erase(m_guiObjects, formContainer);
             },
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
@@ -355,7 +362,7 @@ namespace EconSimPlusPlus::Editor {
 
         buttonText = {"Cancel", m_graphics.font.get(), {.size = 32.0f}};
         auto cancelFileButton{std::make_shared<Button>(
-            buttonText, [&, formContainer] { std::erase(m_guiObjects, formContainer); }, buttonStyle, buttonActiveStyle,
+            buttonText, [=] { std::erase(m_guiObjects, formContainer); }, buttonStyle, buttonActiveStyle,
             buttonDisabledStyle)};
         buttonContainer->addChild(cancelFileButton);
 
@@ -376,7 +383,6 @@ namespace EconSimPlusPlus::Editor {
         // constructed. If the user clicks cancel, the whole operation should be aborted.
         // TODO: Show dialog that asks user whether save current tile map, discard any changes or cancel the open
         // operation.
-        constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
         constexpr glm::ivec2 defaultMapSize{16, 16};
         const std::vector defaultTiles(defaultMapSize.x * defaultMapSize.y, 0);
 
@@ -385,7 +391,7 @@ namespace EconSimPlusPlus::Editor {
         std::erase(m_guiObjects, m_tileSheetPanel);
 
         // Tile map display
-        auto tileSheet{std::make_unique<TileSheet>(Texture::create(image), defaultTileSize)};
+        auto tileSheet{std::make_unique<TileSheet>(Texture::create(image), tileSize)};
         m_tileMap = std::make_shared<TileMap>(std::move(tileSheet), defaultMapSize, defaultTiles);
         m_tileMap->setAnchor(Anchor::center);
         m_tileMap->setLayer(1.0f);
@@ -477,7 +483,7 @@ namespace EconSimPlusPlus::Editor {
         m_tileSheetPanel->addChild(mapSizeGroup);
 
         // Tile sheet display
-        tileSheet = std::make_unique<TileSheet>(Texture::create(image), defaultTileSize);
+        tileSheet = std::make_unique<TileSheet>(Texture::create(image), tileSize);
         std::vector<int> tiles(tileSheet->tileCount());
         std::iota(tiles.begin(), tiles.end(), 1);
         const auto tileMap{std::make_shared<TileMap>(std::move(tileSheet), tileSheet->sheetSize(), tiles)};
