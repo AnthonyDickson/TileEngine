@@ -290,7 +290,7 @@ namespace EconSimPlusPlus::Editor {
             return tileMap;
         };
 
-        auto tileMap{createTileSheetDisplay(defaultTileSize)};
+        m_tileMap = createTileSheetDisplay(defaultTileSize);
 
         const auto tileSizeGroup{std::make_shared<TwoColumnLayout>(
             TwoColumnLayout::Layout{.padding = glm::vec2{0.0f}, .spacing = glm::vec2{4.0f}})};
@@ -305,10 +305,9 @@ namespace EconSimPlusPlus::Editor {
         tileWidthTextField->setInputValidator(textFieldValidator);
         tileWidthTextField->setSubmitAction([=](const std::string& text) {
             const int tileWidth{std::stoi(text)};
-            // TODO: Fix this not removing the tile map after the first time. The pointer has likely changed, so the
-            // tile map passed into `removeChild` will not match any child objects.
-            tileSheetContainer->removeChild(tileMap);
-            tileSheetContainer->addChild(createTileSheetDisplay(glm::vec2{tileWidth, tileMap->tileSize().y}));
+            tileSheetContainer->removeChild(m_tileMap);
+            m_tileMap = createTileSheetDisplay(glm::vec2{tileWidth, m_tileMap->tileSize().y});
+            tileSheetContainer->addChild(m_tileMap);
             tileWidthTextField->notify(Event::defocus, EventData{*m_window});
             m_focusedObject = nullptr;
         });
@@ -323,10 +322,9 @@ namespace EconSimPlusPlus::Editor {
         tileHeightTextField->setInputValidator(textFieldValidator);
         tileHeightTextField->setSubmitAction([=](const std::string& text) {
             const int tileHeight{std::stoi(text)};
-            // TODO: Fix this not removing the tile map after the first time. The pointer has likely changed, so the
-            // tile map passed into `removeChild` will not match any child objects.
-            tileSheetContainer->removeChild(tileMap);
-            tileSheetContainer->addChild(createTileSheetDisplay(glm::vec2{tileMap->tileSize().x, tileHeight}));
+            tileSheetContainer->removeChild(m_tileMap);
+            m_tileMap = createTileSheetDisplay(glm::vec2{m_tileMap->tileSize().x, tileHeight});
+            tileSheetContainer->addChild(m_tileMap);
             tileHeightTextField->notify(Event::defocus, EventData{*m_window});
             m_focusedObject = nullptr;
         });
@@ -335,7 +333,7 @@ namespace EconSimPlusPlus::Editor {
         tileSheetContainer->addChild(tileSizeGroup);
 
         // Tile sheet display
-        tileSheetContainer->addChild(tileMap);
+        tileSheetContainer->addChild(m_tileMap);
 
         formContainer->addChild(tileSheetContainer);
 
@@ -353,17 +351,22 @@ namespace EconSimPlusPlus::Editor {
         auto confirmButton{std::make_shared<Button>(
             buttonText,
             [=] {
+                std::erase(m_guiObjects, formContainer);
+                m_tileMap = nullptr;
                 loadTileSheet(image,
                               glm::vec2{std::stof(tileWidthTextField->text()), std::stof(tileHeightTextField->text())});
-                std::erase(m_guiObjects, formContainer);
             },
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         buttonContainer->addChild(confirmButton);
 
         buttonText = {"Cancel", m_graphics.font.get(), {.size = 32.0f}};
         auto cancelFileButton{std::make_shared<Button>(
-            buttonText, [=] { std::erase(m_guiObjects, formContainer); }, buttonStyle, buttonActiveStyle,
-            buttonDisabledStyle)};
+            buttonText,
+            [=] {
+                std::erase(m_guiObjects, formContainer);
+                m_tileMap = nullptr;
+            },
+            buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         buttonContainer->addChild(cancelFileButton);
 
         buttonContainer->setSize(glm::vec2{formContainer->size().x, buttonContainer->size().y});
