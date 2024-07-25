@@ -235,19 +235,20 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::getTileSize(const std::string& filepath) {
+        std::erase(m_guiObjects, m_tileSizeForm);
         constexpr glm::vec2 defaultTileSize{32.0f, 32.0f};
         const Image::Image image{Image::create(filepath)};
 
         // TODO: Add text that describes what they need to do and perhaps also why?
 
-        const auto formContainer{std::make_shared<Group>(
+        m_tileSizeForm = std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical,
                           .padding = glm::vec2{8.0f},
                           .spacing = 8.0f,
                           .horizontalAlignment = Group::HorizontalAlignment::justified,
                           .verticalAlignment = Group::VerticalAlignment::justified},
             Group::Style{.outline = Outline::Style{.color = glm::vec4{0.5f, 0.5f, 0.5f, 1.0f}, .thickness = 2.0f},
-                         .fillColor = glm::vec4{glm::vec3{1.0f}, 1.0f}})};
+                         .fillColor = glm::vec4{glm::vec3{1.0f}, 1.0f}});
 
         const auto tileSheetContainer{
             std::make_shared<Group>(Group::Layout{.direction = Group::LayoutDirection::horizontal,
@@ -335,7 +336,7 @@ namespace EconSimPlusPlus::Editor {
         // Tile sheet display
         tileSheetContainer->addChild(m_tileMap);
 
-        formContainer->addChild(tileSheetContainer);
+        m_tileSizeForm->addChild(tileSheetContainer);
 
         const auto buttonContainer{
             std::make_shared<Group>(Group::Layout{.direction = Group::LayoutDirection::horizontal,
@@ -351,7 +352,8 @@ namespace EconSimPlusPlus::Editor {
         auto confirmButton{std::make_shared<Button>(
             buttonText,
             [=] {
-                std::erase(m_guiObjects, formContainer);
+                std::erase(m_guiObjects, m_tileSizeForm);
+                m_tileSizeForm = nullptr;
                 m_tileMap = nullptr;
                 loadTileSheet(image,
                               glm::vec2{std::stof(tileWidthTextField->text()), std::stof(tileHeightTextField->text())});
@@ -363,21 +365,21 @@ namespace EconSimPlusPlus::Editor {
         auto cancelFileButton{std::make_shared<Button>(
             buttonText,
             [=] {
-                std::erase(m_guiObjects, formContainer);
+                std::erase(m_guiObjects, m_tileSizeForm);
+                m_tileSizeForm = nullptr;
                 m_tileMap = nullptr;
             },
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         buttonContainer->addChild(cancelFileButton);
 
-        buttonContainer->setSize(glm::vec2{formContainer->size().x, buttonContainer->size().y});
-        formContainer->addChild(buttonContainer);
+        buttonContainer->setSize(glm::vec2{m_tileSizeForm->size().x, buttonContainer->size().y});
+        m_tileSizeForm->addChild(buttonContainer);
 
-        formContainer->setPosition(formContainer->position() +
-                                   0.5f * glm::vec2{-formContainer->size().x, formContainer->size().y});
+        m_tileSizeForm->setPosition(m_tileSizeForm->position() +
+                                    0.5f * glm::vec2{-m_tileSizeForm->size().x, m_tileSizeForm->size().y});
 
-        // TODO: Block interaction with other objects.
         // TODO: Dim other objects to focus user on the form. Could use rect spanning viewport w/ transparency.
-        m_guiObjects.push_back(formContainer);
+        m_guiObjects.push_back(m_tileSizeForm);
     }
 
     void Editor::loadTileSheet(const Image::Image& image, glm::vec2 tileSize) {
@@ -505,11 +507,6 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::update(const float deltaTime) {
-        if (m_dialog != nullptr and m_dialog->active()) {
-            m_dialog->update();
-            return;
-        }
-
         if (m_window->hasWindowSizeChanged()) {
             m_graphics.camera.onWindowResize(
                 {static_cast<float>(m_window->width()), static_cast<float>(m_window->height())});
@@ -519,32 +516,50 @@ namespace EconSimPlusPlus::Editor {
             notifyAll(Event::windowResize);
         }
 
+        if (m_dialog != nullptr and m_dialog->active()) {
+            m_dialog->update();
+            return;
+        }
+
         const InputState input{m_focusedObject == nullptr ? m_window->inputState()
                                                           : m_window->inputState().withoutKeyboardInput()};
-        m_graphics.camera.update(deltaTime, input);
+
+        std::vector<std::shared_ptr<Object>> gameObjects;
+        std::vector<std::shared_ptr<Object>> guiObjects;
+
+        if (m_tileSizeForm == nullptr) {
+            m_graphics.camera.update(deltaTime, input);
+
+            gameObjects = m_gameObjects;
+            guiObjects = m_guiObjects;
+        }
+        else {
+            gameObjects = {};
+            guiObjects = {m_tileSizeForm};
+        }
 
         std::ranges::sort(m_gameObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
             return a->layer() > b->layer();
         });
 
-        for (const auto& object : m_gameObjects) {
+        for (const auto& object : gameObjects) {
             object->update(deltaTime, input, m_graphics.camera);
         }
 
         const Camera guiCamera{atOrigin(m_graphics.camera)};
 
-        std::ranges::sort(m_guiObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
+        std::ranges::sort(guiObjects, [&](const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) {
             return a->layer() > b->layer();
         });
 
-        for (const auto& object : m_guiObjects) {
+        for (const auto& object : guiObjects) {
             if (object.get() != m_focusedObject) {
                 object->update(deltaTime, input, guiCamera);
             }
         }
 
-        const std::unordered_set handledEvents{handleEvents(m_guiObjects, guiCamera, m_window->inputState(), {})};
-        handleEvents(m_gameObjects, m_graphics.camera, m_window->inputState(), handledEvents);
+        const std::unordered_set handledEvents{handleEvents(guiObjects, guiCamera, m_window->inputState(), {})};
+        handleEvents(gameObjects, m_graphics.camera, m_window->inputState(), handledEvents);
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst

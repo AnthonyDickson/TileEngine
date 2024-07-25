@@ -101,6 +101,7 @@ namespace EconSimPlusPlus::Editor {
         /// Handles asynchronous dialogs.
         /// @note Possibly nullptr.
         std::unique_ptr<Dialog> m_dialog{};
+        std::shared_ptr<Group> m_tileSizeForm{};
     };
 } // namespace EconSimPlusPlus::Editor
 
