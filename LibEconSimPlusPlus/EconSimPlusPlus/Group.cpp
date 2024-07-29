@@ -56,7 +56,7 @@ namespace EconSimPlusPlus {
                 initialPosition.y = top(group) - 0.5f * layout.padding.y - (innerSize.y - contentSize.y);
                 break;
             case Group::VerticalAlignment::center:
-                initialPosition.y = top(group) - 0.5f * layout.padding.y + 0.5f * (innerSize.y - contentSize.y);
+                initialPosition.y = top(group) - 0.5f * layout.padding.y - 0.5f * (innerSize.y - contentSize.y);
                 break;
             }
 

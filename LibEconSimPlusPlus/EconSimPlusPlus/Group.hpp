@@ -26,7 +26,6 @@
 #include <EconSimPlusPlus/Outline.hpp>
 
 namespace EconSimPlusPlus {
-    // TODO: For horizontal layouts, add option to push objects to closest edge.
     /// Automatically manages the layout of objects.
     class Group final : public Object {
     public:
