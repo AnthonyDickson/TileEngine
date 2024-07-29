@@ -243,6 +243,17 @@ namespace EconSimPlusPlus::Editor {
 
         m_tileSizeForm = std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical,
+                          // TODO: Fix horizontal alignment pushing inner form group to the right edge.
+                          .horizontalAlignment = Group::HorizontalAlignment::center,
+                          .verticalAlignment = Group::VerticalAlignment::center},
+            Group::Style{.fillColor = glm::vec4{glm::vec3{0.2f}, 0.5f}});
+        m_tileSizeForm->setAnchor(Anchor::center);
+        m_tileSizeForm->setSize(m_window->size());
+        m_tileSizeForm->setPosition(glm::vec2{0.0f});
+        m_tileSizeForm->setLayer(99.0f);
+
+        auto innerFormGroup = std::make_shared<Group>(
+            Group::Layout{.direction = Group::LayoutDirection::vertical,
                           .padding = glm::vec2{8.0f},
                           .spacing = 8.0f,
                           .horizontalAlignment = Group::HorizontalAlignment::justified,
@@ -291,6 +302,9 @@ namespace EconSimPlusPlus::Editor {
             return tileMap;
         };
 
+        // TODO: Fix bug where if a tile map is already open, and the tile size form is opened but the user clicks the
+        // cancel, the tile map is set to nullptr. Two options: Backup and restore previous tile map OR add data member
+        // specific to tile size form.
         m_tileMap = createTileSheetDisplay(defaultTileSize);
 
         const auto tileSizeGroup{std::make_shared<TwoColumnLayout>(
@@ -336,7 +350,7 @@ namespace EconSimPlusPlus::Editor {
         // Tile sheet display
         tileSheetContainer->addChild(m_tileMap);
 
-        m_tileSizeForm->addChild(tileSheetContainer);
+        innerFormGroup->addChild(tileSheetContainer);
 
         const auto buttonContainer{
             std::make_shared<Group>(Group::Layout{.direction = Group::LayoutDirection::horizontal,
@@ -372,13 +386,13 @@ namespace EconSimPlusPlus::Editor {
             buttonStyle, buttonActiveStyle, buttonDisabledStyle)};
         buttonContainer->addChild(cancelFileButton);
 
-        buttonContainer->setSize(glm::vec2{m_tileSizeForm->size().x, buttonContainer->size().y});
-        m_tileSizeForm->addChild(buttonContainer);
+        buttonContainer->setSize(glm::vec2{innerFormGroup->size().x, buttonContainer->size().y});
+        innerFormGroup->addChild(buttonContainer);
 
-        m_tileSizeForm->setPosition(m_tileSizeForm->position() +
-                                    0.5f * glm::vec2{-m_tileSizeForm->size().x, m_tileSizeForm->size().y});
+        innerFormGroup->setPosition(innerFormGroup->position() +
+                                    0.5f * glm::vec2{-innerFormGroup->size().x, innerFormGroup->size().y});
+        m_tileSizeForm->addChild(innerFormGroup);
 
-        // TODO: Dim other objects to focus user on the form. Could use rect spanning viewport w/ transparency.
         m_guiObjects.push_back(m_tileSizeForm);
     }
 

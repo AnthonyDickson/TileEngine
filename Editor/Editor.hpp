@@ -101,6 +101,7 @@ namespace EconSimPlusPlus::Editor {
         /// Handles asynchronous dialogs.
         /// @note Possibly nullptr.
         std::unique_ptr<Dialog> m_dialog{};
+        /// A GUI form where the user sets a tile sheet's tile size.
         std::shared_ptr<Group> m_tileSizeForm{};
     };
 } // namespace EconSimPlusPlus::Editor
