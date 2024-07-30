@@ -236,7 +236,15 @@ namespace EconSimPlusPlus {
         for (std::size_t i = 0; i < childObjects.size(); ++i) {
             const auto& object{childObjects.at(i)};
             object->setAnchor(Anchor::topLeft);
-            object->setPosition(calculatePosition(object, nextPosition, m_layout, innerSize));
+
+            if (childObjects.size() > 1) {
+                // TODO: Make alignment along layout direction axis optional.
+                object->setPosition(calculatePosition(object, nextPosition, m_layout, innerSize));
+            }
+            else {
+                object->setPosition(nextPosition);
+            }
+
             object->setLayer(layer());
 
             nextPosition = calculateNextPosition(object, nextPosition, m_layout, innerSize, contentSize,

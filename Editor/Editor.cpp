@@ -243,7 +243,6 @@ namespace EconSimPlusPlus::Editor {
 
         m_tileSizeForm = std::make_shared<Group>(
             Group::Layout{.direction = Group::LayoutDirection::vertical,
-                          // TODO: Fix horizontal alignment pushing inner form group to the right edge.
                           .horizontalAlignment = Group::HorizontalAlignment::center,
                           .verticalAlignment = Group::VerticalAlignment::center},
             Group::Style{.fillColor = glm::vec4{glm::vec3{0.2f}, 0.5f}});
@@ -389,8 +388,6 @@ namespace EconSimPlusPlus::Editor {
         buttonContainer->setSize(glm::vec2{innerFormGroup->size().x, buttonContainer->size().y});
         innerFormGroup->addChild(buttonContainer);
 
-        innerFormGroup->setPosition(innerFormGroup->position() +
-                                    0.5f * glm::vec2{-innerFormGroup->size().x, innerFormGroup->size().y});
         m_tileSizeForm->addChild(innerFormGroup);
 
         m_guiObjects.push_back(m_tileSizeForm);
