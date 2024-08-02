@@ -391,9 +391,6 @@ namespace EconSimPlusPlus::Editor {
     }
 
     void Editor::loadTileSheet(const Image::Image& image, glm::vec2 tileSize) {
-        // TODO: After the user chooses a tile map in the open file dialog, show a prompt that asks for tile size and
-        // shows a preview of the tile sheet. When the user clicks confirm, the tile map and editor GUI should be then
-        // constructed. If the user clicks cancel, the whole operation should be aborted.
         // TODO: Show dialog that asks user whether save current tile map, discard any changes or cancel the open
         // operation.
         constexpr glm::ivec2 defaultMapSize{16, 16};
