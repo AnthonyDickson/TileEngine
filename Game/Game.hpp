@@ -1,12 +1,12 @@
-#ifndef GAME_ECONSIMPLUSPLUS_GAME_HPP
-#define GAME_ECONSIMPLUSPLUS_GAME_HPP
+#ifndef GAME_TILEENGINE_GAME_HPP
+#define GAME_TILEENGINE_GAME_HPP
 
-#include <EconSimPlusPlus/Font.hpp>
-#include <EconSimPlusPlus/GridLines.hpp>
-#include <EconSimPlusPlus/TileMap.hpp>
-#include <EconSimPlusPlus/Window.hpp>
+#include <TileEngine/Font.hpp>
+#include <TileEngine/GridLines.hpp>
+#include <TileEngine/TileMap.hpp>
+#include <TileEngine/Window.hpp>
 
-namespace EconSimPlusPlus {
+namespace TileEngine {
     /// This is the main class for the program.
     class Game {
     public:
@@ -52,6 +52,6 @@ namespace EconSimPlusPlus {
         Graphics m_graphics;
         Graphics m_guiGraphics;
     };
-} // namespace EconSimPlusPlus
+} // namespace TileEngine
 
-#endif // GAME_ECONSIMPLUSPLUS_GAME_HPP
+#endif // GAME_TILEENGINE_GAME_HPP

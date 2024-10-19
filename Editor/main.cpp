@@ -4,7 +4,7 @@
 
 int main() {
     try {
-        auto editor{EconSimPlusPlus::Editor::Editor::create({1920, 1080})};
+        auto editor{TileEngine::Editor::Editor::create({1920, 1080})};
         editor.run();
     }
     catch (const std::exception& exception) {

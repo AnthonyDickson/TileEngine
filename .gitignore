@@ -33,6 +33,7 @@
 
 cmake-build-debug/
 cmake-build-release/
+build/
 
 .idea/editor.xml
 .idea/codeStyles/

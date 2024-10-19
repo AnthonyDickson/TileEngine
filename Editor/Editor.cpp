@@ -7,24 +7,24 @@
 #include "portable-file-dialogs.h"
 #include "yaml-cpp/yaml.h"
 
-#include <EconSimPlusPlus/Button.hpp>
-#include <EconSimPlusPlus/Editor/MessageDialog.hpp>
-#include <EconSimPlusPlus/Editor/OpenFileDialog.hpp>
-#include <EconSimPlusPlus/Editor/SaveFileDialog.hpp>
-#include <EconSimPlusPlus/Event.hpp>
-#include <EconSimPlusPlus/FrameTimer.hpp>
-#include <EconSimPlusPlus/GridLines.hpp>
-#include <EconSimPlusPlus/Group.hpp>
-#include <EconSimPlusPlus/Image.hpp>
-#include <EconSimPlusPlus/TextField.hpp>
-#include <EconSimPlusPlus/TileMap.hpp>
-#include <EconSimPlusPlus/TileSheet.hpp>
-#include <EconSimPlusPlus/TwoColumnLayout.hpp>
+#include <TileEngine/Button.hpp>
+#include <TileEngine/Editor/MessageDialog.hpp>
+#include <TileEngine/Editor/OpenFileDialog.hpp>
+#include <TileEngine/Editor/SaveFileDialog.hpp>
+#include <TileEngine/Event.hpp>
+#include <TileEngine/FrameTimer.hpp>
+#include <TileEngine/GridLines.hpp>
+#include <TileEngine/Group.hpp>
+#include <TileEngine/Image.hpp>
+#include <TileEngine/TextField.hpp>
+#include <TileEngine/TileMap.hpp>
+#include <TileEngine/TileSheet.hpp>
+#include <TileEngine/TwoColumnLayout.hpp>
 
 #include "Editor.hpp"
 
 
-namespace EconSimPlusPlus::Editor {
+namespace TileEngine::Editor {
 
     namespace {
         void save(const TileMap* tileMap, const std::string& path) {
@@ -74,7 +74,7 @@ namespace EconSimPlusPlus::Editor {
     } // namespace
 
     Editor Editor::create(glm::ivec2 windowSize) {
-        auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
+        auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "TileEngine")};
 
         return Editor{std::move(window)};
     }
@@ -662,4 +662,4 @@ namespace EconSimPlusPlus::Editor {
             object->render(m_guiGraphics);
         }
     }
-} // namespace EconSimPlusPlus::Editor
+} // namespace TileEngine::Editor

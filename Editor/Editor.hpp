@@ -1,16 +1,16 @@
-#ifndef EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
-#define EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
+#ifndef EDITOR_TILEENGINE_EDITOR_EDITOR_HPP
+#define EDITOR_TILEENGINE_EDITOR_EDITOR_HPP
 
 #include <unordered_set>
 
-#include <EconSimPlusPlus/Editor/Dialog.hpp>
-#include <EconSimPlusPlus/Graphics.hpp>
-#include <EconSimPlusPlus/Group.hpp>
-#include <EconSimPlusPlus/Object.hpp>
-#include <EconSimPlusPlus/TileMap.hpp>
-#include <EconSimPlusPlus/Window.hpp>
+#include <TileEngine/Editor/Dialog.hpp>
+#include <TileEngine/Graphics.hpp>
+#include <TileEngine/Group.hpp>
+#include <TileEngine/Object.hpp>
+#include <TileEngine/TileMap.hpp>
+#include <TileEngine/Window.hpp>
 
-namespace EconSimPlusPlus::Editor {
+namespace TileEngine::Editor {
     /// This is the main class for the program.
     class Editor {
     public:
@@ -86,6 +86,6 @@ namespace EconSimPlusPlus::Editor {
         /// The tile sheet display for the tile size form.
         std::shared_ptr<TileMap> m_tileSizeSheet{};
     };
-} // namespace EconSimPlusPlus::Editor
+} // namespace TileEngine::Editor
 
-#endif // EDITOR_ECONSIMPLUSPLUS_EDITOR_EDITOR_HPP
+#endif // EDITOR_TILEENGINE_EDITOR_EDITOR_HPP

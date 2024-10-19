@@ -3,11 +3,11 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
-#include <EconSimPlusPlus/FrameTimer.hpp>
-#include <EconSimPlusPlus/Text.hpp>
+#include <TileEngine/FrameTimer.hpp>
+#include <TileEngine/Text.hpp>
 #include "Game.hpp"
 
-namespace EconSimPlusPlus {
+namespace TileEngine {
 
     bool Game::m_isInitialised = false;
 
@@ -26,7 +26,7 @@ namespace EconSimPlusPlus {
     }
 
     Game Game::create(glm::ivec2 windowSize) {
-        auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "EconSimPlusPlus")};
+        auto window{std::make_unique<Window>(windowSize.x, windowSize.y, "TileEngine")};
         std::unique_ptr tileMap{TileMap::create("resource/terrain.yaml")};
 
         return {std::move(window), std::move(tileMap)};
@@ -126,4 +126,4 @@ namespace EconSimPlusPlus {
             m_window->postUpdate();
         }
     }
-} // namespace EconSimPlusPlus
+} // namespace TileEngine

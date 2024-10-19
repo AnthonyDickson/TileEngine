@@ -1,2 +1,2 @@
-add_executable(EconSimPlusPlusEditor main.cpp editor.cpp)
-target_link_libraries(EconSimPlusPlusEditor LibEconSimPlusPlusEditor)
+add_executable(TileEngineEditor main.cpp editor.cpp)
+target_link_libraries(TileEngineEditor LibTileMapEditor)

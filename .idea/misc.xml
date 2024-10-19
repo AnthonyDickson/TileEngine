@@ -3,10 +3,10 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <sourceRoots>
-      <file path="$PROJECT_DIR$/LibEconSimPlusPlus" />
-      <file path="$PROJECT_DIR$/LibEconSimPlusPlus/EconSimPlusPlus" />
-      <file path="$PROJECT_DIR$/LibEconSimPlusPlusEditor" />
-      <file path="$PROJECT_DIR$/LibEconSimPlusPlusEditor/EconSimPlusPlus" />
+      <file path="$PROJECT_DIR$/LibTileEngine" />
+      <file path="$PROJECT_DIR$/LibTileEngine/TileEngine" />
+      <file path="$PROJECT_DIR$/LibTileMapEditor" />
+      <file path="$PROJECT_DIR$/LibTileMapEditor/TileEngine" />
       <file path="$PROJECT_DIR$/apps" />
     </sourceRoots>
     <excludeRoots>
